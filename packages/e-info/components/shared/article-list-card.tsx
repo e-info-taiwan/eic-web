@@ -7,8 +7,9 @@ import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { ArticleCard } from '~/types/component'
+import PostTag from '~/components/post/tag'
 
-import DateAndReadTimeInfo from './date-and-read-time-info'
+import DateInfo from './date-info'
 import ReportLabel from './report-label'
 
 type StyledProps = {
@@ -105,15 +106,14 @@ const ImageWrapper = styled.div<StyledProps>`
           margin: 0 0 12px;
         }
 
-        ${
-          $shouldReverseInMobile &&
-          `
+        ${$shouldReverseInMobile &&
+    `
             margin: 0 0 0 8px;
             ${theme.breakpoint.sm} {
               margin: 0 0 12px;
             }
           `
-        }
+    }
       }
     `}
 `
@@ -123,7 +123,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
     text-align: left;
     margin: 0 0 4px;
     ${({ theme }) => theme.breakpoint.sm} {
-      margin: 0 0 8px;
+      margin: 12px 0 0;
     }
     p {
       display: inline;
@@ -131,13 +131,14 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
       font-weight: 700;
       line-height: 24px;
       letter-spacing: 0.03em;
-      color: #000928;
+      color: #232333;
       ${({ theme }) => theme.breakpoint.md} {
         font-size: 18px;
         line-height: 27px;
       }
       &:hover {
-        border-bottom: 1.5px solid #000928;
+        color: #388A48;
+        border-bottom: 1.5px solid #388A48;
       }
     }
 
@@ -148,8 +149,24 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
     overflow: hidden;
   }
 
-  // custom style for <DateAndReadTimeInfo />
+  .summary {
+    margin-top: 20px;
+    margin-bottom: 32px;
+
+    p {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      letter-spacing: 0;
+      color: #373740;
+    }
+  }
+
+  // custom style for <DateInfo />
   .time {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
     ${({ theme }) => theme.breakpoint.md} {
       font-size: 14px;
       line-height: 21px;
@@ -196,10 +213,10 @@ type ArticleListCardProps = Omit<ArticleCard, 'id'> & {
 export default function ArticleListCard({
   href = '/',
   title = '',
+  summary = '',
   images = {},
   imagesWebP = {},
   date = '',
-  readTimeText = '',
   isReport = false,
   shouldReverseInMobile = false,
   shouldHighlightReport = false,
@@ -212,7 +229,7 @@ export default function ArticleListCard({
   const isReportAndShouldHighlight = isReport && shouldHighlightReport
 
   function clickHander(event: unknown) {
-    ;(event as Event).stopPropagation()
+    ; (event as Event).stopPropagation()
     if (typeof onClick === 'function') {
       onClick()
     }
@@ -244,12 +261,20 @@ export default function ArticleListCard({
         {isReport && <ReportLabel />}
       </ImageWrapper>
       <TextWrapper $shouldHighlightReport={isReportAndShouldHighlight}>
+        {!shouldHideBottomInfos && (
+          <DateInfo date={date} />
+        )}
         <div className="title">
           <p>{title}</p>
         </div>
-        {!shouldHideBottomInfos && (
-          <DateAndReadTimeInfo date={date} readTimeText={readTimeText} />
-        )}
+        <div className="summary">
+          <p>{summary || '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機'}</p>
+        </div>
+        <PostTag tags={[
+          { id: '1630', name: '微軟' },
+          { id: '1629', name: '工程師' },
+          { id: '1628', name: '台積電' }
+        ]} />
       </TextWrapper>
     </Link>
   )

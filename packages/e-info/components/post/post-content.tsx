@@ -253,6 +253,8 @@ export default function PostContent({
   const categorySlug = postData?.categories[0]?.slug || 'breakingnews'
   const blocksLength = getBlocksCount(postData?.content)
 
+  console.log(postData?.tags)
+
   return (
     <Container shouldPaddingTop={shouldPaddingTop} ref={articleRef}>
       <SideIndex

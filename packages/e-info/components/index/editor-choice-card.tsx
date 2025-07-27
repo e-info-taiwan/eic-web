@@ -5,7 +5,7 @@ import SharedImage from '@readr-media/react-image'
 import NextLink from 'next/link'
 import styled, { useTheme } from 'styled-components'
 
-import DateAndReadTimeInfo from '~/components/shared/date-and-read-time-info'
+import DateInfo from '~/components/shared/date-info'
 import ReportLabel from '~/components/shared/report-label'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import IconFeaturedLabel from '~/public/icons/featured-label.svg'
@@ -187,7 +187,6 @@ export default function EditorChoiceCard({
   images = {},
   imagesWebP = {},
   date = '',
-  readTimeText = '',
   isFeatured = false,
   isReport = false,
   shouldHideBottomInfos = false,
@@ -238,7 +237,7 @@ export default function EditorChoiceCard({
           <p>{title}</p>
         </div>
         {!shouldHideBottomInfos && (
-          <DateAndReadTimeInfo date={date} readTimeText={readTimeText} />
+          <DateInfo date={date} />
         )}
       </TextWrapper>
     </Container>

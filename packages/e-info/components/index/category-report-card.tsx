@@ -4,7 +4,7 @@ import SharedImage from '@readr-media/react-image'
 import NextLink from 'next/link'
 import styled, { useTheme } from 'styled-components'
 
-import DateAndReadTimeInfo from '~/components/shared/date-and-read-time-info'
+import DateInfo from '~/components/shared/date-info'
 import ReportLabel from '~/components/shared/report-label'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { ArticleCard } from '~/types/component'
@@ -136,7 +136,7 @@ const TextWrapper = styled.div`
     }
   }
 
-  // custom style for <DateAndReadTimeInfo />
+  // custom style for <DateInfo />
   .time {
     ${({ theme }) => theme.breakpoint.sm} {
       font-size: 14px;
@@ -165,7 +165,6 @@ export default function CategoryReportCard({
     title = '',
     images = {},
     date = '',
-    readTimeText = '',
     isReport = false,
   } = report ?? {}
 
@@ -200,7 +199,7 @@ export default function CategoryReportCard({
         <div className="title">
           <p>{title}</p>
         </div>
-        <DateAndReadTimeInfo date={date} readTimeText={readTimeText} />
+        <DateInfo date={date} />
       </TextWrapper>
     </Container>
   )

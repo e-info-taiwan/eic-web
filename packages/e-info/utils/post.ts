@@ -126,7 +126,6 @@ export function convertPostToArticleCard(
     id = 'no-id',
     title = '',
     slug = '',
-    readingTime = 0,
     style,
     publishTime = '',
   } = post ?? {}
@@ -136,7 +135,7 @@ export function convertPostToArticleCard(
     title,
     href: getHref({ style, id, slug }),
     date: formatPostDate(publishTime),
-    readTimeText: formatReadTime(readingTime),
+    summary: '',
     isReport: isReport(style),
     images: images ?? {},
     imagesWebP: imagesWebP ?? {},

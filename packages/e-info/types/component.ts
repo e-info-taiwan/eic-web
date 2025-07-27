@@ -4,10 +4,10 @@ export type ArticleCard = {
   id: string
   href: string
   title: string
+  summary: string
   images: ResizedImages
   imagesWebP: ResizedImages
   date: string
-  readTimeText: string
   isReport: boolean
 }
 

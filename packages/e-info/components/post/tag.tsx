@@ -12,13 +12,13 @@ const TagWrapper = styled.ul`
   max-width: 600px;
 
   > li {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
-    text-align: left;
-    border-radius: 2px;
-    color: #575d71;
-    background-color: #f6f6fb;
-    margin: 0 8px 8px 0;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid #8BC890;
+    color: #8BC890;
+    margin: 0 8px 12px 0;
 
     &:hover {
       color: #7f8493;

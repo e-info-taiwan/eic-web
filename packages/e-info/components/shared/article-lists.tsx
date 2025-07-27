@@ -11,7 +11,7 @@ const shareStyle = css`
     width: calc((100% - 24px) / 2);
   }
   ${({ theme }) => theme.breakpoint.xl} {
-    width: 256px;
+    width: calc((100% - 24px) / 2);
   }
 `
 
@@ -22,11 +22,8 @@ const Item = styled.li`
     margin: 0 0 32px;
   }
   ${({ theme }) => theme.breakpoint.xl} {
-    margin: 0 0 60px;
-    &:nth-child(3),
-    &:nth-child(4) {
-      margin: 0;
-    }
+    margin: 0 0 32px;
+
   }
   ${shareStyle}
 `
@@ -41,8 +38,7 @@ const ItemList = styled.div`
     margin-top: 50px;
   }
   ${({ theme }) => theme.breakpoint.xl} {
-    justify-content: flex-start;
-    gap: calc((100% - 1024px) / 3);
+    margin-top: 50px;
   }
 `
 
