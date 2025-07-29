@@ -2,12 +2,11 @@
 
 import type { Breakpoint, Rwd } from '@readr-media/react-image'
 import SharedImage from '@readr-media/react-image'
-import NextLink from 'next/link'
 import styled from 'styled-components'
 
+import PostTag from '~/components/post/tag'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { ArticleCard } from '~/types/component'
-import PostTag from '~/components/post/tag'
 
 import DateInfo from './date-info'
 import ReportLabel from './report-label'
@@ -106,14 +105,15 @@ const ImageWrapper = styled.div<StyledProps>`
           margin: 0 0 12px;
         }
 
-        ${$shouldReverseInMobile &&
-    `
+        ${
+          $shouldReverseInMobile &&
+          `
             margin: 0 0 0 8px;
             ${theme.breakpoint.sm} {
               margin: 0 0 12px;
             }
           `
-    }
+        }
       }
     `}
 `
@@ -137,8 +137,8 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
         line-height: 27px;
       }
       &:hover {
-        color: #388A48;
-        border-bottom: 1.5px solid #388A48;
+        color: #388a48;
+        border-bottom: 1.5px solid #388a48;
       }
     }
 
@@ -229,7 +229,7 @@ export default function ArticleListCard({
   const isReportAndShouldHighlight = isReport && shouldHighlightReport
 
   function clickHander(event: unknown) {
-    ; (event as Event).stopPropagation()
+    ;(event as Event).stopPropagation()
     if (typeof onClick === 'function') {
       onClick()
     }
@@ -261,20 +261,23 @@ export default function ArticleListCard({
         {isReport && <ReportLabel />}
       </ImageWrapper>
       <TextWrapper $shouldHighlightReport={isReportAndShouldHighlight}>
-        {!shouldHideBottomInfos && (
-          <DateInfo date={date} />
-        )}
+        {!shouldHideBottomInfos && <DateInfo date={date} />}
         <div className="title">
           <p>{title}</p>
         </div>
         <div className="summary">
-          <p>{summary || '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機'}</p>
+          <p>
+            {summary ||
+              '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機'}
+          </p>
         </div>
-        <PostTag tags={[
-          { id: '1630', name: '微軟' },
-          { id: '1629', name: '工程師' },
-          { id: '1628', name: '台積電' }
-        ]} />
+        <PostTag
+          tags={[
+            { id: '1630', name: '微軟' },
+            { id: '1629', name: '工程師' },
+            { id: '1628', name: '台積電' },
+          ]}
+        />
       </TextWrapper>
     </Link>
   )

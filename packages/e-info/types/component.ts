@@ -4,7 +4,7 @@ export type ArticleCard = {
   id: string
   href: string
   title: string
-  summary: string
+  summary?: string
   images: ResizedImages
   imagesWebP: ResizedImages
   date: string

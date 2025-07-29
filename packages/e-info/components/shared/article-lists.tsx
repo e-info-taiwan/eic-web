@@ -23,7 +23,6 @@ const Item = styled.li`
   }
   ${({ theme }) => theme.breakpoint.xl} {
     margin: 0 0 32px;
-
   }
   ${shareStyle}
 `

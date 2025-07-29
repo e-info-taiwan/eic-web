@@ -236,9 +236,7 @@ export default function EditorChoiceCard({
         <div className="title">
           <p>{title}</p>
         </div>
-        {!shouldHideBottomInfos && (
-          <DateInfo date={date} />
-        )}
+        {!shouldHideBottomInfos && <DateInfo date={date} />}
       </TextWrapper>
     </Container>
   )

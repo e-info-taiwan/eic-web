@@ -16,8 +16,8 @@ const TagWrapper = styled.ul`
     line-height: 1.5;
     text-align: center;
     border-radius: 4px;
-    border: 1px solid #8BC890;
-    color: #8BC890;
+    border: 1px solid #8bc890;
+    color: #8bc890;
     margin: 0 8px 12px 0;
 
     &:hover {
