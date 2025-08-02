@@ -64,21 +64,11 @@ export default class MyDocument extends Document {
           <link
             rel="icon"
             type="image/png"
-            sizes="32x32"
+            sizes="96x96"
             href="/favicon-32x32.png?v2"
           />
-          <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="/favicon-16x16.png?v2"
-          />
+          <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <link rel="manifest" href="/site.webmanifest" />
-          <meta
-            name="msapplication-TileColor"
-            content="#eee500"
-            key="msapplication-TileColor"
-          />
           <meta name="theme-color" content="#0b2163" key="theme-color" />
           <meta
             name="google-site-verification"
