@@ -12,9 +12,12 @@ import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import CollaborationSection from '~/components/index/collaboration-section'
 import EditorChoiceSection from '~/components/index/editor-choice-section'
 import FeatureSection from '~/components/index/feature-section'
+import HighlightSection from '~/components/index/highlight-section'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import LatestReportSection from '~/components/index/latest-report-section'
+import NewsSection from '~/components/index/news-section'
 import OpenDataSection from '~/components/index/open-data-section'
+import SpecialColumnSection from '~/components/index/special-column-section'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import {
@@ -105,7 +108,11 @@ const Index: NextPageWithLayout<PageProps> = ({
 
   return (
     <>
-      {shouldShowEditorChoiceSection && (
+      {/* 首頁內容 */}
+      <HighlightSection />
+      <NewsSection />
+      <SpecialColumnSection />
+      {/* {shouldShowEditorChoiceSection && (
         <EditorChoiceSection posts={editorChoices} />
       )}
 
@@ -123,7 +130,7 @@ const Index: NextPageWithLayout<PageProps> = ({
         />
       )}
       <StyledAdsense_FT pageKey="home" adKey="FT" />
-      <OpenDataSection items={dataSetItems} totalCount={dataSetCount} />
+      <OpenDataSection items={dataSetItems} totalCount={dataSetCount} /> */}
       <HiddenAnchor ref={anchorRef} />
     </>
   )

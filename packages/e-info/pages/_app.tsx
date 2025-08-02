@@ -11,7 +11,7 @@ import { ThemeProvider } from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import ComScoreScript from '~/components/comscore-script'
-import Footer from '~/components/layout/footer'
+import Footer from '~/components/layout/footer-new'
 import GDPRControl from '~/components/layout/gdpr-control'
 import { NormalizeStyles } from '~/components/layout/normalize-styles'
 import { ReadrStyles } from '~/components/layout/readr-styles'
