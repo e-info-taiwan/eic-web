@@ -17,6 +17,7 @@ import GreenConsumptionSection from '~/components/index/green-consumption-sectio
 import HighlightSection from '~/components/index/highlight-section'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import LatestReportSection from '~/components/index/latest-report-section'
+import MainCarousel from '~/components/index/main-carousel'
 import NewsSection from '~/components/index/news-section'
 import OpenDataSection from '~/components/index/open-data-section'
 import SpecialColumnSection from '~/components/index/special-column-section'
@@ -114,6 +115,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       {/* 首頁內容 */}
 
       {/* Demo - begin */}
+      <MainCarousel />
       <HighlightSection />
       <NewsSection />
       <SpecialColumnSection />
