@@ -13,20 +13,21 @@ const Header = styled.div`
   align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  gap: 1rem;
 `
 
 const AccentBar = styled.div`
-  background-color: #059669;
-  width: 1rem;
-  height: 2rem;
+  background-color: #388a48;
+  width: 80px;
+  height: 32px;
   margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
 `
 
 const Title = styled.h1`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1f2937;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #232333;
   margin: 0;
   margin-right: 2rem;
 `
@@ -40,26 +41,27 @@ const CategoryTabs = styled.div`
 const CategoryTab = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: #373740;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
   cursor: pointer;
   padding: 0.25rem 0;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #059669;
+    color: #388a48;
   }
 
   &.active {
-    color: #059669;
-    font-weight: 500;
+    color: #388a48;
   }
 `
 
 const ArticlesGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 20px;
 
   @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
@@ -73,14 +75,7 @@ const ArticlesGrid = styled.div`
 const ArticleCard = styled.div`
   position: relative;
   cursor: pointer;
-  border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  }
 `
 
 const ArticleImage = styled.img`
@@ -88,10 +83,6 @@ const ArticleImage = styled.img`
   height: 250px;
   object-fit: cover;
   transition: transform 0.3s ease;
-
-  ${ArticleCard}:hover & {
-    transform: scale(1.05);
-  }
 
   @media (min-width: 768px) {
     height: 280px;
@@ -114,11 +105,11 @@ const ImageOverlay = styled.div`
 `
 
 const ArticleTitle = styled.h3`
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.4;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
   margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 
   @media (min-width: 768px) {
     font-size: 1.125rem;

@@ -16,15 +16,17 @@ const Header = styled.div`
 
 const AccentBar = styled.div`
   background-color: #f97316;
-  width: 1rem;
-  height: 2rem;
+  width: 80px;
+  height: 32px;
   margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
 `
 
 const Title = styled.h1`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1f2937;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #232333;
   margin: 0;
 `
 
@@ -46,40 +48,35 @@ const ArticlesGrid = styled.div`
 const ArticleCard = styled.div`
   cursor: pointer;
   transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
+  display: flex;
+  flex-direction: row;
 `
 
 const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
   margin-bottom: 0.75rem;
+  margin-right: 12px;
 `
 
 const ArticleImage = styled.img`
-  width: 100%;
-  height: 12rem;
+  width: 160px;
+  height: 106px;
   object-fit: cover;
   transition: transform 0.3s ease;
-
-  ${ArticleCard}:hover & {
-    transform: scale(1.05);
-  }
 `
 
 const ArticleTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-  line-height: 1.4;
+  flex: 1;
+  font-size: 18px;
+  font-weight: 700;
+  color: #dd8346;
+  line-height: 1.5;
   margin: 0;
   transition: color 0.3s ease;
 
   ${ArticleCard}:hover & {
-    color: #f97316;
+    color: #5b9d68;
   }
 `
 
@@ -105,27 +102,6 @@ const articlesData = [
     image:
       'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=250&fit=crop',
     alt: 'Modern building complex',
-  },
-  {
-    id: 4,
-    title: '深度報導：台灣咖啡文化的興起與發展',
-    image:
-      'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c?w=400&h=250&fit=crop',
-    alt: 'Coffee and reading',
-  },
-  {
-    id: 5,
-    title: '小店經濟復甦：疫情後的新商業模式',
-    image:
-      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=250&fit=crop',
-    alt: 'Store front',
-  },
-  {
-    id: 6,
-    title: '科技創新驅動：台灣數位轉型新趨勢',
-    image:
-      'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=250&fit=crop',
-    alt: 'Tech workspace',
   },
 ]
 

@@ -8,10 +8,10 @@ import HeaderGeneral from './header/header-general'
 
 const Main = styled.main`
   min-height: 100vh;
-  padding: 64px 0 0;
+  // padding: 64px 0 0;
   overflow: hidden;
   ${({ theme }) => theme.breakpoint.sm} {
-    padding: 80px 0 0;
+    // padding: 80px 0 0;
   }
 `
 

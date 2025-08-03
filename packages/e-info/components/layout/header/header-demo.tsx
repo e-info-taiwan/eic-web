@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
+import LogoEIC from '~/public/eic-logo.svg'
+import IconSearch from '~/public/icons/search.svg'
+
 // Styled Components
 const HeaderContainer = styled.header`
   background-color: white;
@@ -77,9 +80,9 @@ const RightSection = styled.div`
 `
 
 const SearchButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background-color: #059669;
+  width: 32px;
+  height: 32px;
+  background-color: #388a48;
   border: none;
   border-radius: 50%;
   color: white;
@@ -90,15 +93,15 @@ const SearchButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #047857;
+    background-color: #388a48;
   }
 `
 
 const LoginButton = styled.button`
   background: none;
-  border: 2px solid #059669;
-  color: #059669;
-  padding: 0.5rem 1rem;
+  border: 1px solid #5b9d68;
+  color: #5b9d68;
+  padding: 5.5px 12px;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -106,7 +109,7 @@ const LoginButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #059669;
+    background-color: #5b9d68;
     color: white;
   }
 `
@@ -114,7 +117,6 @@ const LoginButton = styled.button`
 const ActionButtons = styled.div`
   display: none;
   gap: 1rem;
-
   @media (min-width: 1024px) {
     display: flex;
   }
@@ -123,25 +125,28 @@ const ActionButtons = styled.div`
 const ActionButton = styled.button`
   background: none;
   border: none;
-  color: #059669;
+  color: #232333;
   padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: normal;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
   cursor: pointer;
   transition: color 0.3s ease;
   white-space: nowrap;
 
   &:hover {
-    color: #047857;
+    color: #5b9d68;
   }
 `
 
 const NavigationSection = styled.div`
-  border-top: 1px solid #e5e7eb;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -155,23 +160,24 @@ const NavigationMenu = styled.nav`
 
 const NavItem = styled.a`
   position: relative;
-  padding: 1rem 1.5rem;
-  color: #4b5563;
+  padding: 1rem 0.75rem;
+  color: #232333;
   text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 700;
   cursor: pointer;
   transition: color 0.3s ease;
   white-space: nowrap;
-  border-bottom: 3px solid transparent;
+  border-top: 3px solid transparent;
 
   &:hover {
-    color: #059669;
+    color: #5b9d68;
   }
 
   &.active {
-    color: #059669;
-    border-bottom-color: #059669;
+    color: ##B9D68;
+    border-top-color: #5b9d68;
   }
 
   &.featured {
@@ -201,6 +207,18 @@ const MobileMenuButton = styled.button`
   }
 `
 
+const NewsBar = styled.div`
+  background: #cfedd1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px 0;
+  color: #232333;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+`
+
 // Navigation data
 const navigationItems = [
   { label: '時事新聞', href: '#', active: true },
@@ -223,15 +241,13 @@ const Header = () => {
       <Container>
         <TopSection>
           <Logo>
-            <LogoIcon>🌱</LogoIcon>
-            <LogoText>
-              <LogoTitle>環境資訊中心</LogoTitle>
-              <LogoSubtitle>Environmental Information Center</LogoSubtitle>
-            </LogoText>
+            <LogoEIC />
           </Logo>
 
           <RightSection>
-            <SearchButton>🔍</SearchButton>
+            <SearchButton>
+              <IconSearch />
+            </SearchButton>
             <LoginButton>登入</LoginButton>
             <MobileMenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
               ☰
@@ -252,13 +268,16 @@ const Header = () => {
                 {item.label}
               </NavItem>
             ))}
-            <ActionButtons>
-              <ActionButton>訂閱電子報</ActionButton>
-              <ActionButton>捐款支持</ActionButton>
-            </ActionButtons>
           </NavigationMenu>
+          <ActionButtons>
+            <ActionButton>訂閱電子報</ActionButton>
+            <ActionButton>捐款支持</ActionButton>
+          </ActionButtons>
         </NavigationSection>
       </Container>
+      <NewsBar>
+        《核管法》修法三讀 核電運轉年限最多再加20年、已停機核電可重啟
+      </NewsBar>
     </HeaderContainer>
   )
 }

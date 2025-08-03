@@ -1,9 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import LogoEIC from '~/public/eic-logo.svg'
+
 // Styled Components
 const FooterContainer = styled.footer`
-  background-color: #f3f4f6;
+  background-color: #eaeaea;
   padding: 2rem 1rem 1rem;
   margin-top: 4rem;
 `
@@ -84,18 +86,19 @@ const ActionButtons = styled.div`
 `
 
 const Button = styled.button`
-  background: none;
-  border: 2px solid #059669;
-  color: #059669;
+  background: #fff;
+  border: 1px solid #5b9d68;
+  color: #5b9d68;
   padding: 0.5rem 1.5rem;
   border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: 14px;
+  line-height: 1.5;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #059669;
+    background-color: #5b9d68;
     color: white;
   }
 `
@@ -118,18 +121,19 @@ const NavigationSection = styled.div`
 const NavColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
 `
 
 const NavLink = styled.a`
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: #6f6f72;
+  font-size: 14px;
+  line-height: 2;
+  font-weight: 500;
   text-decoration: none;
   cursor: pointer;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #059669;
+    color: #388a48;
   }
 `
 
@@ -163,8 +167,11 @@ const CopyrightSection = styled.div`
 `
 
 const CopyrightText = styled.p`
-  color: #6b7280;
-  font-size: 0.75rem;
+  color: #000;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 400;
+  letter-spacing: 0;
   margin: 0;
 `
 
@@ -175,9 +182,11 @@ const SocialSection = styled.div`
 `
 
 const SocialLabel = styled.span`
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: #000;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 400;
+  letter-spacing: 0;
 `
 
 const SocialIcons = styled.div`
@@ -186,8 +195,8 @@ const SocialIcons = styled.div`
 `
 
 const SocialIcon = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 21px;
+  height: 21px;
   background-color: #9ca3af;
   border-radius: 50%;
   cursor: pointer;
@@ -203,7 +212,7 @@ const Footer = () => {
     ['關於我們', '網站授權條款', '投稿須知'],
     ['合作媒體', '常見問題', '隱私權政策'],
     ['編輯室自律公約', '獲獎記錄', '網站導覽'],
-    ['活動', '綠色聯盟'],
+    ['活動', '綠色職缺'],
   ]
 
   return (
@@ -212,11 +221,7 @@ const Footer = () => {
         <TopSection>
           <LeftSection>
             <Logo>
-              <LogoIcon>🌱</LogoIcon>
-              <LogoText>
-                <LogoTitle>環境資訊中心</LogoTitle>
-                <LogoSubtitle>Environmental Information Center</LogoSubtitle>
-              </LogoText>
+              <LogoEIC />
             </Logo>
 
             <ActionButtons>

@@ -13,20 +13,21 @@ const Header = styled.div`
   align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  gap: 1rem;
 `
 
 const AccentBar = styled.div`
-  background-color: #059669;
-  width: 1rem;
-  height: 2rem;
+  background-color: #388a48;
+  width: 80px;
+  height: 32px;
   margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
 `
 
 const Title = styled.h1`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1f2937;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #232333;
   margin: 0;
   margin-right: 2rem;
 `
@@ -40,19 +41,20 @@ const CategoryTabs = styled.div`
 const CategoryTab = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: #373740;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
   cursor: pointer;
   padding: 0.25rem 0;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #059669;
+    color: #388a48;
   }
 
   &.active {
-    color: #059669;
-    font-weight: 500;
+    color: #388a48;
   }
 `
 
@@ -68,22 +70,17 @@ const MainContent = styled.div`
 
 const Sidebar = styled.div`
   order: 2;
-
   @media (min-width: 768px) {
     order: 1;
   }
 `
 
 const NewsItem = styled.div`
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #000;
   padding-bottom: 1rem;
   margin-bottom: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateX(4px);
-  }
 
   &:last-child {
     border-bottom: none;
@@ -92,36 +89,39 @@ const NewsItem = styled.div`
 `
 
 const NewsDate = styled.div`
-  color: #059669;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: #388a48;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
   margin-bottom: 0.5rem;
 `
 
 const NewsTitle = styled.h3`
-  color: #1f2937;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.4;
+  color: #232333;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
   margin: 0;
   margin-bottom: 0.75rem;
   transition: color 0.3s ease;
 
   ${NewsItem}:hover & {
-    color: #059669;
+    color: #388a48;
   }
 `
 
 const NewsExcerpt = styled.p`
-  color: #6b7280;
-  font-size: 0.75rem;
-  line-height: 1.4;
+  color: #373740;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
   margin: 0;
 `
 
 const FeaturedSection = styled.div`
   order: 1;
-
+  border-left: 1px solid #000;
+  padding-left: 30px;
   @media (min-width: 768px) {
     order: 2;
   }
@@ -130,7 +130,6 @@ const FeaturedSection = styled.div`
 const FeaturedImage = styled.div`
   position: relative;
   margin-bottom: 1rem;
-  border-radius: 8px;
   overflow: hidden;
 `
 
@@ -144,33 +143,42 @@ const MainImage = styled.img`
   }
 `
 
+const FeaturedArticle = styled.div`
+  cursor: pointer;
+`
+
 const FeaturedContent = styled.div`
   margin-bottom: 2rem;
 `
 
 const FeaturedDate = styled.div`
-  color: #059669;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: #388a48;
+  font-size: 16;
+  font-weight: 700;
+  line-height: 1.5;
   margin-bottom: 0.75rem;
 `
 
 const FeaturedTitle = styled.h2`
   color: #1f2937;
-  font-size: 1.5rem;
-  font-weight: bold;
-  line-height: 1.3;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 32px;
   margin: 0;
   margin-bottom: 0.75rem;
 
   @media (min-width: 768px) {
     font-size: 1.75rem;
   }
+
+  ${FeaturedArticle}:hover & {
+    color: #388a48;
+  }
 `
 
 const FeaturedExcerpt = styled.p`
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: #373740;
+  font-size: 16px;
   line-height: 1.5;
   margin: 0;
 `
@@ -178,7 +186,7 @@ const FeaturedExcerpt = styled.p`
 const RelatedArticles = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 60px;
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(2, 1fr);
@@ -188,37 +196,40 @@ const RelatedArticles = styled.div`
 const RelatedArticle = styled.div`
   cursor: pointer;
   transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
 `
 
 const RelatedImage = styled.img`
-  width: 100%;
-  height: 120px;
+  width: 160px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
+`
+
+const RelatedContent = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 const RelatedDate = styled.div`
-  color: #059669;
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
+  color: #388a48;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 4px;
 `
 
 const RelatedTitle = styled.h4`
-  color: #1f2937;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.4;
+  color: #232333;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
   margin: 0;
   transition: color 0.3s ease;
 
   ${RelatedArticle}:hover & {
-    color: #059669;
+    color: #388a48;
   }
 `
 
@@ -304,29 +315,32 @@ const NewsSection = () => {
 
         {/* Featured Section */}
         <FeaturedSection>
-          <FeaturedImage>
-            <MainImage
-              src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop"
-              alt="Featured news image"
-            />
-          </FeaturedImage>
+          <FeaturedArticle>
+            <FeaturedImage>
+              <MainImage
+                src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop"
+                alt="Featured news image"
+              />
+            </FeaturedImage>
 
-          <FeaturedContent>
-            <FeaturedDate>2023/03/28</FeaturedDate>
-            <FeaturedTitle>
-              「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法
-            </FeaturedTitle>
-            <FeaturedExcerpt>
-              核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管...
-            </FeaturedExcerpt>
-          </FeaturedContent>
-
+            <FeaturedContent>
+              <FeaturedDate>2023/03/28</FeaturedDate>
+              <FeaturedTitle>
+                「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法
+              </FeaturedTitle>
+              <FeaturedExcerpt>
+                核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管...
+              </FeaturedExcerpt>
+            </FeaturedContent>
+          </FeaturedArticle>
           <RelatedArticles>
             {relatedArticles.map((article) => (
               <RelatedArticle key={article.id}>
                 <RelatedImage src={article.image} alt="Related article" />
-                <RelatedDate>{article.date}</RelatedDate>
-                <RelatedTitle>{article.title}</RelatedTitle>
+                <RelatedContent>
+                  <RelatedDate>{article.date}</RelatedDate>
+                  <RelatedTitle>{article.title}</RelatedTitle>
+                </RelatedContent>
               </RelatedArticle>
             ))}
           </RelatedArticles>
