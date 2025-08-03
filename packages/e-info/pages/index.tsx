@@ -12,12 +12,15 @@ import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import CollaborationSection from '~/components/index/collaboration-section'
 import EditorChoiceSection from '~/components/index/editor-choice-section'
 import FeatureSection from '~/components/index/feature-section'
+import FeaturedTopicsSection from '~/components/index/featured-topics-section'
+import GreenConsumptionSection from '~/components/index/green-consumption-section'
 import HighlightSection from '~/components/index/highlight-section'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import LatestReportSection from '~/components/index/latest-report-section'
 import NewsSection from '~/components/index/news-section'
 import OpenDataSection from '~/components/index/open-data-section'
 import SpecialColumnSection from '~/components/index/special-column-section'
+import SupplementSection from '~/components/index/supplement-section'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import {
@@ -109,9 +112,16 @@ const Index: NextPageWithLayout<PageProps> = ({
   return (
     <>
       {/* 首頁內容 */}
+
+      {/* Demo - begin */}
       <HighlightSection />
       <NewsSection />
       <SpecialColumnSection />
+      <SupplementSection />
+      <FeaturedTopicsSection />
+      <GreenConsumptionSection />
+      {/* Demo - end */}
+
       {/* {shouldShowEditorChoiceSection && (
         <EditorChoiceSection posts={editorChoices} />
       )}

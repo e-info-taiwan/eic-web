@@ -7,7 +7,6 @@ import LogoEIC from '~/public/eic-logo.svg'
 const FooterContainer = styled.footer`
   background-color: #eaeaea;
   padding: 2rem 1rem 1rem;
-  margin-top: 4rem;
 `
 
 const Container = styled.div`
