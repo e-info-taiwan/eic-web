@@ -264,7 +264,7 @@ const MainCarousel = () => {
     slidesToScroll: 1,
     centerMode: true,
     centerPadding: '0px',
-    autoplay: false,
+    autoplay: true,
     autoplaySpeed: 4500,
     pauseOnHover: true,
     focusOnSelect: true,
