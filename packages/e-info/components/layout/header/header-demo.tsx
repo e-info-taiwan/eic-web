@@ -707,12 +707,16 @@ const navigationItems = [
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [hoveredCategory, setHoveredCategory] = useState(null)
-  const [hoveredSecondaryCategory, setHoveredSecondaryCategory] = useState(null)
-  const [currentSubMenu, setCurrentSubMenu] = useState(null)
-  const hoverTimeoutRef = useRef(null)
+  const [hoveredCategory, setHoveredCategory] = useState<number | null>(null)
+  const [hoveredSecondaryCategory, setHoveredSecondaryCategory] = useState<
+    number | null
+  >(null)
+  const [currentSubMenu, setCurrentSubMenu] = useState<
+    typeof navigationItems[0] | null
+  >(null)
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const handleCategoryHover = (categoryIndex) => {
+  const handleCategoryHover = (categoryIndex: number) => {
     // Clear any existing timeout when hovering a new category
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current)
@@ -745,7 +749,7 @@ const Header = () => {
     setHoveredSecondaryCategory(null)
   }
 
-  const handleSecondaryItemHover = (itemIndex) => {
+  const handleSecondaryItemHover = (itemIndex: number) => {
     setHoveredSecondaryCategory(itemIndex)
   }
 
@@ -753,7 +757,7 @@ const Header = () => {
     setHoveredSecondaryCategory(null)
   }
 
-  const handleMobileMenuItemClick = (item) => {
+  const handleMobileMenuItemClick = (item: typeof navigationItems[0]) => {
     if (item.subCategories && item.subCategories.length > 0) {
       setCurrentSubMenu(item)
     }
