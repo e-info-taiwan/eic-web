@@ -23,6 +23,8 @@ import OpenDataSection from '~/components/index/open-data-section'
 import SpecialColumnSection from '~/components/index/special-column-section'
 import SupplementSection from '~/components/index/supplement-section'
 import LayoutGeneral from '~/components/layout/layout-general'
+import AdContent from '~/components/shared/ad-content'
+import Placeholder from '~/components/shared/placeholder'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import {
   LATEST_POSTS_IN_CATEGORIES_URL,
@@ -117,10 +119,13 @@ const Index: NextPageWithLayout<PageProps> = ({
       {/* Demo - begin */}
       <MainCarousel />
       <HighlightSection />
+      <Placeholder height={600}>重要圖表</Placeholder>
       <NewsSection />
+      <AdContent />
       <SpecialColumnSection />
       <SupplementSection />
       <FeaturedTopicsSection />
+      <AdContent />
       <GreenConsumptionSection />
       {/* Demo - end */}
 

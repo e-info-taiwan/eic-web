@@ -5,7 +5,17 @@ import styled from 'styled-components'
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 36px 0;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 12px;
+  }
 `
 
 const Header = styled.div`
@@ -13,30 +23,75 @@ const Header = styled.div`
   align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding-left: 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding-left: 78px;
+    justify-content: normal;
+  }
 `
 
 const AccentBar = styled.div`
-  background-color: #388a48;
-  width: 80px;
-  height: 32px;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  width: 60px;
+  height: 20px;
   margin-right: 0.75rem;
   border-bottom-right-radius: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 80px;
+    height: 32px;
+  }
 `
 
 const Title = styled.h1`
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 32px;
-  color: #232333;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
-  margin-right: 2rem;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
 `
 
 const CategoryTabs = styled.div`
   display: flex;
   gap: 1.5rem;
-  flex-wrap: wrap;
+  margin-top: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-wrap: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: 100%;
+    justify-content: center;
+    overflow-x: visible;
+    flex-wrap: nowrap;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: auto;
+    margin-top: 0;
+    margin-left: 28px;
+  }
 `
 
 const CategoryTab = styled.button`
@@ -48,23 +103,32 @@ const CategoryTab = styled.button`
   line-height: 28px;
   cursor: pointer;
   padding: 0.25rem 0;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   &.active {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
-
 const MainContent = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 20px;
 
-  @media (min-width: 1024px) {
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 45px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     grid-template-columns: 2fr 1fr;
+    padding: 0 78px;
   }
 `
 
@@ -72,6 +136,7 @@ const LeftSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  order: 0;
 `
 
 const HeroArticle = styled.div`
@@ -92,25 +157,27 @@ const HeroOverlay = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.4) 50%,
-    transparent 100%
-  );
-  padding: 2rem 1.5rem 1.5rem;
+  background: ${({ theme }) => theme.colors.grayscale[0]};
+  padding: 12px 0;
   color: white;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 10px 0;
+  }
 `
 
 const HeroTitle = styled.h2`
-  font-size: 1.25rem;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 700;
   margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  line-height: 1.3;
+  line-height: 28px;
+  text-align: center;
 
-  @media (min-width: 768px) {
-    font-size: 1.5rem;
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 28px;
+    line-height: 32px;
   }
 `
 
@@ -122,16 +189,21 @@ const ArticlesList = styled.div`
 
 const ArticleItem = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+  grid-template-columns: 1fr 130px;
+  gap: 12px;
+  padding: 0 23px;
   cursor: pointer;
 
-  @media (min-width: 640px) {
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     grid-template-columns: 1fr 200px;
+    gap: 16px;
   }
 
-  @media (min-width: 768px) {
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     grid-template-columns: 1fr 250px;
+    gap: 30px;
   }
 `
 
@@ -139,22 +211,40 @@ const ArticleContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    justify-content: space-between;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    justify-content: space-between;
+  }
 `
 
 const ArticleTitle = styled.h3`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
-  color: #232333;
-  margin: 0 0 0.75rem 0;
-  line-height: 28px;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0;
+  line-height: 1.5;
   transition: color 0.3s ease;
 
   ${ArticleItem}:hover & {
     color: #059669;
   }
 
-  @media (min-width: 768px) {
-    font-size: 1.125rem;
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 20px;
+    line-height: 28px;
   }
 `
 
@@ -164,6 +254,12 @@ const ArticleExcerpt = styled.p`
   font-weight: 400;
   line-height: 1.5;
   margin: 0;
+  display: none;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    display: block;
+  }
 `
 
 const ArticleImage = styled.img`
@@ -173,10 +269,17 @@ const ArticleImage = styled.img`
 `
 
 const Sidebar = styled.div`
-  order: -1;
-  border-left: 1px solid #000;
-  @media (min-width: 1024px) {
-    order: 1;
+  order: 1;
+  border-left: none;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    border-left: none;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    border-left: 1px solid #000;
   }
 `
 
@@ -189,28 +292,63 @@ const RankingHeader = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding-left: 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding-left: 78px;
+    justify-content: normal;
+  }
 `
 
 const RankingAccentBar = styled.div`
-  background-color: #388a48;
-  width: 80px;
-  height: 32px;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  width: 60px;
+  height: 20px;
   margin-right: 0.75rem;
   border-bottom-right-radius: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 80px;
+    height: 32px;
+  }
 `
 
 const RankingTitle = styled.h3`
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 32px;
-  color: #232333;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
 `
 
 const RankingList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: row;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    flex-direction: column;
+  }
 `
 
 const RankingItem = styled.div`
@@ -224,8 +362,19 @@ const RankingNumber = styled.div`
   font-size: 48px;
   line-height: 1.25;
   font-weight: 900;
-  color: #388a48;
+  color: ${({ theme }) => theme.colors.primary[20]};
   min-width: 2rem;
+  text-align: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    text-align: left;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    text-align: left;
+  }
 `
 
 const RankingContent = styled.div`
@@ -240,7 +389,23 @@ const RankingItemTitle = styled.h4`
   line-height: 28px;
 
   ${RankingItem}:hover & {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+`
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid #000;
+  margin: 20px 28px 16px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    margin-left: 44px;
+    margin-right: 44px;
+  }
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    display: none;
   }
 `
 
@@ -302,7 +467,7 @@ const FeaturedTopicsSection = () => {
         <AccentBar />
         <Title>深度專題</Title>
         <CategoryTabs>
-          <CategoryTab className="active">次分類範例文字1</CategoryTab>
+          <CategoryTab>次分類範例文字1</CategoryTab>
           <CategoryTab>次分類範例文字2</CategoryTab>
           <CategoryTab>次分類範例文字3</CategoryTab>
           <CategoryTab>次分類範例文字4</CategoryTab>
@@ -336,6 +501,7 @@ const FeaturedTopicsSection = () => {
 
         {/* Sidebar */}
         <Sidebar>
+          <Divider />
           <RankingSection>
             <RankingHeader>
               <RankingAccentBar />

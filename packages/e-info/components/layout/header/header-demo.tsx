@@ -4,9 +4,12 @@ import styled from 'styled-components'
 
 import LogoEIC from '~/public/eic-logo.svg'
 import IconCancel from '~/public/icons/cancel.svg'
+import IconFacebook from '~/public/icons/facebook.svg'
 import IconHamburger from '~/public/icons/hamburger.svg'
+import IconInstagram from '~/public/icons/instagram.svg'
+import IconLeftArrow from '~/public/icons/left-arrow.svg'
+import IconMail from '~/public/icons/mail.svg'
 import IconSearch from '~/public/icons/search.svg'
-
 // Styled Components
 const HeaderContainer = styled.header`
   background-color: ${({ theme }) => theme.colors.grayscale[100]};
@@ -107,18 +110,15 @@ const ActionButtons = styled.div`
   display: none;
   gap: 1rem;
 
-  /* Hide on mobile (< md) */
-  ${({ theme }) => theme.breakpoint.md} {
-    display: flex;
-  }
-
   /* Hide on tablet and show on desktop (>= xl) for navigation area */
-  ${({ theme }) => theme.breakpoint.xl} {
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: flex;
+    justify-content: center;
+    align-items: center;
   }
 `
 
-const ActionButton = styled.button`
+const ActionButton = styled.a`
   background: none;
   border: none;
   color: ${({ theme }) => theme.colors.grayscale[0]};
@@ -128,6 +128,14 @@ const ActionButton = styled.button`
   cursor: pointer;
   transition: color 0.3s ease;
   white-space: nowrap;
+
+  /* Mobile menu styling */
+  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: none;
+    border-top: none;
+  }
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary[40]};
@@ -157,7 +165,7 @@ const NavigationSection = styled.div<{ isOpen: boolean }>`
     background: ${({ theme }) => theme.colors.grayscale[95]};
     flex-direction: column;
     z-index: 10000;
-    padding: 2rem;
+    padding: 72px 48px;
     overflow-y: auto;
   }
 `
@@ -187,9 +195,9 @@ const NavItem = styled.a`
 
   /* Mobile menu styling */
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    font-size: 18px;
-    font-weight: 400;
-    padding: 0.75rem 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 2;
     border-bottom: none;
     border-top: none;
 
@@ -260,6 +268,7 @@ const NewsBar = styled.div`
     overflow: hidden;
     white-space: nowrap;
     position: relative;
+    padding: 0;
   }
 `
 
@@ -340,14 +349,13 @@ const TertiaryDropdown = styled.div`
   top: 100%;
   left: 0;
   min-width: 100px;
+  max-width: 150px;
   background: ${({ theme }) => theme.colors.grayscale[100]};
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
   z-index: 1001;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.3s ease;
   margin-top: 0;
+  padding: 9px 8px;
 
   &.show {
     opacity: 1;
@@ -358,21 +366,17 @@ const TertiaryDropdown = styled.div`
 
 const TertiaryItem = styled.a`
   display: block;
-  padding: 0.75rem 1rem;
   color: ${({ theme }) => theme.colors.grayscale[40]};
   text-decoration: none;
   font-size: 14px;
-  transition: all 0.3s ease;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[99]};
+  text-align: center;
+  padding-bottom: 12px;
 
   &:last-child {
-    border-bottom: none;
+    padding-bottom: 0;
   }
-
   &:hover {
-    background-color: ${({ theme }) => theme.colors.grayscale[99]};
     color: ${({ theme }) => theme.colors.primary[40]};
-    padding-left: 1.25rem;
   }
 `
 
@@ -418,7 +422,6 @@ const MobileMenuContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 2rem;
   height: 100%;
 
   /* Only show on mobile/tablet */
@@ -428,10 +431,15 @@ const MobileMenuContent = styled.div`
 `
 
 const MobileMenuHeader = styled.div`
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 40px;
+
+  /* Show on mobile and tablet (< xl) */
+  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+    display: flex;
+  }
 `
 
 const MobileMenuLogo = styled.div`
@@ -449,22 +457,33 @@ const MobileMenuSection = styled.div`
 `
 
 const MobileMenuFooter = styled.div`
+  display: none;
   margin-top: auto;
   padding-top: 2rem;
+
+  /* Show on mobile and tablet (< xl) */
+  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+    display: flex;
+  }
 `
 
 const SocialIcons = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 16px;
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     color: ${({ theme }) => theme.colors.grayscale[40]};
     cursor: pointer;
 
     &:hover {
       color: ${({ theme }) => theme.colors.primary[40]};
+    }
+
+    &.mail {
+      width: 30px;
+      height: 20px;
     }
   }
 `
@@ -473,14 +492,13 @@ const SubMenuView = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 2rem;
   height: 100%;
 `
 
 const SubMenuHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 16px;
   gap: 1rem;
 `
 
@@ -489,7 +507,7 @@ const BackButton = styled.button`
   border: none;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -504,13 +522,6 @@ const BackButton = styled.button`
   }
 `
 
-const SubMenuTitle = styled.h2`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
-  margin: 0;
-`
-
 const SubMenuList = styled.div`
   display: flex;
   flex-direction: column;
@@ -520,10 +531,10 @@ const SubMenuList = styled.div`
 const SubMenuItem = styled.a`
   color: ${({ theme }) => theme.colors.grayscale[0]};
   text-decoration: none;
-  font-size: 18px;
-  font-weight: 400;
-  padding: 0.75rem 0;
-  transition: color 0.3s ease;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 2;
+  padding: 0;
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary[40]};
@@ -545,7 +556,11 @@ const navigationItems = [
       {
         label: '國際新聞',
         href: '#',
-        items: ['亞洲', '歐美', '全球議題'],
+        items: [
+          '在理想中擱淺的鯨豚觀察員',
+          '我推的防災生活',
+          '直擊阿聯氣候新時代',
+        ],
       },
       {
         label: '環境新聞',
@@ -812,22 +827,17 @@ const Header = () => {
             <IconCancel />
           </CloseButton>
 
+          <MobileMenuHeader>
+            <MobileMenuLogo>
+              <LogoEIC />
+            </MobileMenuLogo>
+          </MobileMenuHeader>
           {/* Mobile/Tablet full-page menu overlay */}
           {!currentSubMenu ? (
             <MobileMenuContent>
-              <MobileMenuHeader>
-                <MobileMenuLogo>
-                  <LogoEIC />
-                </MobileMenuLogo>
-              </MobileMenuHeader>
-
               <MobileMenuSection>
-                <NavItem href="#" className="action-item">
-                  捐款支持
-                </NavItem>
-                <NavItem href="#" className="action-item">
-                  訂閱電子報
-                </NavItem>
+                <ActionButton>捐款支持</ActionButton>
+                <ActionButton>訂閱電子報</ActionButton>
               </MobileMenuSection>
 
               <MobileMenuSection>
@@ -849,30 +859,13 @@ const Header = () => {
                   </NavItem>
                 ))}
               </MobileMenuSection>
-
-              <MobileMenuFooter>
-                <SocialIcons>
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.80 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                  </svg>
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                  </svg>
-                </SocialIcons>
-              </MobileMenuFooter>
             </MobileMenuContent>
           ) : (
             <SubMenuView>
               <SubMenuHeader>
                 <BackButton onClick={handleBackToMainMenu}>
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                  </svg>
+                  <IconLeftArrow />
                 </BackButton>
-                <SubMenuTitle>{currentSubMenu.label}</SubMenuTitle>
               </SubMenuHeader>
 
               <SubMenuList>
@@ -884,6 +877,14 @@ const Header = () => {
               </SubMenuList>
             </SubMenuView>
           )}
+
+          <MobileMenuFooter>
+            <SocialIcons>
+              <IconFacebook />
+              <IconInstagram />
+              <IconMail className="mail" />
+            </SocialIcons>
+          </MobileMenuFooter>
 
           {/* Desktop navigation - always visible on desktop */}
           <NavigationMenu>

@@ -5,7 +5,17 @@ import styled from 'styled-components'
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 36px 0;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 40px 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 66px 12px 0;
+  }
 `
 
 const Header = styled.div`
@@ -13,29 +23,75 @@ const Header = styled.div`
   align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding-left: 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding-left: 78px;
+    justify-content: normal;
+  }
 `
 
 const AccentBar = styled.div`
-  background-color: #388a48;
-  width: 80px;
-  height: 32px;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  width: 60px;
+  height: 20px;
   margin-right: 0.75rem;
   border-bottom-right-radius: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 80px;
+    height: 32px;
+  }
 `
 
 const Title = styled.h1`
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 32px;
-  color: #232333;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
-  margin-right: 2rem;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
 `
 
 const CategoryTabs = styled.div`
   display: flex;
   gap: 1.5rem;
-  flex-wrap: wrap;
+  margin-top: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-wrap: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: 100%;
+    justify-content: center;
+    overflow-x: visible;
+    flex-wrap: nowrap;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: auto;
+    margin-top: 0;
+    margin-left: 28px;
+  }
 `
 
 const CategoryTab = styled.button`
@@ -48,13 +104,15 @@ const CategoryTab = styled.button`
   cursor: pointer;
   padding: 0.25rem 0;
   transition: color 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   &.active {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
 
@@ -63,8 +121,16 @@ const MainContent = styled.div`
   grid-template-columns: 1fr;
   gap: 2rem;
 
-  @media (min-width: 768px) {
+  padding: 0 24px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     grid-template-columns: 1fr 2fr;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 60px;
   }
 `
 
@@ -76,7 +142,7 @@ const Sidebar = styled.div`
 `
 
 const NewsItem = styled.div`
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
   padding-bottom: 1rem;
   margin-bottom: 1rem;
   cursor: pointer;
@@ -85,6 +151,16 @@ const NewsItem = styled.div`
   &:last-child {
     border-bottom: none;
     margin-bottom: 0;
+  }
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    border-bottom: 1px solid #000;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    border-bottom: 1px solid #000;
   }
 `
 
@@ -120,26 +196,40 @@ const NewsExcerpt = styled.p`
 
 const FeaturedSection = styled.div`
   order: 1;
-  border-left: 1px solid #000;
-  padding-left: 30px;
-  @media (min-width: 768px) {
+  border-left: none;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    border-left: 1px solid #000;
+    padding-left: 30px;
     order: 2;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    border-left: 1px solid #000;
   }
 `
 
 const FeaturedImage = styled.div`
   position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   overflow: hidden;
 `
 
 const MainImage = styled.img`
   width: 100%;
-  height: 300px;
+  height: auto;
   object-fit: cover;
 
-  @media (min-width: 768px) {
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     height: 400px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    height: 300px;
   }
 `
 
@@ -152,7 +242,7 @@ const FeaturedContent = styled.div`
 `
 
 const FeaturedDate = styled.div`
-  color: #388a48;
+  color: ${({ theme }) => theme.colors.primary[20]};
   font-size: 16;
   font-weight: 700;
   line-height: 1.5;
@@ -160,24 +250,31 @@ const FeaturedDate = styled.div`
 `
 
 const FeaturedTitle = styled.h2`
-  color: #1f2937;
-  font-size: 28px;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  font-size: 18px;
   font-weight: 700;
-  line-height: 32px;
+  line-height: 1.5;
   margin: 0;
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 
-  @media (min-width: 768px) {
-    font-size: 1.75rem;
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
   }
 
   ${FeaturedArticle}:hover & {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
 
 const FeaturedExcerpt = styled.p`
-  color: #373740;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   font-size: 16px;
   line-height: 1.5;
   margin: 0;
@@ -186,10 +283,14 @@ const FeaturedExcerpt = styled.p`
 const RelatedArticles = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 60px;
+  gap: 40px;
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    gap: 60px;
   }
 `
 
@@ -197,14 +298,35 @@ const RelatedArticle = styled.div`
   cursor: pointer;
   transition: transform 0.3s ease;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 16px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: auto;
+    min-width: auto;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    flex-direction: row;
+    flex-shrink: 1;
+    width: auto;
+    min-wdith: 280px;
+  }
 `
 
 const RelatedImage = styled.img`
-  width: 160px;
-  height: 100%;
+  width: 100%;
+  height: auto;
   object-fit: cover;
+  transition: transform 0.3s ease;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 160px;
+    height: 106px;
+  }
 `
 
 const RelatedContent = styled.div`
@@ -221,15 +343,21 @@ const RelatedDate = styled.div`
 `
 
 const RelatedTitle = styled.h4`
-  color: #232333;
-  font-size: 18px;
+  flex: 1;
+  font-size: 16px;
   font-weight: 700;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   line-height: 1.5;
   margin: 0;
   transition: color 0.3s ease;
 
   ${RelatedArticle}:hover & {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 18px;
   }
 `
 
@@ -293,7 +421,7 @@ const NewsSection = () => {
         <AccentBar />
         <Title>時事新聞</Title>
         <CategoryTabs>
-          <CategoryTab className="active">次分類範例文字1</CategoryTab>
+          <CategoryTab>次分類範例文字1</CategoryTab>
           <CategoryTab>次分類範例文字2</CategoryTab>
           <CategoryTab>次分類範例文字3</CategoryTab>
           <CategoryTab>次分類範例文字4</CategoryTab>

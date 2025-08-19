@@ -5,8 +5,18 @@ import LogoEIC from '~/public/eic-logo.svg'
 
 // Styled Components
 const FooterContainer = styled.footer`
-  background-color: #eaeaea;
-  padding: 2rem 1rem 1rem;
+  background-color: ${({ theme }) => theme.colors.grayscale[95]};
+  padding: 36px 24px 24px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 0;
+    column-gap: 30px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    column-gap: 64px;
+  }
 `
 
 const Container = styled.div`
@@ -20,7 +30,10 @@ const TopSection = styled.div`
   gap: 2rem;
   margin-bottom: 2rem;
 
-  @media (min-width: 768px) {
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
@@ -30,12 +43,17 @@ const TopSection = styled.div`
 const LeftSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 27px;
 
-  @media (min-width: 768px) {
-    flex-direction: row;
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    gap: 11px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    flex-direction: row;
+    gap: 51px;
   }
 `
 
@@ -43,39 +61,6 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-`
-
-const LogoIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  background-color: #059669;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 1.25rem;
-`
-
-const LogoText = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const LogoTitle = styled.h3`
-  color: #059669;
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin: 0;
-  line-height: 1.2;
-`
-
-const LogoSubtitle = styled.p`
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: 0;
-  line-height: 1.2;
 `
 
 const ActionButtons = styled.div`
@@ -86,8 +71,8 @@ const ActionButtons = styled.div`
 
 const Button = styled.button`
   background: #fff;
-  border: 1px solid #5b9d68;
-  color: #5b9d68;
+  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
+  color: ${({ theme }) => theme.colors.primary[40]};
   padding: 0.5rem 1.5rem;
   border-radius: 6px;
   font-size: 14px;
@@ -97,34 +82,36 @@ const Button = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #5b9d68;
+    background-color: ${({ theme }) => theme.colors.primary[40]};
     color: white;
   }
 `
 
 const NavigationSection = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 20px;
 
-  @media (min-width: 640px) {
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     grid-template-columns: repeat(4, 1fr);
+    row-gap: 0;
+    column-gap: 30px;
   }
 
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(4, auto);
-    gap: 3rem;
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    column-gap: 64px;
   }
-`
-
-const NavColumn = styled.div`
-  display: flex;
-  flex-direction: column;
 `
 
 const NavLink = styled.a`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
   color: #6f6f72;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 2;
   font-weight: 500;
   text-decoration: none;
@@ -132,19 +119,28 @@ const NavLink = styled.a`
   transition: color 0.3s ease;
 
   &:hover {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 14px;
   }
 `
 
 const Divider = styled.hr`
   border: none;
-  border-top: 1px solid #d1d5db;
-  margin: 2rem 0 1.5rem;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
+  margin: 31px 16px 18px 16px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    margin-left: 0;
+    margin-right: 0;
+  }
 `
 
 const BottomSection = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 1rem;
 
   @media (min-width: 768px) {
@@ -157,11 +153,13 @@ const BottomSection = styled.div`
 const CopyrightSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 15px;
 
   @media (min-width: 640px) {
     flex-direction: row;
-    gap: 2rem;
+    align-items: flex-start;
+    gap: 30px;
   }
 `
 
@@ -177,15 +175,8 @@ const CopyrightText = styled.p`
 const SocialSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
-`
-
-const SocialLabel = styled.span`
-  color: #000;
-  font-size: 12px;
-  line-height: 1.25;
-  font-weight: 400;
-  letter-spacing: 0;
+  justify-content: center;
+  gap: 7px;
 `
 
 const SocialIcons = styled.div`
@@ -196,13 +187,13 @@ const SocialIcons = styled.div`
 const SocialIcon = styled.div`
   width: 21px;
   height: 21px;
-  background-color: #9ca3af;
+  background-color: ${({ theme }) => theme.colors.grayscale[60]};
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #059669;
+    background-color: ${({ theme }) => theme.colors.primary[40]};
   }
 `
 
@@ -230,15 +221,13 @@ const Footer = () => {
           </LeftSection>
 
           <NavigationSection>
-            {navigationData.map((columnLinks, columnIndex) => (
-              <NavColumn key={columnIndex}>
-                {columnLinks.map((link, linkIndex) => (
-                  <NavLink key={linkIndex} href="#">
-                    {link}
-                  </NavLink>
-                ))}
-              </NavColumn>
-            ))}
+            {navigationData.map((columnLinks, columnIndex) =>
+              columnLinks.map((link, linkIndex) => (
+                <NavLink key={linkIndex} href="#">
+                  {link}
+                </NavLink>
+              ))
+            )}
           </NavigationSection>
         </TopSection>
 
@@ -253,7 +242,6 @@ const Footer = () => {
           </CopyrightSection>
 
           <SocialSection>
-            <SocialLabel>聯絡資訊與社群ICON</SocialLabel>
             <SocialIcons>
               {[...Array(7)].map((_, index) => (
                 <SocialIcon key={index} />

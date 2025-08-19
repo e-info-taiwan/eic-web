@@ -4,107 +4,210 @@ import styled from 'styled-components'
 // Styled Components
 const SectionContainer = styled.section`
   background-color: #388a48;
-  padding: 3rem 1rem;
-  margin: 3rem 0 0;
+  padding: 24px 0 20px;
+  margin: 32px 0 0;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 40px 0px;
+    margin: 60px 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 100px 12px;
+  }
 `
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0;
 `
 
 const Header = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding-left: 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding-left: 78px;
+    justify-content: normal;
+  }
 `
 
 const AccentBar = styled.div`
-  background-color: white;
-  width: 80px;
-  height: 32px;
+  background-color: ${({ theme }) => theme.colors.primary[100]};
+  width: 60px;
+  height: 20px;
   margin-right: 0.75rem;
   border-bottom-right-radius: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 80px;
+    height: 32px;
+  }
 `
 
 const Title = styled.h1`
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 32px;
-  color: #fff;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[100]};
   margin: 0;
-  margin-right: 2rem;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
 `
 
 const CategoryTabs = styled.div`
   display: flex;
   gap: 1.5rem;
-  flex-wrap: wrap;
+  margin-top: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-wrap: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: 100%;
+    justify-content: center;
+    overflow-x: visible;
+    flex-wrap: nowrap;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: auto;
+    margin-top: 0;
+    margin-left: 28px;
+  }
 `
 
 const CategoryTab = styled.button`
   background: none;
   border: none;
-  color: #373740;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
   cursor: pointer;
   padding: 0.25rem 0;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover {
-    color: #fff;
+    color: ${({ theme }) => theme.colors.primary[100]};
   }
 
   &.active {
-    color: #fff;
+    color: ${({ theme }) => theme.colors.primary[100]};
   }
 `
 
 const ArticlesGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 90px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 24px;
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+  &::-webkit-scrollbar {
+    display: none;
   }
 
-  @media (min-width: 1024px) {
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 24px;
+    padding: 0 18px;
+    overflow-x: visible;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 78px;
     grid-template-columns: repeat(3, 1fr);
   }
 `
 
 const ArticleCard = styled.div`
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 200px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: auto;
+    min-width: auto;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    flex-direction: column;
+    width: auto;
+    min-wdith: 280px;
+  }
+`
+
+const ImageContainer = styled.div`
+  position: relative;
   overflow: hidden;
+  margin-bottom: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    margin-bottom: 12px;
+  }
 `
 
 const ArticleImage = styled.img`
   width: 100%;
-  height: 190px;
+  height: auto;
   object-fit: cover;
-`
-
-const ArticleContent = styled.div`
-  padding-top: 12px;
+  transition: transform 0.3s ease;
 `
 
 const ArticleTitle = styled.h3`
-  font-size: 20px;
+  flex: 1;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 28px;
+  color: ${({ theme }) => theme.colors.primary[100]};
+  line-height: 1.5;
   margin: 0;
-  color: white;
+  transition: color 0.3s ease;
 
   ${ArticleCard}:hover & {
-    color: #dd8346;
+    color: ${({ theme }) => theme.colors.secondary[20]};
   }
 
-  @media (min-width: 768px) {
-    font-size: 1.125rem;
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 18px;
   }
 `
 
@@ -113,18 +216,21 @@ const articlesData = [
   {
     id: 1,
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
+    alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
       'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=400&fit=crop',
   },
   {
     id: 2,
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
+    alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
       'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=400&fit=crop',
   },
   {
     id: 3,
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
+    alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
       'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=400&fit=crop',
   },
@@ -139,7 +245,7 @@ const GreenConsumptionSection = () => {
           <AccentBar />
           <Title>綠色消費</Title>
           <CategoryTabs>
-            <CategoryTab className="active">次分類範例文字1</CategoryTab>
+            <CategoryTab>次分類範例文字1</CategoryTab>
             <CategoryTab>次分類範例文字2</CategoryTab>
             <CategoryTab>次分類範例文字3</CategoryTab>
             <CategoryTab>次分類範例文字4</CategoryTab>
@@ -150,10 +256,10 @@ const GreenConsumptionSection = () => {
         <ArticlesGrid>
           {articlesData.map((article) => (
             <ArticleCard key={article.id}>
-              <ArticleImage src={article.image} alt={article.title} />
-              <ArticleContent>
-                <ArticleTitle>{article.title}</ArticleTitle>
-              </ArticleContent>
+              <ImageContainer>
+                <ArticleImage src={article.image} alt={article.alt} />
+              </ImageContainer>
+              <ArticleTitle>{article.title}</ArticleTitle>
             </ArticleCard>
           ))}
         </ArticlesGrid>
