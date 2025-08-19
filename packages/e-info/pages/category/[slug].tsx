@@ -223,7 +223,7 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
 
   return (
     <CategoryWrapper aria-label={sectionTitle}>
-      <StyledAdsense_HD pageKey={activeCategory.slug} adKey="HD" />
+      {/* <StyledAdsense_HD pageKey={activeCategory.slug} adKey="HD" /> */}
       <SectionHeading
         title={sectionTitle}
         highlightColor="#eee500"
