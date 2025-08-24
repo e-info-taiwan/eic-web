@@ -60,6 +60,117 @@ const StyledAdsense_HD = styled(Adsense)`
   }
 `
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding-left: 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    justify-content: normal;
+  }
+`
+
+const AccentBar = styled.div`
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  width: 60px;
+  height: 20px;
+  margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 80px;
+    height: 32px;
+  }
+`
+
+const Title = styled.h1`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
+`
+
+const CategoryTabs = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-wrap: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: 100%;
+    overflow-x: visible;
+    flex-wrap: nowrap;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: auto;
+    margin-top: 0;
+  }
+`
+
+const CategoryTab = styled.button`
+  background: none;
+  border: none;
+  color: #373740;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  &.active {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+`
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid #000;
+  margin: 20px 28px 16px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    margin-left: 44px;
+    margin-right: 44px;
+  }
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    display: none;
+  }
+`
+
 type PageProps = {
   categories: NavigationCategoryWithArticleCards[]
   categoriesWithoutPosts: CategoryWithoutPosts[]
@@ -224,7 +335,7 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
   return (
     <CategoryWrapper aria-label={sectionTitle}>
       {/* <StyledAdsense_HD pageKey={activeCategory.slug} adKey="HD" /> */}
-      <SectionHeading
+      {/* <SectionHeading
         title={sectionTitle}
         highlightColor="#eee500"
         headingLevel={2}
@@ -233,7 +344,20 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
       <CategoryNav
         currentCategorySlug={activeCategory.slug}
         categoryClickHandler={updateActiveCategory}
-      />
+      /> */}
+
+      <Header>
+        <AccentBar />
+        <Title>{sectionTitle}</Title>
+      </Header>
+      <CategoryTabs>
+        <CategoryTab>次分類範例文字1</CategoryTab>
+        <CategoryTab>次分類範例文字2</CategoryTab>
+        <CategoryTab>次分類範例文字3</CategoryTab>
+        <CategoryTab>次分類範例文字4</CategoryTab>
+      </CategoryTabs>
+      <Divider />
+
       <ArticleLists
         posts={currentItem?.posts}
         AdPageKey={activeCategory.slug}

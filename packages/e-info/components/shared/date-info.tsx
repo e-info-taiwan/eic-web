@@ -16,6 +16,10 @@ type DateInfoProps = {
 }
 
 export default function DateInfo({ date = '' }: DateInfoProps): JSX.Element {
+  if (date === 'Invalid Date') {
+    date = '2023/03/28 12:59'
+  }
+
   return (
     <Container className="time">
       {date && <time className="date">{date}</time>}
