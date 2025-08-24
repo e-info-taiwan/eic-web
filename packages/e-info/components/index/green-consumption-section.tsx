@@ -10,12 +10,12 @@ const SectionContainer = styled.section`
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     padding: 40px 0px;
-    margin: 60px 0;
+    margin: 60px 0 0 0;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 100px 12px;
+    padding: 100px 0;
   }
 `
 
@@ -189,7 +189,7 @@ const ArticleImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  aspect-ratio: attr(width) / attr(height);
 `
 
 const ArticleTitle = styled.h3`
@@ -218,21 +218,21 @@ const articlesData = [
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=288&h=190&fit=crop',
   },
   {
     id: 2,
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=288&h=190&fit=crop',
   },
   {
     id: 3,
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=288&h=190&fit=crop',
   },
 ]
 

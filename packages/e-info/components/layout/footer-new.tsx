@@ -65,15 +65,20 @@ const Logo = styled.div`
 
 const ActionButtons = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 18px;
   flex-wrap: wrap;
+  flex-direction: row;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: row;
+  }
 `
 
 const Button = styled.button`
   background: #fff;
   border: 1px solid ${({ theme }) => theme.colors.primary[40]};
   color: ${({ theme }) => theme.colors.primary[40]};
-  padding: 0.5rem 1.5rem;
+  padding: 5.5px 12px;
   border-radius: 6px;
   font-size: 14px;
   line-height: 1.5;
@@ -110,13 +115,12 @@ const NavLink = styled.a`
   align-items: center;
   flex-wrap: nowrap;
   white-space: nowrap;
-  color: #6f6f72;
-  font-size: 13px;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  font-size: 14px;
   line-height: 2;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.3s ease;
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary[20]};
@@ -124,6 +128,7 @@ const NavLink = styled.a`
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     font-size: 14px;
+    align-items: flex-start;
   }
 `
 
@@ -199,10 +204,9 @@ const SocialIcon = styled.div`
 
 const Footer = () => {
   const navigationData = [
-    ['關於我們', '網站授權條款', '投稿須知'],
-    ['合作媒體', '常見問題', '隱私權政策'],
-    ['編輯室自律公約', '獲獎記錄', '網站導覽'],
-    ['活動', '綠色職缺'],
+    ['關於我們', '合作媒體', '編輯室自律公約', '活動'],
+    ['網站授權條款', '常見問題', '獲獎記錄', '綠色職缺'],
+    ['投稿須知', '隱私權政策', '網站導覽'],
   ]
 
   return (

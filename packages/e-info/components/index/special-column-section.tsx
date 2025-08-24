@@ -9,7 +9,7 @@ const Container = styled.div`
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    padding: 40px 0;
+    padding: 40px 18px 0;
   }
 
   // Desktop
@@ -142,13 +142,9 @@ const ArticleCard = styled.div`
 
 const ArticleImage = styled.img`
   width: 100%;
-  height: 250px;
+  height: auto;
   object-fit: cover;
-  transition: transform 0.3s ease;
-
-  @media (min-width: 768px) {
-    height: 280px;
-  }
+  aspect-ratio: attr(width) / attr(height);
 `
 
 const ImageOverlay = styled.div`
@@ -180,37 +176,37 @@ const articlesData = [
     id: 1,
     title: '再生能源承諾當前，菲律賓卻「燒瘋」難戒',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=500&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=360&h=240&fit=crop',
   },
   {
     id: 2,
     title: '組筆電像拼樂高、熱水壺自己換零件 創新設計讓消費者變身修理達人',
     image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=360&h=240&fit=crop',
   },
   {
     id: 3,
     title: '再生能源承諾當前，菲律賓卻「燒瘋」難戒',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=500&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=360&h=240&fit=crop',
   },
   {
     id: 4,
     title: '再生能源承諾當前，菲律賓卻「燒瘋」難戒',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=500&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=360&h=240&fit=crop',
   },
   {
     id: 5,
     title: '組筆電像拼樂高、熱水壺自己換零件 創新設計讓消費者變身修理達人',
     image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=500&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=360&h=240&fit=crop',
   },
   {
     id: 6,
     title: '再生能源承諾當前，菲律賓卻「燒瘋」難戒',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=500&h=350&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=360&h=240&fit=crop',
   },
 ]
 

@@ -14,7 +14,7 @@ const Container = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 0 12px;
+    padding: 0 0;
   }
 `
 
@@ -148,8 +148,18 @@ const HeroArticle = styled.div`
 
 const HeroImage = styled.img`
   width: 100%;
-  height: 507px;
+  height: auto;
   object-fit: cover;
+  aspect-ratio: 1;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    aspect-ratio: attr(width) / attr(height);
+  }
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    aspect-ratio: attr(width) / attr(height);
+  }
 `
 
 const HeroOverlay = styled.div`
@@ -196,14 +206,16 @@ const ArticleItem = styled.div`
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    grid-template-columns: 1fr 200px;
+    grid-template-columns: 1fr 289px;
     gap: 16px;
+    padding: 0;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    grid-template-columns: 1fr 250px;
+    grid-template-columns: 1fr 400px;
     gap: 30px;
+    padding: 0;
   }
 `
 
@@ -263,9 +275,20 @@ const ArticleExcerpt = styled.p`
 `
 
 const ArticleImage = styled.img`
-  width: 400px;
+  width: 100%;
   height: auto;
   object-fit: cover;
+  aspect-ratio: attr(width) / attr(height);
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: 289px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 400px;
+  }
 `
 
 const Sidebar = styled.div`
@@ -284,8 +307,12 @@ const Sidebar = styled.div`
 `
 
 const RankingSection = styled.div`
-  border-radius: 8px;
-  padding: 1.5rem;
+  padding: 40px 48px 48px 48px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 0 48px 32px;
+  }
 `
 
 const RankingHeader = styled.div`
@@ -302,7 +329,7 @@ const RankingHeader = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding-left: 78px;
+    padding-left: 0;
     justify-content: normal;
   }
 `
@@ -413,7 +440,7 @@ const Divider = styled.hr`
 const heroArticle = {
   title: '在理想中擱淺的鯨豚觀察員',
   image:
-    'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=760&h=507&fit=crop',
   alt: 'Whale watching illustration',
 }
 
@@ -424,7 +451,7 @@ const articles = [
     excerpt:
       '核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照限定，在「屆期前」都可提出申請，核電廠運轉年限最多再延長20年、已停機',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&h=267&fit=crop',
   },
   {
     id: 2,
@@ -432,7 +459,7 @@ const articles = [
     excerpt:
       '核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照限定，在「屆期前」都可提出申請，核電廠運轉年限最多再延長20年、已停機',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&h=267&fit=crop',
   },
   {
     id: 3,
@@ -440,7 +467,7 @@ const articles = [
     excerpt:
       '核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照限定，在「屆期前」都可提出申請，核電廠運轉年限最多再延長20年、已停機',
     image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=300&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&h=267&fit=crop',
   },
 ]
 

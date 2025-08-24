@@ -14,7 +14,7 @@ const Container = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 0 12px;
+    padding: 0;
   }
 `
 
@@ -154,8 +154,7 @@ const ArticleCard = styled.div`
     gap: 24px;
     padding: 0;
     flex-shrink: 0;
-    width: 200px;
-    min-width: 320px;
+    width: 330px;
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
@@ -169,20 +168,22 @@ const ArticleCard = styled.div`
 `
 
 const ImagePlaceholder = styled.div`
-  width: 130px;
-  height: 100%;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: attr(width) / attr(height);
   background-color: #d1d5db;
   flex-shrink: 0;
+  max-width: 130px;
+  min-height: 87px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    width: 130px;
-    height: 100%;
+    flex: 1;
+    max-width: auto;
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     flex: 1;
-    width: 100%;
-    height: 100%;
   }
 `
 

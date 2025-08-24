@@ -1,7 +1,7 @@
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
-import React from 'react'
+import React, { useRef } from 'react'
 import Slider from 'react-slick'
 import styled from 'styled-components'
 
@@ -53,9 +53,9 @@ const CarouselContainer = styled.section`
         opacity: 0.3;
       }
 
-      //   .slide-title {
-      //     font-size: 0.75rem !important;
-      //   }
+      .arrow-button {
+        visibility: hidden;
+      }
     }
 
     &.slick-center {
@@ -69,6 +69,12 @@ const CarouselContainer = styled.section`
 
       .slide-overlay {
         opacity: 1;
+      }
+
+      @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+        .arrow-button {
+          visibility: visible;
+        }
       }
     }
   }
@@ -160,10 +166,12 @@ const CarouselContainer = styled.section`
   }
 `
 
-const ArrowButton = styled.button`
+const ArrowButton = styled.button.attrs({ className: 'arrow-button' })`
   display: flex;
   align-items: center;
   justify-content: center;
+  visibility: hidden;
+  cusor: pointer;
 
   > svg {
     width: 20px;
@@ -192,28 +200,72 @@ const SlideContent = styled.div.attrs({ className: 'slide-content' })`
   position: relative;
   overflow: hidden;
   transition: all 0.4s ease;
-  width: 880px;
+  // max-width: 880px;
+  width: 100%;
+`
+const ImageWrap = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: row;
+
+  & ${ArrowButton}:first-child {
+    visibility: visible;
+    position: absolute;
+    top: calc(50% - 10px);
+    left: 16px;
+  }
+
+  & ${ArrowButton}:last-child {
+    visibility: visible;
+    position: absolute;
+    top: calc(50% - 10px);
+    right: 16px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    & ${ArrowButton} {
+      visibility: hidden;
+      display: none;
+    }
+  }
+`
+const MainImage = styled.img`
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: attr(width) / attr(height);
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     padding: 40px 84px 0;
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 80px 16px 0;
-  }
-
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    width: 100%;
+    padding: 80px 0 0;
   }
 `
 
-const MainImage = styled.img`
-  width: 880px;
-  height: 100%;
-  object-fit: cover;
+const TitleWrap = styled.div`
+  margin: 28px 22px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100vw;
 
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    width: 100%;
+  > ${ArrowButton} {
+    display: none;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    margin: 16px 32px 56px 32px;
+    > ${ArrowButton} {
+      display: block;
+    }
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    margin: 16px 0 56px 0;
+    max-width: 880px;
   }
 `
 
@@ -221,21 +273,18 @@ const MainTitle = styled.h2.attrs({ className: 'slide-title' })`
   text-align: center;
   color: ${({ theme }) => theme.colors.primary[60]};
   font-size: 28px;
-  font-weight: 700;
-  margin-top: 16px;
-  margin-bottom: 36px;
-  padding: 0 22px;
+  font-weight: 500;
+  padding: 0;
   line-height: 32px;
   transition: all 0.4s ease;
 
-  .slick-center & {
-    @media (min-width: 768px) {
-      font-size: 1.25rem;
-    }
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 
-    @media (min-width: 1024px) {
-      font-size: 1.75rem;
-    }
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 22px;
   }
 `
 
@@ -243,61 +292,61 @@ const MainTitle = styled.h2.attrs({ className: 'slide-title' })`
 const carouselData = [
   {
     id: 1,
-    title: '以沉船視角看見海洋之美——紀錄片《沉睡的水下巨人》',
+    title:
+      '以沉船視角看見海洋之美——紀錄片《沉睡的水下巨人》以沉船視角看見海洋之美——紀錄片《沉睡的水下巨人》',
     mainImage:
-      'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1000&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=880&h=586&fit=crop',
   },
   {
     id: 2,
     title: '海洋保護的重要性——珊瑚礁生態系統',
     mainImage:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1000&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=880&h=586&fit=crop',
   },
   {
     id: 3,
     title: '深海探索的新發現——未知的海底世界',
     mainImage:
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1000&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=880&h=586&fit=crop',
   },
   {
     id: 4,
     title: '氣候變遷對海洋生態的影響',
     mainImage:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1000&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=880&h=586&fit=crop',
   },
   {
     id: 5,
     title: '永續漁業的未來發展',
     mainImage:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1000&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=880&h=586&fit=crop',
   },
 ]
 
 const MainCarousel = () => {
+  const sliderRef = useRef<Slider | null>(null)
+  const next = () => {
+    console.log('next', sliderRef)
+    sliderRef.current?.slickNext()
+  }
+  const previous = () => {
+    console.log('previous', sliderRef)
+    sliderRef.current?.slickPrev()
+  }
   const settings = {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 3,
+    slidesToShow: 1,
     slidesToScroll: 1,
     centerMode: true,
     centerPadding: '0px',
-    autoplay: true,
+    autoplay: false,
     autoplaySpeed: 4500,
     pauseOnHover: true,
-    focusOnSelect: true,
-    // cssEase: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    focusOnSelect: false,
     variableWidth: true,
-    nextArrow: (
-      <ArrowButton>
-        <IconNext />
-      </ArrowButton>
-    ),
-    prevArrow: (
-      <ArrowButton>
-        <IconPrev />
-      </ArrowButton>
-    ),
+
     responsive: [
       {
         breakpoint: 1200,
@@ -323,12 +372,28 @@ const MainCarousel = () => {
   return (
     <CarouselContainer>
       <Container>
-        <Slider {...settings}>
+        <Slider ref={sliderRef} {...settings}>
           {carouselData.map((slide) => (
             <CarouselSlide key={slide.id}>
               <SlideContent>
-                <MainImage src={slide.mainImage} alt={slide.title} />
-                <MainTitle>{slide.title}</MainTitle>
+                <ImageWrap>
+                  <ArrowButton onClick={previous}>
+                    <IconPrev />
+                  </ArrowButton>
+                  <MainImage src={slide.mainImage} alt={slide.title} />
+                  <ArrowButton onClick={next}>
+                    <IconNext />
+                  </ArrowButton>
+                </ImageWrap>
+                <TitleWrap>
+                  <ArrowButton onClick={previous}>
+                    <IconPrev />
+                  </ArrowButton>
+                  <MainTitle>{slide.title}</MainTitle>
+                  <ArrowButton onClick={next}>
+                    <IconNext />
+                  </ArrowButton>
+                </TitleWrap>
               </SlideContent>
             </CarouselSlide>
           ))}

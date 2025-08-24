@@ -21,16 +21,33 @@ const HeaderContainer = styled.header`
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 30px 12px 30px 12px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 35px 44px 20px 44px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 35px 0 10px 0;
+  }
 `
 
 const TopSection = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
   position: relative;
   gap: 12px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+  }
 `
 
 const Logo = styled.div`
@@ -272,7 +289,13 @@ const NewsBar = styled.div`
   }
 `
 
-const NewsContent = styled.span`
+const NewsContent = styled.div`
+  &::before {
+    content: '快訊';
+    margin-right: 10px;
+    font-weight: 700;
+  }
+
   /* Default: centered on desktop */
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: inline;
@@ -283,6 +306,10 @@ const NewsContent = styled.span`
     display: inline-block;
     animation: marquee 20s linear infinite;
     white-space: nowrap;
+
+    &::before {
+      margin-right: 8px;
+    }
   }
 
   @keyframes marquee {

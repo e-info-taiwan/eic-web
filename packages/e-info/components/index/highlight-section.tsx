@@ -9,12 +9,12 @@ const Container = styled.div`
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    padding: 48px 78px;
+    padding: 34px 48px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 48px 12px;
+    padding: 48px 0;
   }
 `
 
@@ -133,12 +133,11 @@ const ArticleImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  aspect-ratio: attr(width) / attr(height);
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     width: 160px;
-    height: 106px;
   }
 `
 

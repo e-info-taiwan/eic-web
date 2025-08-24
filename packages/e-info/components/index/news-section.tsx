@@ -14,7 +14,7 @@ const Container = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 66px 12px 0;
+    padding: 66px 0 0;
   }
 `
 
@@ -119,13 +119,17 @@ const CategoryTab = styled.button`
 const MainContent = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 30px;
 
   padding: 0 24px;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     grid-template-columns: 1fr 2fr;
+    // grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+      'A B'
+      'A C';
   }
 
   // Desktop
@@ -136,8 +140,12 @@ const MainContent = styled.div`
 
 const Sidebar = styled.div`
   order: 2;
-  @media (min-width: 768px) {
-    order: 1;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    grid-area: A;
+    border-right: 1px solid #000;
+    padding-right: 30px;
   }
 `
 
@@ -169,16 +177,15 @@ const NewsDate = styled.div`
   font-size: 16px;
   font-weight: 700;
   line-height: 1.5;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 `
 
 const NewsTitle = styled.h3`
   color: #232333;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.5;
   margin: 0;
-  margin-bottom: 0.75rem;
   transition: color 0.3s ease;
 
   ${NewsItem}:hover & {
@@ -192,22 +199,16 @@ const NewsExcerpt = styled.p`
   font-weight: 400;
   line-height: 1.5;
   margin: 0;
-`
-
-const FeaturedSection = styled.div`
-  order: 1;
-  border-left: none;
+  margin-top: 24px;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    border-left: 1px solid #000;
-    padding-left: 30px;
-    order: 2;
+    margin: 12px 0 24px 0;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    border-left: 1px solid #000;
+    margin: 24px 0 36px 0;
   }
 `
 
@@ -221,24 +222,33 @@ const MainImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
+  aspect-ratio: attr(width) / attr(height);
+`
+
+const FeaturedArticle = styled.div`
+  order: 1;
+  cursor: pointer;
+
+  border-bottom: 1px solid #000;
+  padding-bottom: 20px;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    height: 400px;
+    grid-area: B;
+    border-bottom: none;
+    padding-bottom: 0px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    height: 300px;
+    grid-area: B;
+    border-bottom: 1px solid #000;
+    padding-bottom: 30px;
   }
 `
 
-const FeaturedArticle = styled.div`
-  cursor: pointer;
-`
-
 const FeaturedContent = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 `
 
 const FeaturedDate = styled.div`
@@ -281,14 +291,19 @@ const FeaturedExcerpt = styled.p`
 `
 
 const RelatedArticles = styled.div`
+  order: 3;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px;
 
-  @media (min-width: 480px) {
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    grid-area: C;
     grid-template-columns: repeat(2, 1fr);
   }
 
+  // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     gap: 60px;
   }
@@ -320,12 +335,11 @@ const RelatedImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  aspect-ratio: attr(width) / attr(height);
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     width: 160px;
-    height: 106px;
   }
 `
 
@@ -345,18 +359,23 @@ const RelatedDate = styled.div`
 const RelatedTitle = styled.h4`
   flex: 1;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   line-height: 1.5;
   margin: 0;
   transition: color 0.3s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   ${RelatedArticle}:hover & {
     color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   // Desktop
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     font-size: 18px;
   }
 `
@@ -402,14 +421,14 @@ const relatedArticles = [
     date: '2023/03/28',
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=107&fit=crop',
   },
   {
     id: 2,
     date: '2023/03/28',
     title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
     image:
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=200&fit=crop',
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=160&h=107&fit=crop',
   },
 ]
 
@@ -430,7 +449,7 @@ const NewsSection = () => {
 
       {/* Main Content */}
       <MainContent>
-        {/* Sidebar */}
+        {/* A */}
         <Sidebar>
           {sidebarNews.map((news) => (
             <NewsItem key={news.id}>
@@ -441,38 +460,38 @@ const NewsSection = () => {
           ))}
         </Sidebar>
 
-        {/* Featured Section */}
-        <FeaturedSection>
-          <FeaturedArticle>
-            <FeaturedImage>
-              <MainImage
-                src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop"
-                alt="Featured news image"
-              />
-            </FeaturedImage>
+        {/* B */}
+        <FeaturedArticle>
+          <FeaturedImage>
+            <MainImage
+              src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=740&h=431&fit=crop"
+              alt="Featured news image"
+            />
+          </FeaturedImage>
 
-            <FeaturedContent>
-              <FeaturedDate>2023/03/28</FeaturedDate>
-              <FeaturedTitle>
-                「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法
-              </FeaturedTitle>
-              <FeaturedExcerpt>
-                核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管...
-              </FeaturedExcerpt>
-            </FeaturedContent>
-          </FeaturedArticle>
-          <RelatedArticles>
-            {relatedArticles.map((article) => (
-              <RelatedArticle key={article.id}>
-                <RelatedImage src={article.image} alt="Related article" />
-                <RelatedContent>
-                  <RelatedDate>{article.date}</RelatedDate>
-                  <RelatedTitle>{article.title}</RelatedTitle>
-                </RelatedContent>
-              </RelatedArticle>
-            ))}
-          </RelatedArticles>
-        </FeaturedSection>
+          <FeaturedContent>
+            <FeaturedDate>2023/03/28</FeaturedDate>
+            <FeaturedTitle>
+              「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法
+            </FeaturedTitle>
+            <FeaturedExcerpt>
+              核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管...
+            </FeaturedExcerpt>
+          </FeaturedContent>
+        </FeaturedArticle>
+
+        {/* C */}
+        <RelatedArticles>
+          {relatedArticles.map((article) => (
+            <RelatedArticle key={article.id}>
+              <RelatedImage src={article.image} alt="Related article" />
+              <RelatedContent>
+                <RelatedDate>{article.date}</RelatedDate>
+                <RelatedTitle>{article.title}</RelatedTitle>
+              </RelatedContent>
+            </RelatedArticle>
+          ))}
+        </RelatedArticles>
       </MainContent>
     </Container>
   )
