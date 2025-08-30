@@ -15,6 +15,7 @@ import FeatureSection from '~/components/index/feature-section'
 import FeaturedTopicsSection from '~/components/index/featured-topics-section'
 import GreenConsumptionSection from '~/components/index/green-consumption-section'
 import HighlightSection from '~/components/index/highlight-section'
+import Inforgraphic from '~/components/index/inforgraphic'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import LatestReportSection from '~/components/index/latest-report-section'
 import MainCarousel from '~/components/index/main-carousel'
@@ -119,7 +120,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       {/* Demo - begin */}
       <MainCarousel />
       <HighlightSection />
-      <Placeholder height={600}>重要圖表</Placeholder>
+      <Inforgraphic />
       <NewsSection />
       <AdContent />
       <SpecialColumnSection />

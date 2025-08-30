@@ -22,11 +22,21 @@ const Container = styled.div`
   }
 `
 
+const Text = styled.span`
+  font-weight: 400;
+  font-size: 48px;
+  color: #000;
+`
+
 const AdContent: React.FC = () => {
   return (
     <Container>
-      <Placeholder height={200}>廣告</Placeholder>
-      <Placeholder height={200}>廣告</Placeholder>
+      <Placeholder height={200}>
+        <Text>廣告</Text>
+      </Placeholder>
+      <Placeholder height={200}>
+        <Text>廣告</Text>
+      </Placeholder>
     </Container>
   )
 }

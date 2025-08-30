@@ -53,7 +53,7 @@ const AccentBar = styled.div`
 
 const Title = styled.h1`
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
