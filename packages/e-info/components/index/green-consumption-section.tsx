@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 // Styled Components
@@ -101,10 +101,11 @@ const CategoryTabs = styled.div`
   }
 `
 
-const CategoryTab = styled.button`
+const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
+  color: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.primary[100] : theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -115,10 +116,6 @@ const CategoryTab = styled.button`
   flex-shrink: 0;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary[100]};
-  }
-
-  &.active {
     color: ${({ theme }) => theme.colors.primary[100]};
   }
 `
@@ -211,32 +208,119 @@ const ArticleTitle = styled.h3`
   }
 `
 
-// Sample data
-const articlesData = [
-  {
-    id: 1,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=288&h=190&fit=crop',
-  },
-  {
-    id: 2,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=288&h=190&fit=crop',
-  },
-  {
-    id: 3,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    alt: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    image:
-      'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=288&h=190&fit=crop',
-  },
+// Categories and Sample data
+const categories = [
+  { id: 'green1', name: '次分類範例文字1' },
+  { id: 'green2', name: '次分類範例文字2' },
+  { id: 'green3', name: '次分類範例文字3' },
+  { id: 'green4', name: '次分類範例文字4' },
 ]
 
+const articlesData = {
+  green1: [
+    {
+      id: 1,
+      title: '減塑新生活 環保餐具選擇指南',
+      alt: '減塑新生活 環保餐具選擇指南',
+      image:
+        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=288&h=190&fit=crop',
+    },
+    {
+      id: 2,
+      title: '線上購物綠色選擇 包裝簡化愛地球',
+      alt: '線上購物綠色選擇',
+      image:
+        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=288&h=190&fit=crop',
+    },
+    {
+      id: 3,
+      title: '線色消費指南 在地食材的環保選擇',
+      alt: '線色消費指南',
+      image:
+        'https://images.unsplash.com/photo-1542838132-92c53300491e?w=288&h=190&fit=crop',
+    },
+  ],
+  green2: [
+    {
+      id: 1,
+      title: '太陽能在家庭 綠能生活新選擇',
+      alt: '太陽能在家庭',
+      image:
+        'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=288&h=190&fit=crop',
+    },
+    {
+      id: 2,
+      title: '節能家電新指南 智慧用電省錢省能',
+      alt: '節能家電新指南',
+      image:
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=288&h=190&fit=crop',
+    },
+    {
+      id: 3,
+      title: '電動車時代來臨 充電設施完善規劃',
+      alt: '電動車時代來臨',
+      image:
+        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=288&h=190&fit=crop',
+    },
+  ],
+  green3: [
+    {
+      id: 1,
+      title: '循環時尚新風尚 二手衣物的美學重生',
+      alt: '循環時尚新風尚',
+      image:
+        'https://images.unsplash.com/photo-1445205170230-053b83016050?w=288&h=190&fit=crop',
+    },
+    {
+      id: 2,
+      title: '網路交換平台 物品共享經濟的實踐',
+      alt: '網路交換平台',
+      image:
+        'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=288&h=190&fit=crop',
+    },
+    {
+      id: 3,
+      title: 'DIY維修文化 讓物品延續生命力',
+      alt: 'DIY維修文化',
+      image:
+        'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=288&h=190&fit=crop',
+    },
+  ],
+  green4: [
+    {
+      id: 1,
+      title: '都市農園興起 陰台種菜的綠色生活',
+      alt: '都市農園興起',
+      image:
+        'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=288&h=190&fit=crop',
+    },
+    {
+      id: 2,
+      title: '零廢棄物生活 延續物品使用壽命',
+      alt: '零廢棄物生活',
+      image:
+        'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=288&h=190&fit=crop',
+    },
+    {
+      id: 3,
+      title: '水資源保育 日常節水小技巧',
+      alt: '水資源保育',
+      image:
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=288&h=190&fit=crop',
+    },
+  ],
+}
+
 const GreenConsumptionSection = () => {
+  const [activeCategory, setActiveCategory] = useState<string>('green1')
+
+  const currentArticles =
+    articlesData[activeCategory as keyof typeof articlesData]
+
+  const handleCategoryClick = (categoryId: string) => {
+    setActiveCategory(categoryId)
+  }
+
   return (
     <SectionContainer>
       <Container>
@@ -245,16 +329,21 @@ const GreenConsumptionSection = () => {
           <AccentBar />
           <Title>綠色消費</Title>
           <CategoryTabs>
-            <CategoryTab>次分類範例文字1</CategoryTab>
-            <CategoryTab>次分類範例文字2</CategoryTab>
-            <CategoryTab>次分類範例文字3</CategoryTab>
-            <CategoryTab>次分類範例文字4</CategoryTab>
+            {categories.map((category) => (
+              <CategoryTab
+                key={category.id}
+                $isActive={activeCategory === category.id}
+                onClick={() => handleCategoryClick(category.id)}
+              >
+                {category.name}
+              </CategoryTab>
+            ))}
           </CategoryTabs>
         </Header>
 
         {/* Articles Grid */}
         <ArticlesGrid>
-          {articlesData.map((article) => (
+          {currentArticles.map((article) => (
             <ArticleCard key={article.id}>
               <ImageContainer>
                 <ArticleImage src={article.image} alt={article.alt} />

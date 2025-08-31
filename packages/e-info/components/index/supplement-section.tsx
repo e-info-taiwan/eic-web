@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 // Styled Components
@@ -94,10 +94,11 @@ const CategoryTabs = styled.div`
   }
 `
 
-const CategoryTab = styled.button`
+const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
-  color: #373740;
+  color: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.secondary[20] : '#373740'};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -108,10 +109,6 @@ const CategoryTab = styled.button`
   flex-shrink: 0;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.secondary[20]};
-  }
-
-  &.active {
     color: ${({ theme }) => theme.colors.secondary[20]};
   }
 `
@@ -238,23 +235,107 @@ const Divider = styled.hr`
   }
 `
 
-// Sample data
-const articlesData = [
-  {
-    id: 1,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-  },
-  {
-    id: 2,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-  },
-  {
-    id: 3,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-  },
+// Categories and Sample data
+const categories = [
+  { id: 'supplement1', name: '次分類範例文字1' },
+  { id: 'supplement2', name: '次分類範例文字2' },
+  { id: 'supplement3', name: '次分類範例文字3' },
+  { id: 'supplement4', name: '次分類範例文字4' },
 ]
 
+const articlesData = {
+  supplement1: [
+    {
+      id: 1,
+      title: '文學與生活的黃金交集 現代詩歌中的情感表達',
+      image:
+        'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=130&h=87&fit=crop',
+    },
+    {
+      id: 2,
+      title: '留留那些美好的時光 散文中的温柔力量',
+      image:
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=130&h=87&fit=crop',
+    },
+    {
+      id: 3,
+      title: '小說中的人物塑造 當代作家的羅生劃像',
+      image:
+        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=130&h=87&fit=crop',
+    },
+  ],
+  supplement2: [
+    {
+      id: 1,
+      title: '艾藝進化史 從古典美學到當代藝術',
+      image:
+        'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=130&h=87&fit=crop',
+    },
+    {
+      id: 2,
+      title: '色彩的魔法 繪畫中的情感語言',
+      image:
+        'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=130&h=87&fit=crop',
+    },
+    {
+      id: 3,
+      title: '雕塑的立體詩意 空間藝術的哲學思考',
+      image:
+        'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=130&h=87&fit=crop',
+    },
+  ],
+  supplement3: [
+    {
+      id: 1,
+      title: '都市中的慢生活 咖啡香裡的哲學思考',
+      image:
+        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=130&h=87&fit=crop',
+    },
+    {
+      id: 2,
+      title: '旅行的意義 在路上發現自己的可能',
+      image:
+        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=130&h=87&fit=crop',
+    },
+    {
+      id: 3,
+      title: '美食與記憶 味覺裡的情感連結',
+      image:
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=130&h=87&fit=crop',
+    },
+  ],
+  supplement4: [
+    {
+      id: 1,
+      title: '音樂的治療力量 聲音裡的情感釋放',
+      image:
+        'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=130&h=87&fit=crop',
+    },
+    {
+      id: 2,
+      title: '舞台上的詩意 舞蹈表演中的身體美學',
+      image:
+        'https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=130&h=87&fit=crop',
+    },
+    {
+      id: 3,
+      title: '燈光與影像 電影中的視覺詩學',
+      image:
+        'https://images.unsplash.com/photo-1489599808821-1871c5ad5af6?w=130&h=87&fit=crop',
+    },
+  ],
+}
+
 const SupplementSection = () => {
+  const [activeCategory, setActiveCategory] = useState<string>('supplement1')
+
+  const currentArticles =
+    articlesData[activeCategory as keyof typeof articlesData]
+
+  const handleCategoryClick = (categoryId: string) => {
+    setActiveCategory(categoryId)
+  }
+
   return (
     <Container>
       <Divider />
@@ -262,18 +343,29 @@ const SupplementSection = () => {
         <AccentBar />
         <Title>副刊</Title>
         <CategoryTabs>
-          <CategoryTab>次分類範例文字1</CategoryTab>
-          <CategoryTab>次分類範例文字2</CategoryTab>
-          <CategoryTab>次分類範例文字3</CategoryTab>
-          <CategoryTab>次分類範例文字4</CategoryTab>
+          {categories.map((category) => (
+            <CategoryTab
+              key={category.id}
+              $isActive={activeCategory === category.id}
+              onClick={() => handleCategoryClick(category.id)}
+            >
+              {category.name}
+            </CategoryTab>
+          ))}
         </CategoryTabs>
       </Header>
 
       {/* Articles Grid */}
       <ArticlesGrid>
-        {articlesData.map((article) => (
+        {currentArticles.map((article) => (
           <ArticleCard key={article.id}>
-            <ImagePlaceholder />
+            <ImagePlaceholder
+              style={{
+                backgroundImage: `url(${article.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
             <ArticleContent>
               <ArticleTitle>{article.title}</ArticleTitle>
             </ArticleContent>
