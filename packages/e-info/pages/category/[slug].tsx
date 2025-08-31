@@ -26,29 +26,40 @@ import { latestPosts as latestPostsQuery } from '~/graphql/query/post'
 import { postStyles } from '~/graphql/query/post'
 import useInfiniteScroll from '~/hooks/useInfiniteScroll'
 import type { NextPageWithLayout } from '~/pages/_app'
+import IconBack from '~/public/icons/arrow_back.svg'
+import IconForward from '~/public/icons/arrow_forward.svg'
 import type { NavigationCategory } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { getResizedUrl, postConvertFunc } from '~/utils/post'
 
 const CategoryWrapper = styled.div`
-  padding: 20px 20px 24px;
+  padding: 20px 0 24px;
 
-  ${({ theme }) => theme.breakpoint.sm} {
-    padding: 20px 20px 48px;
-  }
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 20px 48px 48px;
+    padding: 20px 0 48px;
   }
 
   ${({ theme }) => theme.breakpoint.lg} {
-    padding: 20px 72px 60px;
-    max-width: 1240px;
+    padding: 20px 0 60px;
+    max-width: 1200px;
     margin: auto;
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    padding: 40px 72px 60px;
+    padding: 40px 0 60px;
+  }
+`
+
+const ArticleWrapper = styled.div`
+  padding: 0 27px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 0 98px;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    padding: 0 58px;
   }
 `
 
@@ -65,16 +76,17 @@ const Header = styled.div`
   align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: normal;
+  padding: 0 27px;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    padding-left: 0;
+    padding: 0 98px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    justify-content: normal;
+    padding: 0 58px;
   }
 `
 
@@ -94,7 +106,7 @@ const AccentBar = styled.div`
 
 const Title = styled.h1`
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
@@ -108,7 +120,8 @@ const Title = styled.h1`
 
 const CategoryTabs = styled.div`
   display: flex;
-  gap: 1.5rem;
+  row-gap: 8px;
+  column-gap: 16px;
   margin-top: 12px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -123,13 +136,15 @@ const CategoryTabs = styled.div`
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     width: 100%;
     overflow-x: visible;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    padding: 0 98px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     width: auto;
     margin-top: 0;
+    padding: 0 58px;
   }
 `
 
@@ -141,7 +156,6 @@ const CategoryTab = styled.button`
   font-size: 20px;
   line-height: 28px;
   cursor: pointer;
-  padding: 0.25rem 0;
   transition: color 0.3s ease;
   white-space: nowrap;
   flex-shrink: 0;
@@ -155,19 +169,139 @@ const CategoryTab = styled.button`
   }
 `
 
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #000;
-  margin: 20px 28px 16px;
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    margin-left: 44px;
-    margin-right: 44px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+  }
+`
+
+const BackForwardButton = styled.button`
+  display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+
+  > svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  // Tablet, Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    min-width: 40px;
+    height: 40px;
+
+    > svg {
+      width: 40px;
+      height: 40px;
+    }
+  }
+`
+
+const PaginationButton = styled.button<{
+  $isActive?: boolean
+  $isDisabled?: boolean
+  $isNavigation?: boolean
+}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #000;
+  border-color: ${({ $isActive, $isDisabled, theme }) =>
+    $isDisabled
+      ? theme.colors.grayscale[60]
+      : $isActive
+      ? theme.colors.grayscale[0]
+      : theme.colors.primary[20]};
+  background: #fff;
+  color: ${({ $isActive, $isDisabled, theme }) =>
+    $isDisabled
+      ? theme.colors.grayscale[60]
+      : $isActive
+      ? theme.colors.grayscale[0]
+      : theme.colors.primary[20]};
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: ${({ $isDisabled }) => ($isDisabled ? 'not-allowed' : 'pointer')};
+  transition: all 0.2s ease;
+  border-radius: 11px;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primary[20]};
+    border-color: ${({ theme }) => theme.colors.primary[20]};
+    color: #fff;
+  }
+
+  // Tablet, Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    min-width: 36px;
+    height: 36px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 18px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  ${({ $isNavigation }) =>
+    $isNavigation &&
+    `
+    padding: 0 12px;
+    font-weight: 600;
+  `}
+`
+
+const PaginationEllipsis = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  font-size: 14px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    min-width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
+`
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid #000;
+  margin: 20px 28px 24px;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    margin-top: 24px;
+    margin-left: 98px;
+    margin-right: 98px;
+    margin-bottom: 24px;
   }
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    display: none;
+    margin-top: 28px;
+    margin-left: 58px;
+    margin-right: 58px;
+    margin-bottom: 28px;
   }
 `
 
@@ -205,7 +339,7 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
     setSectionTitle(
       category.slug === 'all' ? '所有報導' : `所有${category.title}報導`
     )
-    setIsAtBottom(false) //infinite scroll: reset `isAtBottom` to false when change category
+    // setIsAtBottom(false) //infinite scroll: reset `isAtBottom` to false when change category
     gtag.sendEvent('listing', 'click', `listing-${category.title}`)
   }
 
@@ -319,18 +453,18 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
   }
 
   // infinite scroll
-  const [ref, isAtBottom, setIsAtBottom] = useInfiniteScroll({
-    amount: dataAmount,
-    dependency: activeCategory.slug,
-  })
+  // const [ref, isAtBottom, setIsAtBottom] = useInfiniteScroll({
+  //   amount: dataAmount,
+  //   dependency: activeCategory.slug,
+  // })
 
-  useEffect(() => {
-    if (isAtBottom) {
-      activeCategory.slug === 'all'
-        ? fetchMoreLatestPosts()
-        : fetchMoreCategoryPosts(activeCategory)
-    }
-  }, [isAtBottom])
+  // useEffect(() => {
+  //   if (isAtBottom) {
+  //     activeCategory.slug === 'all'
+  //       ? fetchMoreLatestPosts()
+  //       : fetchMoreCategoryPosts(activeCategory)
+  //   }
+  // }, [isAtBottom])
 
   return (
     <CategoryWrapper aria-label={sectionTitle}>
@@ -351,18 +485,40 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
         <Title>{sectionTitle}</Title>
       </Header>
       <CategoryTabs>
-        <CategoryTab>次分類範例文字1</CategoryTab>
-        <CategoryTab>次分類範例文字2</CategoryTab>
-        <CategoryTab>次分類範例文字3</CategoryTab>
-        <CategoryTab>次分類範例文字4</CategoryTab>
+        <CategoryTab>分類標題1</CategoryTab>
+        <CategoryTab>分類標題2</CategoryTab>
+        <CategoryTab>分類標題3</CategoryTab>
+        <CategoryTab>分類標題4</CategoryTab>
+        <CategoryTab>分類標題5</CategoryTab>
+        <CategoryTab>分類標題6</CategoryTab>
+        <CategoryTab>分類標題7</CategoryTab>
+        <CategoryTab>分類標題8</CategoryTab>
+        <CategoryTab>分類標題9</CategoryTab>
+        <CategoryTab>分類標題10</CategoryTab>
       </CategoryTabs>
       <Divider />
 
-      <ArticleLists
-        posts={currentItem?.posts}
-        AdPageKey={activeCategory.slug}
-      />
-      <span ref={ref} id="scroll-to-bottom-anchor" />
+      <ArticleWrapper>
+        <ArticleLists
+          posts={currentItem?.posts}
+          AdPageKey={activeCategory.slug}
+        />
+      </ArticleWrapper>
+      {/* Pagination */}
+      <PaginationWrapper>
+        <BackForwardButton>
+          <IconBack />
+        </BackForwardButton>
+        <PaginationButton $isActive>01</PaginationButton>
+        <PaginationButton>02</PaginationButton>
+        <PaginationButton>03</PaginationButton>
+        <PaginationEllipsis>......</PaginationEllipsis>
+        <PaginationButton>15</PaginationButton>
+        <BackForwardButton>
+          <IconForward />
+        </BackForwardButton>
+      </PaginationWrapper>
+      {/* <span ref={ref} id="scroll-to-bottom-anchor" /> */}
     </CategoryWrapper>
   )
 }

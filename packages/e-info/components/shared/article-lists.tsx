@@ -8,10 +8,10 @@ import * as gtag from '~/utils/gtag'
 const shareStyle = css`
   width: 100%;
   ${({ theme }) => theme.breakpoint.sm} {
-    width: calc((100% - 24px) / 2);
+    width: calc((100% - 40px) / 2);
   }
   ${({ theme }) => theme.breakpoint.xl} {
-    width: calc((100% - 24px) / 2);
+    width: calc((100% - 44px) / 2);
   }
 `
 
@@ -19,10 +19,10 @@ const Item = styled.li`
   margin: 0 0 16px;
   list-style: none;
   ${({ theme }) => theme.breakpoint.sm} {
-    margin: 0 0 32px;
+    margin: 0 0 47px;
   }
   ${({ theme }) => theme.breakpoint.xl} {
-    margin: 0 0 32px;
+    margin: 0 0 44px;
   }
   ${shareStyle}
 `
@@ -33,12 +33,6 @@ const ItemList = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-top: 20px;
-  ${({ theme }) => theme.breakpoint.sm} {
-    margin-top: 50px;
-  }
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-top: 50px;
-  }
 `
 
 const StyledAsense_FT = styled(Adsense)`
@@ -64,8 +58,8 @@ export default function ArticleLists({
       <Item key={article.id}>
         <ArticleListCard
           {...article}
-          isReport={article.isReport}
-          shouldHighlightReport={article.isReport}
+          isReport={false}
+          shouldHighlightReport={false}
           shouldReverseInMobile={true}
           rwd={{
             mobile: '30vw',
@@ -89,8 +83,8 @@ export default function ArticleLists({
       <Item key={article.id}>
         <ArticleListCard
           {...article}
-          isReport={article.isReport}
-          shouldHighlightReport={article.isReport}
+          isReport={false}
+          shouldHighlightReport={false}
           shouldReverseInMobile={true}
           rwd={{
             mobile: '30vw',

@@ -10,15 +10,16 @@ const TagWrapper = styled.ul`
   flex-wrap: wrap;
   list-style: none;
   max-width: 600px;
-
+  row-gap: 12px;
+  column-gap: 7px;
   > li {
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 400;
     line-height: 1.5;
     text-align: center;
     border-radius: 4px;
     border: 1px solid #8bc890;
     color: #8bc890;
-    margin: 0 8px 12px 0;
 
     &:hover {
       color: #7f8493;
@@ -27,14 +28,16 @@ const TagWrapper = styled.ul`
 
   a {
     display: inline-block;
-    padding: 8px;
+    padding: 1.5px 10px;
     cursor: pointer;
   }
 
   ${({ theme }) => theme.breakpoint.md} {
-    max-width: 336px;
     padding: 0;
     margin: 0;
+  }
+  ${({ theme }) => theme.breakpoint.xl} {
+    max-width: 440px;
   }
 `
 

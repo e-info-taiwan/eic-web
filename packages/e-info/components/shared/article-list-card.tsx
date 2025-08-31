@@ -27,7 +27,7 @@ const Link = styled.a<StyledProps>`
   ${({ $shouldReverseInMobile }) =>
     $shouldReverseInMobile &&
     `
-      flex-direction: row-reverse;
+      flex-direction: column;
       justify-content: space-between;
     `}
 
@@ -45,113 +45,33 @@ const Link = styled.a<StyledProps>`
 const ImageWrapper = styled.div<StyledProps>`
   display: inline-block;
   align-self: flex-start;
-  min-width: calc((100% - 16px) * 0.2727);
-  max-width: calc((100% - 16px) * 0.2727);
+  width: 100%;
   margin: 0 16px 0 0;
   overflow: hidden;
   border-radius: 2px;
-  ${({ theme }) => theme.breakpoint.sm} {
-    min-width: unset;
-    max-width: unset;
-    width: 100%;
-    margin: 0 0 12px;
+  > picture img {
+    aspect-ratio: 16 / 10;
   }
-
-  picture {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    &::after {
-      content: '';
-      width: 100%;
-      display: block;
-      padding-top: 100%;
-      ${({ theme }) => theme.breakpoint.sm} {
-        padding-top: 52.5%;
-      }
-    }
-
-    img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      background-color: #d8d8d8;
-      transition: all 0.3s ease;
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
-  }
-
-  ${({ theme, $shouldReverseInMobile }) =>
-    $shouldReverseInMobile &&
-    `
-      margin: 0 0 0 16px;
-      ${theme.breakpoint.sm} {
-        margin: 0 0 12px;
-      }
-    `}
-
-  ${({ theme, $shouldHighlightReport, $shouldReverseInMobile }) =>
-    $shouldHighlightReport &&
-    `
-      picture {
-        margin: 0 8px 0 0;
-        ${theme.breakpoint.sm} {
-          margin: 0 0 12px;
-        }
-
-        ${
-          $shouldReverseInMobile &&
-          `
-            margin: 0 0 0 8px;
-            ${theme.breakpoint.sm} {
-              margin: 0 0 12px;
-            }
-          `
-        }
-      }
-    `}
 `
 
 const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
   .title {
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 500;
     text-align: left;
-    margin: 0 0 4px;
-    ${({ theme }) => theme.breakpoint.sm} {
-      margin: 12px 0 0;
-    }
-    p {
-      display: inline;
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 24px;
-      letter-spacing: 0.03em;
-      color: #232333;
-      ${({ theme }) => theme.breakpoint.md} {
-        font-size: 18px;
-        line-height: 27px;
-      }
-      &:hover {
-        color: #388a48;
-        border-bottom: 1.5px solid #388a48;
-      }
-    }
+    margin-top: 12px;
 
     // Display an ellipsis (...) for titles that exceed 4 lines
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 2;
     overflow: hidden;
   }
 
   .summary {
-    margin-top: 20px;
-    margin-bottom: 32px;
+    margin-top: 24px;
+    margin-bottom: 24px;
 
     p {
       font-size: 16px;
@@ -164,19 +84,11 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
 
   // custom style for <DateInfo />
   .time {
-    font-size: 20px;
-    line-height: 28px;
-    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+    margin-top: 12px;
     ${({ theme }) => theme.breakpoint.md} {
-      font-size: 14px;
-      line-height: 21px;
-      .read {
-        padding: 0 0 0 14px;
-        &::before {
-          top: 9px;
-          left: 4px;
-        }
-      }
     }
   }
 
@@ -237,7 +149,8 @@ export default function ArticleListCard({
 
   return (
     <Link
-      href={href}
+      // href={href}
+      href={'#'}
       target="_blank"
       $shouldReverseInMobile={shouldReverseInMobile}
       $shouldHighlightReport={isReportAndShouldHighlight}
@@ -273,9 +186,16 @@ export default function ArticleListCard({
         </div>
         <PostTag
           tags={[
-            { id: '1630', name: '微軟' },
-            { id: '1629', name: '工程師' },
-            { id: '1628', name: '台積電' },
+            { id: '1', name: '標籤1' },
+            { id: '2', name: '標籤2' },
+            { id: '3', name: '標籤3' },
+            { id: '4', name: '標籤44' },
+            { id: '5', name: '標籤5' },
+            { id: '6', name: '標籤6' },
+            { id: '7', name: '標籤7' },
+            { id: '8', name: '標籤8' },
+            { id: '9', name: '標籤9' },
+            { id: '10', name: '標籤10' },
           ]}
         />
       </TextWrapper>
