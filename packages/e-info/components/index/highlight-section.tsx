@@ -144,7 +144,7 @@ const ArticleImage = styled.img`
 const ArticleTitle = styled.h3`
   flex: 1;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   color: ${({ theme }) => theme.colors.secondary[20]};
   line-height: 1.5;
   margin: 0;
