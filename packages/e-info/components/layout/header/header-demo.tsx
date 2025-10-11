@@ -11,11 +11,14 @@ import IconLeftArrow from '~/public/icons/left-arrow.svg'
 import IconMail from '~/public/icons/mail.svg'
 import IconSearch from '~/public/icons/search.svg'
 // Styled Components
-const HeaderContainer = styled.header`
+const HeaderContainer = styled.header<{ $isHidden?: boolean }>`
   background-color: ${({ theme }) => theme.colors.grayscale[100]};
   position: sticky;
   top: 0;
   z-index: 100;
+  transform: ${({ $isHidden }) =>
+    $isHidden ? 'translateY(-100%)' : 'translateY(0)'};
+  transition: transform 0.3s ease-in-out;
 `
 
 const Container = styled.div`
@@ -756,7 +759,9 @@ const Header = () => {
   const [currentSubMenu, setCurrentSubMenu] = useState<
     typeof navigationItems[0] | null
   >(null)
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastScrollY = useRef(0)
 
   const handleCategoryHover = (categoryIndex: number) => {
     // Clear any existing timeout when hovering a new category
@@ -814,6 +819,31 @@ const Header = () => {
     setCurrentSubMenu(null)
   }
 
+  // Handle scroll direction for header hide/show
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+
+      // Only hide/show if scrolled more than 10px to avoid small movements
+      if (Math.abs(currentScrollY - lastScrollY.current) > 10) {
+        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+          // Scrolling down - hide header
+          setIsHeaderHidden(true)
+        } else if (currentScrollY < lastScrollY.current) {
+          // Scrolling up - show header
+          setIsHeaderHidden(false)
+        }
+        lastScrollY.current = currentScrollY
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -824,7 +854,7 @@ const Header = () => {
   }, [])
 
   return (
-    <HeaderContainer>
+    <HeaderContainer $isHidden={isHeaderHidden}>
       <Container>
         <TopSection>
           <HamburgerButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
