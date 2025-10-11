@@ -15,7 +15,8 @@ const HeadingWrapper = styled.section`
 
   ${({ theme }) => theme.breakpoint.xl} {
     padding: 0;
-    max-width: 600px;
+    max-width: none;
+    margin: 60px 0 48px;
   }
 `
 

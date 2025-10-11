@@ -8,19 +8,22 @@ import DateInfo from '../shared/date-info'
 
 const Title = styled.h1`
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 36px;
-  letter-spacing: 0.04em;
-  color: #000928;
+  letter-spacing: 0;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0 0 16px;
+  text-align: center;
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 36px;
-    line-height: 1.5;
-    letter-spacing: 0.03em;
+    font-size: 48px;
+    line-height: 1.25;
   }
 `
 
 const PostTitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 0px 20px;
   max-width: 568px;
   ${({ theme }) => theme.breakpoint.md} {
@@ -28,7 +31,8 @@ const PostTitleWrapper = styled.div`
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    max-width: 600px;
+    max-width: none;
+    padding: 0;
   }
 `
 
@@ -44,13 +48,13 @@ export default function PostTitle({
   const date = formatPostDate(publishTime)
   const readTimeText = formatReadTime(readingTime)
 
-  const shouldShowCategories = Boolean(categories?.length)
+  // const shouldShowCategories = Boolean(categories?.length)
 
   return (
     <PostTitleWrapper>
-      {shouldShowCategories && <PostCategory category={categories} />}
-      {showTitle && <Title>{title}</Title>}
+      {/* {shouldShowCategories && <PostCategory category={categories} />} */}
       <DateInfo date={date} />
+      {showTitle && <Title>{title}</Title>}
     </PostTitleWrapper>
   )
 }

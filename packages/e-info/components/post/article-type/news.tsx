@@ -5,7 +5,8 @@ import styled from 'styled-components'
 import Header from '~/components/layout/header/header-demo'
 // import HeaderGeneral from '~/components/layout/header/header-general'
 import PostContent from '~/components/post/post-content'
-import PostHeading from '~/components/post/post-heading'
+import PostCredit from '~/components/post/post-credit'
+import PostTitle from '~/components/post/post-title'
 import RelatedPosts from '~/components/post/related-post'
 import SideIndex from '~/components/post/side-index'
 import SubscribeButton from '~/components/post/subscribe-button'
@@ -17,20 +18,20 @@ import { ValidPostStyle } from '~/types/common'
 import * as gtag from '~/utils/gtag'
 
 const NewsContainer = styled.div`
-  padding-top: 72px;
+  // padding-top: 72px;
 
-  ${({ theme }) => theme.breakpoint.sm} {
-    padding-top: 86px;
-  }
+  // ${({ theme }) => theme.breakpoint.sm} {
+  //   padding-top: 86px;
+  // }
 `
 const HeroImage = styled.figure`
   width: 100%;
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
 
   //shared-component of @readr-media/react-image
   .readr-media-react-image {
-    max-height: 480px;
+    max-height: 800px;
   }
 
   figcaption {
@@ -43,16 +44,16 @@ const HeroImage = styled.figure`
     ${({ theme }) => theme.breakpoint.md} {
       width: 568px;
       padding: 0;
-      margin: 12px auto 0;
+      margin: 0 auto 0;
     }
 
     ${({ theme }) => theme.breakpoint.xl} {
-      width: 960px;
+      width: 1200px;
     }
   }
 
   ${({ theme }) => theme.breakpoint.lg} {
-    margin: 24px auto 0px;
+    margin: 0px auto 0px;
   }
 `
 
@@ -70,6 +71,34 @@ const ContentWrapper = styled.main`
   ${({ theme }) => theme.breakpoint.xl} {
     display: flex;
     justify-content: center;
+    gap: 48px;
+  }
+`
+
+const TitleSection = styled.section`
+  width: 100%;
+  max-width: 568px;
+  margin: 24px auto;
+
+  ${({ theme }) => theme.breakpoint.lg} {
+    margin: 60px auto 48px;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    max-width: 800px;
+    margin: 28px auto 48px;
+  }
+`
+
+const TwoColumnSection = styled.section`
+  display: block;
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 148px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 `
 
@@ -78,7 +107,7 @@ const Aside = styled.aside`
 
   ${({ theme }) => theme.breakpoint.xl} {
     display: block;
-    width: 100%;
+    // width: 100%;
     padding-bottom: 250px;
   }
 `
@@ -128,14 +157,20 @@ export default function News({
               />
             </Aside>
             <main>
-              <PostHeading showTitle={true} postData={postData} />
+              <TitleSection>
+                <PostTitle showTitle={true} postData={postData} />
+              </TitleSection>
 
-              <PostContent
-                postData={postData}
-                articleType={ValidPostStyle.NEWS}
-                currentSideIndex={currentSideIndex}
-                setCurrentSideIndex={setCurrentSideIndex}
-              />
+              <TwoColumnSection>
+                <PostCredit postData={postData} />
+
+                <PostContent
+                  postData={postData}
+                  articleType={ValidPostStyle.NEWS}
+                  currentSideIndex={currentSideIndex}
+                  setCurrentSideIndex={setCurrentSideIndex}
+                />
+              </TwoColumnSection>
             </main>
             <Aside />
           </ContentWrapper>

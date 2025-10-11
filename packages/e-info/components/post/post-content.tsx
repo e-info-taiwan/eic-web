@@ -51,8 +51,9 @@ const Container = styled.article<StyleProps>`
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    width: 600px;
+    width: 100%;
     max-width: none;
+    margin: 0;
   }
 `
 

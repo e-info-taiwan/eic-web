@@ -24,7 +24,7 @@ const LineStyle = css`
   position: absolute;
   top: 11px;
   left: 4px;
-  width: 20px;
+  width: 14px;
   height: 1px;
   background-color: #575d71;
 
@@ -41,6 +41,12 @@ const PostCreditWrapper = styled.div`
 
   ${({ theme }) => theme.breakpoint.md} {
     padding: 0;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    margin-top: 0;
+    padding: 0;
+    max-width: 180px;
   }
 `
 
@@ -86,26 +92,11 @@ const CreditList = styled.ul`
   }
 `
 
-const CreditTitle = styled.span`
-  display: block;
-  color: #575d71;
-  display: inline;
-  width: fit-content;
-  min-width: 28px;
-`
-
-const CreditName = styled.div`
+const CreditName = styled.span`
   position: relative;
-  display: inline-block;
-  color: #000928;
-  padding: 0 0 0 28px;
-
-  &:before {
-    ${LineStyle}
-    ${({ theme }) => theme.breakpoint.md} {
-      top: 13px;
-    }
-  }
+  font-weight: 400;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
 
   span {
     position: relative;
@@ -120,9 +111,6 @@ const CreditName = styled.div`
       top: 11px;
       left: 8px;
     }
-  }
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 0 0 0 30px;
   }
 `
 
@@ -167,45 +155,38 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
       <CreditList>
         {writers?.length > 0 && (
           <li>
-            <CreditTitle>作者</CreditTitle>
-            <CreditName>{writers}</CreditName>
+            <CreditName>作者—{writers}</CreditName>
           </li>
         )}
         {photographers?.length > 0 && (
           <li>
-            <CreditTitle>攝影</CreditTitle>
-            <CreditName>{photographers}</CreditName>
+            <CreditName>攝影—{photographers}</CreditName>
           </li>
         )}
         {cameraOperators?.length > 0 && (
           <li>
-            <CreditTitle>影音</CreditTitle>
-            <CreditName>{cameraOperators}</CreditName>
+            <CreditName>影音—{cameraOperators}</CreditName>
           </li>
         )}
         {designers?.length > 0 && (
           <li>
-            <CreditTitle>設計</CreditTitle>
-            <CreditName>{designers}</CreditName>
+            <CreditName>設計—{designers}</CreditName>
           </li>
         )}
         {engineers?.length > 0 && (
           <li>
-            <CreditTitle>工程</CreditTitle>
-            <CreditName>{engineers}</CreditName>
+            <CreditName>工程—{engineers}</CreditName>
           </li>
         )}
         {dataAnalysts?.length > 0 && (
           <li>
-            <CreditTitle className="dataAnalysts">資料分析</CreditTitle>
-            <CreditName>{dataAnalysts}</CreditName>
+            <CreditName>資料分析—{dataAnalysts}</CreditName>
           </li>
         )}
 
         {otherWriters && (
           <li>
-            <CreditTitle className="otherWriters">其他作者</CreditTitle>
-            <CreditName>{otherWriters}</CreditName>
+            <CreditName>其他作者—{otherWriters}</CreditName>
           </li>
         )}
       </CreditList>

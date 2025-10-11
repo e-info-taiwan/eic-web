@@ -3,9 +3,10 @@
 import styled from 'styled-components'
 
 const Container = styled.div`
-  font-size: 14px;
-  line-height: 1.5;
-  color: #388a48;
+  font-size: 16px;
+  line-height: 1.8;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 16px;
   }
