@@ -2,7 +2,8 @@ import SharedImage from '@readr-media/react-image'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-import HeaderGeneral from '~/components/layout/header/header-general'
+import Header from '~/components/layout/header/header-demo'
+// import HeaderGeneral from '~/components/layout/header/header-general'
 import PostContent from '~/components/post/post-content'
 import PostHeading from '~/components/post/post-heading'
 import RelatedPosts from '~/components/post/related-post'
@@ -102,7 +103,7 @@ export default function News({
 
   return (
     <>
-      <HeaderGeneral />
+      <Header />
       <NewsContainer>
         <article id="post">
           {shouldShowHeroImage && (
