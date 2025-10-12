@@ -22,6 +22,7 @@ COPY draft-renderer ./packages/draft-renderer/
 # Now copy workspace root configuration (this will be the workspace root)
 COPY root-package.json ./package.json
 COPY yarn.lock ./
+COPY .eslintrc.js ./
 
 # Install dependencies for the entire workspace
 RUN yarn install --frozen-lockfile
@@ -30,7 +31,7 @@ RUN yarn install --frozen-lockfile
 FROM node:${NODE_VERSION} AS builder
 WORKDIR /workspace
 COPY --from=deps /workspace/node_modules ./node_modules
-COPY --from=deps /workspace/package.json /workspace/yarn.lock ./
+COPY --from=deps /workspace/package.json /workspace/yarn.lock /workspace/.eslintrc.js ./
 COPY --from=deps /workspace/packages ./packages
 
 # Copy e-info source (current directory in build context)
