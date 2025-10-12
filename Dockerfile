@@ -9,9 +9,8 @@ RUN apk add --no-cache python3 make g++ \
     && yarn global add node-gyp
 
 # Install dependencies based on the preferred package manager
-COPY ["package.json", "yarn.lock", "./"]
-COPY packages/draft-renderer/package.json ./packages/draft-renderer/
-COPY packages/e-info/package.json ./packages/e-info/
+COPY package.json yarn.lock ./
+COPY packages ./packages
 RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
