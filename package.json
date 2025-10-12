@@ -31,5 +31,10 @@
     "*.{js,ts,jsx,tsx}": [
       "bash -c 'if [[ $0 != *\"packages/draft-renderer\"* ]]; then eslint --cache --fix $0; fi'"
     ]
+  },
+  "resolutions": {
+    "@types/react": "18.0.21",
+    "@types/react-dom": "18.0.6",
+    "@types/styled-components": "5.1.26"
   }
 }
