@@ -42,11 +42,10 @@ type PostProps = {
 }
 
 export default function PostTitle({
-  postData: { title, categories, publishTime, readingTime },
+  postData: { title, publishTime },
   showTitle = true,
 }: PostProps): JSX.Element {
   const date = formatPostDate(publishTime)
-  const readTimeText = formatReadTime(readingTime)
 
   // const shouldShowCategories = Boolean(categories?.length)
 

@@ -152,8 +152,8 @@ export default function ScrollableVideo({
           <ScrollTitle>{postData?.title}</ScrollTitle>
         </HeroImage>
 
-        {shouldShowLeadingEmbedded ? (
-          <LeadingEmbeddedCode embeddedCode={postData?.leadingEmbeddedCode} />
+        {shouldShowLeadingEmbedded && postData?.leadingEmbeddedCode ? (
+          <LeadingEmbeddedCode embeddedCode={postData.leadingEmbeddedCode} />
         ) : (
           <DraftRenderer rawContentBlock={embeddedContentState} />
         )}

@@ -44,8 +44,8 @@ export default function Blank({ postData }: BlankProps): JSX.Element {
 
   return (
     <BlankWrapper>
-      {shouldShowLeadingEmbedded && (
-        <LeadingEmbeddedCode embeddedCode={postData?.leadingEmbeddedCode} />
+      {shouldShowLeadingEmbedded && postData?.leadingEmbeddedCode && (
+        <LeadingEmbeddedCode embeddedCode={postData.leadingEmbeddedCode} />
       )}
 
       {shouldShowContentBlock && (

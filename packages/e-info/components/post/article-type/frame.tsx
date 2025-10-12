@@ -243,9 +243,9 @@ export default function Frame({
             )}
           </HeroImage>
         )}
-        {shouldShowLeadingEmbedded && (
+        {shouldShowLeadingEmbedded && postData?.leadingEmbeddedCode && (
           <LeadingEmbeddedCode
-            embeddedCode={postData?.leadingEmbeddedCode}
+            embeddedCode={postData.leadingEmbeddedCode}
             backgroundColor="#f6f6f5"
           />
         )}

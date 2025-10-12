@@ -19,7 +19,7 @@ export function getHref({
   style,
   id,
   slug,
-}: Partial<Pick<GenericPost, 'style' | 'id' | 'slug'>>): string {
+}: Partial<Pick<GenericPost, 'style' | 'id'> & { slug: string }>): string {
   switch (style) {
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
@@ -41,7 +41,7 @@ export function getUid({
   style,
   id,
   slug,
-}: Partial<Pick<GenericPost, 'style' | 'id' | 'slug'>>): string {
+}: Partial<Pick<GenericPost, 'style' | 'id'> & { slug: string }>): string {
   switch (style) {
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
@@ -122,18 +122,12 @@ export function convertPostToArticleCard(
   images?: ResizedImages,
   imagesWebP?: ResizedImages
 ): ArticleCard {
-  const {
-    id = 'no-id',
-    title = '',
-    slug = '',
-    style,
-    publishTime = '',
-  } = post ?? {}
+  const { id = 'no-id', title = '', style, publishTime = '' } = post ?? {}
 
   return {
-    id: getUid({ style, id, slug }),
+    id: getUid({ style, id }),
     title,
-    href: getHref({ style, id, slug }),
+    href: getHref({ style, id }),
     date: formatPostDate(publishTime),
     summary: '',
     isReport: isReport(style),

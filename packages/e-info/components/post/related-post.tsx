@@ -19,14 +19,7 @@ const Wrapper = styled.div`
 
 type RelatedReport = Pick<
   Post,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'style'
-  | 'publishTime'
-  | 'readingTime'
-  | 'heroImage'
-  | 'ogImage'
+  'id' | 'title' | 'style' | 'publishTime' | 'heroImage' | 'ogImage'
 > & {
   name: string
   link: string
@@ -50,7 +43,6 @@ export default function RelatedPost({
       link: getHref({
         style: post.style,
         id: post.id,
-        slug: post.slug,
       }),
     }))
 
