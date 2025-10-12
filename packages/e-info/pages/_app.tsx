@@ -87,43 +87,43 @@ MyApp.getInitialProps = async (context: AppContext) => {
   const categoriesAndRelatedPosts: Category[] = []
   const categoryList: NavigationCategory[] = []
 
-  try {
-    {
-      // Fetch header data from the JSON file
-      const { data: jsonCategories } = await axios.get(HEADER_JSON_URL)
+  // try {
+  //   {
+  //     // Fetch header data from the JSON file
+  //     const { data: jsonCategories } = await axios.get(HEADER_JSON_URL)
 
-      const slicedCategories = jsonCategories.categories
-        .slice(0, 6)
-        .map((category: Category) => {
-          return {
-            ...category,
-            posts: [...(category.posts || []).slice(0, 5)],
-          }
-        })
+  //     const slicedCategories = jsonCategories.categories
+  //       .slice(0, 6)
+  //       .map((category: Category) => {
+  //         return {
+  //           ...category,
+  //           posts: [...(category.posts || []).slice(0, 5)],
+  //         }
+  //       })
 
-      // Use `slicedCategories` if defined, otherwise use `DEFAULT_HEADER_CATEGORY_LIST`
-      slicedCategories
-        ? categoriesAndRelatedPosts.push(...slicedCategories)
-        : categoriesAndRelatedPosts.push(...DEFAULT_HEADER_CATEGORY_LIST)
-    }
+  //     // Use `slicedCategories` if defined, otherwise use `DEFAULT_HEADER_CATEGORY_LIST`
+  //     slicedCategories
+  //       ? categoriesAndRelatedPosts.push(...slicedCategories)
+  //       : categoriesAndRelatedPosts.push(...DEFAULT_HEADER_CATEGORY_LIST)
+  //   }
 
-    {
-      // Fetch all categories
-      let data: { categories: Category[] }
-      const response = await axios.get<{ categories: Category[] }>(
-        LATEST_POSTS_IN_CATEGORIES_URL
-      )
-      data = response.data
+  //   {
+  //     // Fetch all categories
+  //     let data: { categories: Category[] }
+  //     const response = await axios.get<{ categories: Category[] }>(
+  //       LATEST_POSTS_IN_CATEGORIES_URL
+  //     )
+  //     data = response.data
 
-      const sortCategories =
-        sortByTimeStamp(data.categories) || data.categories || []
+  //     const sortCategories =
+  //       sortByTimeStamp(data.categories) || data.categories || []
 
-      categoryList.push(...sortCategories)
-    }
-  } catch (error) {
-    const err = error as Error
-    console.error(JSON.stringify({ severity: 'ERROR', message: err.stack }))
-  }
+  //     categoryList.push(...sortCategories)
+  //   }
+  // } catch (error) {
+  //   const err = error as Error
+  //   console.error(JSON.stringify({ severity: 'ERROR', message: err.stack }))
+  // }
 
   return {
     ...ctx,

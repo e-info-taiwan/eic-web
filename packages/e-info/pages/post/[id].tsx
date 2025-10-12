@@ -123,18 +123,11 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     {
       // fetch post data by id
       const postId = params?.id
-      console.log('#### before', {
-        query: postQuery,
-        variables: { id: postId },
-      })
+
       const { data, errors: gqlErrors } = await client.query({
         query: postQuery,
         variables: { id: postId },
       })
-
-      console.log('####')
-      console.log(JSON.stringify(data, null, 2))
-      console.log('####')
 
       if (gqlErrors) {
         const annotatingError = errors.helpers.wrap(
