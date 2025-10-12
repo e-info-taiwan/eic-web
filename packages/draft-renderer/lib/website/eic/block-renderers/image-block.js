@@ -38,12 +38,20 @@ function ImageBlock(props) {
     resized = _entity$getData$resiz === void 0 ? {} : _entity$getData$resiz,
     _entity$getData$resiz2 = _entity$getData.resizedWebp,
     resizedWebp = _entity$getData$resiz2 === void 0 ? {} : _entity$getData$resiz2,
-    url = _entity$getData.url;
+    url = _entity$getData.url,
+    src = _entity$getData.src;
+
+  // Check if resized images exist, otherwise fallback to src
+  var hasResizedImages = resized && Object.keys(resized).length > 0;
+  var imagesToUse = hasResizedImages ? resized : src ? {
+    original: src
+  } : {};
+  var webpImagesToUse = resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {};
   var imgBlock = /*#__PURE__*/_react["default"].createElement(Figure, null, /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {
-    images: resized,
-    imagesWebP: resizedWebp,
+    images: imagesToUse,
+    imagesWebP: webpImagesToUse,
     defaultImage: defaultImage,
-    alt: name,
+    alt: name || desc,
     rwd: {
       mobile: '100vw',
       tablet: '608px',
