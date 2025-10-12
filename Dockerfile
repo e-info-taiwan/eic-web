@@ -23,6 +23,7 @@ COPY draft-renderer ./packages/draft-renderer/
 COPY root-package.json ./package.json
 COPY yarn.lock ./
 COPY .eslintrc.js ./
+COPY prettier.config.js ./
 
 # Install dependencies for the entire workspace
 RUN yarn install --frozen-lockfile
@@ -31,11 +32,15 @@ RUN yarn install --frozen-lockfile
 FROM node:${NODE_VERSION} AS builder
 WORKDIR /workspace
 COPY --from=deps /workspace/node_modules ./node_modules
-COPY --from=deps /workspace/package.json /workspace/yarn.lock /workspace/.eslintrc.js ./
+COPY --from=deps /workspace/package.json /workspace/yarn.lock /workspace/.eslintrc.js /workspace/prettier.config.js ./
 COPY --from=deps /workspace/packages ./packages
 
 # Copy e-info source (current directory in build context)
+# This will copy everything including the draft-renderer that cloudbuild copied here
 COPY . ./packages/e-info/
+
+# Remove the draft-renderer from e-info directory since it's already in packages/
+RUN rm -rf ./packages/e-info/draft-renderer
 
 # Build draft-renderer first
 RUN cd packages/draft-renderer && yarn build
