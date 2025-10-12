@@ -5,6 +5,14 @@ module.exports = {
       rootDir: 'packages/*/',
     },
   },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   extends: ['plugin:prettier/recommended'],
   plugins: ['prettier', 'simple-import-sort'],
   rules: {
