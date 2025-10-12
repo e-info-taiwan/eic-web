@@ -59,6 +59,11 @@ ENV NODE_ENV production
 # Note: In this monorepo setup, standalone output flattens to e-info's structure
 COPY --from=builder /workspace/packages/e-info/.next/standalone ./
 
+# Debug: Check node_modules and next module
+RUN ls -la node_modules/ | head -20 && \
+    ls -la node_modules/next 2>&1 | head -10 || echo "next not found in node_modules" && \
+    echo "Checking package.json:" && cat package.json
+
 # Copy static and public directories to the correct locations
 COPY --from=builder /workspace/packages/e-info/.next/static ./.next/static
 COPY --from=builder /workspace/packages/e-info/public ./public
