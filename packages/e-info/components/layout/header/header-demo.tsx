@@ -757,7 +757,7 @@ const Header = () => {
     number | null
   >(null)
   const [currentSubMenu, setCurrentSubMenu] = useState<
-    typeof navigationItems[0] | null
+    (typeof navigationItems)[0] | null
   >(null)
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -804,7 +804,7 @@ const Header = () => {
     setHoveredSecondaryCategory(null)
   }
 
-  const handleMobileMenuItemClick = (item: typeof navigationItems[0]) => {
+  const handleMobileMenuItemClick = (item: (typeof navigationItems)[0]) => {
     if (item.subCategories && item.subCategories.length > 0) {
       setCurrentSubMenu(item)
     }
