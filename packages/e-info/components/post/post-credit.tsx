@@ -119,33 +119,22 @@ type PostProps = {
 }
 
 export default function PostCredit({ postData }: PostProps): JSX.Element {
-  function renderNames(authors: Author[]) {
-    return authors?.map((author) => (
+  function renderAuthor(author: Author | null | undefined) {
+    if (!author) return null
+    return (
       <span key={author.id}>
-        <Link key={author.id} href={`/author/${author.id}`}>
-          {author.name}
-        </Link>
+        <Link href={`/author/${author.id}`}>{author.name}</Link>
       </span>
-    ))
+    )
   }
 
-  const writers = renderNames(
-    postData?.manualOrderOfWriters ?? postData?.writers
-  )
-  const photographers = renderNames(
-    postData?.manualOrderOfPhotographers ?? postData?.photographers
-  )
-  const cameraOperators = renderNames(
-    postData?.manualOrderOfCameraOperators ?? postData?.cameraOperators
-  )
-  const designers = renderNames(
-    postData?.manualOrderOfDesigners ?? postData?.designers
-  )
-  const engineers = renderNames(
-    postData?.manualOrderOfEngineers ?? postData?.engineers
-  )
-  const dataAnalysts = renderNames(
-    postData?.manualOrderOfDataAnalysts ?? postData?.dataAnalysts
+  // Collect all authors (author1, author2, author3)
+  const authors = [
+    postData?.author1,
+    postData?.author2,
+    postData?.author3,
+  ].filter(
+    (author): author is Author => author !== null && author !== undefined
   )
 
   const otherWriters = postData?.otherByline
@@ -153,34 +142,17 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
   return (
     <PostCreditWrapper>
       <CreditList>
-        {writers?.length > 0 && (
+        {authors.length > 0 && (
           <li>
-            <CreditName>作者—{writers}</CreditName>
-          </li>
-        )}
-        {photographers?.length > 0 && (
-          <li>
-            <CreditName>攝影—{photographers}</CreditName>
-          </li>
-        )}
-        {cameraOperators?.length > 0 && (
-          <li>
-            <CreditName>影音—{cameraOperators}</CreditName>
-          </li>
-        )}
-        {designers?.length > 0 && (
-          <li>
-            <CreditName>設計—{designers}</CreditName>
-          </li>
-        )}
-        {engineers?.length > 0 && (
-          <li>
-            <CreditName>工程—{engineers}</CreditName>
-          </li>
-        )}
-        {dataAnalysts?.length > 0 && (
-          <li>
-            <CreditName>資料分析—{dataAnalysts}</CreditName>
+            <CreditName>
+              作者—
+              {authors.map((author, index) => (
+                <span key={author.id}>
+                  {index > 0 && ' '}
+                  <Link href={`/author/${author.id}`}>{author.name}</Link>
+                </span>
+              ))}
+            </CreditName>
           </li>
         )}
 

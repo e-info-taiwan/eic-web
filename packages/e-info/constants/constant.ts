@@ -27,6 +27,10 @@ const CATEGORY_SLUGS = {
 }
 
 const POST_STYLES: string[] = [
+  // New API styles
+  ValidPostStyle.DEFAULT,
+  ValidPostStyle.EDITOR,
+  // Legacy styles
   ValidPostStyle.NEWS,
   ValidPostStyle.FRAME,
   ValidPostStyle.BLANK,

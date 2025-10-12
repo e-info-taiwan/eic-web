@@ -13,57 +13,46 @@ import type {
 } from '~/types/common'
 import { convertToStringList } from '~/utils/common'
 
-export type Category = Pick<GenericCategory, 'id' | 'title' | 'slug'>
+export type Category = {
+  id: string
+  name: string
+  slug: string
+}
 
 export type Tag = Pick<GenericTag, 'id' | 'name'>
+
+export type Section = {
+  id: string
+  name: string
+  slug: string
+}
+
+export type Topic = {
+  id: string
+  title: string
+}
 
 export type PostDetail = Override<
   Post &
     Pick<
       GenericPost,
-      | 'heroCaption'
-      | 'content'
-      | 'summary'
-      | 'actionList'
-      | 'citation'
-      | 'manualOrderOfWriters'
-      | 'manualOrderOfPhotographers'
-      | 'manualOrderOfCameraOperators'
-      | 'manualOrderOfDesigners'
-      | 'manualOrderOfEngineers'
-      | 'manualOrderOfDataAnalysts'
-      | 'writers'
-      | 'photographers'
-      | 'cameraOperators'
-      | 'designers'
-      | 'engineers'
-      | 'dataAnalysts'
-      | 'otherByline'
-      | 'relatedPosts'
-      | 'categories'
-      | 'tags'
-      | 'state'
-      | 'ogDescription'
-      | 'leadingEmbeddedCode'
+      'heroCaption' | 'content' | 'subtitle' | 'otherByline' | 'state'
     >,
   {
     heroImage: PhotoWithResizedOnly | null
     ogImage: PhotoWithResizedOnly | null
-    manualOrderOfWriters: Author[]
-    manualOrderOfPhotographers: Author[]
-    manualOrderOfCameraOperators: Author[]
-    manualOrderOfDesigners: Author[]
-    manualOrderOfEngineers: Author[]
-    manualOrderOfDataAnalysts: Author[]
-    writers: Author[]
-    photographers: Author[]
-    cameraOperators: Author[]
-    designers: Author[]
-    engineers: Author[]
-    dataAnalysts: Author[]
+    author1: Author | null
+    author2: Author | null
+    author3: Author | null
+    section: Section | null
+    category: Category | null
+    topic: Topic | null
     relatedPosts: Post[]
-    categories: Category[]
     tags: Tag[]
+    brief: any // JSON type for draft-js content
+    briefApiData: any // JSON type for API format
+    contentApiData: any // JSON type for API format
+    citations: string | null
   }
 >
 
@@ -73,60 +62,54 @@ const post = gql`
   query ($id: ID!) {
     posts ( where: {
       state: { equals: "published" }
-      id: { equals: $id }  
+      id: { equals: $id }
       style: {
         in: [${convertToStringList(postStyles)}]
-      }       
+      }
       })  {
       ...PostFields
-      
+
       state
+      subtitle
       content
-      summary
-      actionList
-      citation
+      contentApiData
+      brief
+      briefApiData
       heroCaption
-      ogDescription
-      categories {
+      citations
+
+      section {
         id
-        title
+        name
         slug
       }
-      manualOrderOfWriters
-      manualOrderOfPhotographers
-      manualOrderOfCameraOperators 
-      manualOrderOfDesigners 
-      manualOrderOfEngineers 
-      manualOrderOfDataAnalysts 
-      writers {
+      category {
+        id
+        name
+        slug
+      }
+      topic {
+        id
+        title
+      }
+
+      author1 {
         ...AuthorFields
       }
-      photographers {
+      author2 {
         ...AuthorFields
       }
-      cameraOperators  {
-        ...AuthorFields
-      }
-      designers {
-        ...AuthorFields
-      }
-      engineers {
-        ...AuthorFields
-      }
-      dataAnalysts {
+      author3 {
         ...AuthorFields
       }
 
-      leadingEmbeddedCode
       otherByline
-      tags ( 
-        where: { 
-          state: { equals: "active" } 
-        } 
-      ) {
+
+      tags {
         id
         name
       }
+
       relatedPosts (
         where: {
            state: { equals: "published" }

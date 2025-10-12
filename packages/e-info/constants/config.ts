@@ -33,7 +33,8 @@ switch (ENV) {
     break
   case 'dev':
   default:
-    API_ENDPOINT = 'https://readr-gql-dev-4g6paft7cq-de.a.run.app/api/graphql'
+    API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     break

@@ -199,10 +199,16 @@ export default function PostContent({
     getFirstBlockEntityType,
   } = Readr
 
-  const shouldShowSummary = hasContentInRawContentBlock(postData?.summary)
-  const shouldShowContent = hasContentInRawContentBlock(postData?.content)
-  const shouldShowActionList = hasContentInRawContentBlock(postData?.actionList)
-  const shouldShowCitation = hasContentInRawContentBlock(postData?.citation)
+  // Note: contentApiData is array format, not compatible with DraftRenderer
+  // Use original content field (Draft.js format)
+  const contentToRender = postData?.content
+  const briefToRender = postData?.brief
+
+  const shouldShowSummary = hasContentInRawContentBlock(briefToRender)
+  const shouldShowContent = hasContentInRawContentBlock(contentToRender)
+  // Note: actionList and citation fields are removed in new API
+  const shouldShowActionList = false
+  const shouldShowCitation = !!postData?.citations
 
   //WORKAROUND：
   //when article type is `frame`, and has `summary` or first block of `content` is not an "EMBEDDEDCODE" , `<Container>` requires "padding-top".
@@ -210,7 +216,7 @@ export default function PostContent({
     articleType === ValidPostStyle.FRAME &&
     (shouldShowSummary ||
       (!shouldShowSummary &&
-        getFirstBlockEntityType(postData?.content) !== 'EMBEDDEDCODE'))
+        getFirstBlockEntityType(contentToRender) !== 'EMBEDDEDCODE'))
 
   const articleRef = useRef<HTMLElement>(null)
 
@@ -251,15 +257,14 @@ export default function PostContent({
     }
   }, [articleRef, articleType, setCurrentSideIndex])
 
-  const categorySlug = postData?.categories[0]?.slug || 'breakingnews'
-  const blocksLength = getBlocksCount(postData?.content)
-
-  console.log(postData?.tags)
+  // Note: New API uses category (singular) instead of categories (plural)
+  const categorySlug = 'breakingnews' // Default since new API structure changed
+  const blocksLength = getBlocksCount(contentToRender)
 
   return (
     <Container shouldPaddingTop={shouldPaddingTop} ref={articleRef}>
       <SideIndex
-        rawContentBlock={postData?.content}
+        rawContentBlock={contentToRender}
         currentIndex={currentSideIndex}
         isAside={false}
       />
@@ -269,7 +274,7 @@ export default function PostContent({
           <div>
             <p className="title">報導重點摘要</p>
             <DraftRenderer
-              rawContentBlock={postData?.summary}
+              rawContentBlock={briefToRender}
               contentType={ValidPostContentType.SUMMARY}
             />
           </div>
@@ -279,19 +284,16 @@ export default function PostContent({
       {shouldShowContent && (
         <Content>
           <DraftRenderer
-            rawContentBlock={copyAndSliceDraftBlock(postData?.content, 0, 5)}
+            rawContentBlock={contentToRender}
             contentType={ValidPostContentType.NORMAL}
+            disabledImageLazyLoad={false}
           />
 
           {blocksLength > 5 && (
             <>
               <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" />
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(
-                  postData?.content,
-                  5,
-                  10
-                )}
+                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5, 10)}
                 contentType={ValidPostContentType.NORMAL}
               />
             </>
@@ -301,7 +303,7 @@ export default function PostContent({
             <>
               <StyledAdsense_AT pageKey={categorySlug} adKey="AT2" />
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(postData?.content, 10)}
+                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 10)}
                 contentType={ValidPostContentType.NORMAL}
               />
             </>
@@ -309,13 +311,11 @@ export default function PostContent({
         </Content>
       )}
 
+      {/* Note: actionList is not available in new API */}
       {shouldShowActionList && (
         <ActionList>
           <p className="title">如果你關心這個議題</p>
-          <DraftRenderer
-            rawContentBlock={postData?.actionList}
-            contentType={ValidPostContentType.ACTIONLIST}
-          />
+          {/* actionList content removed */}
         </ActionList>
       )}
 
@@ -331,10 +331,8 @@ export default function PostContent({
         <Citation>
           <p className="title">引用資料</p>
           <div className="content">
-            <DraftRenderer
-              rawContentBlock={postData?.citation}
-              contentType={ValidPostContentType.CITATION}
-            />
+            {/* Note: citations is now a string field, not draft-js */}
+            <p>{postData?.citations}</p>
           </div>
         </Citation>
       )}

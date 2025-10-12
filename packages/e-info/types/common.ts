@@ -29,6 +29,10 @@ export type PhotoWithResizedOnly = Pick<GenericPhoto, 'resized' | 'resizedWebp'>
 // ref: https://github.com/mirror-media/Lilith/blob/95bb4f8e9b43bd60515e1ba5b9b77d512f880bca/packages/readr/lists/Post.ts#L139
 /* eslint-disable no-unused-vars */
 export enum ValidPostStyle {
+  // New API styles
+  DEFAULT = 'default',
+  EDITOR = 'editor',
+  // Legacy styles (kept for backward compatibility)
   NEWS = 'news',
   FRAME = 'frame',
   BLANK = 'blank',
@@ -85,41 +89,28 @@ export type GenericProject = {
 
 export type GenericPost = {
   id: string
-  slug: string
   style: ValidPostStyle
-  name: string
-  title: string // alias to `name`
+  title: string
   subtitle: string
-  sortOrder: number
   heroImage: GenericPhoto | null
   ogImage: GenericPhoto | null
-  ogDescription: string | null
   heroCaption: string
   content: RawDraftContentState // draft-renderer JSON
-  summary: RawDraftContentState // draft-renderer JSON
-  actionList: RawDraftContentState // draft-renderer JSON
-  citation: RawDraftContentState // draft-renderer JSON
-  categories: GenericCategory[]
-  writers: GenericAuthor[] //作者
-  photographers: GenericAuthor[] //攝影
-  cameraOperators: GenericAuthor[] //影音
-  designers: GenericAuthor[] //設計
-  engineers: GenericAuthor[] //工程
-  dataAnalysts: GenericAuthor[] //資料分析
-  manualOrderOfWriters: GenericAuthor[] //作者 JSON
-  manualOrderOfPhotographers: GenericAuthor[] //攝影 JSON
-  manualOrderOfCameraOperators: GenericAuthor[] //影音 JSON
-  manualOrderOfDesigners: GenericAuthor[] //設計 JSON
-  manualOrderOfEngineers: GenericAuthor[] //工程 JSON
-  manualOrderOfDataAnalysts: GenericAuthor[] //資料分析 JSON
-  otherByline: string //作者（其他）
+  brief: RawDraftContentState // draft-renderer JSON (similar to summary)
+  contentApiData: RawDraftContentState // draft-renderer JSON
+  briefApiData: RawDraftContentState // draft-renderer JSON
+  citations: string // 引用來源
+  author1: GenericAuthor | null
+  author2: GenericAuthor | null
+  author3: GenericAuthor | null
+  otherByline: string // 作者（其他）
+  section: { id: string; name: string; slug: string } | null
+  category: { id: string; name: string; slug: string } | null
+  topic: { id: string; title: string } | null
   relatedPosts: GenericPost[]
-  manualOrderOfRelatedPosts: unknown // it is hard to describe JSON type
   publishTime: string
-  readingTime: number
   tags: GenericTag[]
   state: string
-  leadingEmbeddedCode: string
 }
 
 export type GenericCategory = {

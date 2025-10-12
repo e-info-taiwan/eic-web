@@ -14,14 +14,7 @@ import {
 export type Post = Override<
   Pick<
     GenericPost,
-    | 'id'
-    | 'slug'
-    | 'style'
-    | 'title'
-    | 'publishTime'
-    | 'readingTime'
-    | 'heroImage'
-    | 'ogImage'
+    'id' | 'style' | 'title' | 'publishTime' | 'heroImage' | 'ogImage'
   >,
   {
     heroImage: PhotoWithResizedOnly | null
@@ -32,9 +25,8 @@ export type Post = Override<
 export const postFragment = gql`
   fragment PostFields on Post {
     id
-    slug
     style
-    title: name
+    title
     heroImage {
       resized {
         ...ResizedImagesField
@@ -52,7 +44,6 @@ export const postFragment = gql`
       }
     }
     publishTime
-    readingTime
   }
   ${resizeImagesFragment}
   ${resizeWebpImagesFragment}
