@@ -204,6 +204,27 @@ export default function PostContent({
   const contentToRender = postData?.content
   const briefToRender = postData?.brief
 
+  // Debug: Log content structure to check image data
+  if (typeof window !== 'undefined' && contentToRender) {
+    console.log('=== DEBUG: Post Content Structure ===')
+    console.log('Post ID:', postData?.id)
+    console.log('Full content:', JSON.stringify(contentToRender, null, 2))
+
+    // Find and log image entities
+    if (contentToRender.entityMap) {
+      Object.entries(contentToRender.entityMap).forEach(
+        ([key, entity]: [string, any]) => {
+          if (entity.type === 'IMAGE') {
+            console.log(
+              `Image entity ${key}:`,
+              JSON.stringify(entity.data, null, 2)
+            )
+          }
+        }
+      )
+    }
+  }
+
   const shouldShowSummary = hasContentInRawContentBlock(briefToRender)
   const shouldShowContent = hasContentInRawContentBlock(contentToRender)
   // Note: actionList and citation fields are removed in new API
