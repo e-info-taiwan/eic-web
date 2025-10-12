@@ -1,9 +1,9 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client'
 
 import { EDITOOLS_API_ENDPOINT } from '~/constants/config'
 
 const editoolsClient = new ApolloClient({
-  uri: EDITOOLS_API_ENDPOINT,
+  link: new HttpLink({ uri: EDITOOLS_API_ENDPOINT }),
   cache: new InMemoryCache(),
   defaultOptions: {
     query: {

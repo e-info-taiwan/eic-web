@@ -1,16 +1,12 @@
 import { Eic } from '@eic-web/draft-renderer'
-import { DonateButton } from '@readr-media/react-component'
 import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import SideIndex from '~/components/post/side-index'
-import PostTag from '~/components/post/tag'
 import MediaLinkList from '~/components/shared/media-link'
-import { DONATION_PAGE_URL } from '~/constants/environment-variables'
 import { PostDetail } from '~/graphql/query/post'
 import { ValidPostContentType, ValidPostStyle } from '~/types/common'
-import * as gtag from '~/utils/gtag'
 import { copyAndSliceDraftBlock, getBlocksCount } from '~/utils/post'
 
 const defaultMarginBottom = css`
@@ -30,14 +26,6 @@ const MobileMediaLink = styled(MediaLinkList)`
   }
 `
 
-const DesktopMediaLink = styled(MediaLinkList)`
-  display: none;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    display: flex;
-    margin: 0;
-  }
-`
 
 const Container = styled.article<StyleProps>`
   width: 100%;
@@ -141,23 +129,6 @@ const Citation = styled.article`
     ${({ theme }) => theme.breakpoint.md} {
       padding: 16px 32px;
     }
-  }
-`
-
-const TagGroup = styled.div`
-  width: 100%;
-  max-width: 600px;
-  margin-bottom: 48px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 0;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-bottom: 60px;
   }
 `
 
@@ -340,10 +311,6 @@ export default function PostContent({
         </ActionList>
       )}
 
-      <DonateButton
-        href={DONATION_PAGE_URL}
-        onClick={() => gtag.sendEvent('post', 'click', 'post-donate')}
-      />
       <StyledAdsense_E1 pageKey={categorySlug} adKey="E1" />
 
       <MobileMediaLink />
@@ -357,11 +324,6 @@ export default function PostContent({
           </div>
         </Citation>
       )}
-
-      <TagGroup>
-        <PostTag tags={postData?.tags} />
-        <DesktopMediaLink />
-      </TagGroup>
     </Container>
   )
 }

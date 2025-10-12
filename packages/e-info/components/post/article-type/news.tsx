@@ -9,7 +9,6 @@ import PostCredit from '~/components/post/post-credit'
 import PostTitle from '~/components/post/post-title'
 import RelatedPosts from '~/components/post/related-post'
 import SideIndex from '~/components/post/side-index'
-import SubscribeButton from '~/components/post/subscribe-button'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { Post } from '~/graphql/fragments/post'
 import type { PostDetail } from '~/graphql/query/post'
@@ -164,24 +163,24 @@ export default function News({
               <TwoColumnSection>
                 <PostCredit postData={postData} />
 
-                <PostContent
-                  postData={postData}
-                  articleType={ValidPostStyle.NEWS}
-                  currentSideIndex={currentSideIndex}
-                  setCurrentSideIndex={setCurrentSideIndex}
-                />
+                <div>
+                  <PostContent
+                    postData={postData}
+                    articleType={ValidPostStyle.NEWS}
+                    currentSideIndex={currentSideIndex}
+                    setCurrentSideIndex={setCurrentSideIndex}
+                  />
+                  <RelatedPosts
+                    relatedPosts={postData?.relatedPosts}
+                    latestPosts={latestPosts}
+                  />
+                </div>
               </TwoColumnSection>
             </main>
             <Aside />
           </ContentWrapper>
         </article>
 
-        <SubscribeButton />
-
-        <RelatedPosts
-          relatedPosts={postData?.relatedPosts}
-          latestPosts={latestPosts}
-        />
         <HiddenAnchor ref={anchorRef} />
       </NewsContainer>
     </>
