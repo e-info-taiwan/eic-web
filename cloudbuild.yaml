@@ -9,9 +9,10 @@ steps:
       - '-c'
       - |
         # Copy root files and workspace packages for monorepo build
-        cp yarn.lock Dockerfile .dockerignore .eslintrc.js prettier.config.js packages/$_TARGET_PACKAGE/
-        # Copy root package.json separately to avoid overwriting package's own package.json
+        cp yarn.lock Dockerfile .dockerignore prettier.config.js packages/$_TARGET_PACKAGE/
+        # Copy root configs separately to avoid overwriting package's own configs
         cp package.json packages/$_TARGET_PACKAGE/root-package.json
+        cp .eslintrc.js packages/$_TARGET_PACKAGE/root-eslintrc.js
         cp -r packages/draft-renderer packages/$_TARGET_PACKAGE/
         cd packages/$_TARGET_PACKAGE
         printenv > .env.local

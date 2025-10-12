@@ -22,7 +22,7 @@ COPY draft-renderer ./packages/draft-renderer/
 # Now copy workspace root configuration (this will be the workspace root)
 COPY root-package.json ./package.json
 COPY yarn.lock ./
-COPY .eslintrc.js ./
+COPY root-eslintrc.js ./.eslintrc.js
 COPY prettier.config.js ./
 
 # Install dependencies for the entire workspace
