@@ -1,5 +1,8 @@
 // under construction
 
+/* eslint-disable no-unused-vars */
+// TODO: Remove this eslint-disable when GraphQL queries are migrated to new API
+
 // @ts-ignore: no definition
 import errors from '@twreporter/errors'
 import axios from 'axios'
@@ -7,7 +10,8 @@ import type { GetServerSideProps } from 'next'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { getGqlClient } from '~/apollo-client'
+// TODO: Re-enable when migrating to new API
+// import { getGqlClient } from '~/apollo-client'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import CollaborationSection from '~/components/index/collaboration-section'
 import EditorChoiceSection from '~/components/index/editor-choice-section'
@@ -39,8 +43,9 @@ import type {
 } from '~/graphql/query/collaboration'
 import { collaborations as collaborationsQuery } from '~/graphql/query/collaboration'
 import { featuredCollaborations as featuredCollaborationsQuery } from '~/graphql/query/collaboration'
-import type { DataSetWithCount } from '~/graphql/query/dataset'
-import { dataSets as dataSetsQuery } from '~/graphql/query/dataset'
+// TODO: Re-enable when migrating to new API
+// import type { DataSetWithCount } from '~/graphql/query/dataset'
+// import { dataSets as dataSetsQuery } from '~/graphql/query/dataset'
 import type { EditorChoice } from '~/graphql/query/editor-choice'
 import type { EditorCard } from '~/graphql/query/editor-choice'
 import { editorChoices as editorChoicesQuery } from '~/graphql/query/editor-choice'
@@ -53,7 +58,8 @@ import { ValidPostStyle } from '~/types/common'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
 import type { CollaborationItem } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
-import { convertDataSet } from '~/utils/data-set'
+// TODO: Re-enable when migrating to new API
+// import { convertDataSet } from '~/utils/data-set'
 import * as gtag from '~/utils/gtag'
 import { sortByTimeStamp } from '~/utils/index'
 import { convertPostToArticleCard } from '~/utils/post'
@@ -166,7 +172,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 }) => {
   setCacheControl(res)
 
-  const client = getGqlClient()
+  // TODO: Re-enable when migrating to new API
+  // const client = getGqlClient()
 
   let editorChoices: EditorCard[] = []
   let categories: NavigationCategoryWithArticleCards[] = []
@@ -190,6 +197,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let dataSetCount: number = 0
 
   try {
+    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
+    /*
     {
       // fetch editor choice data
       const { data, errors: gqlErrors } = await client.query<{
@@ -252,7 +261,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         }
       })
     }
-
+    */
+    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
+    /*
     {
       {
         // fetch categories and related latest reports
@@ -313,7 +324,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         )
       }
     }
-
+    */
+    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
+    /*
     {
       // fetch featured post data
       const { data, errors: gqlErrors } = await client.query<{
@@ -353,7 +366,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         }
       })
     }
-
+    */
     /**
      * this section is disabled since <CollaborationQuoteSlider /> is replaced by <CollaborationHighlight />,
      * see <CollaborationSection />
@@ -379,7 +392,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       quotes = data.quotes
     }
     */
-
+    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
+    /*
     {
       // fetch collaboration items
       const { data, errors: gqlErrors } = await client.query<{
@@ -426,7 +440,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         }
       })
     }
-
+    */
+    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
+    /*
     {
       // fetch featured collaboration (collaboration banner)
       const { data, errors: gqlErrors } = await client.query<{
@@ -448,7 +464,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
       featuredCollaboration = data.collaborations[0] ?? {}
     }
-
+    */
+    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
+    /*
     {
       // fetch open data items
       const { data, error: gqlErrors } = await client.query<DataSetWithCount>({
@@ -474,6 +492,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       dataSetItems = dataSets.map(convertDataSet)
       dataSetCount = count ?? dataSetItems.length
     }
+    */
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
