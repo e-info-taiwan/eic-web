@@ -54,11 +54,11 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-COPY --from=builder /workspace/packages/e-info/public ./public
-
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
+# In monorepo, standalone output includes the full workspace structure
 COPY --from=builder /workspace/packages/e-info/.next/standalone ./
-COPY --from=builder /workspace/packages/e-info/.next/static ./.next/static
+COPY --from=builder /workspace/packages/e-info/.next/static ./packages/e-info/.next/static
+COPY --from=builder /workspace/packages/e-info/public ./packages/e-info/public
 
-CMD ["node", "server.js"]
+CMD ["node", "packages/e-info/server.js"]
