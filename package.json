@@ -28,6 +28,8 @@
     "prettier": "^2.7.1"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": "eslint --cache --fix"
+    "*.{js,ts,jsx,tsx}": [
+      "bash -c 'if [[ $0 != *\"packages/draft-renderer\"* ]]; then eslint --cache --fix $0; fi'"
+    ]
   }
 }

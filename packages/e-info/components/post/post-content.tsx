@@ -1,4 +1,4 @@
-import { Readr } from '@mirrormedia/lilith-draft-renderer'
+import { Readr } from '@eic-web/draft-renderer'
 import { DonateButton } from '@readr-media/react-component'
 import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'

@@ -1,4 +1,4 @@
-import { Readr } from '@mirrormedia/lilith-draft-renderer'
+import { Readr } from '@eic-web/draft-renderer'
 import dayjs from 'dayjs'
 import type { RawDraftContentState } from 'draft-js'
 

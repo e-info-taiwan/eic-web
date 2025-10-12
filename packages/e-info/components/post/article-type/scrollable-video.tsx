@@ -1,4 +1,4 @@
-import { Readr } from '@mirrormedia/lilith-draft-renderer'
+import { Readr } from '@eic-web/draft-renderer'
 import SharedImage from '@readr-media/react-image'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -104,8 +104,8 @@ export default function ScrollableVideo({
     entityMap: {
       '0': { ...embeddedEntities },
     },
-    blocks: [{ ...embeddedBlocks }],
-  }
+    blocks: embeddedBlocks ? [{ ...embeddedBlocks }] : [],
+  } as any
 
   // get first Embedded-Video key in `entityMap`
   let scrollVideoIndex = 0

@@ -1,0 +1,40 @@
+{
+  "name": "@eic-web/draft-renderer",
+  "version": "1.4.4",
+  "description": "Draft.js renderer for EIC Web (forked from @mirrormedia/lilith-draft-renderer)",
+  "main": "lib/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "babel src --out-dir lib --extensions '.ts,.tsx' --copy-files",
+    "clean": "rm -rf lib",
+    "dev": "babel src --out-dir lib --extensions '.ts,.tsx' --copy-files --watch"
+  },
+  "keywords": [
+    "react",
+    "readr",
+    "draft.js",
+    "eic"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@readr-media/react-image": "2.1.3",
+    "body-scroll-lock": "3.1.5",
+    "draft-js": "^0.11.7",
+    "node-html-parser": "^6.1.5"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "styled-components": "^5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/preset-react": "^7.22.0",
+    "@babel/preset-typescript": "^7.23.0",
+    "babel-plugin-file-loader": "^2.0.0",
+    "babel-plugin-inline-react-svg": "^2.0.1",
+    "typescript": "^4.8.0"
+  }
+}

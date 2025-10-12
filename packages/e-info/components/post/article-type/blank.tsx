@@ -1,4 +1,4 @@
-import { Readr } from '@mirrormedia/lilith-draft-renderer'
+import { Readr } from '@eic-web/draft-renderer'
 import styled from 'styled-components'
 
 import Footer from '~/components/layout/footer'
