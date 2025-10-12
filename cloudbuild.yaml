@@ -9,7 +9,9 @@ steps:
       - '-c'
       - |
         # Copy root files and workspace packages for monorepo build
-        cp yarn.lock Dockerfile .dockerignore package.json packages/$_TARGET_PACKAGE
+        cp yarn.lock Dockerfile .dockerignore packages/$_TARGET_PACKAGE/
+        # Copy root package.json separately to avoid overwriting package's own package.json
+        cp package.json packages/$_TARGET_PACKAGE/root-package.json
         cp -r packages/draft-renderer packages/$_TARGET_PACKAGE/
         cd packages/$_TARGET_PACKAGE
         printenv > .env.local

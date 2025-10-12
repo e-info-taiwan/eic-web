@@ -9,18 +9,21 @@ WORKDIR /workspace
 RUN apk add --no-cache python3 make g++ \
     && yarn global add node-gyp
 
-# Set up workspace - cloudbuild copies package.json, yarn.lock, and draft-renderer
+# Set up workspace - cloudbuild copies root-package.json, yarn.lock, and draft-renderer
 # into the e-info package directory before building
-COPY package.json yarn.lock ./
 
-# Copy both packages to recreate workspace structure
+# First, set up the packages directory with e-info's package.json
+RUN mkdir -p packages/e-info
+COPY package.json ./packages/e-info/
+
+# Copy draft-renderer package
 COPY draft-renderer ./packages/draft-renderer/
 
-# Create a temporary package.json for e-info to satisfy workspace
-RUN mkdir -p packages/e-info && \
-    echo '{"name":"@eic-web/e-info","version":"1.0.0"}' > packages/e-info/package.json
+# Now copy workspace root configuration (this will be the workspace root)
+COPY root-package.json ./package.json
+COPY yarn.lock ./
 
-# Install dependencies
+# Install dependencies for the entire workspace
 RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
