@@ -5,7 +5,6 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import Footer from '~/components/layout/footer'
-import LeadingEmbeddedCode from '~/components/post/leadingEmbeddedCode'
 import PostContent from '~/components/post/post-content'
 import RelatedPosts from '~/components/post/related-post'
 import SideIndex from '~/components/post/side-index'
@@ -190,7 +189,6 @@ export default function Frame({
 
   const date = formatPostDate(postData?.publishTime)
 
-  const shouldShowLeadingEmbedded = Boolean(postData?.leadingEmbeddedCode)
   const shouldShowHeroImage = Boolean(postData?.heroImage)
   const shouldShowHeroCaption = Boolean(postData?.heroCaption)
 
@@ -242,12 +240,6 @@ export default function Frame({
               <figcaption>{postData?.heroCaption}</figcaption>
             )}
           </HeroImage>
-        )}
-        {shouldShowLeadingEmbedded && postData?.leadingEmbeddedCode && (
-          <LeadingEmbeddedCode
-            embeddedCode={postData.leadingEmbeddedCode}
-            backgroundColor="#f6f6f5"
-          />
         )}
 
         <ContentWrapper>

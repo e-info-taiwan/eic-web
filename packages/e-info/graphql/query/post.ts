@@ -53,7 +53,6 @@ export type PostDetail = Override<
     briefApiData: any // JSON type for API format
     contentApiData: any // JSON type for API format
     citations: string | null
-    leadingEmbeddedCode: string | null
   }
 >
 
@@ -78,7 +77,6 @@ const post = gql`
       briefApiData
       heroCaption
       citations
-      leadingEmbeddedCode
 
       section {
         id

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import HeaderGeneral from '~/components/layout/header/header-general'
-import LeadingEmbeddedCode from '~/components/post/leadingEmbeddedCode'
 import PostContent from '~/components/post/post-content'
 import PostHeading from '~/components/post/post-heading'
 import RelatedPosts from '~/components/post/related-post'
@@ -90,8 +89,6 @@ export default function ScrollableVideo({
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
 
-  const shouldShowLeadingEmbedded = Boolean(postData?.leadingEmbeddedCode)
-
   const { DraftRenderer } = Readr
 
   // get first Embedded-Video of `postData.content`.
@@ -152,11 +149,7 @@ export default function ScrollableVideo({
           <ScrollTitle>{postData?.title}</ScrollTitle>
         </HeroImage>
 
-        {shouldShowLeadingEmbedded && postData?.leadingEmbeddedCode ? (
-          <LeadingEmbeddedCode embeddedCode={postData.leadingEmbeddedCode} />
-        ) : (
-          <DraftRenderer rawContentBlock={embeddedContentState} />
-        )}
+        <DraftRenderer rawContentBlock={embeddedContentState} />
 
         <ContentWrapper>
           <Aside>
@@ -173,11 +166,7 @@ export default function ScrollableVideo({
               articleType={ValidPostStyle.SCROLLABLE_VIDEO}
               currentSideIndex={currentSideIndex}
               setCurrentSideIndex={setCurrentSideIndex}
-              postData={
-                shouldShowLeadingEmbedded
-                  ? postData
-                  : postDataWithoutFirstScrollVideo
-              }
+              postData={postDataWithoutFirstScrollVideo}
             />
           </main>
           <Aside />
