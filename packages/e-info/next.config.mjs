@@ -1,4 +1,9 @@
 import * as tsImport from 'ts-import'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const { ENV, DONATION_PAGE_URL } = await tsImport.load(
   './constants/environment-variables.ts'
@@ -79,6 +84,10 @@ const nextConfig = {
     ]
   },
   output: 'standalone',
+  // In monorepo, tell Next.js where the workspace root is for dependency tracing
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, '../../'),
+  },
   async headers() {
     return [
       // for debug purpose
