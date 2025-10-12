@@ -56,14 +56,11 @@ ENV NODE_ENV production
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-# In monorepo, standalone output includes the full workspace structure
+# Note: In this monorepo setup, standalone output flattens to e-info's structure
 COPY --from=builder /workspace/packages/e-info/.next/standalone ./
 
-# List directory structure for debugging (can be removed later)
-RUN ls -la && ls -la packages/ && ls -la packages/e-info/ || echo "e-info not found"
+# Copy static and public directories to the correct locations
+COPY --from=builder /workspace/packages/e-info/.next/static ./.next/static
+COPY --from=builder /workspace/packages/e-info/public ./public
 
-# Copy static and public directories
-COPY --from=builder /workspace/packages/e-info/.next/static ./packages/e-info/.next/static
-COPY --from=builder /workspace/packages/e-info/public ./packages/e-info/public
-
-CMD ["node", "packages/e-info/server.js"]
+CMD ["node", "server.js"]
