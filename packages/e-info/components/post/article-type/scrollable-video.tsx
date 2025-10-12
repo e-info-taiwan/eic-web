@@ -1,4 +1,4 @@
-import { Readr } from '@eic-web/draft-renderer'
+import { Eic } from '@eic-web/draft-renderer'
 import SharedImage from '@readr-media/react-image'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -89,7 +89,7 @@ export default function ScrollableVideo({
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
 
-  const { DraftRenderer } = Readr
+  const { DraftRenderer } = Eic
 
   // get first Embedded-Video of `postData.content`.
   const embeddedEntities = Object.values(postData?.content?.entityMap).find(

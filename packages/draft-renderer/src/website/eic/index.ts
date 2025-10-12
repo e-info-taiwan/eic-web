@@ -11,7 +11,7 @@ import {
   insertRecommendInContentBlock,
 } from './utils/post'
 
-const Readr = {
+const Eic = {
   DraftRenderer,
   blockRenderers,
   entityDecorators,
@@ -22,4 +22,4 @@ const Readr = {
   getFirstBlockEntityType,
 }
 
-export default Readr
+export default Eic

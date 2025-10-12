@@ -1,4 +1,4 @@
-import { Readr } from '@eic-web/draft-renderer'
+import { Eic } from '@eic-web/draft-renderer'
 import dayjs from 'dayjs'
 import type { RawDraftContentState } from 'draft-js'
 
@@ -13,7 +13,7 @@ import type {
 } from '~/types/common'
 import { ValidPostStyle } from '~/types/common'
 import type { ArticleCard } from '~/types/component'
-const { removeEmptyContentBlock, hasContentInRawContentBlock } = Readr
+const { removeEmptyContentBlock, hasContentInRawContentBlock } = Eic
 
 export function getHref({
   style,

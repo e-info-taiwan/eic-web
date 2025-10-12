@@ -7,7 +7,7 @@ export interface DraftRendererProps {
   disabledImageLazyLoad?: boolean
 }
 
-export interface ReadrModule {
+export interface EicModule {
   DraftRenderer: FC<DraftRendererProps>
   blockRenderers: any
   entityDecorators: any
@@ -18,14 +18,7 @@ export interface ReadrModule {
   getFirstBlockEntityType: (rawContentBlock: RawDraftContentState) => string
 }
 
-export interface MirrorMediaModule {
-  DraftRenderer: FC<DraftRendererProps>
-  blockRenderers: any
-  entityDecorators: any
-}
-
-export const Readr: ReadrModule
-export const MirrorMedia: MirrorMediaModule
+export const Eic: EicModule
 
 export const ENTITY: {
   [key: string]: string

@@ -10,7 +10,7 @@ var _entityDecorators = require("./entity-decorators");
 var _common = require("./utils/common");
 var _post = require("./utils/post");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-var Readr = {
+var Eic = {
   DraftRenderer: _draftRenderer["default"],
   blockRenderers: _blockRenderers.blockRenderers,
   entityDecorators: _entityDecorators.entityDecorators,
@@ -20,4 +20,4 @@ var Readr = {
   insertRecommendInContentBlock: _post.insertRecommendInContentBlock,
   getFirstBlockEntityType: _post.getFirstBlockEntityType
 };
-var _default = exports["default"] = Readr;
+var _default = exports["default"] = Eic;

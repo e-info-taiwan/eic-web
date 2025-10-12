@@ -1,5 +1,4 @@
-import MirrorMedia from './website/mirrormedia'
-import Readr from './website/readr'
+import Eic from './website/eic'
 
-export { MirrorMedia, Readr }
+export { Eic }
 export * from './draft-js/const'

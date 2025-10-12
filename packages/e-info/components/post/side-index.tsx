@@ -1,4 +1,4 @@
-import { Readr } from '@eic-web/draft-renderer'
+import { Eic } from '@eic-web/draft-renderer'
 import type { RawDraftContentState } from 'draft-js'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -79,7 +79,7 @@ export default function SideIndex({
   currentIndex,
   isAside = false,
 }: SideIndexProps): JSX.Element {
-  const { getSideIndexEntityData } = Readr
+  const { getSideIndexEntityData } = Eic
   const sideIndexList = getSideIndexEntityData(rawContentBlock)
 
   function handleScrollIntoView(target: string) {

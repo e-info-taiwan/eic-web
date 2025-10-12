@@ -1,4 +1,4 @@
-import { Readr } from '@eic-web/draft-renderer'
+import { Eic } from '@eic-web/draft-renderer'
 import styled from 'styled-components'
 
 import Footer from '~/components/layout/footer'
@@ -35,7 +35,7 @@ export default function Blank({ postData }: BlankProps): JSX.Element {
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
 
-  const { DraftRenderer, hasContentInRawContentBlock } = Readr
+  const { DraftRenderer, hasContentInRawContentBlock } = Eic
 
   const shouldShowContentBlock = hasContentInRawContentBlock(postData?.content)
 

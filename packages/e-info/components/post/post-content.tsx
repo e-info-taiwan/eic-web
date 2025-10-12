@@ -1,4 +1,4 @@
-import { Readr } from '@eic-web/draft-renderer'
+import { Eic } from '@eic-web/draft-renderer'
 import { DonateButton } from '@readr-media/react-component'
 import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
@@ -197,7 +197,7 @@ export default function PostContent({
     DraftRenderer,
     hasContentInRawContentBlock,
     getFirstBlockEntityType,
-  } = Readr
+  } = Eic
 
   // Note: contentApiData is array format, not compatible with DraftRenderer
   // Use original content field (Draft.js format)
