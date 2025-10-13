@@ -26,7 +26,6 @@ const MobileMediaLink = styled(MediaLinkList)`
   }
 `
 
-
 const Container = styled.article<StyleProps>`
   width: 100%;
   max-width: 568px;

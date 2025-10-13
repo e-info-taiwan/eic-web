@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import SharedImage from '@readr-media/react-image'
+import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { Post } from '~/graphql/fragments/post'
@@ -109,7 +109,9 @@ export default function RelatedPost({
           {image && (
             <SharedImage
               images={image}
-              imagesWebP={post.ogImage?.resizedWebp || post.heroImage?.resizedWebp}
+              imagesWebP={
+                post.ogImage?.resizedWebp || post.heroImage?.resizedWebp
+              }
               defaultImage={DEFAULT_POST_IMAGE_PATH}
               alt={post.title}
               priority={false}

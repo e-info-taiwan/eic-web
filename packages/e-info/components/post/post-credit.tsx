@@ -175,7 +175,6 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
       <SnsLinksDonateBtnWrapper>
         <MediaLinkList />
       </SnsLinksDonateBtnWrapper>
-
     </PostCreditWrapper>
   )
 }
