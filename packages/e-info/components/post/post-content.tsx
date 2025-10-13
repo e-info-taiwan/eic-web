@@ -91,42 +91,51 @@ const ActionList = styled.article`
 //引用數據
 const Citation = styled.article`
   margin-bottom: 48px;
-  max-width: 600px;
-  border-radius: 2px;
-  width: calc(100% + 40px);
-  transform: translateX(-20px);
-
-  ${({ theme }) => theme.breakpoint.md} {
-    width: 100%;
-    transform: none;
-  }
 
   ${({ theme }) => theme.breakpoint.xl} {
     margin-bottom: 60px;
   }
 
-  .title {
-    font-size: 18px;
+  h3 {
+    font-size: 20px;
     font-weight: 700;
-    line-height: 27px;
-    letter-spacing: 0.03em;
-    color: #eee500;
-    text-align: center;
-    background-color: #0b2163;
-    padding: 8px 0;
+    line-height: 1.5;
+    color: #2d7a4f;
+    margin-bottom: 12px;
 
     ${({ theme }) => theme.breakpoint.md} {
-      font-size: 20px;
-      line-height: 29px;
+      font-size: 24px;
+      margin-bottom: 16px;
     }
   }
 
   .content {
-    background-color: #f5f0ff;
-    padding: 12px 24px;
+    padding: 0;
 
-    ${({ theme }) => theme.breakpoint.md} {
-      padding: 16px 32px;
+    ul {
+      list-style: disc;
+      padding-left: 20px;
+      margin: 0;
+
+      li {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #000;
+        margin-bottom: 8px;
+
+        ${({ theme }) => theme.breakpoint.md} {
+          font-size: 18px;
+        }
+      }
+    }
+
+    a {
+      color: #2d7a4f;
+      text-decoration: underline;
+
+      &:hover {
+        color: #1f5537;
+      }
     }
   }
 `
@@ -316,11 +325,10 @@ export default function PostContent({
 
       {shouldShowCitation && (
         <Citation>
-          <p className="title">引用資料</p>
-          <div className="content">
-            {/* Note: citations is now a string field, not draft-js */}
-            <p>{postData?.citations}</p>
-          </div>
+          <div
+            className="content"
+            dangerouslySetInnerHTML={{ __html: postData?.citations || '' }}
+          />
         </Citation>
       )}
     </Container>
