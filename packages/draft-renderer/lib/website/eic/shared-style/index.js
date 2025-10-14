@@ -9,7 +9,7 @@ var _templateObject, _templateObject2, _templateObject3, _templateObject4, _temp
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var blockQuoteSpacingBetweenContent = exports.blockQuoteSpacingBetweenContent = (0, _styledComponents.css)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  .public-DraftStyleDefault-block {\n    margin-top: 8px;\n  }\n"])));
 var textAroundPictureStyle = exports.textAroundPictureStyle = (0, _styledComponents.css)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  max-width: 33.3%;\n  > figure {\n    margin-bottom: 0;\n    width: 150%;\n    transform: unset;\n  }\n  figcaption {\n    padding: 0;\n  }\n"])));
-var defaultH2Style = exports.defaultH2Style = (0, _styledComponents.css)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  ", ";\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: 0.032em;\n  color: #000928;\n\n  ", " {\n    ", ";\n  }\n"])), function (_ref) {
+var defaultH2Style = exports.defaultH2Style = (0, _styledComponents.css)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  ", ";\n  font-weight: 500;\n  line-height: 32px;\n  letter-spacing: 0;\n  color: #000000;\n\n  ", " {\n    ", ";\n  }\n"])), function (_ref) {
   var theme = _ref.theme;
   return theme.fontSize.lg;
 }, function (_ref2) {

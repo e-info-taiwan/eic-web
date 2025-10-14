@@ -13,7 +13,7 @@ var SummaryStyle = exports.SummaryStyle = (0, _styledComponents.css)(_templateOb
   var theme = _ref.theme;
   return theme.fontSize.sm;
 }, _index.defaultBlockQuoteStyle, _index.blockQuoteSpacingBetweenContent);
-var NormalStyle = exports.NormalStyle = (0, _styledComponents.css)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  ", ";\n  line-height: 2;\n\n  *:not(:first-child) {\n    ", "\n  }\n\n  .public-DraftStyleDefault-unorderedListItem,\n  .public-DraftStyleDefault-orderedListItem {\n    ", ";\n  }\n\n  .public-DraftStyleDefault-ul,\n  .public-DraftStyleDefault-ol {\n    margin-top: 32px;\n  }\n\n  .public-DraftStyleDefault-blockquote {\n    ", ";\n\n    & + blockquote {\n      ", ";\n    }\n  }\n"])), function (_ref2) {
+var NormalStyle = exports.NormalStyle = (0, _styledComponents.css)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  ", ";\n  line-height: 1.8;\n\n  *:not(:first-child) {\n    ", "\n  }\n\n  .public-DraftStyleDefault-unorderedListItem,\n  .public-DraftStyleDefault-orderedListItem {\n    ", ";\n  }\n\n  .public-DraftStyleDefault-ul,\n  .public-DraftStyleDefault-ol {\n    margin-top: 32px;\n  }\n\n  .public-DraftStyleDefault-blockquote {\n    ", ";\n\n    & + blockquote {\n      ", ";\n    }\n  }\n"])), function (_ref2) {
   var theme = _ref2.theme;
   return theme.fontSize.md;
 }, _index.defaultSpacingBetweenContent, _index.noSpacingBetweenContent, _index.defaultBlockQuoteStyle, _index.blockQuoteSpacingBetweenContent);

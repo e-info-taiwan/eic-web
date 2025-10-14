@@ -41,7 +41,7 @@ export const SummaryStyle = css`
 
 export const NormalStyle = css`
   ${({ theme }) => theme.fontSize.md};
-  line-height: 2;
+  line-height: 1.8;
 
   *:not(:first-child) {
     ${defaultSpacingBetweenContent}

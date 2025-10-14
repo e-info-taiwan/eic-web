@@ -5,23 +5,21 @@ import CustomImage from '@readr-media/react-image'
 import defaultImage from '../assets/default-og-img.png'
 
 const Figure = styled.figure`
-  width: calc(100% + 40px);
-  transform: translateX(-20px);
+  width: 100%;
   ${({ theme }) => theme.margin.default};
 `
 
 const FigureCaption = styled.figcaption`
   width: 100%;
-  ${({ theme }) => theme.fontSize.xs}
-  line-height: 20px;
+  font-size: 12px;
+  line-height: 1.25;
   text-align: justify;
-  color: rgba(0, 9, 40, 0.5);
-  padding: 0 20px;
+  color: #373740;
+  padding: 0;
   margin: 8px 0 0;
 
   ${({ theme }) => theme.breakpoint.xl} {
-    line-height: 24px;
-    ${({ theme }) => theme.fontSize.sm};
+    line-height: 1.25;
   }
 `
 const Anchor = styled.a`

@@ -47,8 +47,8 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   width: 100%;
   height: 100%;
-  letter-spacing: 0.01em;
-  color: rgba(0, 9, 40, 0.87);
+  font-weight: 400;
+  color: #000000;
 
   *:has(.bg) + *:has(.bg) {
     section {
