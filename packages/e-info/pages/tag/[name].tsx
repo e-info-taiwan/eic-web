@@ -1,7 +1,6 @@
 // 標籤頁
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
-import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -54,8 +53,7 @@ type PageProps = {
   tagName?: string | string[]
 }
 
-const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts }) => {
-  const router = useRouter()
+const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts, tagName }) => {
   const client = getGqlClient()
 
   const [displayPosts, setDisplayPosts] = useState(tagRelatedPosts)
@@ -77,7 +75,7 @@ const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts }) => {
         }>({
           query: tagQuery,
           variables: {
-            tagName: router?.query?.name,
+            tagName: tagName,
             postSkip: displayPosts?.length,
             relatedPostFirst: 12,
             relatedPostTypes: postStyles,
@@ -117,7 +115,7 @@ const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts }) => {
     }
   }, [isAtBottom])
 
-  const sectionTitle = `${router?.query?.name}`
+  const sectionTitle = `${tagName || ''}`
   return (
     <TagWrapper aria-label={sectionTitle}>
       <StyledAdsense_HD pageKey="tag" adKey="HD" />

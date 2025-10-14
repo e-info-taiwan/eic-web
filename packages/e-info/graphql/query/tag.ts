@@ -22,7 +22,6 @@ const tags = gql`
   ) {
     tags ( where: { 
       name: { equals: $tagName  }
-      state: { equals: "active" }
     } ) {
       id
       name

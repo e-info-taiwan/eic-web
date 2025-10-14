@@ -19,11 +19,17 @@ export const config = {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  return new Promise((resolve, reject) => {
-    const proxy: httpProxy = httpProxy.createProxy()
-    proxy.once('proxyRes', resolve).once('error', reject).web(req, res, {
-      changeOrigin: true,
-      target: API_ENDPOINT,
-    })
+  const proxy: httpProxy = httpProxy.createProxy()
+
+  proxy.web(req, res, {
+    changeOrigin: true,
+    target: API_ENDPOINT,
+  })
+
+  proxy.on('error', (err) => {
+    console.error('Proxy error:', err)
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Proxy error' })
+    }
   })
 }
