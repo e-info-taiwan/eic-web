@@ -159,12 +159,9 @@ const authorPosts = gql`
       skip: $skip
       where: {
         OR: [
-          { writers: { some: { id: { equals: $authorId } } } }
-          { photographers: { some: { id: { equals: $authorId } } } }
-          { cameraOperators: { some: { id: { equals: $authorId } } } }
-          { designers: { some: { id: { equals: $authorId } } } }
-          { engineers: { some: { id: { equals: $authorId } } } }
-          { dataAnalysts: { some: { id: { equals: $authorId } } } }
+          { author1: { id: { equals: $authorId } } }
+          { author2: { id: { equals: $authorId } } }
+          { author3: { id: { equals: $authorId } } }
         ]
         state: { equals: "published" }
         style: {

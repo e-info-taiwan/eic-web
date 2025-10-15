@@ -149,8 +149,7 @@ export default function ArticleListCard({
 
   return (
     <Link
-      // href={href}
-      href={'#'}
+      href={href}
       target="_blank"
       $shouldReverseInMobile={shouldReverseInMobile}
       $shouldHighlightReport={isReportAndShouldHighlight}

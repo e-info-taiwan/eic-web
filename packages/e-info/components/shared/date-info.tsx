@@ -6,7 +6,7 @@ const Container = styled.div`
   font-size: 16px;
   line-height: 1.8;
   font-weight: 400;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
+  color: ${({ theme }) => theme.colors.primary[40]};
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 16px;
   }

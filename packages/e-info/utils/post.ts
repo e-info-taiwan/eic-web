@@ -21,6 +21,7 @@ export function getHref({
   slug,
 }: Partial<Pick<GenericPost, 'style' | 'id'> & { slug: string }>): string {
   switch (style) {
+    case ValidPostStyle.DEFAULT:
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
     case ValidPostStyle.FRAME:
@@ -94,7 +95,7 @@ export function isReport(style: string = ''): boolean {
 export function formatPostDate(datetime: dayjs.ConfigType): string {
   const formatStr = dayjs().isSame(dayjs(datetime), 'year')
     ? 'MM/DD'
-    : 'YYYY/MM/DD'
+    : 'YYYY/MM/DD hh:mm'
   return dayjs(datetime).format(formatStr)
 }
 

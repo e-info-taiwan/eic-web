@@ -13,8 +13,8 @@ const Container = styled.div<StyledProps>`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  border-bottom: 3px solid #000928;
-  padding: 0 0 12px;
+  border-bottom: 1px solid #000;
+  padding: 0 0 36px;
   > p {
     position: relative;
     font-size: 24px;
@@ -63,6 +63,51 @@ const ShowMoreControl = styled(NextLink)`
   }
 `
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding-left: 0;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    justify-content: normal;
+  }
+`
+
+const AccentBar = styled.div`
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  width: 60px;
+  height: 20px;
+  margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 80px;
+    height: 32px;
+  }
+`
+
+const Title = styled.h1`
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0;
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
+`
+
 type SectionHeadingProps = {
   title?: string
   showMoreText?: string
@@ -86,9 +131,10 @@ export default function SectionHeading({
     <>
       {title && (
         <Container $highlightColor={highlightColor} className="section-heading">
-          <p role="heading" aria-level={headingLevel}>
-            {title}
-          </p>
+          <Header>
+            <AccentBar />
+            <Title>{title}</Title>
+          </Header>
           {shouldShowMoreControl && (
             <ShowMoreControl
               href={{

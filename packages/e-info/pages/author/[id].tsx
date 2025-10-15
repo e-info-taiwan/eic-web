@@ -116,7 +116,7 @@ const Author: NextPageWithLayout<PageProps> = ({ authorPosts, authorName }) => {
     }
   }, [isAtBottom])
 
-  const sectionTitle = `文章作者：${authorName}`
+  const sectionTitle = `${authorName}`
   return (
     <AuthorWrapper aria-label={sectionTitle}>
       <StyledAdsense_HD pageKey="author" adKey="HD" />
