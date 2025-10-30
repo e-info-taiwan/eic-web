@@ -125,6 +125,140 @@ type Post {
 }
 ```
 
+#### Category Data Structure
+
+```typescript
+type Category {
+  id: ID!
+  slug: String              // URL-friendly identifier (e.g., "ecomid")
+  name: String              // Display name (e.g., "環中")
+  sortOrder: Int            // Display order
+  heroImage: Photo          // Hero image for category
+  heroImageCaption: String  // Image caption
+  posts: [Post]             // Related posts
+  postsCount: Int           // Number of posts
+  section: Section          // Parent section
+  classifies: [Classify]    // Classifications
+  classifiesCount: Int
+  createdAt: DateTime
+  updatedAt: DateTime
+  createdBy: User
+  updatedBy: User
+}
+```
+
+**Example Query**:
+```graphql
+query {
+  categories(orderBy: { sortOrder: asc }) {
+    id
+    slug
+    name
+    postsCount
+    posts(take: 10) {
+      id
+      title
+      publishTime
+    }
+  }
+}
+```
+
+#### Topic Data Structure
+
+```typescript
+type Topic {
+  id: ID!
+  title: String             // Topic title
+  status: String            // "published", "draft", etc.
+  content: String           // Topic description/summary
+  heroImage: Photo          // Hero image for topic
+  posts: [Post]             // Related articles
+  postsCount: Int           // Number of articles
+  tags: [Tag]               // Related tags
+  tagsCount: Int            // Number of tags
+  isPinned: Boolean         // Whether pinned to top
+  createdAt: DateTime
+  updatedAt: DateTime
+  createdBy: User
+  updatedBy: User
+}
+```
+
+**Example Query**:
+```graphql
+query {
+  topics {
+    id
+    title
+    status
+    content
+    heroImage {
+      resized {
+        original
+        w480
+        w800
+        w1200
+      }
+    }
+    postsCount
+    posts(take: 24) {
+      id
+      title
+      publishTime
+      heroImage {
+        resized {
+          original
+          w480
+        }
+      }
+    }
+    tags {
+      id
+      name
+    }
+    isPinned
+  }
+}
+```
+
+**Dev Environment Test Data**:
+- Topic ID `1`: "測試專題給測試文章們" (has 1 post, 2 tags)
+
+#### Tag Data Structure
+
+```typescript
+type Tag {
+  id: ID!
+  name: String              // Tag name
+  brief: String             // Tag description
+  heroImage: Photo          // Tag hero image
+  isFeatured: Boolean       // Whether featured tag
+  sortOrder: Int            // Display order
+  posts: [Post]             // Related posts
+  postsCount: Int           // Number of posts
+  topics: [Topic]           // Related topics
+  topicsCount: Int          // Number of topics
+  createdAt: DateTime
+  updatedAt: DateTime
+  createdBy: User
+  updatedBy: User
+}
+```
+
+**Example Query**:
+```graphql
+query {
+  tags(where: { isFeatured: { equals: true } }) {
+    id
+    name
+    brief
+    postsCount
+    topicsCount
+  }
+}
+```
+
 #### ResizedImages Field Names
 
 Image sizes use `w480`, `w800`, `w1200`, `w1600`, `w2400`, **not** `small`, `medium`, `large`.
@@ -306,12 +440,33 @@ curl -X POST "https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graph
     "query": "query ($id: ID!) { posts(where: { id: { equals: $id } }) { id title citations } }",
     "variables": { "id": "238646" }
   }'
+
+# Example: Query all categories
+cat > /tmp/query.json << 'EOF'
+{
+  "query": "query { categories(orderBy: { sortOrder: asc }) { id slug name postsCount posts(take: 3) { id title publishTime } } }"
+}
+EOF
+curl -X POST https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql \
+  -H 'Content-Type: application/json' \
+  -d @/tmp/query.json | jq '.'
+
+# Example: Query all topics with posts and tags
+cat > /tmp/query.json << 'EOF'
+{
+  "query": "query { topics { id title status content heroImage { resized { original w480 w800 } } postsCount posts(take: 5) { id title publishTime } tags { id name } isPinned } }"
+}
+EOF
+curl -X POST https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql \
+  -H 'Content-Type: application/json' \
+  -d @/tmp/query.json | jq '.'
 ```
 
-**Test Post IDs in Dev Environment**:
-- `238646` - Has heroImage and citations
-- `238651` - Has complete citations HTML
-- `238631` - Has citations
+**Test IDs in Dev Environment**:
+- **Post**: `238646` (has heroImage and citations), `238651` (complete citations HTML), `238631` (has citations), `238658` (測試文章)
+- **Category**: `1` / `ecomid` / "環中" (has 1 post)
+- **Topic**: `1` / "測試專題給測試文章們" (has 1 post, 2 tags)
+- **Tags**: `13` / "中國新聞", `5` / "台灣新聞"
 
 ## Deployment
 
@@ -432,12 +587,15 @@ Includes simple-import-sort rules to ensure consistent import ordering.
 ## Development Tips
 
 1. **Testing Post Pages**: Use post ID `238646` for testing, it includes complete citations and heroImage
-2. **Style Changes**: Use styled-components, follow existing theme settings
-3. **GraphQL Queries**: Reference complete query examples in `graphql/query/post.ts`
-4. **Image Handling**: Prefer `resized` and `resizedWebp`, with `src` fallback
-5. **Content Rendering**: Use `contentApiData` field, not the old `content` field
-6. **Commit Messages**: Use clear descriptions, reference recent commit style
+2. **Testing Topic Pages**: Use topic ID `1` for testing, includes heroImage, posts, and tags
+3. **Testing Category Pages**: Use category slug `ecomid` or ID `1` for testing
+4. **Style Changes**: Use styled-components, follow existing theme settings
+5. **GraphQL Queries**: Reference complete query examples in `graphql/query/post.ts` and `graphql/query/category.ts`
+6. **Image Handling**: Prefer `resized` and `resizedWebp`, with `src` fallback
+7. **Content Rendering**: Use `contentApiData` field, not the old `content` field
+8. **Commit Messages**: Use clear descriptions, reference recent commit style
+9. **API Testing**: Use curl with `/tmp/query.json` for complex GraphQL queries (see Testing GraphQL API section)
 
 ---
 
-**Last Updated**: 2025-10-13
+**Last Updated**: 2025-10-31
