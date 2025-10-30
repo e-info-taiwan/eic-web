@@ -27,7 +27,7 @@ export function getHref({
     case ValidPostStyle.FRAME:
     case ValidPostStyle.SCROLLABLE_VIDEO:
     case ValidPostStyle.BLANK:
-      return `/post/${id}`
+      return `/node/${id}`
     case ValidPostStyle.REPORT:
       return `https://${SITE_URL}/project/${slug}/`
     case ValidPostStyle.PROJECT3:
