@@ -392,7 +392,8 @@ type TopicData = {
 // Dummy topic data
 const DUMMY_TOPIC: TopicData = {
   id: '1',
-  heroImage: 'https://picsum.photos/seed/hero-topic1/1600/900',
+  heroImage:
+    'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1600&h=900&fit=crop',
   heroTopText: '深度專題系列報導',
   heroTitle: '卓永脛觀察員',
   title: '在理想中擱淺的鯨豚觀察員',
@@ -412,7 +413,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '《尼斯護照旅行》總90國家簽證單 拆來全球塑膠公約談判逐協議',
       excerpt:
         '聯合國海洋大會正在法國尼斯舉行，10日有超過90個會員國簽署《尼斯護照旅行》（The Nice wake up call for an ambitious plastic treat...',
-      image: 'https://picsum.photos/seed/article1/400/250',
+      image:
+        'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=250&fit=crop',
       href: '/node/1',
     },
     {
@@ -420,7 +422,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋保護區的建立與挑戰 台灣周邊海域生態調查報告',
       excerpt:
         '根據最新的海洋生態調查顯示，台灣周邊海域的生物多樣性正面臨嚴峻挑戰，海洋保護區的設立刻不容緩...',
-      image: 'https://picsum.photos/seed/article2/400/250',
+      image:
+        'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=400&h=250&fit=crop',
       href: '/node/2',
     },
     {
@@ -428,7 +431,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '氣候變遷下的珊瑚礁白化危機 專家呼籲立即行動',
       excerpt:
         '全球暖化導致海水溫度上升，珊瑚礁白化現象日益嚴重。海洋生物學家警告，若不採取行動，珊瑚生態系統將面臨崩潰...',
-      image: 'https://picsum.photos/seed/article3/400/250',
+      image:
+        'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400&h=250&fit=crop',
       href: '/node/3',
     },
     {
@@ -436,7 +440,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '漁業永續發展的新契機 智慧養殖技術突破',
       excerpt:
         '台灣養殖業者引進智慧監測系統，結合物聯網技術，大幅提升養殖效率，同時減少對環境的衝擊...',
-      image: 'https://picsum.photos/seed/article4/400/250',
+      image:
+        'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=400&h=250&fit=crop',
       href: '/node/4',
     },
     {
@@ -444,7 +449,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋廢棄物處理新方案 民間團體推動淨灘行動',
       excerpt:
         '環保團體發起全台淨灘活動，一年內清理超過50噸海洋垃圾，喚起民眾對海洋污染的關注...',
-      image: 'https://picsum.photos/seed/article5/400/250',
+      image:
+        'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=400&h=250&fit=crop',
       href: '/node/5',
     },
     {
@@ -452,7 +458,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '離岸風電與海洋生態的平衡 環評爭議持續延燒',
       excerpt:
         '離岸風電開發案引發環保團體與能源業者論戰，如何在綠能發展與生態保護之間取得平衡成為焦點...',
-      image: 'https://picsum.photos/seed/article6/400/250',
+      image:
+        'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=400&h=250&fit=crop',
       href: '/node/6',
     },
     {
@@ -460,7 +467,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海龜保育有成 野放數量創新高紀錄',
       excerpt:
         '今年度海龜救傷中心成功野放123隻海龜，創下歷年新高。保育人員表示，這是多年努力的成果...',
-      image: 'https://picsum.photos/seed/article7/400/250',
+      image:
+        'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=250&fit=crop',
       href: '/node/7',
     },
     {
@@ -468,7 +476,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '深海探測新發現 台灣海溝發現未知物種',
       excerpt:
         '研究團隊在台灣海溝進行深海探測時，發現多種未曾記錄的生物，為海洋生物學研究開啟新頁...',
-      image: 'https://picsum.photos/seed/article8/400/250',
+      image:
+        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop',
       href: '/node/8',
     },
     {
@@ -476,7 +485,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋教育向下扎根 偏鄉學校推動海洋課程',
       excerpt:
         '教育部推動海洋教育計畫，在沿海偏鄉學校開設特色課程，培養學生海洋素養與保育意識...',
-      image: 'https://picsum.photos/seed/article9/400/250',
+      image:
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop',
       href: '/node/9',
     },
     {
@@ -484,7 +494,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '漁港轉型觀光 漁村再生計畫啟動',
       excerpt:
         '政府推動漁港多元化發展，結合觀光與在地文化，為傳統漁村注入新活力，創造就業機會...',
-      image: 'https://picsum.photos/seed/article10/400/250',
+      image:
+        'https://images.unsplash.com/photo-1544198365-f5d60b6d8190?w=400&h=250&fit=crop',
       href: '/node/10',
     },
     {
@@ -492,7 +503,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋污染監測系統升級 即時掌握水質狀況',
       excerpt:
         '環保署建置新一代海洋水質監測系統，運用AI技術分析數據，提供即時預警機制...',
-      image: 'https://picsum.photos/seed/article11/400/250',
+      image:
+        'https://images.unsplash.com/photo-1476673160081-cf065607f449?w=400&h=250&fit=crop',
       href: '/node/11',
     },
     {
@@ -500,7 +512,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '鯨豚擁擠頻傳 專家呼籲加強海域巡護',
       excerpt:
         '今年鯨豚擱淺案件數量攀升，海洋保育專家分析原因，呼籲政府加強海域巡護與救援機制...',
-      image: 'https://picsum.photos/seed/article12/400/250',
+      image:
+        'https://images.unsplash.com/photo-1567551956697-b6e0520f2fb5?w=400&h=250&fit=crop',
       href: '/node/12',
     },
     {
@@ -508,7 +521,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋再生能源發展藍圖 2030目標出爐',
       excerpt:
         '政府公布海洋能源發展藍圖，規劃2030年前完成10GW離岸風電裝置容量，推動能源轉型...',
-      image: 'https://picsum.photos/seed/article13/400/250',
+      image:
+        'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=250&fit=crop',
       href: '/node/13',
     },
     {
@@ -516,7 +530,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋科技產業起飛 水下無人機需求大增',
       excerpt:
         '隨著海洋探測與監測需求增加，水下無人機市場快速成長，台灣廠商積極搶攻商機...',
-      image: 'https://picsum.photos/seed/article14/400/250',
+      image:
+        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop',
       href: '/node/14',
     },
     {
@@ -524,7 +539,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋文化資產保存 水下考古新發現',
       excerpt:
         '文化部水下考古團隊在澎湖海域發現清代沉船遺跡，出土大量文物，具有重要歷史價值...',
-      image: 'https://picsum.photos/seed/article15/400/250',
+      image:
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop',
       href: '/node/15',
     },
     {
@@ -532,7 +548,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '永續海鮮指南發布 消費者選購新參考',
       excerpt:
         '環保團體推出永續海鮮指南，協助消費者辨識友善環境的海產品，推動負責任的消費行為...',
-      image: 'https://picsum.photos/seed/article16/400/250',
+      image:
+        'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=400&h=250&fit=crop',
       href: '/node/16',
     },
     {
@@ -540,7 +557,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋熱浪襲擊 漁獲量驟減引發關注',
       excerpt:
         '連續高溫導致海洋熱浪現象，影響魚群洄游路線，漁民收入大減，專家憂心氣候變遷加劇...',
-      image: 'https://picsum.photos/seed/article17/400/250',
+      image:
+        'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=400&h=250&fit=crop',
       href: '/node/17',
     },
     {
@@ -548,7 +566,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋生物多樣性公約 台灣參與受阻',
       excerpt:
         '聯合國海洋生物多樣性公約談判進入關鍵階段，台灣雖積極爭取參與，仍面臨國際政治阻力...',
-      image: 'https://picsum.photos/seed/article18/400/250',
+      image:
+        'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=250&fit=crop',
       href: '/node/18',
     },
     {
@@ -556,7 +575,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋運動風潮興起 衝浪列入正式課程',
       excerpt:
         '教育部將衝浪納入體育課程選項，東海岸地區學校率先試辦，培養學生親海愛海的態度...',
-      image: 'https://picsum.photos/seed/article19/400/250',
+      image:
+        'https://images.unsplash.com/photo-1502933691298-84fc14542831?w=400&h=250&fit=crop',
       href: '/node/19',
     },
     {
@@ -564,7 +584,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋塑膠微粒污染 食物鏈威脅浮現',
       excerpt:
         '研究發現海洋生物體內塑膠微粒濃度上升，透過食物鏈累積，對人體健康構成潛在風險...',
-      image: 'https://picsum.photos/seed/article20/400/250',
+      image:
+        'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=400&h=250&fit=crop',
       href: '/node/20',
     },
     {
@@ -572,7 +593,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '潮間帶生態調查 公民科學家動員',
       excerpt:
         '海洋保育團體招募公民科學家進行潮間帶生態調查，累積寶貴數據，建立長期監測機制...',
-      image: 'https://picsum.photos/seed/article21/400/250',
+      image:
+        'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400&h=250&fit=crop',
       href: '/node/21',
     },
     {
@@ -580,7 +602,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋法規修訂 加重非法捕撈罰則',
       excerpt:
         '立法院三讀通過海洋法規修正案，大幅提高非法捕撈罰金，強化執法力度遏止違規行為...',
-      image: 'https://picsum.photos/seed/article22/400/250',
+      image:
+        'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=400&h=250&fit=crop',
       href: '/node/22',
     },
     {
@@ -588,7 +611,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '海洋研究船隊擴編 提升科研能量',
       excerpt:
         '科技部投資建造新一代海洋研究船，配備先進儀器設備，強化台灣海洋科學研究實力...',
-      image: 'https://picsum.photos/seed/article23/400/250',
+      image:
+        'https://images.unsplash.com/photo-1544198365-f5d60b6d8190?w=400&h=250&fit=crop',
       href: '/node/23',
     },
     {
@@ -596,7 +620,8 @@ const DUMMY_TOPIC: TopicData = {
       title: '藍碳經濟新商機 紅樹林復育成焦點',
       excerpt:
         '紅樹林具有高效碳匯能力，政府推動沿海紅樹林復育計畫，發展藍碳經濟創造多重效益...',
-      image: 'https://picsum.photos/seed/article24/400/250',
+      image:
+        'https://images.unsplash.com/photo-1473773508845-188df298d2d1?w=400&h=250&fit=crop',
       href: '/node/24',
     },
   ],

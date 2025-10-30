@@ -330,7 +330,8 @@ const DUMMY_TOPICS: FeaturedTopic[] = [
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     href: '/topic/1',
     date: '2023/03/28 12:59',
-    image: 'https://picsum.photos/seed/topic1/800/500',
+    image:
+      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=500&fit=crop',
     isFeatured: true,
   },
   {
@@ -340,7 +341,8 @@ const DUMMY_TOPICS: FeaturedTopic[] = [
     excerpt: '',
     href: '/topic/2',
     date: '2023/03/28 12:59',
-    image: 'https://picsum.photos/seed/topic2/800/500',
+    image:
+      'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=500&fit=crop',
   },
   {
     id: '3',
@@ -349,7 +351,8 @@ const DUMMY_TOPICS: FeaturedTopic[] = [
     excerpt: '',
     href: '/topic/3',
     date: '2023/03/28 12:59',
-    image: 'https://picsum.photos/seed/topic3/800/500',
+    image:
+      'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=800&h=500&fit=crop',
   },
   {
     id: '4',
@@ -358,7 +361,8 @@ const DUMMY_TOPICS: FeaturedTopic[] = [
     excerpt: '',
     href: '/topic/4',
     date: '2023/03/28 12:59',
-    image: 'https://picsum.photos/seed/topic4/800/500',
+    image:
+      'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&h=500&fit=crop',
   },
   {
     id: '5',
@@ -368,7 +372,8 @@ const DUMMY_TOPICS: FeaturedTopic[] = [
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     href: '/topic/5',
     date: '2023/03/28 12:59',
-    image: 'https://picsum.photos/seed/topic5/800/500',
+    image:
+      'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=800&h=500&fit=crop',
     isFeatured: true,
   },
   {
@@ -379,7 +384,8 @@ const DUMMY_TOPICS: FeaturedTopic[] = [
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     href: '/topic/6',
     date: '2023/03/28 12:59',
-    image: 'https://picsum.photos/seed/topic6/800/500',
+    image:
+      'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800&h=500&fit=crop',
     isFeatured: true,
   },
 ]
