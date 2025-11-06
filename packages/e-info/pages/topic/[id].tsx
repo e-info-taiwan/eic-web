@@ -374,8 +374,6 @@ type TopicArticle = {
 type TopicData = {
   id: string
   heroImage: string
-  heroTopText: string
-  heroTitle: string
   title: string
   summary: string
   updateTime: string
@@ -394,8 +392,6 @@ const DUMMY_TOPIC: TopicData = {
   id: '1',
   heroImage:
     'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1600&h=900&fit=crop',
-  heroTopText: '深度專題系列報導',
-  heroTitle: '卓永脛觀察員',
   title: '在理想中擱淺的鯨豚觀察員',
   summary:
     '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
@@ -702,7 +698,7 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
     <PageWrapper>
       {/* Hero Section */}
       <HeroSection>
-        <HeroImage src={topic.heroImage} alt={topic.heroTitle} />
+        <HeroImage src={topic.heroImage} alt={topic.title} />
       </HeroSection>
 
       {/* Content */}
