@@ -35,42 +35,43 @@ const ContentWrapper = styled.div`
   }
 `
 
-const Header = styled.div`
+const SectionTitle = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 40px;
+  justify-content: center;
+  margin-bottom: 28px;
+  gap: 12px;
 
-  ${({ theme }) => theme.breakpoint.md} {
-    margin-bottom: 48px;
+  ${({ theme }) => theme.breakpoint.xl} {
+    justify-content: flex-start;
   }
 `
 
 const AccentBar = styled.div`
-  background-color: ${({ theme }) => theme.colors.primary[0]};
+  background-color: ${({ theme }) => theme.colors.secondary[80]};
   width: 60px;
   height: 20px;
-  margin-right: 12px;
+  margin-right: 0.75rem;
   border-bottom-right-radius: 12px;
 
-  ${({ theme }) => theme.breakpoint.xl} {
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     width: 80px;
-    height: 24px;
-    border-bottom-right-radius: 16px;
+    height: 32px;
   }
 `
 
 const Title = styled.h1`
-  font-size: 28px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary[0]};
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.secondary[80]};
   margin: 0;
 
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 32px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    font-size: 36px;
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
   }
 `
 
@@ -85,24 +86,17 @@ const EventGrid = styled.div`
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 `
 
 const EventCard = styled.a`
   display: block;
   background: #fff;
-  border-radius: 8px;
   overflow: hidden;
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  }
 `
 
 const EventImage = styled.div<{ $image: string }>`
@@ -114,44 +108,30 @@ const EventImage = styled.div<{ $image: string }>`
 `
 
 const EventContent = styled.div`
-  padding: 20px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 24px;
-  }
+  padding: 10px 20px;
 `
 
 const EventTitle = styled.h2`
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 700;
-  color: #000;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0 0 12px 0;
-  line-height: 1.5;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 20px;
-  }
-`
-
-const EventMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 14px;
-  color: #666;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 15px;
-  }
+  line-height: 32px;
 `
 
 const EventDate = styled.div`
-  color: ${({ theme }) => theme.colors.primary[0]};
-  font-weight: 500;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
 `
 
 const EventOrganizer = styled.div`
-  color: #666;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
 `
 
 const PaginationWrapper = styled.div`
@@ -263,6 +243,99 @@ const PaginationEllipsis = styled.span`
   }
 `
 
+const FilterBar = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 32px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+`
+
+const FilterGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+`
+
+const FilterLabel = styled.label`
+  font-size: 16px;
+  line-heigth: 1.5;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  min-width: 70px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    font-size: 16px;
+    min-width: auto;
+  }
+`
+
+const Select = styled.select`
+  padding: 0 22px 0 8px;
+  font-size: 16px;
+  background-color: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
+  border-radius: 0;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  min-width: 128px;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary[0]};
+  }
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 0 22px 0 8px;
+    font-size: 15px;
+    min-width: 140px;
+    background-size: 18px;
+  }
+`
+
+const SubmitButton = styled.a`
+  padding: 4px 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #fff;
+  background-color: ${({ theme }) => theme.colors.secondary[20]};
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+  text-align: center;
+  align-self: center;
+  width: fit-content;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary[0]};
+  }
+
+  ${({ theme }) => theme.breakpoint.md} {
+    margin-left: auto;
+    align-self: auto;
+  }
+`
+
 type Event = {
   id: string
   title: string
@@ -277,7 +350,7 @@ const DUMMY_EVENTS: Event[] = [
   {
     id: '1',
     title: '【台灣蝴蝶保育學會】每周日免費賞蝶導覽',
-    date: '2025-00-00-00:00',
+    date: '2025-01-01-01:01',
     organizer: '單位名稱單位名稱單位名稱',
     image:
       'https://images.unsplash.com/photo-1534889156217-d643df14f14a?w=800&h=450&fit=crop',
@@ -362,10 +435,27 @@ type PageProps = {
 }
 
 const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
+  // Filter state
+  const [selectedLocation, setSelectedLocation] = useState('all')
+  const [selectedDate, setSelectedDate] = useState('all')
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9 // 9 events per page (3x3 grid)
   const totalPages = Math.ceil(events.length / itemsPerPage)
+
+  // Format date to yyyy年mm月dd日
+  const formatDate = (dateString: string) => {
+    // Handle format: 2025-00-00-00:00 or 2025-01-15-14:00
+    const parts = dateString.split('-')
+    if (parts.length >= 3) {
+      const year = parts[0]
+      const month = parts[1]
+      const day = parts[2].split('-')[0] // Remove time part if exists
+      return `${year}年${month}月${day}日`
+    }
+    return dateString
+  }
 
   // Calculate current events to display
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -421,10 +511,64 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
   return (
     <PageWrapper>
       <ContentWrapper>
-        <Header>
+        <SectionTitle>
           <AccentBar />
-          <Title>活動列表</Title>
-        </Header>
+          <Title>活動</Title>
+        </SectionTitle>
+
+        <FilterBar>
+          <FilterGroup>
+            <FilterLabel htmlFor="location-filter">活動地點</FilterLabel>
+            <Select
+              id="location-filter"
+              value={selectedLocation}
+              onChange={(e) => {
+                setSelectedLocation(e.target.value)
+                setCurrentPage(1)
+                gtag.sendEvent('events', 'filter', `location-${e.target.value}`)
+              }}
+            >
+              <option value="all">全部</option>
+              <option value="taipei">台北市</option>
+              <option value="new-taipei">新北市</option>
+              <option value="taoyuan">桃園市</option>
+              <option value="taichung">台中市</option>
+              <option value="tainan">台南市</option>
+              <option value="kaohsiung">高雄市</option>
+              <option value="other">其他縣市</option>
+            </Select>
+          </FilterGroup>
+
+          <FilterGroup>
+            <FilterLabel htmlFor="date-filter">日期</FilterLabel>
+            <Select
+              id="date-filter"
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.target.value)
+                setCurrentPage(1)
+                gtag.sendEvent('events', 'filter', `date-${e.target.value}`)
+              }}
+            >
+              <option value="all">全部</option>
+              <option value="2025-01">2025-01</option>
+              <option value="2025-02">2025-02</option>
+              <option value="2025-03">2025-03</option>
+              <option value="2025-04">2025-04</option>
+              <option value="2025-05">2025-05</option>
+              <option value="2025-06">2025-06</option>
+            </Select>
+          </FilterGroup>
+
+          <SubmitButton
+            href="https://forms.gle/your-form-id"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => gtag.sendEvent('events', 'click', 'submit-event')}
+          >
+            我要刊登
+          </SubmitButton>
+        </FilterBar>
 
         <EventGrid>
           {currentEvents.map((event) => (
@@ -434,11 +578,9 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
               >
                 <EventImage $image={event.image} />
                 <EventContent>
+                  <EventDate>{formatDate(event.date)}</EventDate>
                   <EventTitle>{event.title}</EventTitle>
-                  <EventMeta>
-                    <EventDate>{event.date}</EventDate>
-                    <EventOrganizer>{event.organizer}</EventOrganizer>
-                  </EventMeta>
+                  <EventOrganizer>{event.organizer}</EventOrganizer>
                 </EventContent>
               </EventCard>
             </Link>
