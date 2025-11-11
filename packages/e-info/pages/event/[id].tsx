@@ -5,6 +5,10 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { NextPageWithLayout } from '~/pages/_app'
+import BookmarkIcon from '~/public/icons/bookmark.svg'
+import FacebookIcon from '~/public/icons/facebook.svg'
+import LineIcon from '~/public/icons/line.svg'
+import XIcon from '~/public/icons/x.svg'
 import { setCacheControl } from '~/utils/common'
 
 const PageWrapper = styled.div`
@@ -122,13 +126,38 @@ const MetaValue = styled.div`
   }
 `
 
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
-  margin: 48px 0;
+const ShareButtons = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 40px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    margin: 60px 0;
+    margin-bottom: 48px;
+  }
+`
+
+const ShareButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 `
 
@@ -232,6 +261,37 @@ type PageProps = {
 }
 
 const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+  }
+
+  const handleShareFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        window.location.href
+      )}`,
+      '_blank'
+    )
+  }
+
+  const handleShareX = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+        window.location.href
+      )}`,
+      '_blank'
+    )
+  }
+
+  const handleShareLine = () => {
+    window.open(
+      `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
+        window.location.href
+      )}`,
+      '_blank'
+    )
+  }
+
   return (
     <PageWrapper>
       <HeroSection>
@@ -260,6 +320,23 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
               </MetaLabel>
             </MetaItem>
           </EventMetaGrid>
+          <ShareButtons>
+            <ShareButton onClick={handleCopyLink} aria-label="複製連結">
+              <BookmarkIcon />
+            </ShareButton>
+            <ShareButton
+              onClick={handleShareFacebook}
+              aria-label="分享到 Facebook"
+            >
+              <FacebookIcon />
+            </ShareButton>
+            <ShareButton onClick={handleShareX} aria-label="分享到 X">
+              <XIcon />
+            </ShareButton>
+            <ShareButton onClick={handleShareLine} aria-label="分享到 Line">
+              <LineIcon />
+            </ShareButton>
+          </ShareButtons>
         </EventHeader>
 
         <EventContent>
