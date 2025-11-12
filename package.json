@@ -18,6 +18,9 @@
     "url": "https://github.com/readr-media/Sachiel/issues"
   },
   "homepage": "https://github.com/readr-media/Sachiel#readme",
+  "engines": {
+    "node": "^20.19.5"
+  },
   "devDependencies": {
     "eslint": "8.24.0",
     "eslint-config-prettier": "^8.5.0",
