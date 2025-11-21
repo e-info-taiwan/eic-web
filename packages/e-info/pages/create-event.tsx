@@ -1,5 +1,6 @@
 // 建立活動頁面
 import type { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -378,6 +379,7 @@ type FormErrors = {
 }
 
 const CreateEventPage: NextPageWithLayout = () => {
+  const router = useRouter()
   const [formData, setFormData] = useState<FormData>({
     name: '',
     image: null,
@@ -488,7 +490,8 @@ const CreateEventPage: NextPageWithLayout = () => {
     if (validateForm()) {
       // TODO: Submit form data
       console.log('Form submitted:', formData)
-      alert('表單已送出！（測試模式）')
+      // Redirect to completion page
+      router.push('/submission-complete')
     }
   }
 
