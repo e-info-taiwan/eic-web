@@ -18,18 +18,42 @@ try {
 
 let API_ENDPOINT = ''
 let EDITOOLS_API_ENDPOINT = ''
+let FIREBASE_CONFIG = {
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+}
 
 switch (ENV) {
   case 'prod':
     API_ENDPOINT = 'https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
+    FIREBASE_CONFIG = {
+      apiKey: '',
+      authDomain: '',
+      projectId: '',
+      storageBucket: '',
+      messagingSenderId: '',
+      appId: '',
+    }
     break
   case 'staging':
     API_ENDPOINT =
       'https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/graphql'
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
+    FIREBASE_CONFIG = {
+      apiKey: '',
+      authDomain: '',
+      projectId: '',
+      storageBucket: '',
+      messagingSenderId: '',
+      appId: '',
+    }
     break
   case 'dev':
   default:
@@ -37,14 +61,45 @@ switch (ENV) {
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
+    FIREBASE_CONFIG = {
+      // 測試需要，後續請更換
+      apiKey: 'AIzaSyAPJDplwypAUNzeLaBN8aIGlMO2MJXm6pc',
+      authDomain: 'eic-test-project-4d375.firebaseapp.com',
+      projectId: 'eic-test-project-4d375',
+      storageBucket: 'eic-test-project-4d375.firebasestorage.app',
+      messagingSenderId: '777373177504',
+      appId: '1:777373177504:web:0ad8ec47384323330ddbc5',
+    }
     break
 }
 
 if (USE_MOCK_SERVER) API_ENDPOINT = `http://localhost:${MOCK_API_SERVER_PORT}/`
 
+// 環境變數優先覆蓋 Firebase 設定（各欄位獨立檢查）
+if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+  FIREBASE_CONFIG.apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+}
+if (process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) {
+  FIREBASE_CONFIG.authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+}
+if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+  FIREBASE_CONFIG.projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+}
+if (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET) {
+  FIREBASE_CONFIG.storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+}
+if (process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID) {
+  FIREBASE_CONFIG.messagingSenderId =
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+}
+if (process.env.NEXT_PUBLIC_FIREBASE_APP_ID) {
+  FIREBASE_CONFIG.appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+}
+
 export {
   API_ENDPOINT,
   EDITOOLS_API_ENDPOINT,
+  FIREBASE_CONFIG,
   MISO_API_KEY,
   MOCK_API_SERVER_PORT,
   OAUTH_CLIENT_ID,
