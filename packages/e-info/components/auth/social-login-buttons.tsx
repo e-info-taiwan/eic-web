@@ -7,7 +7,9 @@ const ButtonsContainer = styled.div`
   width: 100%;
 `
 
-const SocialButton = styled.button<{ $variant: 'facebook' | 'google' | 'apple' }>`
+const SocialButton = styled.button<{
+  $variant: 'facebook' | 'google' | 'apple'
+}>`
   display: flex;
   align-items: center;
   justify-content: center;

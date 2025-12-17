@@ -82,9 +82,9 @@ type NewsletterOptionsProps = {
   dailyNewsletter: boolean
   weeklyNewsletter: boolean
   newsletterFormat: 'general' | 'beautified'
-  onDailyChange: (checked: boolean) => void
-  onWeeklyChange: (checked: boolean) => void
-  onFormatChange: (format: 'general' | 'beautified') => void
+  onDailyChange: (_checked: boolean) => void
+  onWeeklyChange: (_checked: boolean) => void
+  onFormatChange: (_format: 'general' | 'beautified') => void
 }
 
 const NewsletterOptions = ({

@@ -17,7 +17,6 @@ import { createUserProfile } from '~/lib/firebase/firestore'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type {
   InterestedCategory,
-  LocationOption,
   RegisterFormData,
   RegisterFormErrors,
   RegisterFormValidation,
@@ -266,8 +265,13 @@ const EyeOffIcon = () => (
 const RegisterPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { email: queryEmail, provider } = router.query
-  const { firebaseUser, signUpWithEmail, error, clearError, refreshUserProfile } =
-    useAuth()
+  const {
+    firebaseUser,
+    signUpWithEmail,
+    error,
+    clearError,
+    refreshUserProfile,
+  } = useAuth()
 
   const [formData, setFormData] = useState<RegisterFormData>({
     name: '',
@@ -501,7 +505,9 @@ const RegisterPage: NextPageWithLayout = () => {
                   message={VALIDATION_RULES.password.message}
                   errorMessage={VALIDATION_RULES.password.errorMessage}
                 />
-                {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
+                {errors.password && (
+                  <ErrorMessage>{errors.password}</ErrorMessage>
+                )}
               </FormGroup>
 
               <FormGroup>
@@ -609,7 +615,11 @@ const RegisterPage: NextPageWithLayout = () => {
             <PrimaryButton type="submit" disabled={loading}>
               註冊會員
             </PrimaryButton>
-            <SecondaryButton type="button" onClick={handleBack} disabled={loading}>
+            <SecondaryButton
+              type="button"
+              onClick={handleBack}
+              disabled={loading}
+            >
               回上一步
             </SecondaryButton>
           </ButtonGroup>

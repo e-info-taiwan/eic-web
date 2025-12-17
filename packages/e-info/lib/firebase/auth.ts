@@ -1,3 +1,4 @@
+import type { User } from 'firebase/auth'
 import {
   createUserWithEmailAndPassword,
   FacebookAuthProvider,
@@ -9,7 +10,6 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
-  type User,
 } from 'firebase/auth'
 
 import { auth } from './config'
@@ -54,5 +54,5 @@ export const checkEmailExists = async (email: string): Promise<boolean> => {
 export const signOut = () => firebaseSignOut(auth)
 
 // Auth state observer
-export const onAuthChange = (callback: (user: User | null) => void) =>
+export const onAuthChange = (callback: (_user: User | null) => void) =>
   onAuthStateChanged(auth, callback)

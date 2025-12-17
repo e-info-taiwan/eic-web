@@ -28,11 +28,7 @@ const LoginResultPage: NextPageWithLayout = () => {
 
   return (
     <PageWrapper>
-      <AuthResultCard
-        type="login"
-        success={isSuccess}
-        onRetry={handleRetry}
-      />
+      <AuthResultCard type="login" success={isSuccess} onRetry={handleRetry} />
     </PageWrapper>
   )
 }

@@ -1,6 +1,8 @@
 import styled from 'styled-components'
 
-const IndicatorWrapper = styled.div<{ $status: 'valid' | 'invalid' | 'neutral' }>`
+const IndicatorWrapper = styled.div<{
+  $status: 'valid' | 'invalid' | 'neutral'
+}>`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -42,7 +44,8 @@ const ValidationIndicator = ({
   errorMessage,
 }: ValidationIndicatorProps) => {
   const status = isValid === null ? 'neutral' : isValid ? 'valid' : 'invalid'
-  const displayMessage = isValid === false && errorMessage ? errorMessage : message
+  const displayMessage =
+    isValid === false && errorMessage ? errorMessage : message
 
   return (
     <IndicatorWrapper $status={status}>
