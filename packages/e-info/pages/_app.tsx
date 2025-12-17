@@ -18,6 +18,7 @@ import { ReadrStyles } from '~/components/layout/readr-styles'
 import { DEFAULT_HEADER_CATEGORY_LIST } from '~/constants/constant'
 import { HEADER_JSON_URL } from '~/constants/environment-variables'
 import { LATEST_POSTS_IN_CATEGORIES_URL } from '~/constants/environment-variables'
+import { AuthProvider } from '~/contexts/auth-context'
 import CategoryListContext from '~/contexts/category-list'
 import HeaderCategoriesAndRelatePostsContext from '~/contexts/header-categories-and-related-posts'
 import type { Category } from '~/graphql/query/category'
@@ -64,15 +65,17 @@ const MyApp = ({ Component, pageProps, props }: AppPropsWithLayout) => {
       <ReadrStyles />
       <ApolloProvider client={client}>
         <ThemeProvider theme={theme}>
-          <HeaderCategoriesAndRelatePostsContext.Provider
-            value={props.categoriesAndRelatedPosts}
-          >
-            <CategoryListContext.Provider value={props.categoryList}>
-              {getLayout(<Component {...pageProps} />)}
-            </CategoryListContext.Provider>
-            <Footer />
-            <GDPRControl />
-          </HeaderCategoriesAndRelatePostsContext.Provider>
+          <AuthProvider>
+            <HeaderCategoriesAndRelatePostsContext.Provider
+              value={props.categoriesAndRelatedPosts}
+            >
+              <CategoryListContext.Provider value={props.categoryList}>
+                {getLayout(<Component {...pageProps} />)}
+              </CategoryListContext.Provider>
+              <Footer />
+              <GDPRControl />
+            </HeaderCategoriesAndRelatePostsContext.Provider>
+          </AuthProvider>
         </ThemeProvider>
       </ApolloProvider>
       {/* use react script rather than next/Script to let the script show on the source of the html (view-source:) */}
