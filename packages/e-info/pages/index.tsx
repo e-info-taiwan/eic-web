@@ -52,8 +52,18 @@ import type { Feature } from '~/graphql/query/feature'
 import { features as featuresQuery } from '~/graphql/query/feature'
 import type { Quote } from '~/graphql/query/quote'
 import { quotes as quotesQuery } from '~/graphql/query/quote'
-import type { Section, SectionCategory } from '~/graphql/query/section'
-import { sectionWithCategoriesAndPosts } from '~/graphql/query/section'
+import type {
+  CategoryPost,
+  CategoryWithPosts,
+  Section,
+  SectionCategory,
+  Topic,
+} from '~/graphql/query/section'
+import {
+  categoryWithPosts,
+  sectionWithCategoriesAndPosts,
+  topicsWithPosts,
+} from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
@@ -82,6 +92,8 @@ type PageProps = {
   columnCategories: SectionCategory[]
   newsCategories: SectionCategory[]
   greenCategories: SectionCategory[]
+  highlightPosts: CategoryPost[]
+  topics: Topic[]
 }
 
 const HiddenAnchor = styled.div`
@@ -118,6 +130,8 @@ const Index: NextPageWithLayout<PageProps> = ({
   columnCategories,
   newsCategories,
   greenCategories,
+  highlightPosts,
+  topics,
 }) => {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
@@ -134,13 +148,13 @@ const Index: NextPageWithLayout<PageProps> = ({
 
       {/* Demo - begin */}
       <MainCarousel />
-      <HighlightSection />
+      <HighlightSection posts={highlightPosts} />
       <Inforgraphic />
       <NewsSection categories={newsCategories} />
       <AdContent />
       <SpecialColumnSection categories={columnCategories} />
       <SupplementSection categories={supplementCategories} />
-      <FeaturedTopicsSection />
+      <FeaturedTopicsSection topics={topics} />
       <AdContent />
       <GreenConsumptionSection categories={greenCategories} />
       {/* Demo - end */}
@@ -207,6 +221,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let columnCategories: SectionCategory[] = []
   let newsCategories: SectionCategory[] = []
   let greenCategories: SectionCategory[] = []
+  let highlightPosts: CategoryPost[] = []
+  let topics: Topic[] = []
 
   try {
     // Fetch news section (Section ID: 3 = 時事新聞)
@@ -314,6 +330,59 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
       if (data?.sections?.[0]?.categories) {
         greenCategories = data.sections[0].categories
+      }
+    }
+
+    // Fetch highlight section (Category ID: 5 = 焦點話題)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        categories: CategoryWithPosts[]
+      }>({
+        query: categoryWithPosts,
+        variables: {
+          categoryId: '5',
+          postsCount: 3,
+        },
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `categories` query for highlight'),
+          'GraphQLError',
+          'failed to complete `categories` for highlight',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.categories?.[0]?.posts) {
+        highlightPosts = data.categories[0].posts
+      }
+    }
+
+    // Fetch topics (深度專題)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        topics: Topic[]
+      }>({
+        query: topicsWithPosts,
+        variables: {
+          postsPerTopic: 4,
+        },
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `topics` query'),
+          'GraphQLError',
+          'failed to complete `topics`',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.topics) {
+        topics = data.topics
       }
     }
     // TODO: Temporarily disabled until GraphQL queries are migrated to new API
@@ -650,6 +719,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       columnCategories,
       newsCategories,
       greenCategories,
+      highlightPosts,
+      topics,
     },
   }
 }

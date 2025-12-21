@@ -1,5 +1,10 @@
-import React from 'react'
+import SharedImage from '@readr-media/react-image'
+import Link from 'next/link'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { Topic } from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -94,10 +99,11 @@ const CategoryTabs = styled.div`
   }
 `
 
-const CategoryTab = styled.button`
+const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
-  color: #373740;
+  color: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.primary[20] : '#373740'};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -110,11 +116,8 @@ const CategoryTab = styled.button`
   &:hover {
     color: ${({ theme }) => theme.colors.primary[20]};
   }
-
-  &.active {
-    color: ${({ theme }) => theme.colors.primary[20]};
-  }
 `
+
 const MainContent = styled.div`
   display: grid;
   grid-template-columns: 1fr;
@@ -139,26 +142,23 @@ const LeftSection = styled.div`
   order: 0;
 `
 
-const HeroArticle = styled.div`
+const HeroArticle = styled.a`
   position: relative;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease;
+  display: block;
+  text-decoration: none;
 `
 
-const HeroImage = styled.img`
+const HeroImageWrapper = styled.div`
   width: 100%;
-  height: auto;
-  object-fit: cover;
   aspect-ratio: 1;
+  background-color: #d1d5db;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    aspect-ratio: attr(width) / attr(height);
-  }
-  // Desktop
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    aspect-ratio: attr(width) / attr(height);
+    aspect-ratio: 760 / 507;
   }
 `
 
@@ -197,12 +197,13 @@ const ArticlesList = styled.div`
   gap: 1.5rem;
 `
 
-const ArticleItem = styled.div`
+const ArticleItem = styled.a`
   display: grid;
   grid-template-columns: 1fr 130px;
   gap: 12px;
   padding: 0 23px;
   cursor: pointer;
+  text-decoration: none;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
@@ -267,18 +268,24 @@ const ArticleExcerpt = styled.p`
   line-height: 1.5;
   margin: 0;
   display: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    display: block;
+    display: -webkit-box;
   }
 `
 
-const ArticleImage = styled.img`
+const ArticleImageWrapper = styled.div`
   width: 100%;
   height: auto;
-  object-fit: cover;
-  aspect-ratio: attr(width) / attr(height);
+  aspect-ratio: 3 / 2;
+  background-color: #d1d5db;
+  overflow: hidden;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
@@ -378,11 +385,12 @@ const RankingList = styled.div`
   }
 `
 
-const RankingItem = styled.div`
+const RankingItem = styled.a`
   display: flex;
   flex-direction: column;
   gap: 8px;
   cursor: pointer;
+  text-decoration: none;
 `
 
 const RankingNumber = styled.div`
@@ -436,41 +444,13 @@ const Divider = styled.hr`
   }
 `
 
-// Sample data
-const heroArticle = {
-  title: '在理想中擱淺的鯨豚觀察員',
-  image:
-    'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=760&h=507&fit=crop',
-  alt: 'Whale watching illustration',
-}
+const EmptyMessage = styled.p`
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+`
 
-const articles = [
-  {
-    id: 1,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    excerpt:
-      '核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照限定，在「屆期前」都可提出申請，核電廠運轉年限最多再延長20年、已停機',
-    image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&h=267&fit=crop',
-  },
-  {
-    id: 2,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    excerpt:
-      '核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照限定，在「屆期前」都可提出申請，核電廠運轉年限最多再延長20年、已停機',
-    image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&h=267&fit=crop',
-  },
-  {
-    id: 3,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    excerpt:
-      '核三將於本周六（17日）停機，立法院在野黨立委掀人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照限定，在「屆期前」都可提出申請，核電廠運轉年限最多再延長20年、已停機',
-    image:
-      'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=400&h=267&fit=crop',
-  },
-]
-
+// Sample rankings data (this could be fetched from API later)
 const rankings = [
   {
     rank: 1,
@@ -486,7 +466,36 @@ const rankings = [
   },
 ]
 
-const FeaturedTopicsSection = () => {
+type FeaturedTopicsSectionProps = {
+  topics?: Topic[]
+}
+
+const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
+  // Filter topics that have posts
+  const topicsWithPosts = topics.filter(
+    (topic) => topic.posts && topic.posts.length > 0
+  )
+
+  const [activeTopic, setActiveTopic] = useState<string>(
+    topicsWithPosts[0]?.id || ''
+  )
+
+  const handleTopicClick = (topicId: string) => {
+    setActiveTopic(topicId)
+  }
+
+  // If no topics with posts, don't render the section
+  if (topicsWithPosts.length === 0) {
+    return null
+  }
+
+  const currentTopic = topicsWithPosts.find((topic) => topic.id === activeTopic)
+  const currentPosts = currentTopic?.posts || []
+
+  // Hero uses topic info, articles list uses posts
+  const heroTopic = currentTopic
+  const articlePosts = currentPosts.slice(0, 3)
+
   return (
     <Container>
       {/* Header */}
@@ -494,35 +503,90 @@ const FeaturedTopicsSection = () => {
         <AccentBar />
         <Title>深度專題</Title>
         <CategoryTabs>
-          <CategoryTab>次分類範例文字1</CategoryTab>
-          <CategoryTab>次分類範例文字2</CategoryTab>
-          <CategoryTab>次分類範例文字3</CategoryTab>
-          <CategoryTab>次分類範例文字4</CategoryTab>
+          {topicsWithPosts.map((topic) => (
+            <CategoryTab
+              key={topic.id}
+              $isActive={activeTopic === topic.id}
+              onClick={() => handleTopicClick(topic.id)}
+            >
+              {topic.title}
+            </CategoryTab>
+          ))}
         </CategoryTabs>
       </Header>
 
       {/* Main Content */}
       <MainContent>
         <LeftSection>
-          {/* Hero Article */}
-          <HeroArticle>
-            <HeroImage src={heroArticle.image} alt={heroArticle.alt} />
-            <HeroOverlay>
-              <HeroTitle>{heroArticle.title}</HeroTitle>
-            </HeroOverlay>
-          </HeroArticle>
+          {/* Hero Article - Links to topic page */}
+          {heroTopic && (
+            <Link href={`/topic/${heroTopic.id}`} passHref legacyBehavior>
+              <HeroArticle>
+                <HeroImageWrapper>
+                  <SharedImage
+                    images={heroTopic.heroImage?.resized || {}}
+                    imagesWebP={heroTopic.heroImage?.resizedWebp || {}}
+                    defaultImage={DEFAULT_POST_IMAGE_PATH}
+                    alt={heroTopic.title}
+                    priority={true}
+                    rwd={{
+                      mobile: '100vw',
+                      tablet: '100vw',
+                      desktop: '760px',
+                      default: '760px',
+                    }}
+                  />
+                </HeroImageWrapper>
+                <HeroOverlay>
+                  <HeroTitle>{heroTopic.title}</HeroTitle>
+                </HeroOverlay>
+              </HeroArticle>
+            </Link>
+          )}
 
-          {/* Articles List */}
+          {/* Articles List - Links to individual posts */}
           <ArticlesList>
-            {articles.map((article) => (
-              <ArticleItem key={article.id}>
-                <ArticleContent>
-                  <ArticleTitle>{article.title}</ArticleTitle>
-                  <ArticleExcerpt>{article.excerpt}</ArticleExcerpt>
-                </ArticleContent>
-                <ArticleImage src={article.image} alt={article.title} />
-              </ArticleItem>
-            ))}
+            {articlePosts.length > 0 ? (
+              articlePosts.map((post) => {
+                const image = post.heroImage?.resized
+                const imageWebp = post.heroImage?.resizedWebp
+
+                return (
+                  <Link
+                    key={post.id}
+                    href={`/post/${post.id}`}
+                    passHref
+                    legacyBehavior
+                  >
+                    <ArticleItem>
+                      <ArticleContent>
+                        <ArticleTitle>{post.title}</ArticleTitle>
+                        {post.brief && (
+                          <ArticleExcerpt>{post.brief}</ArticleExcerpt>
+                        )}
+                      </ArticleContent>
+                      <ArticleImageWrapper>
+                        <SharedImage
+                          images={image || {}}
+                          imagesWebP={imageWebp || {}}
+                          defaultImage={DEFAULT_POST_IMAGE_PATH}
+                          alt={post.title}
+                          priority={false}
+                          rwd={{
+                            mobile: '130px',
+                            tablet: '289px',
+                            desktop: '400px',
+                            default: '400px',
+                          }}
+                        />
+                      </ArticleImageWrapper>
+                    </ArticleItem>
+                  </Link>
+                )
+              })
+            ) : (
+              <EmptyMessage>目前沒有文章</EmptyMessage>
+            )}
           </ArticlesList>
         </LeftSection>
 
@@ -536,7 +600,7 @@ const FeaturedTopicsSection = () => {
             </RankingHeader>
             <RankingList>
               {rankings.map((item) => (
-                <RankingItem key={item.rank}>
+                <RankingItem key={item.rank} href="#">
                   <RankingNumber>{item.rank}</RankingNumber>
                   <RankingContent>
                     <RankingItemTitle>{item.title}</RankingItemTitle>

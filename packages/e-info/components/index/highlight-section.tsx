@@ -1,5 +1,10 @@
+import SharedImage from '@readr-media/react-image'
+import Link from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
+
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { CategoryPost } from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -94,13 +99,14 @@ const ArticlesGrid = styled.div`
   }
 `
 
-const ArticleCard = styled.div`
+const ArticleCard = styled.a`
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   width: 200px;
+  text-decoration: none;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
@@ -121,23 +127,16 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
   margin-bottom: 12px;
+  aspect-ratio: 160 / 107;
+  background-color: #d1d5db;
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
     margin-right: 12px;
-  }
-`
-
-const ArticleImage = styled.img`
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  aspect-ratio: attr(width) / attr(height);
-
-  // Desktop
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     width: 160px;
+    height: 107px;
+    flex-shrink: 0;
   }
 `
 
@@ -160,32 +159,23 @@ const ArticleTitle = styled.h3`
   }
 `
 
-// Articles data
-const articlesData = [
-  {
-    id: 1,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-    image:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop',
-    alt: 'Speaker at podium',
-  },
-  {
-    id: 2,
-    title: '走進彼桑拉返，看見傳統現代交融的布農豆豆班',
-    image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=250&fit=crop',
-    alt: 'Traditional market scene',
-  },
-  {
-    id: 3,
-    title: '走進彼桑拉返，看見傳統現代交融的布農豆豆班',
-    image:
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=250&fit=crop',
-    alt: 'Modern building complex',
-  },
-]
+const EmptyMessage = styled.p`
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  grid-column: 1 / -1;
+`
 
-const HighlightSection = () => {
+type HighlightSectionProps = {
+  posts?: CategoryPost[]
+}
+
+const HighlightSection = ({ posts = [] }: HighlightSectionProps) => {
+  // If no posts, don't render the section
+  if (posts.length === 0) {
+    return null
+  }
+
   return (
     <Container>
       {/* Header */}
@@ -196,14 +186,42 @@ const HighlightSection = () => {
 
       {/* Articles Grid */}
       <ArticlesGrid>
-        {articlesData.map((article) => (
-          <ArticleCard key={article.id}>
-            <ImageContainer>
-              <ArticleImage src={article.image} alt={article.alt} />
-            </ImageContainer>
-            <ArticleTitle>{article.title}</ArticleTitle>
-          </ArticleCard>
-        ))}
+        {posts.length > 0 ? (
+          posts.map((post) => {
+            const image = post.heroImage?.resized
+            const imageWebp = post.heroImage?.resizedWebp
+
+            return (
+              <Link
+                key={post.id}
+                href={`/post/${post.id}`}
+                passHref
+                legacyBehavior
+              >
+                <ArticleCard>
+                  <ImageContainer>
+                    <SharedImage
+                      images={image || {}}
+                      imagesWebP={imageWebp || {}}
+                      defaultImage={DEFAULT_POST_IMAGE_PATH}
+                      alt={post.title}
+                      priority={false}
+                      rwd={{
+                        mobile: '200px',
+                        tablet: '33vw',
+                        desktop: '160px',
+                        default: '160px',
+                      }}
+                    />
+                  </ImageContainer>
+                  <ArticleTitle>{post.title}</ArticleTitle>
+                </ArticleCard>
+              </Link>
+            )
+          })
+        ) : (
+          <EmptyMessage>目前沒有文章</EmptyMessage>
+        )}
       </ArticlesGrid>
     </Container>
   )
