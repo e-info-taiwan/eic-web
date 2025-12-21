@@ -1,5 +1,10 @@
+import SharedImage from '@readr-media/react-image'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { SectionCategory } from '~/graphql/query/section'
 
 // Styled Components
 const SectionContainer = styled.section`
@@ -149,13 +154,14 @@ const ArticlesGrid = styled.div`
   }
 `
 
-const ArticleCard = styled.div`
+const ArticleCard = styled.a`
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   width: 200px;
+  text-decoration: none;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
@@ -171,22 +177,17 @@ const ArticleCard = styled.div`
   }
 `
 
-const ImageContainer = styled.div`
+const ImageWrapper = styled.div`
   position: relative;
   overflow: hidden;
   margin-bottom: 12px;
+  aspect-ratio: 288 / 190;
+  background-color: #2d7a4f;
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     margin-bottom: 12px;
   }
-`
-
-const ArticleImage = styled.img`
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  aspect-ratio: attr(width) / attr(height);
 `
 
 const ArticleTitle = styled.h3`
@@ -208,118 +209,42 @@ const ArticleTitle = styled.h3`
   }
 `
 
-// Categories and Sample data
-const categories = [
-  { id: 'green1', name: '次分類範例文字1' },
-  { id: 'green2', name: '次分類範例文字2' },
-  { id: 'green3', name: '次分類範例文字3' },
-  { id: 'green4', name: '次分類範例文字4' },
-]
+const EmptyMessage = styled.p`
+  text-align: center;
+  color: ${({ theme }) => theme.colors.primary[100]};
+  padding: 2rem;
+  grid-column: 1 / -1;
+`
 
-const articlesData = {
-  green1: [
-    {
-      id: 1,
-      title: '減塑新生活 環保餐具選擇指南',
-      alt: '減塑新生活 環保餐具選擇指南',
-      image:
-        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=288&h=190&fit=crop',
-    },
-    {
-      id: 2,
-      title: '線上購物綠色選擇 包裝簡化愛地球',
-      alt: '線上購物綠色選擇',
-      image:
-        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=288&h=190&fit=crop',
-    },
-    {
-      id: 3,
-      title: '線色消費指南 在地食材的環保選擇',
-      alt: '線色消費指南',
-      image:
-        'https://images.unsplash.com/photo-1542838132-92c53300491e?w=288&h=190&fit=crop',
-    },
-  ],
-  green2: [
-    {
-      id: 1,
-      title: '太陽能在家庭 綠能生活新選擇',
-      alt: '太陽能在家庭',
-      image:
-        'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=288&h=190&fit=crop',
-    },
-    {
-      id: 2,
-      title: '節能家電新指南 智慧用電省錢省能',
-      alt: '節能家電新指南',
-      image:
-        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=288&h=190&fit=crop',
-    },
-    {
-      id: 3,
-      title: '電動車時代來臨 充電設施完善規劃',
-      alt: '電動車時代來臨',
-      image:
-        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=288&h=190&fit=crop',
-    },
-  ],
-  green3: [
-    {
-      id: 1,
-      title: '循環時尚新風尚 二手衣物的美學重生',
-      alt: '循環時尚新風尚',
-      image:
-        'https://images.unsplash.com/photo-1445205170230-053b83016050?w=288&h=190&fit=crop',
-    },
-    {
-      id: 2,
-      title: '網路交換平台 物品共享經濟的實踐',
-      alt: '網路交換平台',
-      image:
-        'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=288&h=190&fit=crop',
-    },
-    {
-      id: 3,
-      title: 'DIY維修文化 讓物品延續生命力',
-      alt: 'DIY維修文化',
-      image:
-        'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=288&h=190&fit=crop',
-    },
-  ],
-  green4: [
-    {
-      id: 1,
-      title: '都市農園興起 陰台種菜的綠色生活',
-      alt: '都市農園興起',
-      image:
-        'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=288&h=190&fit=crop',
-    },
-    {
-      id: 2,
-      title: '零廢棄物生活 延續物品使用壽命',
-      alt: '零廢棄物生活',
-      image:
-        'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=288&h=190&fit=crop',
-    },
-    {
-      id: 3,
-      title: '水資源保育 日常節水小技巧',
-      alt: '水資源保育',
-      image:
-        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=288&h=190&fit=crop',
-    },
-  ],
+type GreenConsumptionSectionProps = {
+  categories?: SectionCategory[]
 }
 
-const GreenConsumptionSection = () => {
-  const [activeCategory, setActiveCategory] = useState<string>('green1')
+const GreenConsumptionSection = ({
+  categories = [],
+}: GreenConsumptionSectionProps) => {
+  // Filter categories that have posts
+  const categoriesWithPosts = categories.filter(
+    (cat) => cat.posts && cat.posts.length > 0
+  )
 
-  const currentArticles =
-    articlesData[activeCategory as keyof typeof articlesData]
+  const [activeCategory, setActiveCategory] = useState<string>(
+    categoriesWithPosts[0]?.id || ''
+  )
 
   const handleCategoryClick = (categoryId: string) => {
     setActiveCategory(categoryId)
   }
+
+  // If no categories with posts, don't render the section
+  if (categoriesWithPosts.length === 0) {
+    return null
+  }
+
+  const currentCategory = categoriesWithPosts.find(
+    (cat) => cat.id === activeCategory
+  )
+  const currentPosts = currentCategory?.posts || []
 
   return (
     <SectionContainer>
@@ -329,7 +254,7 @@ const GreenConsumptionSection = () => {
           <AccentBar />
           <Title>綠色消費</Title>
           <CategoryTabs>
-            {categories.map((category) => (
+            {categoriesWithPosts.map((category) => (
               <CategoryTab
                 key={category.id}
                 $isActive={activeCategory === category.id}
@@ -343,14 +268,42 @@ const GreenConsumptionSection = () => {
 
         {/* Articles Grid */}
         <ArticlesGrid>
-          {currentArticles.map((article) => (
-            <ArticleCard key={article.id}>
-              <ImageContainer>
-                <ArticleImage src={article.image} alt={article.alt} />
-              </ImageContainer>
-              <ArticleTitle>{article.title}</ArticleTitle>
-            </ArticleCard>
-          ))}
+          {currentPosts.length > 0 ? (
+            currentPosts.map((post) => {
+              const image = post.heroImage?.resized
+              const imageWebp = post.heroImage?.resizedWebp
+
+              return (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.id}`}
+                  passHref
+                  legacyBehavior
+                >
+                  <ArticleCard>
+                    <ImageWrapper>
+                      <SharedImage
+                        images={image || {}}
+                        imagesWebP={imageWebp || {}}
+                        defaultImage={DEFAULT_POST_IMAGE_PATH}
+                        alt={post.title}
+                        priority={false}
+                        rwd={{
+                          mobile: '200px',
+                          tablet: '33vw',
+                          desktop: '350px',
+                          default: '350px',
+                        }}
+                      />
+                    </ImageWrapper>
+                    <ArticleTitle>{post.title}</ArticleTitle>
+                  </ArticleCard>
+                </Link>
+              )
+            })
+          ) : (
+            <EmptyMessage>目前沒有文章</EmptyMessage>
+          )}
         </ArticlesGrid>
       </Container>
     </SectionContainer>

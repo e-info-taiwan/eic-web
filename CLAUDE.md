@@ -223,7 +223,8 @@ query {
 ```
 
 **Dev Environment Test Data**:
-- Topic ID `1`: "測試專題給測試文章們" (has 1 post, 2 tags)
+- Topic ID `3`: "直擊阿聯氣候新時代" (4 posts, isPinned: true)
+- Topic ID `2`: "測試用專題" (8 posts, 2 tags)
 
 #### Tag Data Structure
 
@@ -258,6 +259,50 @@ query {
   }
 }
 ```
+
+#### Section Data Structure
+
+```typescript
+type Section {
+  id: ID!
+  slug: String              // URL-friendly identifier (e.g., "latestnews")
+  name: String              // Display name (e.g., "時事新聞")
+  categories: [Category]    // Child categories
+  categoriesCount: Int      // Number of categories
+  createdAt: DateTime
+  updatedAt: DateTime
+  createdBy: User
+  updatedBy: User
+}
+```
+
+**Example Query**:
+```graphql
+query {
+  sections {
+    id
+    slug
+    name
+    categoriesCount
+    categories {
+      id
+      slug
+      name
+      postsCount
+    }
+  }
+}
+```
+
+**Dev Environment Sections**:
+| ID | Slug | Name | Categories |
+|---|---|---|---|
+| 2 | testsection | 測試大分類 | 1 |
+| 3 | latestnews | 時事新聞 | 9 |
+| 4 | column | 專欄 | 55 |
+| 5 | sub | 副刊 | 12 |
+| 6 | green | 綠色消費 | 3 |
+| 7 | critic | 評論 | 3 |
 
 #### ResizedImages Field Names
 
@@ -463,10 +508,11 @@ curl -X POST https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphq
 ```
 
 **Test IDs in Dev Environment**:
-- **Post**: `238646` (has heroImage and citations), `238651` (complete citations HTML), `238631` (has citations), `238658` (測試文章)
-- **Category**: `1` / `ecomid` / "環中" (has 1 post)
-- **Topic**: `1` / "測試專題給測試文章們" (has 1 post, 2 tags)
-- **Tags**: `13` / "中國新聞", `5` / "台灣新聞"
+- **Post**: `238659` (最新測試文章, 2025-11-23), `238646` (has heroImage and citations), `238651` (complete citations HTML)
+- **Category**: `2` / `testcategory` / "測試中分類" (1 post), `7` / `taiwannews` / "台灣新聞" (8 posts)
+- **Section**: `3` / `latestnews` / "時事新聞" (9 categories), `4` / `column` / "專欄" (55 categories)
+- **Topic**: `3` / "直擊阿聯氣候新時代" (4 posts, isPinned), `2` / "測試用專題" (8 posts, 2 tags)
+- **Tags**: `12` / "深度報導" (1 post), `13` / "中國新聞" (1 post), `16` / "回顧與前瞻" (1 post, 1 topic)
 
 ## Deployment
 
@@ -586,16 +632,17 @@ Includes simple-import-sort rules to ensure consistent import ordering.
 
 ## Development Tips
 
-1. **Testing Post Pages**: Use post ID `238646` for testing, it includes complete citations and heroImage
-2. **Testing Topic Pages**: Use topic ID `1` for testing, includes heroImage, posts, and tags
-3. **Testing Category Pages**: Use category slug `ecomid` or ID `1` for testing
-4. **Style Changes**: Use styled-components, follow existing theme settings
-5. **GraphQL Queries**: Reference complete query examples in `graphql/query/post.ts` and `graphql/query/category.ts`
-6. **Image Handling**: Prefer `resized` and `resizedWebp`, with `src` fallback
-7. **Content Rendering**: Use `contentApiData` field, not the old `content` field
-8. **Commit Messages**: Use clear descriptions, reference recent commit style
-9. **API Testing**: Use curl with `/tmp/query.json` for complex GraphQL queries (see Testing GraphQL API section)
+1. **Testing Post Pages**: Use post ID `238659` (最新) or `238646` (has citations and heroImage)
+2. **Testing Topic Pages**: Use topic ID `3` (直擊阿聯氣候新時代, isPinned) or `2` (測試用專題, 8 posts)
+3. **Testing Category Pages**: Use category slug `testcategory` or ID `2`, or `taiwannews` (8 posts)
+4. **Testing Section Pages**: Use section slug `latestnews` (時事新聞) or `column` (專欄)
+5. **Style Changes**: Use styled-components, follow existing theme settings
+6. **GraphQL Queries**: Reference complete query examples in `graphql/query/post.ts` and `graphql/query/category.ts`
+7. **Image Handling**: Prefer `resized` and `resizedWebp`, with `src` fallback
+8. **Content Rendering**: Use `contentApiData` field, not the old `content` field
+9. **Commit Messages**: Use clear descriptions, reference recent commit style
+10. **API Testing**: Use curl with `/tmp/query.json` for complex GraphQL queries (see Testing GraphQL API section)
 
 ---
 
-**Last Updated**: 2025-10-31
+**Last Updated**: 2025-12-22

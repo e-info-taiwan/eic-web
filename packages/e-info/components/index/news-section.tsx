@@ -1,5 +1,10 @@
+import SharedImage from '@readr-media/react-image'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { SectionCategory } from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -146,7 +151,9 @@ const Sidebar = styled.div`
   }
 `
 
-const NewsItem = styled.div`
+const NewsItem = styled.a`
+  display: block;
+  text-decoration: none;
   border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
   padding-bottom: 1rem;
   margin-bottom: 1rem;
@@ -190,36 +197,12 @@ const NewsTitle = styled.h3`
   }
 `
 
-const NewsExcerpt = styled.p`
-  color: #373740;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
-  margin: 0;
-  margin-top: 24px;
-
-  // Tablet
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    margin: 12px 0 24px 0;
-  }
-
-  // Desktop
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    margin: 24px 0 36px 0;
-  }
-`
-
-const FeaturedImage = styled.div`
+const FeaturedImageWrapper = styled.div`
   position: relative;
   margin-bottom: 16px;
   overflow: hidden;
-`
-
-const MainImage = styled.img`
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  aspect-ratio: attr(width) / attr(height);
+  aspect-ratio: 740 / 431;
+  background-color: #d1d5db;
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
@@ -228,7 +211,9 @@ const MainImage = styled.img`
   }
 `
 
-const FeaturedArticle = styled.div`
+const FeaturedArticle = styled.a`
+  display: block;
+  text-decoration: none;
   order: 1;
   cursor: pointer;
 
@@ -286,16 +271,8 @@ const FeaturedTitle = styled.h2`
   }
 `
 
-const FeaturedExcerpt = styled.p`
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0;
-`
-
 const RelatedArticles = styled.div`
   order: 3;
-  cursor: pointer;
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px;
@@ -312,12 +289,13 @@ const RelatedArticles = styled.div`
   }
 `
 
-const RelatedArticle = styled.div`
-  cursor: pointer;
-  transition: transform 0.3s ease;
+const RelatedArticle = styled.a`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
@@ -334,16 +312,17 @@ const RelatedArticle = styled.div`
   }
 `
 
-const RelatedImage = styled.img`
+const RelatedImageWrapper = styled.div`
   width: 100%;
-  height: auto;
-  object-fit: cover;
+  aspect-ratio: 3 / 2;
+  background-color: #d1d5db;
+  overflow: hidden;
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     width: 160px;
     height: 107px;
-    // aspect-ratio: 160 / 107;
+    flex-shrink: 0;
   }
 `
 
@@ -384,243 +363,54 @@ const RelatedTitle = styled.h4`
   }
 `
 
-// Categories and Sample data
-const categories = [
-  { id: 'category1', name: '次分類範例文字1' },
-  { id: 'category2', name: '次分類範例文字2' },
-  { id: 'category3', name: '次分類範例文字3' },
-  { id: 'category4', name: '次分類範例文字4' },
-]
+const EmptyMessage = styled.p`
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  grid-column: 1 / -1;
+`
 
-const newsData = {
-  category1: {
-    sidebar: [
-      {
-        id: 1,
-        date: '2024/01/15',
-        title: '環保政策新突破 台灣推動綠色能源轉型',
-        excerpt:
-          '政府宣布新的環保政策，將大力推動再生能源發展，預計在2030年達到50%綠能比例...',
-      },
-      {
-        id: 2,
-        date: '2024/01/14',
-        title: '氣候變遷對台灣農業的衝擊與因應策略',
-      },
-      {
-        id: 3,
-        date: '2024/01/13',
-        title: '海洋塑膠污染問題嚴重 環團呼籲減塑行動',
-      },
-      {
-        id: 4,
-        date: '2024/01/12',
-        title: '都市熱島效應加劇 綠建築成為解決方案',
-      },
-      {
-        id: 5,
-        date: '2024/01/11',
-        title: '生物多樣性保育 台灣濕地復育有成',
-      },
-    ],
-    featured: {
-      date: '2024/01/15',
-      title: '環保政策新突破 台灣推動綠色能源轉型',
-      excerpt:
-        '政府宣布新的環保政策，將大力推動再生能源發展，預計在2030年達到50%綠能比例，這項政策將帶動相關產業發展...',
-      image:
-        'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=740&h=431&fit=crop',
-    },
-    related: [
-      {
-        id: 1,
-        date: '2024/01/14',
-        title: '太陽能發電技術新突破 效率提升30%',
-        image:
-          'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=160&h=107&fit=crop',
-      },
-      {
-        id: 2,
-        date: '2024/01/13',
-        title: '風力發電離岸計畫啟動 預計年底完工',
-        image:
-          'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=160&h=107&fit=crop',
-      },
-    ],
-  },
-  category2: {
-    sidebar: [
-      {
-        id: 1,
-        date: '2024/01/20',
-        title: '科技創新驅動產業轉型 AI應用遍地開花',
-        excerpt:
-          '人工智慧技術在各產業的應用日益普及，帶動台灣科技業新一波成長...',
-      },
-      {
-        id: 2,
-        date: '2024/01/19',
-        title: '5G網路建設加速 智慧城市願景成真',
-      },
-      {
-        id: 3,
-        date: '2024/01/18',
-        title: '半導體產業持續領先 新製程技術突破',
-      },
-      {
-        id: 4,
-        date: '2024/01/17',
-        title: '電動車產業鏈完整 台灣成為關鍵供應商',
-      },
-      {
-        id: 5,
-        date: '2024/01/16',
-        title: '雲端服務需求激增 資料中心建設熱潮',
-      },
-    ],
-    featured: {
-      date: '2024/01/20',
-      title: '科技創新驅動產業轉型 AI應用遍地開花',
-      excerpt:
-        '人工智慧技術在各產業的應用日益普及，從製造業的智慧工廠到服務業的客服機器人，AI正在改變我們的工作和生活方式...',
-      image:
-        'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=740&h=431&fit=crop',
-    },
-    related: [
-      {
-        id: 1,
-        date: '2024/01/19',
-        title: 'ChatGPT掀起AI熱潮 台灣科技業積極布局',
-        image:
-          'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=160&h=107&fit=crop',
-      },
-      {
-        id: 2,
-        date: '2024/01/18',
-        title: '自駕車技術突破 台灣測試場域正式啟用',
-        image:
-          'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=160&h=107&fit=crop',
-      },
-    ],
-  },
-  category3: {
-    sidebar: [
-      {
-        id: 1,
-        date: '2024/01/25',
-        title: '教育改革新方向 108課綱實施成果檢討',
-        excerpt: '教育部公布108課綱實施兩年成果，學生學習成效顯著提升...',
-      },
-      {
-        id: 2,
-        date: '2024/01/24',
-        title: '數位學習平台普及 偏鄉教育資源平衡',
-      },
-      {
-        id: 3,
-        date: '2024/01/23',
-        title: '技職教育受重視 產學合作培育人才',
-      },
-      {
-        id: 4,
-        date: '2024/01/22',
-        title: '雙語教育政策推動 提升學生國際競爭力',
-      },
-      {
-        id: 5,
-        date: '2024/01/21',
-        title: '終身學習風氣興起 成人教育需求增長',
-      },
-    ],
-    featured: {
-      date: '2024/01/25',
-      title: '教育改革新方向 108課綱實施成果檢討',
-      excerpt:
-        '教育部公布108課綱實施兩年來的成果報告，顯示學生在核心素養培養方面有顯著進步，批判思考和問題解決能力明顯提升...',
-      image:
-        'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=740&h=431&fit=crop',
-    },
-    related: [
-      {
-        id: 1,
-        date: '2024/01/24',
-        title: 'STEAM教育夯 培養跨領域人才',
-        image:
-          'https://images.unsplash.com/photo-1606761568499-6d2451b23c66?w=160&h=107&fit=crop',
-      },
-      {
-        id: 2,
-        date: '2024/01/23',
-        title: '線上教學常態化 教師數位能力待提升',
-        image:
-          'https://images.unsplash.com/photo-1588072432836-e10032774350?w=160&h=107&fit=crop',
-      },
-    ],
-  },
-  category4: {
-    sidebar: [
-      {
-        id: 1,
-        date: '2024/01/30',
-        title: '健康醫療新突破 精準醫療時代來臨',
-        excerpt: '基因檢測技術進步，個人化醫療成為趨勢，治療效果大幅提升...',
-      },
-      {
-        id: 2,
-        date: '2024/01/29',
-        title: '長照政策持續優化 銀髮族生活品質提升',
-      },
-      {
-        id: 3,
-        date: '2024/01/28',
-        title: '心理健康受關注 職場壓力管理成重點',
-      },
-      {
-        id: 4,
-        date: '2024/01/27',
-        title: '預防醫學興起 健檢項目更加多元',
-      },
-      {
-        id: 5,
-        date: '2024/01/26',
-        title: '遠距醫療普及 偏鄉醫療資源不足問題改善',
-      },
-    ],
-    featured: {
-      date: '2024/01/30',
-      title: '健康醫療新突破 精準醫療時代來臨',
-      excerpt:
-        '隨著基因檢測技術的快速發展，精準醫療正在改變傳統的治療模式，醫師能根據患者的基因特徵制定個人化的治療方案...',
-      image:
-        'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=740&h=431&fit=crop',
-    },
-    related: [
-      {
-        id: 1,
-        date: '2024/01/29',
-        title: '免疫療法新突破 癌症治療新希望',
-        image:
-          'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=160&h=107&fit=crop',
-      },
-      {
-        id: 2,
-        date: '2024/01/28',
-        title: 'AI輔助診斷系統 提高醫療準確性',
-        image:
-          'https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=160&h=107&fit=crop',
-      },
-    ],
-  },
+// Helper function to format date
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}/${month}/${day}`
 }
 
-const NewsSection = () => {
-  const [activeCategory, setActiveCategory] = useState<string>('category1')
+type NewsSectionProps = {
+  categories?: SectionCategory[]
+}
 
-  const currentData = newsData[activeCategory as keyof typeof newsData]
+const NewsSection = ({ categories = [] }: NewsSectionProps) => {
+  // Filter categories that have posts
+  const categoriesWithPosts = categories.filter(
+    (cat) => cat.posts && cat.posts.length > 0
+  )
+
+  const [activeCategory, setActiveCategory] = useState<string>(
+    categoriesWithPosts[0]?.id || ''
+  )
 
   const handleCategoryClick = (categoryId: string) => {
     setActiveCategory(categoryId)
   }
+
+  // If no categories with posts, don't render the section
+  if (categoriesWithPosts.length === 0) {
+    return null
+  }
+
+  const currentCategory = categoriesWithPosts.find(
+    (cat) => cat.id === activeCategory
+  )
+  const currentPosts = currentCategory?.posts || []
+
+  // Featured post is the first one, sidebar gets posts 1-5, related gets posts 6-7
+  const featuredPost = currentPosts[0]
+  const sidebarPosts = currentPosts.slice(1, 6)
+  const relatedPosts = currentPosts.slice(6, 8)
 
   return (
     <Container>
@@ -629,7 +419,7 @@ const NewsSection = () => {
         <AccentBar />
         <Title>時事新聞</Title>
         <CategoryTabs>
-          {categories.map((category) => (
+          {categoriesWithPosts.map((category) => (
             <CategoryTab
               key={category.id}
               $isActive={activeCategory === category.id}
@@ -643,44 +433,98 @@ const NewsSection = () => {
 
       {/* Main Content */}
       <MainContent>
-        {/* A */}
+        {/* A - Sidebar */}
         <Sidebar>
-          {currentData.sidebar.map((news) => (
-            <NewsItem key={news.id}>
-              <NewsDate>{news.date}</NewsDate>
-              <NewsTitle>{news.title}</NewsTitle>
-              {news.excerpt && <NewsExcerpt>{news.excerpt}</NewsExcerpt>}
-            </NewsItem>
-          ))}
+          {sidebarPosts.length > 0 ? (
+            sidebarPosts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/post/${post.id}`}
+                passHref
+                legacyBehavior
+              >
+                <NewsItem>
+                  <NewsDate>{formatDate(post.publishTime)}</NewsDate>
+                  <NewsTitle>{post.title}</NewsTitle>
+                </NewsItem>
+              </Link>
+            ))
+          ) : (
+            <EmptyMessage>目前沒有文章</EmptyMessage>
+          )}
         </Sidebar>
 
-        {/* B */}
-        <FeaturedArticle>
-          <FeaturedImage>
-            <MainImage
-              src={currentData.featured.image}
-              alt="Featured news image"
-            />
-          </FeaturedImage>
+        {/* B - Featured Article */}
+        {featuredPost && (
+          <Link href={`/post/${featuredPost.id}`} passHref legacyBehavior>
+            <FeaturedArticle>
+              <FeaturedImageWrapper>
+                <SharedImage
+                  images={featuredPost.heroImage?.resized || {}}
+                  imagesWebP={featuredPost.heroImage?.resizedWebp || {}}
+                  defaultImage={DEFAULT_POST_IMAGE_PATH}
+                  alt={featuredPost.title}
+                  priority={true}
+                  rwd={{
+                    mobile: '100vw',
+                    tablet: '66vw',
+                    desktop: '740px',
+                    default: '740px',
+                  }}
+                />
+              </FeaturedImageWrapper>
 
-          <FeaturedContent>
-            <FeaturedDate>{currentData.featured.date}</FeaturedDate>
-            <FeaturedTitle>{currentData.featured.title}</FeaturedTitle>
-            <FeaturedExcerpt>{currentData.featured.excerpt}</FeaturedExcerpt>
-          </FeaturedContent>
-        </FeaturedArticle>
+              <FeaturedContent>
+                <FeaturedDate>
+                  {formatDate(featuredPost.publishTime)}
+                </FeaturedDate>
+                <FeaturedTitle>{featuredPost.title}</FeaturedTitle>
+              </FeaturedContent>
+            </FeaturedArticle>
+          </Link>
+        )}
 
-        {/* C */}
+        {/* C - Related Articles */}
         <RelatedArticles>
-          {currentData.related.map((article) => (
-            <RelatedArticle key={article.id}>
-              <RelatedImage src={article.image} alt="Related article" />
-              <RelatedContent>
-                <RelatedDate>{article.date}</RelatedDate>
-                <RelatedTitle>{article.title}</RelatedTitle>
-              </RelatedContent>
-            </RelatedArticle>
-          ))}
+          {relatedPosts.length > 0 ? (
+            relatedPosts.map((post) => {
+              const image = post.heroImage?.resized
+              const imageWebp = post.heroImage?.resizedWebp
+
+              return (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.id}`}
+                  passHref
+                  legacyBehavior
+                >
+                  <RelatedArticle>
+                    <RelatedImageWrapper>
+                      <SharedImage
+                        images={image || {}}
+                        imagesWebP={imageWebp || {}}
+                        defaultImage={DEFAULT_POST_IMAGE_PATH}
+                        alt={post.title}
+                        priority={false}
+                        rwd={{
+                          mobile: '100vw',
+                          tablet: '50vw',
+                          desktop: '160px',
+                          default: '160px',
+                        }}
+                      />
+                    </RelatedImageWrapper>
+                    <RelatedContent>
+                      <RelatedDate>{formatDate(post.publishTime)}</RelatedDate>
+                      <RelatedTitle>{post.title}</RelatedTitle>
+                    </RelatedContent>
+                  </RelatedArticle>
+                </Link>
+              )
+            })
+          ) : (
+            <EmptyMessage>目前沒有相關文章</EmptyMessage>
+          )}
         </RelatedArticles>
       </MainContent>
     </Container>

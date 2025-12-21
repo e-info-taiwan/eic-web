@@ -10,8 +10,7 @@ import type { GetServerSideProps } from 'next'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
 
-// TODO: Re-enable when migrating to new API
-// import { getGqlClient } from '~/apollo-client'
+import { getGqlClient } from '~/apollo-client'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import CollaborationSection from '~/components/index/collaboration-section'
 import EditorChoiceSection from '~/components/index/editor-choice-section'
@@ -53,6 +52,8 @@ import type { Feature } from '~/graphql/query/feature'
 import { features as featuresQuery } from '~/graphql/query/feature'
 import type { Quote } from '~/graphql/query/quote'
 import { quotes as quotesQuery } from '~/graphql/query/quote'
+import type { Section, SectionCategory } from '~/graphql/query/section'
+import { sectionWithCategoriesAndPosts } from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
@@ -77,6 +78,10 @@ type PageProps = {
   featuredCollaboration: FeaturedCollaboration
   dataSetItems: DataSetItem[]
   dataSetCount: number
+  supplementCategories: SectionCategory[]
+  columnCategories: SectionCategory[]
+  newsCategories: SectionCategory[]
+  greenCategories: SectionCategory[]
 }
 
 const HiddenAnchor = styled.div`
@@ -109,6 +114,10 @@ const Index: NextPageWithLayout<PageProps> = ({
   featuredCollaboration,
   dataSetItems,
   dataSetCount,
+  supplementCategories,
+  columnCategories,
+  newsCategories,
+  greenCategories,
 }) => {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
@@ -127,13 +136,13 @@ const Index: NextPageWithLayout<PageProps> = ({
       <MainCarousel />
       <HighlightSection />
       <Inforgraphic />
-      <NewsSection />
+      <NewsSection categories={newsCategories} />
       <AdContent />
-      <SpecialColumnSection />
-      <SupplementSection />
+      <SpecialColumnSection categories={columnCategories} />
+      <SupplementSection categories={supplementCategories} />
       <FeaturedTopicsSection />
       <AdContent />
-      <GreenConsumptionSection />
+      <GreenConsumptionSection categories={greenCategories} />
       {/* Demo - end */}
 
       {/* {shouldShowEditorChoiceSection && (
@@ -172,8 +181,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 }) => {
   setCacheControl(res)
 
-  // TODO: Re-enable when migrating to new API
-  // const client = getGqlClient()
+  const client = getGqlClient()
 
   let editorChoices: EditorCard[] = []
   let categories: NavigationCategoryWithArticleCards[] = []
@@ -195,8 +203,119 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   }
   let dataSetItems: DataSetItem[] = []
   let dataSetCount: number = 0
+  let supplementCategories: SectionCategory[] = []
+  let columnCategories: SectionCategory[] = []
+  let newsCategories: SectionCategory[] = []
+  let greenCategories: SectionCategory[] = []
 
   try {
+    // Fetch news section (Section ID: 3 = 時事新聞)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        sections: Section[]
+      }>({
+        query: sectionWithCategoriesAndPosts,
+        variables: {
+          sectionId: '3',
+          postsPerCategory: 8,
+        },
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `sections` query for news'),
+          'GraphQLError',
+          'failed to complete `sections` for news',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.sections?.[0]?.categories) {
+        newsCategories = data.sections[0].categories
+      }
+    }
+
+    // Fetch column section (Section ID: 4 = 專欄)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        sections: Section[]
+      }>({
+        query: sectionWithCategoriesAndPosts,
+        variables: {
+          sectionId: '4',
+          postsPerCategory: 6,
+        },
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `sections` query for column'),
+          'GraphQLError',
+          'failed to complete `sections` for column',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.sections?.[0]?.categories) {
+        columnCategories = data.sections[0].categories
+      }
+    }
+
+    // Fetch supplement section (Section ID: 5 = 副刊)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        sections: Section[]
+      }>({
+        query: sectionWithCategoriesAndPosts,
+        variables: {
+          sectionId: '5',
+          postsPerCategory: 3,
+        },
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `sections` query'),
+          'GraphQLError',
+          'failed to complete `sections`',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.sections?.[0]?.categories) {
+        supplementCategories = data.sections[0].categories
+      }
+    }
+
+    // Fetch green consumption section (Section ID: 6 = 綠色消費)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        sections: Section[]
+      }>({
+        query: sectionWithCategoriesAndPosts,
+        variables: {
+          sectionId: '6',
+          postsPerCategory: 3,
+        },
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `sections` query for green'),
+          'GraphQLError',
+          'failed to complete `sections` for green',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.sections?.[0]?.categories) {
+        greenCategories = data.sections[0].categories
+      }
+    }
     // TODO: Temporarily disabled until GraphQL queries are migrated to new API
     /*
     {
@@ -527,6 +646,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       featuredCollaboration,
       dataSetItems,
       dataSetCount,
+      supplementCategories,
+      columnCategories,
+      newsCategories,
+      greenCategories,
     },
   }
 }

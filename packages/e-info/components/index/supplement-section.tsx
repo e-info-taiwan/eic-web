@@ -1,5 +1,10 @@
+import SharedImage from '@readr-media/react-image'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { SectionCategory } from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -139,12 +144,13 @@ const ArticlesGrid = styled.div`
   }
 `
 
-const ArticleCard = styled.div`
+const ArticleCard = styled.a`
   display: flex;
   flex-direction: row;
   cursor: pointer;
   padding: 0 16px;
   gap: 16px;
+  text-decoration: none;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     flex-direction: row;
@@ -164,19 +170,20 @@ const ArticleCard = styled.div`
   }
 `
 
-const ImagePlaceholder = styled.div`
+const ImageWrapper = styled.div`
   width: 100%;
   height: auto;
   object-fit: cover;
-  aspect-ratio: attr(width) / attr(height);
+  aspect-ratio: 3 / 2;
   background-color: #d1d5db;
   flex-shrink: 0;
   max-width: 130px;
   min-height: 87px;
+  overflow: hidden;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     flex: 1;
-    max-width: auto;
+    max-width: none;
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
@@ -235,106 +242,39 @@ const Divider = styled.hr`
   }
 `
 
-// Categories and Sample data
-const categories = [
-  { id: 'supplement1', name: '次分類範例文字1' },
-  { id: 'supplement2', name: '次分類範例文字2' },
-  { id: 'supplement3', name: '次分類範例文字3' },
-  { id: 'supplement4', name: '次分類範例文字4' },
-]
+const EmptyMessage = styled.p`
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+`
 
-const articlesData = {
-  supplement1: [
-    {
-      id: 1,
-      title: '文學與生活的黃金交集 現代詩歌中的情感表達',
-      image:
-        'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=130&h=87&fit=crop',
-    },
-    {
-      id: 2,
-      title: '留留那些美好的時光 散文中的温柔力量',
-      image:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=130&h=87&fit=crop',
-    },
-    {
-      id: 3,
-      title: '小說中的人物塑造 當代作家的羅生劃像',
-      image:
-        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=130&h=87&fit=crop',
-    },
-  ],
-  supplement2: [
-    {
-      id: 1,
-      title: '艾藝進化史 從古典美學到當代藝術',
-      image:
-        'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=130&h=87&fit=crop',
-    },
-    {
-      id: 2,
-      title: '色彩的魔法 繪畫中的情感語言',
-      image:
-        'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=130&h=87&fit=crop',
-    },
-    {
-      id: 3,
-      title: '雕塑的立體詩意 空間藝術的哲學思考',
-      image:
-        'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=130&h=87&fit=crop',
-    },
-  ],
-  supplement3: [
-    {
-      id: 1,
-      title: '都市中的慢生活 咖啡香裡的哲學思考',
-      image:
-        'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=130&h=87&fit=crop',
-    },
-    {
-      id: 2,
-      title: '旅行的意義 在路上發現自己的可能',
-      image:
-        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=130&h=87&fit=crop',
-    },
-    {
-      id: 3,
-      title: '美食與記憶 味覺裡的情感連結',
-      image:
-        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=130&h=87&fit=crop',
-    },
-  ],
-  supplement4: [
-    {
-      id: 1,
-      title: '音樂的治療力量 聲音裡的情感釋放',
-      image:
-        'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=130&h=87&fit=crop',
-    },
-    {
-      id: 2,
-      title: '舞台上的詩意 舞蹈表演中的身體美學',
-      image:
-        'https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=130&h=87&fit=crop',
-    },
-    {
-      id: 3,
-      title: '燈光與影像 電影中的視覺詩學',
-      image:
-        'https://images.unsplash.com/photo-1489599808821-1871c5ad5af6?w=130&h=87&fit=crop',
-    },
-  ],
+type SupplementSectionProps = {
+  categories?: SectionCategory[]
 }
 
-const SupplementSection = () => {
-  const [activeCategory, setActiveCategory] = useState<string>('supplement1')
+const SupplementSection = ({ categories = [] }: SupplementSectionProps) => {
+  // Filter categories that have posts
+  const categoriesWithPosts = categories.filter(
+    (cat) => cat.posts && cat.posts.length > 0
+  )
 
-  const currentArticles =
-    articlesData[activeCategory as keyof typeof articlesData]
+  const [activeCategory, setActiveCategory] = useState<string>(
+    categoriesWithPosts[0]?.id || ''
+  )
 
   const handleCategoryClick = (categoryId: string) => {
     setActiveCategory(categoryId)
   }
+
+  // If no categories with posts, don't render the section
+  if (categoriesWithPosts.length === 0) {
+    return null
+  }
+
+  const currentCategory = categoriesWithPosts.find(
+    (cat) => cat.id === activeCategory
+  )
+  const currentPosts = currentCategory?.posts || []
 
   return (
     <Container>
@@ -343,7 +283,7 @@ const SupplementSection = () => {
         <AccentBar />
         <Title>副刊</Title>
         <CategoryTabs>
-          {categories.map((category) => (
+          {categoriesWithPosts.map((category) => (
             <CategoryTab
               key={category.id}
               $isActive={activeCategory === category.id}
@@ -357,20 +297,44 @@ const SupplementSection = () => {
 
       {/* Articles Grid */}
       <ArticlesGrid>
-        {currentArticles.map((article) => (
-          <ArticleCard key={article.id}>
-            <ImagePlaceholder
-              style={{
-                backgroundImage: `url(${article.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            />
-            <ArticleContent>
-              <ArticleTitle>{article.title}</ArticleTitle>
-            </ArticleContent>
-          </ArticleCard>
-        ))}
+        {currentPosts.length > 0 ? (
+          currentPosts.map((post) => {
+            const image = post.heroImage?.resized
+            const imageWebp = post.heroImage?.resizedWebp
+
+            return (
+              <Link
+                key={post.id}
+                href={`/post/${post.id}`}
+                passHref
+                legacyBehavior
+              >
+                <ArticleCard>
+                  <ImageWrapper>
+                    <SharedImage
+                      images={image || {}}
+                      imagesWebP={imageWebp || {}}
+                      defaultImage={DEFAULT_POST_IMAGE_PATH}
+                      alt={post.title}
+                      priority={false}
+                      rwd={{
+                        mobile: '130px',
+                        tablet: '200px',
+                        desktop: '300px',
+                        default: '300px',
+                      }}
+                    />
+                  </ImageWrapper>
+                  <ArticleContent>
+                    <ArticleTitle>{post.title}</ArticleTitle>
+                  </ArticleContent>
+                </ArticleCard>
+              </Link>
+            )
+          })
+        ) : (
+          <EmptyMessage>目前沒有文章</EmptyMessage>
+        )}
       </ArticlesGrid>
       <Divider />
     </Container>
