@@ -9,7 +9,10 @@ import PostCredit from '~/components/post/post-credit'
 import PostTitle from '~/components/post/post-title'
 import RelatedPosts from '~/components/post/related-post'
 import SideIndex from '~/components/post/side-index'
-import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import {
+  DEFAULT_NEWS_IMAGE_PATH,
+  DEFAULT_POST_IMAGE_PATH,
+} from '~/constants/constant'
 import type { Post } from '~/graphql/fragments/post'
 import type { PostDetail } from '~/graphql/query/post'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
@@ -125,6 +128,10 @@ export default function News({
   )
 
   const shouldShowHeroImage = Boolean(postData?.heroImage?.resized)
+  const isEditorCategory = postData?.category?.slug === 'editor'
+  const defaultImage = isEditorCategory
+    ? DEFAULT_NEWS_IMAGE_PATH
+    : DEFAULT_POST_IMAGE_PATH
 
   //for Draft Style: side-index-block
   const [currentSideIndex, setCurrentSideIndex] = useState('')
@@ -139,7 +146,7 @@ export default function News({
               <SharedImage
                 images={postData?.heroImage?.resized}
                 imagesWebP={postData?.heroImage?.resizedWebp}
-                defaultImage={DEFAULT_POST_IMAGE_PATH}
+                defaultImage={defaultImage}
                 alt={postData?.title}
                 priority={false}
               />

@@ -4,7 +4,8 @@ import { ValidPostStyle } from '~/types/common'
 import type { NavigationCategory } from '~/types/component'
 
 const SITE_TITLE = '環境資訊中心'
-const DEFAULT_POST_IMAGE_PATH = '/icons/default/post.svg'
+const DEFAULT_POST_IMAGE_PATH = '/post-default.png'
+const DEFAULT_NEWS_IMAGE_PATH = '/news-default.jpg'
 const DEFAULT_CATEGORY: NavigationCategory = {
   id: 'all',
   title: '不分類',
@@ -116,6 +117,7 @@ export {
   DEFAULT_CATEGORY,
   DEFAULT_HEADER_CATEGORY_LIST,
   DEFAULT_POST_IMAGE_PATH,
+  DEFAULT_NEWS_IMAGE_PATH,
   POST_STYLES,
   REPORT_STYLES,
   SITE_TITLE,

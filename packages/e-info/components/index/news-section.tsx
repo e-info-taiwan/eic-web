@@ -3,7 +3,10 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
-import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import {
+  DEFAULT_NEWS_IMAGE_PATH,
+  DEFAULT_POST_IMAGE_PATH,
+} from '~/constants/constant'
 import type { SectionCategory } from '~/graphql/query/section'
 
 // Styled Components
@@ -412,6 +415,12 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
   const sidebarPosts = currentPosts.slice(1, 6)
   const relatedPosts = currentPosts.slice(6, 8)
 
+  // Use different default image for "編輯直送" category
+  const isEditorCategory = currentCategory?.slug === 'editor'
+  const defaultImage = isEditorCategory
+    ? DEFAULT_NEWS_IMAGE_PATH
+    : DEFAULT_POST_IMAGE_PATH
+
   return (
     <Container>
       {/* Header */}
@@ -456,13 +465,13 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
 
         {/* B - Featured Article */}
         {featuredPost && (
-          <Link href={`/post/${featuredPost.id}`} passHref legacyBehavior>
+          <Link href={`/node/${featuredPost.id}`} passHref legacyBehavior>
             <FeaturedArticle>
               <FeaturedImageWrapper>
                 <SharedImage
                   images={featuredPost.heroImage?.resized || {}}
                   imagesWebP={featuredPost.heroImage?.resizedWebp || {}}
-                  defaultImage={DEFAULT_POST_IMAGE_PATH}
+                  defaultImage={defaultImage}
                   alt={featuredPost.title}
                   priority={true}
                   rwd={{
@@ -494,7 +503,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
               return (
                 <Link
                   key={post.id}
-                  href={`/post/${post.id}`}
+                  href={`/node/${post.id}`}
                   passHref
                   legacyBehavior
                 >
@@ -503,7 +512,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
                       <SharedImage
                         images={image || {}}
                         imagesWebP={imageWebp || {}}
-                        defaultImage={DEFAULT_POST_IMAGE_PATH}
+                        defaultImage={defaultImage}
                         alt={post.title}
                         priority={false}
                         rwd={{
