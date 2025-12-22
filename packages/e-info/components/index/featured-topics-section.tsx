@@ -561,7 +561,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
                     <ArticleItem>
                       <ArticleContent>
                         <ArticleTitle>{post.title}</ArticleTitle>
-                        {post.brief && (
+                        {post.brief && typeof post.brief === 'string' && (
                           <ArticleExcerpt>{post.brief}</ArticleExcerpt>
                         )}
                       </ArticleContent>

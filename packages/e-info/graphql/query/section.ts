@@ -53,7 +53,7 @@ export type TopicPost = {
   id: string
   title: string
   publishTime: string
-  brief: string | null
+  brief: string | Record<string, unknown> | null
   heroImage: {
     resized: ResizedImages | null
     resizedWebp: ResizedImages | null
