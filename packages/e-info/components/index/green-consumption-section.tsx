@@ -283,6 +283,7 @@ const GreenConsumptionSection = ({
                   <ArticleCard>
                     <ImageWrapper>
                       <SharedImage
+                        key={`green-${activeCategory}-${post.id}`}
                         images={image || {}}
                         imagesWebP={imageWebp || {}}
                         defaultImage={DEFAULT_POST_IMAGE_PATH}

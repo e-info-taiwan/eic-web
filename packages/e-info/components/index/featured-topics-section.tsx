@@ -524,6 +524,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
               <HeroArticle>
                 <HeroImageWrapper>
                   <SharedImage
+                    key={`hero-${activeTopic}-${heroTopic.id}`}
                     images={heroTopic.heroImage?.resized || {}}
                     imagesWebP={heroTopic.heroImage?.resizedWebp || {}}
                     defaultImage={DEFAULT_POST_IMAGE_PATH}
@@ -567,6 +568,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
                       </ArticleContent>
                       <ArticleImageWrapper>
                         <SharedImage
+                          key={`article-${activeTopic}-${post.id}`}
                           images={image || {}}
                           imagesWebP={imageWebp || {}}
                           defaultImage={DEFAULT_POST_IMAGE_PATH}

@@ -312,6 +312,7 @@ const SupplementSection = ({ categories = [] }: SupplementSectionProps) => {
                 <ArticleCard>
                   <ImageWrapper>
                     <SharedImage
+                      key={`supplement-${activeCategory}-${post.id}`}
                       images={image || {}}
                       imagesWebP={imageWebp || {}}
                       defaultImage={DEFAULT_POST_IMAGE_PATH}

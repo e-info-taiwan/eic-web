@@ -469,6 +469,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
             <FeaturedArticle>
               <FeaturedImageWrapper>
                 <SharedImage
+                  key={`featured-${activeCategory}-${featuredPost.id}`}
                   images={featuredPost.heroImage?.resized || {}}
                   imagesWebP={featuredPost.heroImage?.resizedWebp || {}}
                   defaultImage={defaultImage}
@@ -510,6 +511,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
                   <RelatedArticle>
                     <RelatedImageWrapper>
                       <SharedImage
+                        key={`related-${activeCategory}-${post.id}`}
                         images={image || {}}
                         imagesWebP={imageWebp || {}}
                         defaultImage={defaultImage}

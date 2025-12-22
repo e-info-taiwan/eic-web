@@ -247,6 +247,7 @@ const SpecialColumnSection = ({
                 <ArticleCard>
                   <ImageWrapper>
                     <SharedImage
+                      key={`special-${activeCategory}-${post.id}`}
                       images={image || {}}
                       imagesWebP={imageWebp || {}}
                       defaultImage={DEFAULT_POST_IMAGE_PATH}

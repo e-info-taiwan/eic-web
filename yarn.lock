@@ -2992,10 +2992,10 @@
   resolved "https://registry.yarnpkg.com/@readr-media/react-image/-/react-image-1.6.0.tgz#1bff81cdaa8b14f255c22b2504df1d09fc783223"
   integrity sha512-k4FOxVlAdvsFY5zP7nczs11LrJ3mA2T6Y7rwoTjpA9GMhlf3wtLWD84/XwcsGXNvHg0gbxQtmOcNvKE1LsZxwg==
 
-"@readr-media/react-image@^2.2.1":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@readr-media/react-image/-/react-image-2.2.3.tgz#859e04d7c91d1d8a71aafbbd52e58b032cafbe52"
-  integrity sha512-cB0o4wtbngppLDnMRYyX7ZRGsNwneVbqFHJ9q4nw9p8ZFEhUuInaZpJLfdvZq4L74YvNk9iWCnY+nwwP406saA==
+"@readr-media/react-image@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@readr-media/react-image/-/react-image-2.2.4.tgz#0a53f42246fc38a862ac407b31811e4e5715d79e"
+  integrity sha512-cWx5p7Ezt2wSR2FMykmXVhS/C0PsBgEMr2o3bDW8n+OiTGLB+98Fwn6yCUHGyELuNO676zlpWTCyFtELq19lBQ==
 
 "@readr-media/share-button@^1.0.3":
   version "1.0.3"
