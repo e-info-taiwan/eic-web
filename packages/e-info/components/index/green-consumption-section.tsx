@@ -276,7 +276,7 @@ const GreenConsumptionSection = ({
               return (
                 <Link
                   key={post.id}
-                  href={`/post/${post.id}`}
+                  href={`/node/${post.id}`}
                   passHref
                   legacyBehavior
                 >

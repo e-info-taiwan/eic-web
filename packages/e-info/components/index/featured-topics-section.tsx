@@ -554,7 +554,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
                 return (
                   <Link
                     key={post.id}
-                    href={`/post/${post.id}`}
+                    href={`/node/${post.id}`}
                     passHref
                     legacyBehavior
                   >

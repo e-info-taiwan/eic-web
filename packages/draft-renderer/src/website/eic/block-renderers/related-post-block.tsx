@@ -57,7 +57,7 @@ export function RelatedPostBlock(entity: DraftEntityInstance) {
         <RelatedPostTitle>推薦閱讀</RelatedPostTitle>
         {posts.map((post) => (
           <RelatedPostItem key={post.id}>
-            <RelatedPostAnchorWrapper href={`/post/${post.id}`} target="_blank">
+            <RelatedPostAnchorWrapper href={`/node/${post.id}`} target="_blank">
               <RelatedPost>{post.name}</RelatedPost>
             </RelatedPostAnchorWrapper>
           </RelatedPostItem>

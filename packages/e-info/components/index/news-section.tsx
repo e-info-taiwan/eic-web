@@ -448,7 +448,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
             sidebarPosts.map((post) => (
               <Link
                 key={post.id}
-                href={`/post/${post.id}`}
+                href={`/node/${post.id}`}
                 passHref
                 legacyBehavior
               >

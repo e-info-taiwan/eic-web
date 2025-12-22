@@ -14,7 +14,7 @@ eic-web/
 ├── packages/
 │   ├── e-info/                    # Main website application
 │   │   ├── components/            # React components
-│   │   │   ├── post/             # Post-related components
+│   │   │   ├── node/             # Post-related components
 │   │   │   │   ├── article-type/ # Different article types
 │   │   │   │   ├── post-content.tsx
 │   │   │   │   ├── post-credit.tsx

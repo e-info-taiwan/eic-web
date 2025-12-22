@@ -211,7 +211,7 @@ export default function Footer(): JSX.Element {
           <li>
             <NextLink
               href={{
-                pathname: '/post/[postId]',
+                pathname: '/node/[postId]',
                 query: {
                   postId: '2901',
                 },
