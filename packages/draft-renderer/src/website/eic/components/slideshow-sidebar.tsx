@@ -3,22 +3,29 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 
 import defaultImage from '../assets/default-og-img.png'
-import arrowDown from '../assets/slideshow-arrow-down.png'
-import arrowUp from '../assets/slideshow-arrow-up.png'
 
 const arrowShareStyle = css`
   width: 64px;
   height: 64px;
   margin: auto;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 64px;
   cursor: pointer;
   border-radius: 50%;
   visibility: ${(props) => (props.shouldHideArrow ? 'hidden' : 'visible')};
+  position: relative;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
   }
 `
 
@@ -40,12 +47,18 @@ const SideBarWrapper = styled.div`
 
 const ArrowUp = styled.div`
   ${arrowShareStyle}
-  background-image: url(${arrowUp});
+
+  &::before {
+    transform: translate(-50%, -25%) rotate(135deg);
+  }
 `
 
 const ArrowDown = styled.div`
   ${arrowShareStyle}
-  background-image: url(${arrowDown});
+
+  &::before {
+    transform: translate(-50%, -75%) rotate(-45deg);
+  }
 `
 
 const SideBarImage = styled.div`

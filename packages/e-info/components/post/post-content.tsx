@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
-import SideIndex from '~/components/post/side-index'
 import MediaLinkList from '~/components/shared/media-link'
 import { PostDetail } from '~/graphql/query/post'
 import { ValidPostContentType, ValidPostStyle } from '~/types/common'
@@ -263,12 +262,6 @@ export default function PostContent({
 
   return (
     <Container shouldPaddingTop={shouldPaddingTop} ref={articleRef}>
-      <SideIndex
-        rawContentBlock={contentToRender}
-        currentIndex={currentSideIndex}
-        isAside={false}
-      />
-
       {shouldShowSummary && (
         <Summary>
           <div>

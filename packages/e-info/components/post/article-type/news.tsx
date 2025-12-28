@@ -69,12 +69,8 @@ const HiddenAnchor = styled.div`
 
 const ContentWrapper = styled.main`
   display: block;
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-  }
+  max-width: 1200px;
+  margin: 0 auto;
 `
 
 const TitleSection = styled.section`
@@ -94,23 +90,32 @@ const TitleSection = styled.section`
 
 const TwoColumnSection = styled.section`
   display: block;
+  padding: 0 20px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 0;
+    max-width: 568px;
+    margin: 0 auto;
+  }
 
   ${({ theme }) => theme.breakpoint.xl} {
     display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 148px;
-    max-width: 1200px;
+    grid-template-columns: 200px 1fr;
+    gap: 80px;
+    max-width: 1000px;
     margin: 0 auto;
   }
 `
 
-const Aside = styled.aside`
-  display: none;
+const LeftColumn = styled.aside`
+  display: block;
+  margin-bottom: 24px;
 
   ${({ theme }) => theme.breakpoint.xl} {
-    display: block;
-    // width: 100%;
-    padding-bottom: 250px;
+    position: sticky;
+    top: 120px;
+    align-self: flex-start;
+    margin-bottom: 0;
   }
 `
 
@@ -155,36 +160,33 @@ export default function News({
           )}
 
           <ContentWrapper>
-            <Aside>
-              <SideIndex
-                rawContentBlock={postData?.content}
-                currentIndex={currentSideIndex}
-                isAside={true}
-              />
-            </Aside>
-            <main>
-              <TitleSection>
-                <PostTitle showTitle={true} postData={postData} />
-              </TitleSection>
+            <TitleSection>
+              <PostTitle showTitle={true} postData={postData} />
+            </TitleSection>
 
-              <TwoColumnSection>
+            <TwoColumnSection>
+              <LeftColumn>
                 <PostCredit postData={postData} />
+                <SideIndex
+                  rawContentBlock={postData?.content}
+                  currentIndex={currentSideIndex}
+                  isAside={true}
+                />
+              </LeftColumn>
 
-                <div>
-                  <PostContent
-                    postData={postData}
-                    articleType={ValidPostStyle.NEWS}
-                    currentSideIndex={currentSideIndex}
-                    setCurrentSideIndex={setCurrentSideIndex}
-                  />
-                  <RelatedPosts
-                    relatedPosts={postData?.relatedPosts}
-                    latestPosts={latestPosts}
-                  />
-                </div>
-              </TwoColumnSection>
-            </main>
-            <Aside />
+              <div>
+                <PostContent
+                  postData={postData}
+                  articleType={ValidPostStyle.NEWS}
+                  currentSideIndex={currentSideIndex}
+                  setCurrentSideIndex={setCurrentSideIndex}
+                />
+                <RelatedPosts
+                  relatedPosts={postData?.relatedPosts}
+                  latestPosts={latestPosts}
+                />
+              </div>
+            </TwoColumnSection>
           </ContentWrapper>
         </article>
 

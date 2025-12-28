@@ -75,8 +75,8 @@
 **狀態**: ✅ 已修改
 
 **修改內容**:
-- 簡化程式碼結構
-- 樣式優化
+- 展開按鈕文字顏色從 `#000928` 改為 `rgba(36, 36, 36, 0.7)`
+- 箭頭顏色同步更新為 `rgba(36, 36, 36, 0.7)`
 
 ### 8. table-block.tsx
 **狀態**: ✅ 已修改
@@ -101,17 +101,26 @@
 
 ## 二、Components（元件）
 
-### 1. slideshow-lightbox.js
+### 1. slideshow-lightbox.tsx
 **狀態**: ✅ 已修改
 
 **修改內容**:
-- Lightbox 樣式調整
+- **移除圖片依賴**: 不再使用 `slideshow-close-cross.png`
+- CloseButton 改用 CSS `::before` 和 `::after` 偽元素實作 X 圖示
+  - 兩條白色線條 `24px x 2px`
+  - 分別旋轉 45° 和 -45°
+- 保留 hover 效果（半透明白色背景）
 
-### 2. slideshow-sidebar.js
+### 2. slideshow-sidebar.tsx
 **狀態**: ✅ 已修改
 
 **修改內容**:
-- Sidebar 樣式調整
+- **移除圖片依賴**: 不再使用 `slideshow-arrow-up.png` 和 `slideshow-arrow-down.png`
+- ArrowUp / ArrowDown 改用 CSS `::before` 偽元素實作 chevron 箭頭
+  - 使用 `border-left` 和 `border-bottom` 繪製 L 形
+  - ArrowUp 旋轉 135° 指向上方
+  - ArrowDown 旋轉 -45° 指向下方
+- 保留原有的 hover 效果和 visibility 控制
 
 ---
 

@@ -3,14 +3,13 @@ import React from 'react'
 import styled from 'styled-components'
 
 import defaultImage from '../assets/default-og-img.png'
-import closeCross from '../assets/slideshow-close-cross.png'
 import SlideShowSideBar from './slideshow-sidebar'
 
 const LightBoxWrapper = styled.div`
   display: none;
 
   ${({ theme }) => theme.breakpoint.xl} {
-    background: #000928;
+    background: rgba(36, 36, 36, 0.7);
     width: 100%;
     height: 100vh;
     position: fixed;
@@ -69,20 +68,35 @@ const CloseButtonWrapper = styled.div`
 `
 
 const CloseButton = styled.div`
-  background-image: url(${closeCross});
   width: 64px;
   height: 64px;
   margin: auto;
-  background-repeat: no-repeat;
-  background-position: center center;
   cursor: pointer;
   position: absolute;
   top: -64px;
   border-radius: 50%;
-  background-size: 64px;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 2px;
+    background-color: #ffffff;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 `
 

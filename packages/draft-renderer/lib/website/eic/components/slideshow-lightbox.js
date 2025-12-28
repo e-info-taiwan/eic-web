@@ -12,8 +12,7 @@ var _templateObject, _templateObject2, _templateObject3, _templateObject4, _temp
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var closeCross = "/lib/public/903cf84ef5c5ad76634c30bdc0ff8c49.png";
-var LightBoxWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    background: #000928;\n    width: 100%;\n    height: 100vh;\n    position: fixed;\n    top: 0;\n    left: 0;\n    color: white;\n    padding: 0 72px 0 48px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    z-index: 9999;\n  }\n"])), function (_ref) {
+var LightBoxWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    background: rgba(36, 36, 36, 0.7);\n    width: 100%;\n    height: 100vh;\n    position: fixed;\n    top: 0;\n    left: 0;\n    color: white;\n    padding: 0 72px 0 48px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    z-index: 9999;\n  }\n"])), function (_ref) {
   var theme = _ref.theme;
   return theme.breakpoint.xl;
 });
@@ -27,7 +26,7 @@ var FocusImage = _styledComponents["default"].figure(_templateObject3 || (_templ
 });
 var FocusInfo = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  .focus-desc {\n    max-height: 46px;\n    overflow: hidden;\n    word-break: break-word;\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: 2;\n    opacity: 0.87;\n    margin-bottom: 12px;\n  }\n\n  .focus-number {\n    opacity: 0.5;\n    margin-top: 12px;\n  }\n"])));
 var CloseButtonWrapper = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  height: 60vh;\n  width: 64px;\n  position: relative;\n"])));
-var CloseButton = _styledComponents["default"].div(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  background-image: url(", ");\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  background-repeat: no-repeat;\n  background-position: center center;\n  cursor: pointer;\n  position: absolute;\n  top: -64px;\n  border-radius: 50%;\n  background-size: 64px;\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n"])), closeCross);
+var CloseButton = _styledComponents["default"].div(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  cursor: pointer;\n  position: absolute;\n  top: -64px;\n  border-radius: 50%;\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n\n  &::before,\n  &::after {\n    content: '';\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    width: 24px;\n    height: 2px;\n    background-color: #ffffff;\n  }\n\n  &::before {\n    transform: translate(-50%, -50%) rotate(45deg);\n  }\n\n  &::after {\n    transform: translate(-50%, -50%) rotate(-45deg);\n  }\n"])));
 function SlideshowLightBox(_ref4) {
   var focusImageIndex = _ref4.focusImageIndex,
     images = _ref4.images,

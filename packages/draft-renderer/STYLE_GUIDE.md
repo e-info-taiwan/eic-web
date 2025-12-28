@@ -79,6 +79,7 @@
 | `transform: translateX(-20px)` | 移除 |
 | `filter: brightness(15%)` (太暗) | `filter: brightness(0.85)` |
 | 箭頭使用圖片 `arrowDown` | 改用 CSS `content: '▼'` |
+| 展開按鈕顏色 `#000928` | `rgba(36, 36, 36, 0.7)` |
 
 ### 8. video (`block-renderers/video-block.tsx`)
 
@@ -112,6 +113,22 @@
 
 ---
 
+### 12. slideshow-lightbox (`components/slideshow-lightbox.tsx`)
+
+| 修改前 | 修改後 |
+|--------|--------|
+| CloseButton 使用圖片 `slideshow-close-cross.png` | 改用 CSS `::before` + `::after` 偽元素 |
+| - | X 圖示：兩條白色線條 `24px x 2px`，旋轉 ±45° |
+
+### 13. slideshow-sidebar (`components/slideshow-sidebar.tsx`)
+
+| 修改前 | 修改後 |
+|--------|--------|
+| ArrowUp/Down 使用圖片 `slideshow-arrow-up.png` / `slideshow-arrow-down.png` | 改用 CSS `::before` 偽元素 |
+| - | Chevron 箭頭：`border-left` + `border-bottom` 繪製 L 形，旋轉 135° / -45° |
+
+---
+
 ## 尚未修改的元件
 
 | 元件 | 檔案位置 | 備註 |
@@ -121,8 +138,6 @@
 | **background-video** | `block-renderers/background-video-block.tsx` | 待確認是否需要修改 |
 | **media-block** | `block-renderers/media-block.tsx` | 待確認是否需要修改 |
 | **related-post-block** | `block-renderers/related-post-block.tsx` | 待確認是否需要修改 |
-| **slideshow-lightbox** | `components/slideshow-lightbox.tsx` | 待確認是否需要修改 |
-| **slideshow-sidebar** | `components/slideshow-sidebar.tsx` | 待確認是否需要修改 |
 | **link-decorator** | `entity-decorators/link-decorator.tsx` | 待確認是否需要修改 |
 
 ---
@@ -134,10 +149,15 @@
 
 ### 解決方案
 1. **已修改 `.babelrc.js`**：本地開發時使用相對路徑
-2. **已移除圖片依賴**：將 `arrowDown` 和 `annotationArrow` 改為 CSS Unicode 符號 `▼`
+2. **已移除圖片依賴**：
+   - `annotationArrow` → CSS Unicode 符號 `▼`
+   - `slideshow-arrow-down.png` / `slideshow-arrow-up.png` → CSS chevron 箭頭
+   - `slideshow-close-cross.png` → CSS X 圖示
 
 ### 仍使用圖片的檔案
 - `slideshow-block.tsx`: `defaultImage` (預設圖片)
+- `slideshow-lightbox.tsx`: `defaultImage` (預設圖片)
+- `slideshow-sidebar.tsx`: `defaultImage` (預設圖片)
 - `image-block.tsx`: `defaultImage` (預設圖片)
 - `shared-style/content-type.ts`: `citationLink` (引用連結圖示)
 
@@ -168,8 +188,8 @@ packages/draft-renderer/src/website/eic/
 │   ├── table-block.tsx              # ✅ 已修改
 │   └── video-block.tsx              # ✅ 已修改
 ├── components/                      # 子元件
-│   ├── slideshow-lightbox.tsx       # ❌ 未修改
-│   └── slideshow-sidebar.tsx        # ❌ 未修改
+│   ├── slideshow-lightbox.tsx       # ✅ 已修改 (移除圖片依賴)
+│   └── slideshow-sidebar.tsx        # ✅ 已修改 (移除圖片依賴)
 ├── entity-decorators/               # Entity 裝飾器
 │   ├── annotation-decorator.tsx     # ✅ 已修改
 │   ├── link-decorator.tsx           # ❌ 未修改
@@ -209,7 +229,8 @@ yarn dev
 
 - [ ] 確認 `audio-block.tsx` 是否需要修改
 - [ ] 確認 `background-video-block.tsx` 是否需要修改
-- [ ] 確認 `slideshow-lightbox.tsx` 是否需要修改
 - [ ] 確認 `link-decorator.tsx` 是否需要修改
 - [ ] 處理 `citationLink` 圖片（目前仍使用 unpkg.com）
 - [ ] 發布新版本到 npm 後，將 `.babelrc.js` 改回 production 模式
+- [x] ~~確認 `slideshow-lightbox.tsx` 是否需要修改~~ (已完成 - 移除圖片依賴)
+- [x] ~~確認 `slideshow-sidebar.tsx` 是否需要修改~~ (已完成 - 移除圖片依賴)

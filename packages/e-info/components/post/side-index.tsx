@@ -9,59 +9,92 @@ type WrapperProps = {
 }
 
 const SideIndexWrapper = styled.div<WrapperProps>`
-  background: #f6f6fb;
-  border: 1px solid #e5e6e9;
-  border-radius: 2px;
-  padding: 16px 0px;
-  margin-bottom: 24px;
-
-  .title {
-    padding: 0px 20px;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    color: #0b2163;
-    margin-bottom: 8px;
-  }
+  display: ${(props) => (props.isAside ? 'none' : 'block')};
+  margin-top: 24px;
 
   ${({ theme }) => theme.breakpoint.xl} {
-    display: ${(props) => (props.isAside ? 'block' : 'none')};
-    position: sticky;
-    top: 146px;
-    max-width: 320px;
-    margin: 60px 40px auto 40px;
+    display: block;
   }
+`
+
+type TitleProps = {
+  isExpanded: boolean
+}
+
+const Title = styled.button<TitleProps>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  padding: 0;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  background: transparent;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[40]};
+  }
+`
+
+const Arrow = styled.span<TitleProps>`
+  display: inline-flex;
+  transition: transform 0.2s ease;
+  transform: ${(props) => (props.isExpanded ? 'rotate(180deg)' : 'rotate(0)')};
+
+  &::before {
+    content: '▼';
+    font-size: 12px;
+  }
+`
+
+type ListWrapperProps = {
+  isExpanded: boolean
+}
+
+const ListWrapper = styled.div<ListWrapperProps>`
+  display: ${(props) => (props.isExpanded ? 'block' : 'none')};
+  padding: 12px 0;
 `
 type StyleProps = {
   isActive?: boolean
 }
 
-const SideIndexList = styled.li<StyleProps>`
+const SideIndexListItem = styled.li<StyleProps>`
   font-weight: 400;
   font-size: 14px;
-  line-height: 20px;
+  line-height: 1.5;
   cursor: pointer;
-  box-shadow: ${(props) =>
-    props.isActive ? 'inset 4px 0px 0px 0px black' : 'none'};
-  color: ${(props) => (props.isActive ? '#212944' : '#7f8493')};
+  color: ${(props) => (props.isActive ? '#2d7a4f' : 'rgba(0, 9, 40, 0.87)')};
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: flex-start;
+
+  &::before {
+    content: '•';
+    color: #2d7a4f;
+    font-size: 14px;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
 
   & + li {
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   &:hover {
-    color: #212944;
-    box-shadow: inset 4px 0px 0px 0px black;
+    color: #2d7a4f;
   }
 
   > a {
-    width: 100%;
-    padding: 0px 20px;
-    display: inline-block;
+    display: inline;
   }
 `
 
-type SideIndexList = {
+type SideIndexItem = {
   title: string
   id: string
   href: string | null
@@ -81,6 +114,7 @@ export default function SideIndex({
 }: SideIndexProps): JSX.Element {
   const { getSideIndexEntityData } = Eic
   const sideIndexList = getSideIndexEntityData(rawContentBlock)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   function handleScrollIntoView(target: string) {
     const targetElement = document.querySelector(`#${target}`)
@@ -98,7 +132,7 @@ export default function SideIndex({
     setSiteOrigin(window.location.origin)
   }, [])
 
-  const sideIndexLists = sideIndexList?.map((list: SideIndexList) => {
+  const sideIndexLists = sideIndexList?.map((list: SideIndexItem) => {
     const { title, id, href } = list
 
     if (href) {
@@ -107,15 +141,15 @@ export default function SideIndex({
       const target = siteOrigin === linkUrl.origin ? '_self' : '_blank'
 
       return (
-        <SideIndexList key={id} isActive={currentIndex === id}>
+        <SideIndexListItem key={id} isActive={currentIndex === id}>
           <a href={href} target={target} rel="noopener noreferrer">
             {title}
           </a>
-        </SideIndexList>
+        </SideIndexListItem>
       )
     } else {
       return (
-        <SideIndexList
+        <SideIndexListItem
           key={id}
           isActive={currentIndex === id}
           onClick={(e) => {
@@ -124,7 +158,7 @@ export default function SideIndex({
           }}
         >
           <a href={id}>{title}</a>
-        </SideIndexList>
+        </SideIndexListItem>
       )
     }
   })
@@ -138,8 +172,16 @@ export default function SideIndex({
           isAside={isAside}
           shouldShowSideIndex={shouldShowSideIndex}
         >
-          <p className="title">目錄</p>
-          <ul>{sideIndexLists}</ul>
+          <Title
+            isExpanded={isExpanded}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            索引
+            <Arrow isExpanded={isExpanded} />
+          </Title>
+          <ListWrapper isExpanded={isExpanded}>
+            <ul>{sideIndexLists}</ul>
+          </ListWrapper>
         </SideIndexWrapper>
       )}
     </>

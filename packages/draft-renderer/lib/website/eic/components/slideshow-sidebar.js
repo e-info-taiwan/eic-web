@@ -13,14 +13,12 @@ function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var arrowDown = "/lib/public/f96d4b486ba2061c460962ae694f4670.png";
-var arrowUp = "/lib/public/679d63b1846e81ada28c2f76edbd2931.png";
-var arrowShareStyle = (0, _styledComponents.css)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  background-repeat: no-repeat;\n  background-position: center center;\n  background-size: 64px;\n  cursor: pointer;\n  border-radius: 50%;\n  visibility: ", ";\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n"])), function (props) {
+var arrowShareStyle = (0, _styledComponents.css)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  cursor: pointer;\n  border-radius: 50%;\n  visibility: ", ";\n  position: relative;\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n\n  &::before {\n    content: '';\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    width: 12px;\n    height: 12px;\n    border-left: 2px solid #ffffff;\n    border-bottom: 2px solid #ffffff;\n  }\n"])), function (props) {
   return props.shouldHideArrow ? 'hidden' : 'visible';
 });
 var SideBarWrapper = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  width: 64px;\n  position: relative;\n\n  .sidebar-images {\n    overflow-y: scroll;\n    max-height: 520px;\n    scrollbar-width: none;\n    margin: 12px auto;\n\n    &::-webkit-scrollbar {\n      display: none; /* for Chrome, Safari, and Opera */\n    }\n  }\n"])));
-var ArrowUp = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  ", "\n  background-image: url(", ");\n"])), arrowShareStyle, arrowUp);
-var ArrowDown = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  ", "\n  background-image: url(", ");\n"])), arrowShareStyle, arrowDown);
+var ArrowUp = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  ", "\n\n  &::before {\n    transform: translate(-50%, -25%) rotate(135deg);\n  }\n"])), arrowShareStyle);
+var ArrowDown = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  ", "\n\n  &::before {\n    transform: translate(-50%, -75%) rotate(-45deg);\n  }\n"])), arrowShareStyle);
 var SideBarImage = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  width: 100%;\n  aspect-ratio: 1/1;\n  cursor: pointer;\n  filter: ", ";\n\n  &:hover {\n    filter: ", ";\n  }\n\n  & + * {\n    margin-top: 12px;\n  }\n"])), function (props) {
   return props.isfocused ? 'none' : 'brightness(35%)';
 }, function (props) {
