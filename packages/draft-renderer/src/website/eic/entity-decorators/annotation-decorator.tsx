@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
-import annotationArrow from '../assets/annotation-arrow.png'
 import {
   defaultH2Style,
   defaultLinkStyle,
@@ -81,17 +80,21 @@ const AnnotationBody = styled.div`
 `
 
 const ArrowIcon = styled.span`
-  width: 24px;
-  height: 24px;
-  background-image: url(${annotationArrow});
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 24px;
+  width: 20px;
+  height: 20px;
   margin: auto 4px;
   transition: transform 0.3s;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   vertical-align: text-top;
   transform: ${(props) => (props.showContent ? 'rotate(-180deg)' : '')};
+
+  &::before {
+    content: '▼';
+    font-size: 10px;
+    color: #2d7a4f;
+  }
 `
 
 function AnnotationBlock(props) {

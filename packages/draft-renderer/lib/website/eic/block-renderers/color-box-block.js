@@ -11,15 +11,18 @@ var _templateObject;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var colorBoxDefaultSpacing = 32;
-var ColorBoxRenderWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  background-color: ", ";\n  padding: 12px 24px;\n  position: relative;\n  color: #000928;\n  ", ";\n\n  > div > * + * {\n    margin: ", "px 0 0;\n    min-height: 0.01px; //to make margins between paragraphs effective\n  }\n\n  h2 {\n    ", "\n  }\n\n  ul {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n\n      & + li {\n        margin: ", "px 0 0;\n      }\n    }\n  }\n\n  ol {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n\n      & + li {\n        margin: ", "px 0 0;\n      }\n    }\n  }\n\n  a {\n    ", "\n  }\n\n  blockquote {\n    ", "\n  }\n\n  ", " {\n    padding: 16px 32px;\n  }\n"])), function (props) {
-  return props.color ? props.color : ' #FFFFFF';
+var ColorBoxRenderWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  background-color: ", ";\n  padding: 20px 24px;\n  position: relative;\n  color: rgba(0, 9, 40, 0.87);\n  ", ";\n  ", ";\n  line-height: 1.8;\n\n  ", " {\n    padding: 24px 32px;\n  }\n\n  > div > * + * {\n    margin: 16px 0 0;\n    min-height: 0.01px; //to make margins between paragraphs effective\n  }\n\n  h2 {\n    ", "\n  }\n\n  ul {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n\n      & + li {\n        margin: ", "px 0 0;\n      }\n    }\n  }\n\n  ol {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n\n      & + li {\n        margin: ", "px 0 0;\n      }\n    }\n  }\n\n  a {\n    ", "\n  }\n\n  blockquote {\n    ", "\n  }\n"])), function (props) {
+  return props.color ? props.color : '#f5f5f5';
 }, function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
-}, colorBoxDefaultSpacing, _sharedStyle.defaultH2Style, _sharedStyle.defaultUlStyle, colorBoxDefaultSpacing, _sharedStyle.defaultUnorderedListStyle, colorBoxDefaultSpacing / 2, _sharedStyle.defaultOlStyle, colorBoxDefaultSpacing, _sharedStyle.defaultOrderedListStyle, colorBoxDefaultSpacing / 2, _sharedStyle.defaultLinkStyle, _sharedStyle.defaultBlockQuoteStyle, function (_ref2) {
+}, function (_ref2) {
   var theme = _ref2.theme;
+  return theme.fontSize.md;
+}, function (_ref3) {
+  var theme = _ref3.theme;
   return theme.breakpoint.md;
-});
+}, _sharedStyle.defaultH2Style, _sharedStyle.defaultUlStyle, colorBoxDefaultSpacing, _sharedStyle.defaultUnorderedListStyle, colorBoxDefaultSpacing / 2, _sharedStyle.defaultOlStyle, colorBoxDefaultSpacing, _sharedStyle.defaultOrderedListStyle, colorBoxDefaultSpacing / 2, _sharedStyle.defaultLinkStyle, _sharedStyle.defaultBlockQuoteStyle);
 function ColorBoxBlock(props) {
   var block = props.block,
     contentState = props.contentState;

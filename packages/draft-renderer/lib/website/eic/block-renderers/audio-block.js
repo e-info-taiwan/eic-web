@@ -16,8 +16,8 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var audioPlay = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/dc249b3412c5af890a004508287a3c3d.png";
-var audioPause = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/5b3cb1a908786c8750f1041860699cc1.png";
+var audioPlay = "/lib/public/dc249b3412c5af890a004508287a3c3d.png";
+var audioPause = "/lib/public/5b3cb1a908786c8750f1041860699cc1.png";
 var buttonShareStyle = (0, _styledComponents.css)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  border-radius: 50%;\n  background-repeat: no-repeat;\n  background-position: center center;\n  background-size: 22px;\n\n  &:hover {\n    opacity: 0.8;\n  }\n"])));
 var audioTimeShareStyle = (0, _styledComponents.css)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  color: rgba(0, 9, 40, 0.5);\n  font-weight: 400;\n  font-size: 11px;\n  line-height: 1em;\n  position: absolute;\n  bottom: 0px;\n\n  ", " {\n    font-size: 13px;\n  }\n"])), function (_ref) {
   var theme = _ref.theme;

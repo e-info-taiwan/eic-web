@@ -11,8 +11,8 @@ var _slideshowSidebar = _interopRequireDefault(require("./slideshow-sidebar"));
 var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var defaultImage = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var closeCross = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/903cf84ef5c5ad76634c30bdc0ff8c49.png";
+var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
+var closeCross = "/lib/public/903cf84ef5c5ad76634c30bdc0ff8c49.png";
 var LightBoxWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    background: #000928;\n    width: 100%;\n    height: 100vh;\n    position: fixed;\n    top: 0;\n    left: 0;\n    color: white;\n    padding: 0 72px 0 48px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    z-index: 9999;\n  }\n"])), function (_ref) {
   var theme = _ref.theme;
   return theme.breakpoint.xl;

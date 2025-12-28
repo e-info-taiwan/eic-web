@@ -12,9 +12,12 @@ var _templateObject, _templateObject2;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var Block = exports.Block = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  position: relative;\n  white-space: normal;\n  /* styles for image link */\n  img.img-responsive {\n    margin: 0 auto;\n    max-width: 100%;\n    height: auto;\n    display: block;\n  }\n"])));
-var Caption = exports.Caption = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  line-height: 1.43;\n  letter-spacing: 0.4px;\n  ", ";\n  color: #808080;\n  padding: 15px 15px 0 15px;\n"])), function (_ref) {
+var Block = exports.Block = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  position: relative;\n  white-space: normal;\n  ", ";\n  /* styles for image link */\n  img.img-responsive {\n    margin: 0 auto;\n    max-width: 100%;\n    height: auto;\n    display: block;\n  }\n\n  /* YouTube iframe responsive */\n  iframe {\n    max-width: 100%;\n  }\n"])), function (_ref) {
   var theme = _ref.theme;
+  return theme.margin["default"];
+});
+var Caption = exports.Caption = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  line-height: 1.5;\n  letter-spacing: 0.4px;\n  ", ";\n  color: rgba(0, 9, 40, 0.5);\n  padding: 8px 0 0 0;\n"])), function (_ref2) {
+  var theme = _ref2.theme;
   return theme.fontSize.xs;
 });
 var EmbeddedCodeBlock = exports.EmbeddedCodeBlock = function EmbeddedCodeBlock(entity) {

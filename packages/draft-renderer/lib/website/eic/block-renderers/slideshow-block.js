@@ -20,17 +20,16 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var defaultImage = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var arrowDown = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/dd45f0788d9c70cabe72430bf08e7413.png";
+var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
 var SlideShowDesktopSize = 960;
 var SpacingBetweenSlideImages = 12;
-var SlideShowBlockWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: calc(100% + 40px);\n  transform: translateX(-20px);\n  position: relative;\n  ", ";\n\n  ", " {\n    width: ", "px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex-wrap: wrap;\n    transform: translateX(-180px);\n    gap: ", "px;\n    max-height: ", ";\n    overflow: ", ";\n    margin-bottom: ", ";\n  }\n\n  .slideshow-image {\n    max-height: ", ";\n  }\n"])), function (_ref) {
+var SlideShowBlockWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 100%;\n  position: relative;\n  ", ";\n\n  ", " {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex-wrap: wrap;\n    gap: ", "px;\n    max-height: ", ";\n    overflow: ", ";\n    margin-bottom: ", ";\n  }\n\n  .slideshow-image {\n    max-height: ", ";\n  }\n"])), function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
 }, function (_ref2) {
   var theme = _ref2.theme;
   return theme.breakpoint.xl;
-}, SlideShowDesktopSize, SpacingBetweenSlideImages, function (props) {
+}, SpacingBetweenSlideImages, function (props) {
   return props.expandSlideShow ? 'none' : '960px';
 }, function (props) {
   return props.expandSlideShow ? 'visible' : 'hidden';
@@ -39,10 +38,10 @@ var SlideShowBlockWrapper = _styledComponents["default"].div(_templateObject || 
 }, function (props) {
   return props.shouldLimitFigureHeight ? 'calc(960px - 324px)' : 'none';
 });
-var SlideShowImage = _styledComponents["default"].figure(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  width: 100%;\n  aspect-ratio: 1/1;\n\n  & + .slideshow-image {\n    margin-top: ", "px;\n  }\n\n  ", " {\n    flex: 1 0 calc((100% - ", "px) / 3);\n    min-width: ", "px;\n\n    &:hover {\n      cursor: pointer;\n      filter: brightness(15%);\n      transition: 0.3s;\n    }\n\n    & + .slideshow-image {\n      margin-top: unset;\n    }\n  }\n"])), SpacingBetweenSlideImages, function (_ref3) {
+var SlideShowImage = _styledComponents["default"].figure(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  width: 100%;\n  aspect-ratio: 1/1;\n  margin: 0;\n\n  & + .slideshow-image {\n    margin-top: ", "px;\n  }\n\n  ", " {\n    flex: 1 0 calc((100% - ", "px) / 3);\n    max-width: calc((100% - ", "px) / 3);\n\n    &:hover {\n      cursor: pointer;\n      filter: brightness(0.85);\n      transition: 0.3s;\n    }\n\n    & + .slideshow-image {\n      margin-top: unset;\n    }\n  }\n"])), SpacingBetweenSlideImages, function (_ref3) {
   var theme = _ref3.theme;
   return theme.breakpoint.xl;
-}, SpacingBetweenSlideImages * 2, SlideShowDesktopSize / 3 - 8);
+}, SpacingBetweenSlideImages * 2, SpacingBetweenSlideImages * 2);
 var FigCaption = _styledComponents["default"].figcaption(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  font-weight: 400;\n  line-height: 23px;\n  color: #000928;\n  opacity: 0.5;\n  ", ";\n  padding: 8px 20px 20px 20px;\n\n  ", " {\n    ", ";\n  }\n\n  ", " {\n    display: none;\n  }\n"])), function (_ref4) {
   var theme = _ref4.theme;
   return theme.fontSize.xs;
@@ -60,13 +59,13 @@ var GradientMask = _styledComponents["default"].div(_templateObject4 || (_templa
   var theme = _ref8.theme;
   return theme.breakpoint.xl;
 }, SlideShowDesktopSize);
-var ExpandText = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    display: block;\n    font-style: normal;\n    font-weight: 700;\n    ", ";\n    line-height: 18px;\n    letter-spacing: 0.03em;\n    color: #000928;\n    text-align: center;\n    cursor: pointer;\n    position: relative;\n    margin-bottom: 48px;\n    transition: all 0.2s ease;\n\n    &:hover::after,\n    &:active::after {\n      bottom: -30px;\n      transition: all 0.2s;\n    }\n\n    &::after {\n      content: '';\n      position: absolute;\n      bottom: -26px;\n      left: 50%;\n      transform: translate(-50%, 0%);\n      width: 14px;\n      height: 13px;\n      background-image: url(", ");\n      background-repeat: no-repeat;\n      background-position: center center;\n      background-size: 14px;\n    }\n  }\n"])), function (_ref9) {
+var ExpandText = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    display: block;\n    font-style: normal;\n    font-weight: 700;\n    ", ";\n    line-height: 18px;\n    letter-spacing: 0.03em;\n    color: #000928;\n    text-align: center;\n    cursor: pointer;\n    position: relative;\n    margin-bottom: 48px;\n    transition: all 0.2s ease;\n\n    &:hover::after,\n    &:active::after {\n      bottom: -30px;\n      transition: all 0.2s;\n    }\n\n    &::after {\n      content: '\u25BC';\n      position: absolute;\n      bottom: -26px;\n      left: 50%;\n      transform: translate(-50%, 0%);\n      font-size: 12px;\n      color: #000928;\n    }\n  }\n"])), function (_ref9) {
   var theme = _ref9.theme;
   return theme.breakpoint.xl;
 }, function (_ref0) {
   var theme = _ref0.theme;
   return theme.fontSize.md;
-}, arrowDown);
+});
 
 // support old version of slideshow without delay propertiy
 var Figure = _styledComponents["default"].figure(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  position: relative;\n  margin-block: unset;\n  margin-inline: unset;\n  margin: 0 10px;\n"])));

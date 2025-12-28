@@ -10,7 +10,7 @@ var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
 var _templateObject, _templateObject2, _templateObject3;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var defaultImage = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
+var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
 var Figure = _styledComponents["default"].figure(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 100%;\n  ", ";\n"])), function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];

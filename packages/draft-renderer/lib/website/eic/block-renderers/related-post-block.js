@@ -30,7 +30,7 @@ function RelatedPostBlock(entity) {
     return /*#__PURE__*/_react["default"].createElement(RelatedPostItem, {
       key: post.id
     }, /*#__PURE__*/_react["default"].createElement(RelatedPostAnchorWrapper, {
-      href: "/post/".concat(post.id),
+      href: "/node/".concat(post.id),
       target: "_blank"
     }, /*#__PURE__*/_react["default"].createElement(RelatedPost, null, post.name)));
   })));

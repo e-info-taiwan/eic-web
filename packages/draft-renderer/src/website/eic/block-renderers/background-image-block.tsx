@@ -6,19 +6,25 @@ import CustomImage from '@readr-media/react-image'
 const BackgroundContainer = styled.section`
   clear: both;
   position: relative;
-  margin: 32px calc(50% - 50vw) 0 !important;
-  width: 100vw;
-  min-height: 100vh;
+  margin: 32px 0 0;
+  width: 100%;
+  min-height: 60vh;
+  overflow: hidden;
 `
 
 const BackgroundImage = styled.div`
   position: absolute;
-  z-index: 1;
+  z-index: 0;
   top: 0;
-  bottom: unset;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `
 
 const BackgroundContentRow = styled.div``
@@ -27,15 +33,15 @@ const BackgroundContent = styled.div`
   position: relative;
   z-index: 1;
   &.static {
-    height: 100vh;
+    min-height: 60vh;
+    display: flex;
+    align-items: flex-end;
     ${BackgroundContentRow} {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
-      text-shadow: 0px 0px 1px #000000;
-      ${({ theme }) => theme.breakpoint.sm} {
-        bottom: 40px;
+      padding: 20px;
+      color: #fff;
+      text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
+      ${({ theme }) => theme.breakpoint.md} {
+        padding: 32px;
       }
     }
   }
@@ -122,7 +128,7 @@ const BackgroundContent = styled.div`
 `
 
 const BackgroundEmptyRow = styled.div`
-  height: 100vh;
+  height: 30vh;
 `
 
 type BGImageBlockProps = {

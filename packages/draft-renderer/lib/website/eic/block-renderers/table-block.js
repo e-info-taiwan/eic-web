@@ -145,10 +145,16 @@ var Tr = _styledComponents["default"].div(_templateObject2 || (_templateObject2 
 var Td = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  display: table-cell;\n  border-width: 1px;\n  min-width: 100px;\n  min-height: 40px;\n  padding: 10px;\n"])));
 var StyledFirstRow = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  display: table-row;\n  height: 10px;\n\n  div {\n    display: table-cell;\n    position: relative;\n  }\n\n  span {\n    cursor: pointer;\n    line-height: 10px;\n  }\n\n  span:first-child {\n    position: absolute;\n    right: 50%;\n    transform: translateX(50%);\n  }\n\n  span:first-child:before {\n    content: '\u2022';\n  }\n\n  span:first-child:hover:before {\n    content: '\u2796';\n  }\n\n  span:last-child {\n    position: absolute;\n    right: -5px;\n  }\n\n  span:last-child:before {\n    content: '\u2022';\n  }\n\n  span:last-child:hover:before {\n    content: '\u2795';\n  }\n"])));
 var StyledFirstColumn = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  display: table-cell;\n  width: 10px;\n  position: relative;\n\n  span {\n    cursor: pointer;\n  }\n\n  span:first-child {\n    position: absolute;\n    bottom: 50%;\n    right: 0px;\n    transform: translateY(50%);\n  }\n\n  span:first-child:before {\n    content: '\u2022';\n  }\n\n  span:first-child:hover:before {\n    content: '\u2796';\n  }\n\n  span:last-child {\n    position: absolute;\n    bottom: -10px;\n    right: 0px;\n  }\n\n  span:last-child:before {\n    content: '\u2022';\n  }\n\n  span:last-child:hover:before {\n    content: '\u2795';\n  }\n"])));
-var TableBlockContainer = _styledComponents["default"].div(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  margin: 15px 0;\n  position: relative;\n  overflow: scroll;\n  padding: 15px;\n"])));
-var StyledTable = _styledComponents["default"].div(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n  display: table;\n  width: 95%;\n  border-collapse: collapse;\n"])));
-var StyledTr = _styledComponents["default"].div(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral(["\n  display: table-row;\n"])));
-var StyledTd = _styledComponents["default"].div(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral(["\n  display: table-cell;\n  border: 1px solid #e1e5e9;\n  min-width: 100px;\n  min-height: 40px;\n  padding: 10px;\n"])));
+var TableBlockContainer = _styledComponents["default"].div(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  ", ";\n  position: relative;\n  overflow-x: auto;\n  -webkit-overflow-scrolling: touch;\n"])), function (_ref) {
+  var theme = _ref.theme;
+  return theme.margin["default"];
+});
+var StyledTable = _styledComponents["default"].div(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n  display: table;\n  width: 100%;\n  border-collapse: collapse;\n"])));
+var StyledTr = _styledComponents["default"].div(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral(["\n  display: table-row;\n\n  &:first-child {\n    background-color: #f0f9f4;\n    font-weight: 600;\n  }\n\n  &:nth-child(even) {\n    background-color: #fafafa;\n  }\n"])));
+var StyledTd = _styledComponents["default"].div(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral(["\n  display: table-cell;\n  border: 1px solid #e0e0e0;\n  min-width: 100px;\n  padding: 12px 16px;\n  ", ";\n  line-height: 1.6;\n  vertical-align: top;\n"])), function (_ref2) {
+  var theme = _ref2.theme;
+  return theme.fontSize.sm;
+});
 var TableEditorBlock = exports.TableEditorBlock = function TableEditorBlock(props) {
   var _tableData$2;
   var block = props.block,

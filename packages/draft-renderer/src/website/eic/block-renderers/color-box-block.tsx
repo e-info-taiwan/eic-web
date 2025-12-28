@@ -15,14 +15,20 @@ import {
 const colorBoxDefaultSpacing = 32
 
 const ColorBoxRenderWrapper = styled.div`
-  background-color: ${(props) => (props.color ? props.color : ' #FFFFFF')};
-  padding: 12px 24px;
+  background-color: ${(props) => (props.color ? props.color : '#f5f5f5')};
+  padding: 20px 24px;
   position: relative;
-  color: #000928;
+  color: rgba(0, 9, 40, 0.87);
   ${({ theme }) => theme.margin.default};
+  ${({ theme }) => theme.fontSize.md};
+  line-height: 1.8;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 24px 32px;
+  }
 
   > div > * + * {
-    margin: ${colorBoxDefaultSpacing}px 0 0;
+    margin: 16px 0 0;
     min-height: 0.01px; //to make margins between paragraphs effective
   }
 
@@ -62,10 +68,6 @@ const ColorBoxRenderWrapper = styled.div`
 
   blockquote {
     ${defaultBlockQuoteStyle}
-  }
-
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 16px 32px;
   }
 `
 

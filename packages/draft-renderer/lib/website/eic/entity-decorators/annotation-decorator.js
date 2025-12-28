@@ -18,7 +18,6 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var annotationArrow = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/07d1287fd390346af0c15b930148a5e4.png";
 var annotationDefaultSpacing = 8;
 var AnnotationText = _styledComponents["default"].span(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  ", ";\n"])), _sharedStyle.defaultLinkStyle);
 var AnnotationWrapper = _styledComponents["default"].span(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  display: inline-block;\n  cursor: pointer;\n\n  &:hover ", " {\n    border-bottom: 2px solid #04295e;\n  }\n"])), AnnotationText);
@@ -26,7 +25,7 @@ var AnnotationBody = _styledComponents["default"].div(_templateObject3 || (_temp
   var theme = _ref.theme;
   return theme.breakpoint.md;
 }, annotationDefaultSpacing, _sharedStyle.defaultH2Style, _sharedStyle.defaultUlStyle, annotationDefaultSpacing, _sharedStyle.defaultUnorderedListStyle, _sharedStyle.defaultOlStyle, annotationDefaultSpacing, _sharedStyle.defaultOrderedListStyle, _sharedStyle.defaultLinkStyle, _sharedStyle.defaultBlockQuoteStyle);
-var ArrowIcon = _styledComponents["default"].span(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  width: 24px;\n  height: 24px;\n  background-image: url(", ");\n  background-repeat: no-repeat;\n  background-position: center center;\n  background-size: 24px;\n  margin: auto 4px;\n  transition: transform 0.3s;\n  display: inline-flex;\n  vertical-align: text-top;\n  transform: ", ";\n"])), annotationArrow, function (props) {
+var ArrowIcon = _styledComponents["default"].span(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  width: 20px;\n  height: 20px;\n  margin: auto 4px;\n  transition: transform 0.3s;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  vertical-align: text-top;\n  transform: ", ";\n\n  &::before {\n    content: '\u25BC';\n    font-size: 10px;\n    color: #2d7a4f;\n  }\n"])), function (props) {
   return props.showContent ? 'rotate(-180deg)' : '';
 });
 function AnnotationBlock(props) {

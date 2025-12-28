@@ -12,9 +12,9 @@ var _templateObject, _templateObject2, _templateObject3, _templateObject4, _temp
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var defaultImage = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var arrowDown = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/f96d4b486ba2061c460962ae694f4670.png";
-var arrowUp = "https://unpkg.com/@eic-web/draft-renderer@1.4.4/lib/public/679d63b1846e81ada28c2f76edbd2931.png";
+var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
+var arrowDown = "/lib/public/f96d4b486ba2061c460962ae694f4670.png";
+var arrowUp = "/lib/public/679d63b1846e81ada28c2f76edbd2931.png";
 var arrowShareStyle = (0, _styledComponents.css)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  background-repeat: no-repeat;\n  background-position: center center;\n  background-size: 64px;\n  cursor: pointer;\n  border-radius: 50%;\n  visibility: ", ";\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n"])), function (props) {
   return props.shouldHideArrow ? 'hidden' : 'visible';
 });

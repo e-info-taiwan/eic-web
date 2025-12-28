@@ -11,7 +11,10 @@ var _templateObject;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var sideIndexDefaultSpacing = 32;
-var SideIndexBlockWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  margin-top: ", "px;\n\n  h2 {\n    ", "\n  }\n"])), sideIndexDefaultSpacing, _sharedStyle.defaultH2Style);
+var SideIndexBlockWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  margin-top: ", "px;\n  background-color: #f5f5f5;\n  border-left: 4px solid #2d7a4f;\n  padding: 16px 20px;\n\n  ", " {\n    padding: 20px 24px;\n  }\n\n  h2 {\n    ", "\n    margin: 0;\n  }\n"])), sideIndexDefaultSpacing, function (_ref) {
+  var theme = _ref.theme;
+  return theme.breakpoint.md;
+}, _sharedStyle.defaultH2Style);
 function SideIndexBlock(props) {
   var block = props.block,
     contentState = props.contentState;

@@ -287,28 +287,39 @@ const StyledFirstColumn = styled.div`
 `
 
 const TableBlockContainer = styled.div`
-  margin: 15px 0;
+  ${({ theme }) => theme.margin.default};
   position: relative;
-  overflow: scroll;
-  padding: 15px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 `
 
 const StyledTable = styled.div`
   display: table;
-  width: 95%;
+  width: 100%;
   border-collapse: collapse;
 `
 
 const StyledTr = styled.div`
   display: table-row;
+
+  &:first-child {
+    background-color: #f0f9f4;
+    font-weight: 600;
+  }
+
+  &:nth-child(even) {
+    background-color: #fafafa;
+  }
 `
 
 const StyledTd = styled.div`
   display: table-cell;
-  border: 1px solid #e1e5e9;
+  border: 1px solid #e0e0e0;
   min-width: 100px;
-  min-height: 40px;
-  padding: 10px;
+  padding: 12px 16px;
+  ${({ theme }) => theme.fontSize.sm};
+  line-height: 1.6;
+  vertical-align: top;
 `
 
 export const TableEditorBlock = (props: TableBlockProps) => {

@@ -8,9 +8,17 @@ const sideIndexDefaultSpacing = 32
 
 const SideIndexBlockWrapper = styled.div`
   margin-top: ${sideIndexDefaultSpacing}px;
+  background-color: #f5f5f5;
+  border-left: 4px solid #2d7a4f;
+  padding: 16px 20px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 20px 24px;
+  }
 
   h2 {
     ${defaultH2Style}
+    margin: 0;
   }
 `
 

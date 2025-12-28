@@ -7,6 +7,7 @@ const pkgVersion = pkg.version
 
 module.exports = function(api) {
   api.cache(true)
+  const isProduction = process.env.NODE_ENV === 'production'
   const presets = [
     '@babel/preset-env',
     '@babel/preset-react',
@@ -19,7 +20,9 @@ module.exports = function(api) {
         name: '[hash].[ext]',
         extensions: ['png', 'jpg', 'jpeg', 'gif', 'svg'],
         outputPath: '/lib/public',
-        publicPath: `https://unpkg.com/${pkgName}@${pkgVersion}/lib/public`,
+        publicPath: isProduction
+          ? `https://unpkg.com/${pkgName}@${pkgVersion}/lib/public`
+          : '/lib/public',
         context: '/src',
         limit: 0,
       },

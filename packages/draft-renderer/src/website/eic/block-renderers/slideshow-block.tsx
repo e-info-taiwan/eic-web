@@ -4,25 +4,21 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import defaultImage from '../assets/default-og-img.png'
-import arrowDown from '../assets/slideshow-arrow-down-dark.png'
 import SlideShowLightBox from '../components/slideshow-lightbox'
 
 const SlideShowDesktopSize = 960
 const SpacingBetweenSlideImages = 12
 
 const SlideShowBlockWrapper = styled.div`
-  width: calc(100% + 40px);
-  transform: translateX(-20px);
+  width: 100%;
   position: relative;
   ${({ theme }) => theme.margin.default};
 
   ${({ theme }) => theme.breakpoint.xl} {
-    width: ${SlideShowDesktopSize}px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    transform: translateX(-180px);
     gap: ${SpacingBetweenSlideImages}px;
     max-height: ${(props) => (props.expandSlideShow ? 'none' : '960px')};
     overflow: ${(props) => (props.expandSlideShow ? 'visible' : 'hidden')};
@@ -38,6 +34,7 @@ const SlideShowBlockWrapper = styled.div`
 const SlideShowImage = styled.figure`
   width: 100%;
   aspect-ratio: 1/1;
+  margin: 0;
 
   & + .slideshow-image {
     margin-top: ${SpacingBetweenSlideImages}px;
@@ -45,11 +42,11 @@ const SlideShowImage = styled.figure`
 
   ${({ theme }) => theme.breakpoint.xl} {
     flex: 1 0 calc((100% - ${SpacingBetweenSlideImages * 2}px) / 3);
-    min-width: ${SlideShowDesktopSize / 3 - 8}px;
+    max-width: calc((100% - ${SpacingBetweenSlideImages * 2}px) / 3);
 
     &:hover {
       cursor: pointer;
-      filter: brightness(15%);
+      filter: brightness(0.85);
       transition: 0.3s;
     }
 
@@ -119,17 +116,13 @@ const ExpandText = styled.div`
     }
 
     &::after {
-      content: '';
+      content: '▼';
       position: absolute;
       bottom: -26px;
       left: 50%;
       transform: translate(-50%, 0%);
-      width: 14px;
-      height: 13px;
-      background-image: url(${arrowDown});
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: 14px;
+      font-size: 12px;
+      color: #000928;
     }
   }
 `

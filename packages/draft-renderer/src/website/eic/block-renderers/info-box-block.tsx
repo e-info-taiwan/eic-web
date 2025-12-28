@@ -15,16 +15,14 @@ import {
 const infoboxDefaultSpacing = 8
 
 const InfoBoxRenderWrapper = styled.div`
-  background: #f6f6fb;
+  background: #f0f9f4;
   position: relative;
-  padding: 24px 0px;
-  width: calc(100% + 40px);
-  transform: translateX(-20px);
+  padding: 24px 20px;
+  width: 100%;
   ${({ theme }) => theme.margin.default};
 
   ${({ theme }) => theme.breakpoint.md} {
-    max-width: 560px;
-    transform: none;
+    padding: 24px 32px;
   }
 `
 
@@ -32,21 +30,20 @@ const InfoTitle = styled.div`
   width: 100%;
   font-style: normal;
   font-weight: 700;
-  ${({ theme }) => theme.fontSize.md};
+  ${({ theme }) => theme.fontSize.lg};
   line-height: 1.5;
   letter-spacing: 0.03em;
-  color: #000928;
-  border-left: 8px solid #04295e;
-  padding: 0 32px 0 24px;
-  margin-bottom: ${infoboxDefaultSpacing}px;
+  color: #2d7a4f;
+  padding: 0;
+  margin-bottom: 16px;
 `
 
 const InfoContent = styled.div`
-  padding: 0px 32px;
+  padding: 0;
   font-style: normal;
   font-weight: 400;
-  ${({ theme }) => theme.fontSize.sm};
-  line-height: 1.6;
+  ${({ theme }) => theme.fontSize.md};
+  line-height: 1.8;
   color: rgba(0, 9, 40, 0.87);
 
   > div > * + * {
