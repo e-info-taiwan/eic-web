@@ -1,4 +1,4 @@
-import type { User } from 'firebase/auth'
+import type { User, UserCredential } from 'firebase/auth'
 import {
   createUserWithEmailAndPassword,
   FacebookAuthProvider,
@@ -19,14 +19,17 @@ const googleProvider = new GoogleAuthProvider()
 const facebookProvider = new FacebookAuthProvider()
 const appleProvider = new OAuthProvider('apple.com')
 
-// Sign in with Google
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider)
+// Sign in with Google (popup method)
+export const signInWithGoogle = (): Promise<UserCredential> =>
+  signInWithPopup(auth, googleProvider)
 
-// Sign in with Facebook
-export const signInWithFacebook = () => signInWithPopup(auth, facebookProvider)
+// Sign in with Facebook (popup method)
+export const signInWithFacebook = (): Promise<UserCredential> =>
+  signInWithPopup(auth, facebookProvider)
 
-// Sign in with Apple
-export const signInWithApple = () => signInWithPopup(auth, appleProvider)
+// Sign in with Apple (popup method)
+export const signInWithApple = (): Promise<UserCredential> =>
+  signInWithPopup(auth, appleProvider)
 
 // Sign in with email/password
 export const signInWithEmail = (email: string, password: string) =>

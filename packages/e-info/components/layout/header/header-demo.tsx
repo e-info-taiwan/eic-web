@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
+import { useAuth } from '~/hooks/useAuth'
 import LogoEIC from '~/public/eic-logo.svg'
 import IconCancel from '~/public/icons/cancel.svg'
 import IconFacebook from '~/public/icons/facebook.svg'
@@ -751,6 +753,8 @@ const navigationItems = [
 ]
 
 const Header = () => {
+  const router = useRouter()
+  const { firebaseUser, userProfile, loading: authLoading, signOut } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null)
   const [hoveredSecondaryCategory, setHoveredSecondaryCategory] = useState<
@@ -762,6 +766,20 @@ const Header = () => {
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
+
+  // Check if user is logged in (has firebase user and profile)
+  const isLoggedIn = !authLoading && firebaseUser && userProfile
+
+  const handleAuthButtonClick = async () => {
+    if (isLoggedIn) {
+      // User is logged in, sign out
+      await signOut()
+      router.push('/')
+    } else {
+      // User is not logged in, go to login page
+      router.push('/auth/login')
+    }
+  }
 
   const handleCategoryHover = (categoryIndex: number) => {
     // Clear any existing timeout when hovering a new category
@@ -870,7 +888,9 @@ const Header = () => {
               <SearchButton>
                 <IconSearch />
               </SearchButton>
-              <LoginButton>登入</LoginButton>
+              <LoginButton onClick={handleAuthButtonClick}>
+                {authLoading ? '...' : isLoggedIn ? '登出' : '登入'}
+              </LoginButton>
               <TabletActionButtons>
                 <ActionButton>訂閱電子報</ActionButton>
                 <ActionButton>捐款支持</ActionButton>

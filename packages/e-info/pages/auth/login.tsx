@@ -176,6 +176,7 @@ const LoginPage: NextPageWithLayout = () => {
     try {
       const success = await loginFn()
       if (success) {
+        // Login successful, redirect to success page
         router.push('/auth/login-result?success=true')
       } else {
         // User needs to complete registration

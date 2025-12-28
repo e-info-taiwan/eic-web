@@ -38,7 +38,7 @@ export const VALIDATION_RULES = {
   password: {
     minLength: 8,
     message: '密碼在 8 位數以上',
-    errorMessage: '密碼格式錯誤！（文字待定）',
+    errorMessage: '密碼格式錯誤！',
   },
   email: {
     pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,

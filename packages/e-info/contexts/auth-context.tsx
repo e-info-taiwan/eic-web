@@ -71,16 +71,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Listen to auth state changes
   useEffect(() => {
     const unsubscribe = onAuthChange(async (user) => {
+      console.log('[AuthContext] onAuthChange:', user?.uid || 'null')
       setFirebaseUser(user)
 
       if (user) {
         // Check if user profile exists
         const profileExists = await checkUserProfileExists(user.uid)
+        console.log('[AuthContext] Profile exists (onAuthChange):', profileExists)
         if (profileExists) {
           const profile = await getUserProfile(user.uid)
+          console.log('[AuthContext] Got profile:', !!profile)
           setUserProfile(profile)
           setNeedsRegistration(false)
         } else {
+          console.log('[AuthContext] No profile, needs registration')
           setNeedsRegistration(true)
           setUserProfile(null)
         }
@@ -89,6 +93,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setNeedsRegistration(false)
       }
 
+      console.log('[AuthContext] Setting loading to false')
       setLoading(false)
     })
 
@@ -109,26 +114,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [firebaseUser])
 
-  // Handle social login result
-  const handleSocialLoginResult = useCallback(
-    async (user: User): Promise<boolean> => {
-      const profileExists = await checkUserProfileExists(user.uid)
-      if (!profileExists) {
-        setNeedsRegistration(true)
-        return false // Needs to complete registration
-      }
-      const profile = await getUserProfile(user.uid)
-      setUserProfile(profile)
-      return true // Login successful
-    },
-    []
-  )
-
+  // Social login functions using popup method
+  // Returns true if login successful and profile exists, false if needs registration
   const signInWithGoogle = useCallback(async (): Promise<boolean> => {
     try {
       setError(null)
       const result = await signInWithGoogleApi()
-      return await handleSocialLoginResult(result.user)
+      const profileExists = await checkUserProfileExists(result.user.uid)
+      if (!profileExists) {
+        setNeedsRegistration(true)
+        return false // Needs to complete registration
+      }
+      return true // Login successful
     } catch (err: unknown) {
       const errorCode =
         err && typeof err === 'object' && 'code' in err
@@ -137,13 +134,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(getFirebaseErrorMessage(errorCode))
       return false
     }
-  }, [handleSocialLoginResult])
+  }, [])
 
   const signInWithFacebook = useCallback(async (): Promise<boolean> => {
     try {
       setError(null)
       const result = await signInWithFacebookApi()
-      return await handleSocialLoginResult(result.user)
+      const profileExists = await checkUserProfileExists(result.user.uid)
+      if (!profileExists) {
+        setNeedsRegistration(true)
+        return false // Needs to complete registration
+      }
+      return true // Login successful
     } catch (err: unknown) {
       const errorCode =
         err && typeof err === 'object' && 'code' in err
@@ -152,13 +154,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(getFirebaseErrorMessage(errorCode))
       return false
     }
-  }, [handleSocialLoginResult])
+  }, [])
 
   const signInWithApple = useCallback(async (): Promise<boolean> => {
     try {
       setError(null)
       const result = await signInWithAppleApi()
-      return await handleSocialLoginResult(result.user)
+      const profileExists = await checkUserProfileExists(result.user.uid)
+      if (!profileExists) {
+        setNeedsRegistration(true)
+        return false // Needs to complete registration
+      }
+      return true // Login successful
     } catch (err: unknown) {
       const errorCode =
         err && typeof err === 'object' && 'code' in err
@@ -167,7 +174,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setError(getFirebaseErrorMessage(errorCode))
       return false
     }
-  }, [handleSocialLoginResult])
+  }, [])
 
   const signInWithEmail = useCallback(
     async (email: string, password: string): Promise<boolean> => {
