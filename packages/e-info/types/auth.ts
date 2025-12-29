@@ -29,6 +29,12 @@ export type NewsletterPreferences = {
   weeklyBeautified: boolean // 一週回顧（美化版）
 }
 
+// 通知分類選項（之後會擴充）
+export type NotificationCategory =
+  | '台灣新聞'
+  | '生物多樣性'
+  | '編輯直送'
+
 // Firestore 使用者資料結構
 export type UserProfile = {
   uid: string
@@ -39,6 +45,7 @@ export type UserProfile = {
   interestedCategories: InterestedCategory[]
   newsletterSubscriptions: NewsletterSubscription
   newsletterPreferences?: NewsletterPreferences // 新版電子報訂閱選項
+  notificationCategories?: NotificationCategory[] // 通知分類
   createdAt: string
   updatedAt: string
 }
