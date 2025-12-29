@@ -87,7 +87,7 @@ const MobileNav = styled.nav`
   gap: 16px 24px;
   padding-bottom: 24px;
   margin-bottom: 24px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[90]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[95]};
 
   ${({ theme }) => theme.breakpoint.md} {
     display: none;
@@ -169,7 +169,7 @@ const UploadButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.grayscale[90]};
+    background-color: ${({ theme }) => theme.colors.grayscale[80]};
   }
 `
 

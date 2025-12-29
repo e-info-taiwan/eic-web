@@ -11,6 +11,7 @@ import IconHamburger from '~/public/icons/hamburger.svg'
 import IconInstagram from '~/public/icons/instagram.svg'
 import IconLeftArrow from '~/public/icons/left-arrow.svg'
 import IconMail from '~/public/icons/mail.svg'
+import IconMember from '~/public/icons/member.svg'
 import IconSearch from '~/public/icons/search.svg'
 // Styled Components
 const HeaderContainer = styled.header<{ $isHidden?: boolean }>`
@@ -125,6 +126,55 @@ const LoginButton = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.colors.primary[40]};
     color: white;
+  }
+`
+
+const LogoutButton = styled.button`
+  background-color: ${({ theme }) => theme.colors.primary[40]};
+  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
+  color: white;
+  padding: 5.5px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary[20]};
+    border-color: ${({ theme }) => theme.colors.primary[20]};
+  }
+`
+
+const UserInfo = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[40]};
+  }
+
+  svg {
+    width: 28px;
+    height: 32px;
+  }
+`
+
+const UserName = styled.span`
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    max-width: 150px;
   }
 `
 
@@ -888,9 +938,21 @@ const Header = () => {
               <SearchButton>
                 <IconSearch />
               </SearchButton>
-              <LoginButton onClick={handleAuthButtonClick}>
-                {authLoading ? '...' : isLoggedIn ? '登出' : '登入'}
-              </LoginButton>
+              {isLoggedIn ? (
+                <>
+                  <UserInfo href="/member">
+                    <UserName>{userProfile?.displayName || '會員'}</UserName>
+                    <IconMember />
+                  </UserInfo>
+                  <LogoutButton onClick={handleAuthButtonClick}>
+                    登出
+                  </LogoutButton>
+                </>
+              ) : (
+                <LoginButton onClick={handleAuthButtonClick}>
+                  {authLoading ? '...' : '登入'}
+                </LoginButton>
+              )}
               <TabletActionButtons>
                 <ActionButton>訂閱電子報</ActionButton>
                 <ActionButton>捐款支持</ActionButton>
