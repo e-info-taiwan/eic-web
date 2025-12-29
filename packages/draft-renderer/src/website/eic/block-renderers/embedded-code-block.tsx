@@ -17,6 +17,8 @@ export const Block = styled.div`
 
   /* YouTube iframe responsive */
   iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
     max-width: 100%;
   }
 `
