@@ -262,7 +262,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/post-default.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -282,7 +282,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '聯合國海洋大會正於法國尼斯舉行，10日有超過90個會員國共同簽署《尼斯覺醒行動》（The Nice wake up call for an ambitious plastic treat...',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -302,7 +302,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '聯合國海洋大會正於法國尼斯舉行，10日有超過90個會員國共同簽署《尼斯覺醒行動》（The Nice wake up call for an ambitious plastic treat...',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -320,7 +320,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '海洋廢棄物挑戰日益嚴峻，台灣起家的手機配件品牌犀牛盾，宣布推出智慧海廢清理平台「破浪者」。◇ 結合太陽能、自動化與AI辨識技術，透過無人機偵測、無人船回收與水流引導系統，打造低能耗、模組化...',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -340,7 +340,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '全台一年用約50億支寶特瓶，雖然回收率高達95%，但多數回收料被降級為衣物、建材等用途，最終仍遭丟棄。在資源永續循環概念下，盼實現「瓶到瓶」的封閉式資源循環，主婦聯盟昨（21）日首度推出...',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -360,7 +360,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '全台一年用約50億支寶特瓶，雖然回收率高達95%，但多數回收料被降級為衣物、建材等用途，最終仍遭丟棄。在資源永續循環概念下，盼實現「瓶到瓶」的封閉式資源循環，主婦聯盟昨（21）日首度推出...',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -380,7 +380,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -400,7 +400,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
@@ -420,7 +420,7 @@ const generateMockArticles = (): MockArticle[] => [
     summary:
       '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
     date: '2023/03/28 12:59',
-    imageUrl: '/images/default-post.jpg',
+    imageUrl: '/post-default.png',
     tags: [
       { id: '1', name: '標籤1' },
       { id: '2', name: '標籤2' },
