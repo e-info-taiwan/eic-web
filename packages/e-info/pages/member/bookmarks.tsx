@@ -552,7 +552,7 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
 
 MemberBookmarksPage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral title="收藏文章 - 環境資訊中心" description="您的收藏文章">
+    <LayoutGeneral title="收藏文章" description="您的收藏文章">
       {page}
     </LayoutGeneral>
   )

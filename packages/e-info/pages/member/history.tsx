@@ -552,7 +552,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
 
 MemberHistoryPage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral title="閱讀紀錄 - 環境資訊中心" description="您的閱讀紀錄">
+    <LayoutGeneral title="閱讀紀錄" description="您的閱讀紀錄">
       {page}
     </LayoutGeneral>
   )

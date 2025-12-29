@@ -401,7 +401,7 @@ const MemberNotificationsPage: NextPageWithLayout = () => {
 
 MemberNotificationsPage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral title="通知 - 環境資訊中心" description="管理您的通知設定">
+    <LayoutGeneral title="通知" description="管理您的通知設定">
       {page}
     </LayoutGeneral>
   )

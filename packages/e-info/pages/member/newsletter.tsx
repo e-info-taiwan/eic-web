@@ -419,7 +419,7 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
 MemberNewsletterPage.getLayout = function getLayout(page: ReactElement) {
   return (
     <LayoutGeneral
-      title="電子報 - 環境資訊中心"
+      title="電子報"
       description="管理您的電子報訂閱設定"
     >
       {page}

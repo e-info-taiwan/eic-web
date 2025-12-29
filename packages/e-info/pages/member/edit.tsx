@@ -677,7 +677,7 @@ const MemberEditPage: NextPageWithLayout = () => {
 MemberEditPage.getLayout = function getLayout(page: ReactElement) {
   return (
     <LayoutGeneral
-      title="編輯個人資料 - 環境資訊中心"
+      title="編輯個人資料"
       description="編輯您的環境資訊中心帳號資料"
     >
       {page}
