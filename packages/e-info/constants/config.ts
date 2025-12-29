@@ -62,13 +62,13 @@ switch (ENV) {
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     FIREBASE_CONFIG = {
-      // 測試需要，後續請更換
-      apiKey: 'AIzaSyAPJDplwypAUNzeLaBN8aIGlMO2MJXm6pc',
-      authDomain: 'eic-test-project-4d375.firebaseapp.com',
-      projectId: 'eic-test-project-4d375',
-      storageBucket: 'eic-test-project-4d375.firebasestorage.app',
-      messagingSenderId: '777373177504',
-      appId: '1:777373177504:web:0ad8ec47384323330ddbc5',
+      // e-info-dev
+      apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
+      authDomain: 'e-info-dev.firebaseapp.com',
+      projectId: 'e-info-dev',
+      storageBucket: 'e-info-dev.firebasestorage.app',
+      messagingSenderId: '503550465964',
+      appId: '1:503550465964:web:1f1f075c8165fb88b3cc09',
     }
     break
 }
@@ -86,7 +86,8 @@ if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
   FIREBASE_CONFIG.projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
 }
 if (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET) {
-  FIREBASE_CONFIG.storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+  FIREBASE_CONFIG.storageBucket =
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
 }
 if (process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID) {
   FIREBASE_CONFIG.messagingSenderId =
