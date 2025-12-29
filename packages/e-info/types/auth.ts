@@ -21,6 +21,14 @@ export type NewsletterSubscription = {
   newsletterFormat: 'general' | 'beautified'
 }
 
+// 電子報訂閱選項（新版 - 四種獨立選項）
+export type NewsletterPreferences = {
+  dailyGeneral: boolean // 每日報（一般版）
+  dailyBeautified: boolean // 每日報（美化版）
+  weeklyGeneral: boolean // 一週回顧（一般版）
+  weeklyBeautified: boolean // 一週回顧（美化版）
+}
+
 // Firestore 使用者資料結構
 export type UserProfile = {
   uid: string
@@ -30,6 +38,7 @@ export type UserProfile = {
   birthDate: string | null
   interestedCategories: InterestedCategory[]
   newsletterSubscriptions: NewsletterSubscription
+  newsletterPreferences?: NewsletterPreferences // 新版電子報訂閱選項
   createdAt: string
   updatedAt: string
 }
@@ -49,6 +58,20 @@ export type RegisterFormData = {
   dailyNewsletter: boolean
   weeklyNewsletter: boolean
   newsletterFormat: 'general' | 'beautified'
+}
+
+// 將註冊表單的電子報選項轉換為 NewsletterPreferences
+export const convertToNewsletterPreferences = (
+  dailyNewsletter: boolean,
+  weeklyNewsletter: boolean,
+  newsletterFormat: 'general' | 'beautified'
+): NewsletterPreferences => {
+  return {
+    dailyGeneral: dailyNewsletter && newsletterFormat === 'general',
+    dailyBeautified: dailyNewsletter && newsletterFormat === 'beautified',
+    weeklyGeneral: weeklyNewsletter && newsletterFormat === 'general',
+    weeklyBeautified: weeklyNewsletter && newsletterFormat === 'beautified',
+  }
 }
 
 // 註冊表單驗證狀態

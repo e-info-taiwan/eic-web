@@ -421,10 +421,10 @@ const RegisterPage: NextPageWithLayout = () => {
         await refreshUserProfile()
         router.push('/auth/register-result?success=true')
       } else {
-        // Email signup
-        const success = await signUpWithEmail(formData.email, formData.password)
-        if (success && firebaseUser) {
-          await createUserProfile(firebaseUser.uid, formData)
+        // Email signup - signUpWithEmail now returns the User object directly
+        const user = await signUpWithEmail(formData.email, formData.password)
+        if (user) {
+          await createUserProfile(user.uid, formData)
           await refreshUserProfile()
           router.push('/auth/register-result?success=true')
         } else {

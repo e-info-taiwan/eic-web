@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 
 import type { RegisterFormData, UserProfile } from '~/types/auth'
+import { convertToNewsletterPreferences } from '~/types/auth'
 
 import { db } from './config'
 
@@ -36,6 +37,11 @@ export const createUserProfile = async (
       weeklyNewsletter: formData.weeklyNewsletter,
       newsletterFormat: formData.newsletterFormat,
     },
+    newsletterPreferences: convertToNewsletterPreferences(
+      formData.dailyNewsletter,
+      formData.weeklyNewsletter,
+      formData.newsletterFormat
+    ),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }
@@ -61,6 +67,12 @@ export const createUserProfileFromSocialLogin = async (
       dailyNewsletter: false,
       weeklyNewsletter: false,
       newsletterFormat: 'general',
+    },
+    newsletterPreferences: {
+      dailyGeneral: false,
+      dailyBeautified: false,
+      weeklyGeneral: false,
+      weeklyBeautified: false,
     },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

@@ -89,7 +89,7 @@ const AuthResultCard = ({ type, success, onRetry }: AuthResultCardProps) => {
     return (
       <CardWrapper>
         <Title $success={true}>註冊成功！</Title>
-        <StyledLink href="/">跳轉至個人檔案</StyledLink>
+        <StyledLink href="/member">跳轉至個人檔案</StyledLink>
       </CardWrapper>
     )
   } else {

@@ -29,7 +29,7 @@ export type AuthContextType = {
   signInWithFacebook: () => Promise<boolean>
   signInWithApple: () => Promise<boolean>
   signInWithEmail: (email: string, password: string) => Promise<boolean>
-  signUpWithEmail: (email: string, password: string) => Promise<boolean>
+  signUpWithEmail: (email: string, password: string) => Promise<User | null>
   signOut: () => Promise<void>
   checkEmailExists: (email: string) => Promise<boolean>
   sendPasswordReset: (email: string) => Promise<boolean>
@@ -47,7 +47,7 @@ const defaultValue: AuthContextType = {
   signInWithFacebook: async () => false,
   signInWithApple: async () => false,
   signInWithEmail: async () => false,
-  signUpWithEmail: async () => false,
+  signUpWithEmail: async () => null,
   signOut: async () => {},
   checkEmailExists: async () => false,
   sendPasswordReset: async () => false,
@@ -195,19 +195,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   )
 
   const signUpWithEmail = useCallback(
-    async (email: string, password: string): Promise<boolean> => {
+    async (email: string, password: string): Promise<User | null> => {
       try {
         setError(null)
-        await signUpWithEmailApi(email, password)
+        const result = await signUpWithEmailApi(email, password)
         setNeedsRegistration(true)
-        return true
+        return result.user
       } catch (err: unknown) {
         const errorCode =
           err && typeof err === 'object' && 'code' in err
             ? (err as { code: string }).code
             : ''
         setError(getFirebaseErrorMessage(errorCode))
-        return false
+        return null
       }
     },
     []
