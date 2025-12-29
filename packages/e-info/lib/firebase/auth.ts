@@ -1,15 +1,18 @@
 import type { User, UserCredential } from 'firebase/auth'
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
   OAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
+  updatePassword,
 } from 'firebase/auth'
 
 import { auth } from './config'
@@ -59,3 +62,45 @@ export const signOut = () => firebaseSignOut(auth)
 // Auth state observer
 export const onAuthChange = (callback: (_user: User | null) => void) =>
   onAuthStateChanged(auth, callback)
+
+// Reauthenticate user with email/password (required before sensitive operations)
+export const reauthenticateUser = async (
+  user: User,
+  currentPassword: string
+): Promise<void> => {
+  if (!user.email) {
+    throw new Error('User email not found')
+  }
+  const credential = EmailAuthProvider.credential(user.email, currentPassword)
+  await reauthenticateWithCredential(user, credential)
+}
+
+// Change password (requires recent authentication)
+export const changePassword = async (
+  user: User,
+  newPassword: string
+): Promise<void> => {
+  await updatePassword(user, newPassword)
+}
+
+// Change password with reauthentication
+export const changePasswordWithReauth = async (
+  user: User,
+  currentPassword: string,
+  newPassword: string
+): Promise<void> => {
+  await reauthenticateUser(user, currentPassword)
+  await updatePassword(user, newPassword)
+}
+
+// Check if user has password (email/password) login method
+export const hasPasswordProvider = (user: User): boolean => {
+  return user.providerData.some(
+    (provider) => provider.providerId === 'password'
+  )
+}
+
+// Get user's sign-in providers
+export const getSignInProviders = (user: User): string[] => {
+  return user.providerData.map((provider) => provider.providerId)
+}

@@ -7,7 +7,12 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import { getFirebaseErrorMessage } from '~/constants/auth'
 import { useAuth } from '~/hooks/useAuth'
+import {
+  changePasswordWithReauth,
+  hasPasswordProvider,
+} from '~/lib/firebase/auth'
 import { updateUserProfile } from '~/lib/firebase/firestore'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
@@ -372,6 +377,7 @@ const sidebarItems = [
 
 type FormData = {
   displayName: string
+  currentPassword: string
   newPassword: string
   confirmPassword: string
 }
@@ -382,10 +388,12 @@ const MemberEditPage: NextPageWithLayout = () => {
 
   const [formData, setFormData] = useState<FormData>({
     displayName: '',
+    currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   })
-  const [showPassword, setShowPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -426,13 +434,25 @@ const MemberEditPage: NextPageWithLayout = () => {
     }
 
     // Validate password if user wants to change it
-    if (formData.newPassword || formData.confirmPassword) {
-      if (formData.newPassword.length < 6) {
-        setError('密碼需至少 6 位數')
+    const wantsToChangePassword =
+      formData.currentPassword ||
+      formData.newPassword ||
+      formData.confirmPassword
+    if (wantsToChangePassword) {
+      if (!formData.currentPassword) {
+        setError('請輸入目前密碼')
+        return
+      }
+      if (!formData.newPassword) {
+        setError('請輸入新密碼')
+        return
+      }
+      if (formData.newPassword.length < 8) {
+        setError('新密碼需至少 8 位數')
         return
       }
       if (formData.newPassword !== formData.confirmPassword) {
-        setError('密碼不一致')
+        setError('新密碼與確認密碼不一致')
         return
       }
     }
@@ -447,10 +467,14 @@ const MemberEditPage: NextPageWithLayout = () => {
         displayName: formData.displayName,
       })
 
-      // TODO: Update password if provided (requires Firebase Auth reauthentication)
-      // if (formData.newPassword) {
-      //   await updatePassword(firebaseUser, formData.newPassword)
-      // }
+      // Update password if provided
+      if (wantsToChangePassword) {
+        await changePasswordWithReauth(
+          firebaseUser,
+          formData.currentPassword,
+          formData.newPassword
+        )
+      }
 
       await refreshUserProfile()
       setSuccess(true)
@@ -458,11 +482,20 @@ const MemberEditPage: NextPageWithLayout = () => {
       // Clear password fields
       setFormData((prev) => ({
         ...prev,
+        currentPassword: '',
         newPassword: '',
         confirmPassword: '',
       }))
-    } catch {
-      setError('更新失敗，請稍後再試')
+    } catch (err: unknown) {
+      const errorCode =
+        err && typeof err === 'object' && 'code' in err
+          ? (err as { code: string }).code
+          : ''
+      if (errorCode) {
+        setError(getFirebaseErrorMessage(errorCode))
+      } else {
+        setError('更新失敗，請稍後再試')
+      }
     } finally {
       setSaving(false)
     }
@@ -557,47 +590,76 @@ const MemberEditPage: NextPageWithLayout = () => {
               </StaticValue>
             </FormRow>
 
-            <FormRow>
-              <Label htmlFor="newPassword">變更密碼</Label>
-              <PasswordWrapper>
-                <PasswordInput
-                  id="newPassword"
-                  name="newPassword"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.newPassword}
-                  onChange={handleInputChange}
-                  disabled={saving}
-                />
-                <ToggleButton
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
-                >
-                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                </ToggleButton>
-              </PasswordWrapper>
-            </FormRow>
+            {hasPasswordProvider(firebaseUser) && (
+              <>
+                <FormRow>
+                  <Label htmlFor="currentPassword">目前密碼</Label>
+                  <PasswordWrapper>
+                    <PasswordInput
+                      id="currentPassword"
+                      name="currentPassword"
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={formData.currentPassword}
+                      onChange={handleInputChange}
+                      disabled={saving}
+                    />
+                    <ToggleButton
+                      type="button"
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
+                      aria-label={showCurrentPassword ? '隱藏密碼' : '顯示密碼'}
+                    >
+                      {showCurrentPassword ? <EyeOffIcon /> : <EyeIcon />}
+                    </ToggleButton>
+                  </PasswordWrapper>
+                </FormRow>
 
-            <FormRow>
-              <Label htmlFor="confirmPassword">確認密碼</Label>
-              <PasswordWrapper>
-                <PasswordInput
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  disabled={saving}
-                />
-                <ToggleButton
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={showConfirmPassword ? '隱藏密碼' : '顯示密碼'}
-                >
-                  {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
-                </ToggleButton>
-              </PasswordWrapper>
-            </FormRow>
+                <FormRow>
+                  <Label htmlFor="newPassword">新密碼</Label>
+                  <PasswordWrapper>
+                    <PasswordInput
+                      id="newPassword"
+                      name="newPassword"
+                      type={showNewPassword ? 'text' : 'password'}
+                      value={formData.newPassword}
+                      onChange={handleInputChange}
+                      disabled={saving}
+                    />
+                    <ToggleButton
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      aria-label={showNewPassword ? '隱藏密碼' : '顯示密碼'}
+                    >
+                      {showNewPassword ? <EyeOffIcon /> : <EyeIcon />}
+                    </ToggleButton>
+                  </PasswordWrapper>
+                </FormRow>
+
+                <FormRow>
+                  <Label htmlFor="confirmPassword">確認密碼</Label>
+                  <PasswordWrapper>
+                    <PasswordInput
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      disabled={saving}
+                    />
+                    <ToggleButton
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      aria-label={showConfirmPassword ? '隱藏密碼' : '顯示密碼'}
+                    >
+                      {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                    </ToggleButton>
+                  </PasswordWrapper>
+                </FormRow>
+              </>
+            )}
 
             {error && <ErrorMessage>{error}</ErrorMessage>}
             {success && <SuccessMessage>個人資料已更新</SuccessMessage>}

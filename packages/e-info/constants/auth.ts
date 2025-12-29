@@ -63,6 +63,8 @@ export const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
   'auth/popup-closed-by-user': '登入視窗已關閉',
   'auth/operation-not-allowed': '此登入方式未啟用',
   'auth/invalid-credential': '認證資訊無效',
+  'auth/requires-recent-login': '請重新登入後再試',
+  'auth/user-mismatch': '認證資訊不符',
 }
 
 // 取得 Firebase 錯誤的中文訊息
