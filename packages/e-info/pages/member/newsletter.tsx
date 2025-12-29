@@ -418,10 +418,7 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
 
 MemberNewsletterPage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral
-      title="電子報"
-      description="管理您的電子報訂閱設定"
-    >
+    <LayoutGeneral title="電子報" description="管理您的電子報訂閱設定">
       {page}
     </LayoutGeneral>
   )

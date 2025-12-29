@@ -337,10 +337,7 @@ const MemberProfilePage: NextPageWithLayout = () => {
 
 MemberProfilePage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral
-      title="個人資料"
-      description="管理您的環境資訊中心帳號"
-    >
+    <LayoutGeneral title="個人資料" description="管理您的環境資訊中心帳號">
       {page}
     </LayoutGeneral>
   )

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
+import NewsletterModal from '~/components/shared/newsletter-modal'
 import { useAuth } from '~/hooks/useAuth'
 import LogoEIC from '~/public/eic-logo.svg'
 import IconCancel from '~/public/icons/cancel.svg'
@@ -193,6 +194,7 @@ const ActionButtons = styled.div`
 const ActionButton = styled.a`
   background: none;
   border: none;
+  padding: 0;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   font-size: 16px;
   font-weight: 700;
@@ -200,6 +202,8 @@ const ActionButton = styled.a`
   cursor: pointer;
   transition: color 0.3s ease;
   white-space: nowrap;
+  font-family: inherit;
+  text-decoration: none;
 
   /* Mobile menu styling */
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
@@ -814,6 +818,7 @@ const Header = () => {
     (typeof navigationItems)[0] | null
   >(null)
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
+  const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
 
@@ -954,7 +959,12 @@ const Header = () => {
                 </LoginButton>
               )}
               <TabletActionButtons>
-                <ActionButton>訂閱電子報</ActionButton>
+                <ActionButton
+                  as="button"
+                  onClick={() => setIsNewsletterModalOpen(true)}
+                >
+                  訂閱電子報
+                </ActionButton>
                 <ActionButton>捐款支持</ActionButton>
               </TabletActionButtons>
             </RightSection>
@@ -976,7 +986,15 @@ const Header = () => {
             <MobileMenuContent>
               <MobileMenuSection>
                 <ActionButton>捐款支持</ActionButton>
-                <ActionButton>訂閱電子報</ActionButton>
+                <ActionButton
+                  as="button"
+                  onClick={() => {
+                    setIsNewsletterModalOpen(true)
+                    handleMenuClose()
+                  }}
+                >
+                  訂閱電子報
+                </ActionButton>
               </MobileMenuSection>
 
               <MobileMenuSection>
@@ -1078,7 +1096,12 @@ const Header = () => {
             ))}
           </NavigationMenu>
           <ActionButtons>
-            <ActionButton>訂閱電子報</ActionButton>
+            <ActionButton
+              as="button"
+              onClick={() => setIsNewsletterModalOpen(true)}
+            >
+              訂閱電子報
+            </ActionButton>
             <ActionButton>捐款支持</ActionButton>
           </ActionButtons>
         </NavigationSection>
@@ -1088,6 +1111,11 @@ const Header = () => {
           《核管法》修法三讀 核電運轉年限最多再加20年、已停機核電可重啟
         </NewsContent>
       </NewsBar>
+
+      <NewsletterModal
+        isOpen={isNewsletterModalOpen}
+        onClose={() => setIsNewsletterModalOpen(false)}
+      />
     </HeaderContainer>
   )
 }
