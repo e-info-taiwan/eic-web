@@ -156,43 +156,48 @@ const MonthText = styled.span`
   }
 `
 
-const CalendarGrid = styled.div`
+// Desktop calendar grid (hidden on mobile/tablet)
+const DesktopCalendarGrid = styled.div`
+  display: none;
+  margin-bottom: 40px;
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+`
+
+// Mobile/Tablet grid (hidden on desktop)
+const MobileTabletGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
   margin-bottom: 40px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    display: none;
   }
 `
 
 const WeekdayHeader = styled.div`
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   color: ${({ theme }) => theme.colors.grayscale[60]};
-  padding: 8px 0;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 14px;
-    padding: 12px 0;
-  }
+  padding: 12px 0;
 `
 
 const CalendarCell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    min-height: 160px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    min-height: 200px;
-  }
+  min-height: 200px;
 `
 
 const NewsletterCard = styled(Link)`
@@ -509,7 +514,8 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
           </NavButton>
         </NavigationWrapper>
 
-        <CalendarGrid>
+        {/* Desktop: Calendar grid with weekday headers */}
+        <DesktopCalendarGrid>
           {WEEKDAYS.map((day) => (
             <WeekdayHeader key={day}>週{day}</WeekdayHeader>
           ))}
@@ -536,7 +542,32 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
               )}
             </CalendarCell>
           ))}
-        </CalendarGrid>
+        </DesktopCalendarGrid>
+
+        {/* Mobile/Tablet: Simple grid without empty cells */}
+        <MobileTabletGrid>
+          {newsletters.map((newsletter) => (
+            <NewsletterCard
+              key={newsletter.id}
+              href={`/newsletter/${newsletter.id}`}
+            >
+              <ThumbnailWrapper>
+                <Image
+                  src={
+                    newsletter.heroImage?.resized?.w480 ||
+                    newsletter.heroImage?.resized?.original ||
+                    DEFAULT_POST_IMAGE_PATH
+                  }
+                  alt={newsletter.title || '電子報'}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </ThumbnailWrapper>
+              <CardDate>{formatDate(newsletter.sendDate)}</CardDate>
+              <CardTitle>{newsletter.title}</CardTitle>
+            </NewsletterCard>
+          ))}
+        </MobileTabletGrid>
 
         {newsletters.length === 0 && !loading && (
           <EmptyMessage>本月份暫無電子報</EmptyMessage>
