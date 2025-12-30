@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
+import NewsletterModal from '~/components/shared/newsletter-modal'
 import LogoEIC from '~/public/eic-logo.svg'
 
 // Styled Components
@@ -203,6 +204,8 @@ const SocialIcon = styled.div`
 `
 
 const Footer = () => {
+  const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
+
   const navigationData = [
     ['關於我們', '合作媒體', '編輯室自律公約', '活動'],
     ['網站授權條款', '常見問題', '獲獎記錄', '綠色職缺'],
@@ -219,7 +222,9 @@ const Footer = () => {
             </Logo>
 
             <ActionButtons>
-              <Button>訂閱電子報</Button>
+              <Button onClick={() => setIsNewsletterModalOpen(true)}>
+                訂閱電子報
+              </Button>
               <Button>捐款支持</Button>
             </ActionButtons>
           </LeftSection>
@@ -254,6 +259,11 @@ const Footer = () => {
           </SocialSection>
         </BottomSection>
       </Container>
+
+      <NewsletterModal
+        isOpen={isNewsletterModalOpen}
+        onClose={() => setIsNewsletterModalOpen(false)}
+      />
     </FooterContainer>
   )
 }

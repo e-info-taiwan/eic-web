@@ -203,16 +203,17 @@ const FormSection = styled.div`
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px 16px;
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
-  border-radius: 8px;
+  padding: 6px 10px;
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  outline: none;
-  transition: border-color 0.2s ease;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  background-color: ${({ theme }) => theme.colors.grayscale[99]};
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.05) inset;
+  border-radius: 0;
 
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary[40]};
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   &::placeholder {
