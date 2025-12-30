@@ -70,7 +70,10 @@ const CREATE_MEMBER = gql`
 // Mutation to update a member
 const UPDATE_MEMBER = gql`
   ${MEMBER_FIELDS}
-  mutation UpdateMember($where: MemberWhereUniqueInput!, $data: MemberUpdateInput!) {
+  mutation UpdateMember(
+    $where: MemberWhereUniqueInput!
+    $data: MemberUpdateInput!
+  ) {
     updateMember(where: $where, data: $data) {
       ...MemberFields
     }
@@ -140,7 +143,10 @@ export type UpdateMemberInput = {
   newsletterSubscription?: string
   newsletterFrequency?: string
   avatar?: { connect: { id: string } } | { disconnect: true }
-  interestedSections?: { connect: { id: string }[] } | { disconnect: { id: string }[] } | { set: { id: string }[] }
+  interestedSections?:
+    | { connect: { id: string }[] }
+    | { disconnect: { id: string }[] }
+    | { set: { id: string }[] }
 }
 
 /**
@@ -168,7 +174,9 @@ export const getMemberByFirebaseId = async (
 /**
  * Check if member exists by Firebase UID
  */
-export const checkMemberExists = async (firebaseId: string): Promise<boolean> => {
+export const checkMemberExists = async (
+  firebaseId: string
+): Promise<boolean> => {
   const client = getGqlClient()
 
   const result = await client.query({
@@ -187,7 +195,9 @@ export const checkMemberExists = async (firebaseId: string): Promise<boolean> =>
 /**
  * Create a new member
  */
-export const createMember = async (data: CreateMemberInput): Promise<Member> => {
+export const createMember = async (
+  data: CreateMemberInput
+): Promise<Member> => {
   const client = getGqlClient()
 
   const result = await client.mutate({
@@ -257,7 +267,9 @@ export const updateMemberAvatar = async (
   } catch (err) {
     console.error('Photo upload request error:', err)
     throw new Error(
-      `Photo upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+      `Photo upload failed: ${
+        err instanceof Error ? err.message : 'Unknown error'
+      }`
     )
   }
 

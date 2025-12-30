@@ -8,10 +8,7 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
-import {
-  getMemberAvatarUrl,
-  getMemberDisplayName,
-} from '~/lib/graphql/member'
+import { getMemberAvatarUrl, getMemberDisplayName } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { getGravatarUrl } from '~/utils/gravatar'

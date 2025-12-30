@@ -7,7 +7,6 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
-import { updateMemberById } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type { NewsletterPreferences } from '~/types/auth'
 import { setCacheControl } from '~/utils/common'
@@ -291,37 +290,6 @@ const parseNewsletterPreferences = (
     weeklyGeneral: isGeneral && isWeekly,
     weeklyBeautified: isBeautified && isWeekly,
   }
-}
-
-// Convert NewsletterPreferences to member's newsletter fields
-const toNewsletterFields = (
-  prefs: NewsletterPreferences
-): { newsletterSubscription: string | null; newsletterFrequency: string | null } => {
-  const hasDaily = prefs.dailyGeneral || prefs.dailyBeautified
-  const hasWeekly = prefs.weeklyGeneral || prefs.weeklyBeautified
-  const isGeneral = prefs.dailyGeneral || prefs.weeklyGeneral
-  const isBeautified = prefs.dailyBeautified || prefs.weeklyBeautified
-
-  let subscription: string | null = null
-  if (isGeneral && !isBeautified) {
-    subscription = 'general'
-  } else if (isBeautified && !isGeneral) {
-    subscription = 'beautified'
-  } else if (isGeneral || isBeautified) {
-    // If both types are selected, prefer beautified
-    subscription = isBeautified ? 'beautified' : 'general'
-  }
-
-  let frequency: string | null = null
-  if (hasDaily && hasWeekly) {
-    frequency = 'both'
-  } else if (hasDaily) {
-    frequency = 'daily'
-  } else if (hasWeekly) {
-    frequency = 'weekly'
-  }
-
-  return { newsletterSubscription: subscription, newsletterFrequency: frequency }
 }
 
 const MemberNewsletterPage: NextPageWithLayout = () => {

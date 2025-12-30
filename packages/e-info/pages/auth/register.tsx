@@ -265,13 +265,8 @@ const EyeOffIcon = () => (
 const RegisterPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { email: queryEmail, provider } = router.query
-  const {
-    firebaseUser,
-    signUpWithEmail,
-    error,
-    clearError,
-    refreshMember,
-  } = useAuth()
+  const { firebaseUser, signUpWithEmail, error, clearError, refreshMember } =
+    useAuth()
 
   const [formData, setFormData] = useState<RegisterFormData>({
     name: '',

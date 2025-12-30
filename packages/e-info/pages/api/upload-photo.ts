@@ -1,7 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import FormData from 'form-data'
-import { IncomingForm, File } from 'formidable'
+import { File, IncomingForm } from 'formidable'
 import fs from 'fs'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { API_ENDPOINT } from '~/constants/config'
 
