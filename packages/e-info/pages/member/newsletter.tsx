@@ -7,8 +7,8 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
+import { updateMemberById } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
-import type { NewsletterPreferences } from '~/types/auth'
 import { setCacheControl } from '~/utils/common'
 
 const PageWrapper = styled.div`
@@ -122,71 +122,45 @@ const PageTitle = styled.h1`
   }
 `
 
-const NewsletterList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+const FormSection = styled.div`
   margin-bottom: 32px;
 `
 
-const NewsletterItem = styled.div`
+const SectionTitle = styled.h2`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
+  margin: 0 0 16px;
+  text-align: left;
+`
+
+const RadioGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`
+
+const RadioLabel = styled.label`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-`
-
-const NewsletterLabel = styled.span`
+  gap: 12px;
+  cursor: pointer;
   font-size: 16px;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
-`
+  color: ${({ theme }) => theme.colors.grayscale[20]};
 
-// Toggle Switch Styles
-const ToggleWrapper = styled.label`
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 26px;
-  flex-shrink: 0;
-`
-
-const ToggleInput = styled.input`
-  opacity: 0;
-  width: 0;
-  height: 0;
-
-  &:checked + span {
-    background-color: ${({ theme }) => theme.colors.primary[40]};
-  }
-
-  &:checked + span:before {
-    transform: translateX(24px);
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[40]};
   }
 `
 
-const ToggleSlider = styled.span`
-  position: absolute;
+const RadioInput = styled.input`
+  width: 20px;
+  height: 20px;
+  accent-color: ${({ theme }) => theme.colors.primary[40]};
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: ${({ theme }) => theme.colors.grayscale[80]};
-  transition: 0.3s;
-  border-radius: 26px;
-
-  &:before {
-    position: absolute;
-    content: '';
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-  }
+  flex-shrink: 0;
 `
 
 const SaveButton = styled.button`
@@ -258,58 +232,42 @@ const sidebarItems = [
   { label: '通知', href: '/member/notifications' },
 ]
 
-const newsletterOptions = [
-  { key: 'dailyGeneral', label: '《環境資訊電子報》每日報（一般版）' },
-  { key: 'dailyBeautified', label: '《環境資訊電子報》每日報（美化版）' },
-  { key: 'weeklyGeneral', label: '《環境資訊電子報一週回顧》（一般版）' },
-  { key: 'weeklyBeautified', label: '《環境資訊電子報一週回顧》（美化版）' },
-] as const
+// Newsletter subscription options matching CMS schema
+type NewsletterSubscription = 'none' | 'standard' | 'beautified'
+type NewsletterFrequency = 'weekday' | 'saturday' | 'both'
 
-const defaultPreferences: NewsletterPreferences = {
-  dailyGeneral: false,
-  dailyBeautified: false,
-  weeklyGeneral: false,
-  weeklyBeautified: false,
-}
+const subscriptionOptions: { value: NewsletterSubscription; label: string }[] =
+  [
+    { value: 'none', label: '未訂閱' },
+    { value: 'standard', label: '一般版' },
+    { value: 'beautified', label: '美化版' },
+  ]
 
-// Convert member's newsletter fields to NewsletterPreferences
-const parseNewsletterPreferences = (
-  subscription: string | null,
-  frequency: string | null
-): NewsletterPreferences => {
-  // subscription: 'general' | 'beautified' | null
-  // frequency: 'daily' | 'weekly' | 'both' | null
-  const isGeneral = subscription === 'general'
-  const isBeautified = subscription === 'beautified'
-  const isDaily = frequency === 'daily' || frequency === 'both'
-  const isWeekly = frequency === 'weekly' || frequency === 'both'
-
-  return {
-    dailyGeneral: isGeneral && isDaily,
-    dailyBeautified: isBeautified && isDaily,
-    weeklyGeneral: isGeneral && isWeekly,
-    weeklyBeautified: isBeautified && isWeekly,
-  }
-}
+const frequencyOptions: { value: NewsletterFrequency; label: string }[] = [
+  { value: 'weekday', label: '每個工作日' },
+  { value: 'saturday', label: '每週六' },
+  { value: 'both', label: '兩者都有' },
+]
 
 const MemberNewsletterPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { firebaseUser, member, loading, refreshMember } = useAuth()
 
-  const [preferences, setPreferences] =
-    useState<NewsletterPreferences>(defaultPreferences)
+  const [subscription, setSubscription] =
+    useState<NewsletterSubscription>('none')
+  const [frequency, setFrequency] = useState<NewsletterFrequency>('weekday')
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize preferences from member profile
+  // Initialize from member profile
   useEffect(() => {
     if (member) {
-      setPreferences(
-        parseNewsletterPreferences(
-          member.newsletterSubscription,
-          member.newsletterFrequency
-        )
+      setSubscription(
+        (member.newsletterSubscription as NewsletterSubscription) || 'none'
+      )
+      setFrequency(
+        (member.newsletterFrequency as NewsletterFrequency) || 'weekday'
       )
     }
   }, [member])
@@ -321,15 +279,6 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
     }
   }, [loading, firebaseUser, router])
 
-  const handleToggle = (key: keyof NewsletterPreferences) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }))
-    setSuccess(false)
-    setError(null)
-  }
-
   const handleSave = async () => {
     if (!firebaseUser || !member) return
 
@@ -338,9 +287,10 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
     setSuccess(false)
 
     try {
-      // TODO: newsletterSubscription and newsletterFrequency are Keystone select fields
-      // with specific allowed values that need to be determined from the CMS schema.
-      // For now, we just refresh the member data without saving.
+      await updateMemberById(member.id, {
+        newsletterSubscription: subscription,
+        newsletterFrequency: frequency,
+      })
       await refreshMember()
       setSuccess(true)
     } catch {
@@ -400,22 +350,47 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
           {success && <SuccessMessage>電子報訂閱設定已更新</SuccessMessage>}
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <NewsletterList>
-            {newsletterOptions.map((option) => (
-              <NewsletterItem key={option.key}>
-                <NewsletterLabel>{option.label}</NewsletterLabel>
-                <ToggleWrapper>
-                  <ToggleInput
-                    type="checkbox"
-                    checked={preferences[option.key]}
-                    onChange={() => handleToggle(option.key)}
+          <FormSection>
+            <SectionTitle>訂閱版本</SectionTitle>
+            <RadioGroup>
+              {subscriptionOptions.map((option) => (
+                <RadioLabel key={option.value}>
+                  <RadioInput
+                    type="radio"
+                    name="subscription"
+                    value={option.value}
+                    checked={subscription === option.value}
+                    onChange={(e) =>
+                      setSubscription(e.target.value as NewsletterSubscription)
+                    }
                     disabled={saving}
                   />
-                  <ToggleSlider />
-                </ToggleWrapper>
-              </NewsletterItem>
-            ))}
-          </NewsletterList>
+                  {option.label}
+                </RadioLabel>
+              ))}
+            </RadioGroup>
+          </FormSection>
+
+          <FormSection>
+            <SectionTitle>訂閱頻率</SectionTitle>
+            <RadioGroup>
+              {frequencyOptions.map((option) => (
+                <RadioLabel key={option.value}>
+                  <RadioInput
+                    type="radio"
+                    name="frequency"
+                    value={option.value}
+                    checked={frequency === option.value}
+                    onChange={(e) =>
+                      setFrequency(e.target.value as NewsletterFrequency)
+                    }
+                    disabled={saving || subscription === 'none'}
+                  />
+                  {option.label}
+                </RadioLabel>
+              ))}
+            </RadioGroup>
+          </FormSection>
 
           <SaveButton onClick={handleSave} disabled={saving}>
             {saving ? '儲存中...' : '儲存'}
