@@ -5,6 +5,7 @@ import styled from 'styled-components'
 
 import NewsletterModal from '~/components/shared/newsletter-modal'
 import { useAuth } from '~/hooks/useAuth'
+import { getMemberDisplayName } from '~/lib/graphql/member'
 import LogoEIC from '~/public/eic-logo.svg'
 import IconCancel from '~/public/icons/cancel.svg'
 import IconFacebook from '~/public/icons/facebook.svg'
@@ -808,7 +809,7 @@ const navigationItems = [
 
 const Header = () => {
   const router = useRouter()
-  const { firebaseUser, userProfile, loading: authLoading, signOut } = useAuth()
+  const { firebaseUser, member, loading: authLoading, signOut } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null)
   const [hoveredSecondaryCategory, setHoveredSecondaryCategory] = useState<
@@ -822,8 +823,8 @@ const Header = () => {
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
 
-  // Check if user is logged in (has firebase user and profile)
-  const isLoggedIn = !authLoading && firebaseUser && userProfile
+  // Check if user is logged in (has firebase user and member)
+  const isLoggedIn = !authLoading && firebaseUser && member
 
   const handleAuthButtonClick = async () => {
     if (isLoggedIn) {
@@ -946,7 +947,9 @@ const Header = () => {
               {isLoggedIn ? (
                 <>
                   <UserInfo href="/member">
-                    <UserName>{userProfile?.displayName || '會員'}</UserName>
+                    <UserName>
+                      {member ? getMemberDisplayName(member) : '會員'}
+                    </UserName>
                     <IconMember />
                   </UserInfo>
                   <LogoutButton onClick={handleAuthButtonClick}>

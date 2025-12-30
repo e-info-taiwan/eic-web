@@ -14,14 +14,14 @@ import {
   signUpWithEmail as signUpWithEmailApi,
 } from '~/lib/firebase/auth'
 import {
-  checkUserProfileExists,
-  getUserProfile,
-} from '~/lib/firebase/firestore'
-import type { UserProfile } from '~/types/auth'
+  checkMemberExists,
+  getMemberByFirebaseId,
+  type Member,
+} from '~/lib/graphql/member'
 
 export type AuthContextType = {
   firebaseUser: User | null
-  userProfile: UserProfile | null
+  member: Member | null
   loading: boolean
   error: string | null
   needsRegistration: boolean
@@ -34,12 +34,12 @@ export type AuthContextType = {
   checkEmailExists: (email: string) => Promise<boolean>
   sendPasswordReset: (email: string) => Promise<boolean>
   clearError: () => void
-  refreshUserProfile: () => Promise<void>
+  refreshMember: () => Promise<void>
 }
 
 const defaultValue: AuthContextType = {
   firebaseUser: null,
-  userProfile: null,
+  member: null,
   loading: true,
   error: null,
   needsRegistration: false,
@@ -52,7 +52,7 @@ const defaultValue: AuthContextType = {
   checkEmailExists: async () => false,
   sendPasswordReset: async () => false,
   clearError: () => {},
-  refreshUserProfile: async () => {},
+  refreshMember: async () => {},
 }
 
 const AuthContext = createContext<AuthContextType>(defaultValue)
@@ -63,7 +63,7 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null)
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [member, setMember] = useState<Member | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [needsRegistration, setNeedsRegistration] = useState(false)
@@ -75,21 +75,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setFirebaseUser(user)
 
       if (user) {
-        // Check if user profile exists
-        const profileExists = await checkUserProfileExists(user.uid)
-        console.log('[AuthContext] Profile exists (onAuthChange):', profileExists)
-        if (profileExists) {
-          const profile = await getUserProfile(user.uid)
-          console.log('[AuthContext] Got profile:', !!profile)
-          setUserProfile(profile)
+        // Check if member profile exists in CMS
+        const memberExists = await checkMemberExists(user.uid)
+        console.log('[AuthContext] Member exists (onAuthChange):', memberExists)
+        if (memberExists) {
+          const memberData = await getMemberByFirebaseId(user.uid)
+          console.log('[AuthContext] Got member:', !!memberData)
+          setMember(memberData)
           setNeedsRegistration(false)
         } else {
-          console.log('[AuthContext] No profile, needs registration')
+          console.log('[AuthContext] No member, needs registration')
           setNeedsRegistration(true)
-          setUserProfile(null)
+          setMember(null)
         }
       } else {
-        setUserProfile(null)
+        setMember(null)
         setNeedsRegistration(false)
       }
 
@@ -104,11 +104,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setError(null)
   }, [])
 
-  const refreshUserProfile = useCallback(async () => {
+  const refreshMember = useCallback(async () => {
     if (firebaseUser) {
-      const profile = await getUserProfile(firebaseUser.uid)
-      setUserProfile(profile)
-      if (profile) {
+      const memberData = await getMemberByFirebaseId(firebaseUser.uid)
+      setMember(memberData)
+      if (memberData) {
         setNeedsRegistration(false)
       }
     }
@@ -120,8 +120,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setError(null)
       const result = await signInWithGoogleApi()
-      const profileExists = await checkUserProfileExists(result.user.uid)
-      if (!profileExists) {
+      const memberExists = await checkMemberExists(result.user.uid)
+      if (!memberExists) {
         setNeedsRegistration(true)
         return false // Needs to complete registration
       }
@@ -140,8 +140,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setError(null)
       const result = await signInWithFacebookApi()
-      const profileExists = await checkUserProfileExists(result.user.uid)
-      if (!profileExists) {
+      const memberExists = await checkMemberExists(result.user.uid)
+      if (!memberExists) {
         setNeedsRegistration(true)
         return false // Needs to complete registration
       }
@@ -160,8 +160,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setError(null)
       const result = await signInWithAppleApi()
-      const profileExists = await checkUserProfileExists(result.user.uid)
-      if (!profileExists) {
+      const memberExists = await checkMemberExists(result.user.uid)
+      if (!memberExists) {
         setNeedsRegistration(true)
         return false // Needs to complete registration
       }
@@ -216,7 +216,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = useCallback(async () => {
     try {
       await signOutApi()
-      setUserProfile(null)
+      setMember(null)
       setNeedsRegistration(false)
     } catch (err: unknown) {
       const errorCode =
@@ -259,7 +259,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = useMemo(
     () => ({
       firebaseUser,
-      userProfile,
+      member,
       loading,
       error,
       needsRegistration,
@@ -272,11 +272,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       checkEmailExists,
       sendPasswordReset,
       clearError,
-      refreshUserProfile,
+      refreshMember,
     }),
     [
       firebaseUser,
-      userProfile,
+      member,
       loading,
       error,
       needsRegistration,
@@ -289,7 +289,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       checkEmailExists,
       sendPasswordReset,
       clearError,
-      refreshUserProfile,
+      refreshMember,
     ]
   )
 

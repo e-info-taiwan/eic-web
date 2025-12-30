@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
@@ -13,7 +13,12 @@ import {
   changePasswordWithReauth,
   hasPasswordProvider,
 } from '~/lib/firebase/auth'
-import { updateUserProfile } from '~/lib/firebase/firestore'
+import {
+  getMemberAvatarUrl,
+  getMemberDisplayName,
+  updateMemberAvatar,
+  updateMemberById,
+} from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { getGravatarUrl } from '~/utils/gravatar'
@@ -171,6 +176,15 @@ const UploadButton = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.colors.grayscale[80]};
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`
+
+const HiddenFileInput = styled.input`
+  display: none;
 `
 
 const Form = styled.form`
@@ -384,7 +398,8 @@ type FormData = {
 
 const MemberEditPage: NextPageWithLayout = () => {
   const router = useRouter()
-  const { firebaseUser, userProfile, loading, refreshUserProfile } = useAuth()
+  const { firebaseUser, member, loading, refreshMember } = useAuth()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState<FormData>({
     displayName: '',
@@ -396,18 +411,19 @@ const MemberEditPage: NextPageWithLayout = () => {
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  // Initialize form data from user profile
+  // Initialize form data from member profile
   useEffect(() => {
-    if (userProfile) {
+    if (member) {
       setFormData((prev) => ({
         ...prev,
-        displayName: userProfile.displayName || '',
+        displayName: getMemberDisplayName(member),
       }))
     }
-  }, [userProfile])
+  }, [member])
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -462,10 +478,18 @@ const MemberEditPage: NextPageWithLayout = () => {
     setSuccess(false)
 
     try {
-      // Update profile name
-      await updateUserProfile(firebaseUser.uid, {
-        displayName: formData.displayName,
-      })
+      // Update profile name if member exists
+      if (member) {
+        // Parse displayName into firstName and lastName
+        const nameParts = formData.displayName.trim().split(/\s+/)
+        const lastName = nameParts[0] || ''
+        const firstName = nameParts.slice(1).join(' ') || ''
+
+        await updateMemberById(member.id, {
+          lastName,
+          firstName,
+        })
+      }
 
       // Update password if provided
       if (wantsToChangePassword) {
@@ -476,7 +500,7 @@ const MemberEditPage: NextPageWithLayout = () => {
         )
       }
 
-      await refreshUserProfile()
+      await refreshMember()
       setSuccess(true)
 
       // Clear password fields
@@ -502,8 +526,52 @@ const MemberEditPage: NextPageWithLayout = () => {
   }
 
   const handleUploadClick = () => {
-    // TODO: Implement avatar upload functionality
-    alert('頭像上傳功能開發中，目前使用 Gravatar 頭像')
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !firebaseUser) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('請選擇圖片檔案')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('圖片大小不可超過 5MB')
+      return
+    }
+
+    setUploading(true)
+    setError(null)
+    setSuccess(false)
+
+    try {
+      if (!member) {
+        setError('無法取得會員資料')
+        return
+      }
+
+      // Upload avatar and update member profile
+      await updateMemberAvatar(member.id, file, firebaseUser.uid)
+
+      await refreshMember()
+      setSuccess(true)
+    } catch (err: unknown) {
+      console.error('Avatar upload error:', err)
+      const errorMessage =
+        err instanceof Error ? err.message : '頭像上傳失敗，請稍後再試'
+      setError(errorMessage)
+    } finally {
+      setUploading(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
   }
 
   // Show loading state
@@ -522,10 +590,10 @@ const MemberEditPage: NextPageWithLayout = () => {
     return null
   }
 
-  const gravatarUrl = getGravatarUrl(
-    userProfile?.email || firebaseUser.email,
-    150
-  )
+  // Use custom avatar if available, otherwise fallback to Gravatar
+  const avatarUrl =
+    getMemberAvatarUrl(member) ||
+    getGravatarUrl(member?.email || firebaseUser.email, 150)
 
   return (
     <PageWrapper>
@@ -558,16 +626,26 @@ const MemberEditPage: NextPageWithLayout = () => {
           <AvatarSection>
             <AvatarWrapper>
               <AvatarImage
-                src={gravatarUrl}
+                src={avatarUrl}
                 alt={formData.displayName}
                 width={150}
                 height={150}
                 unoptimized
               />
             </AvatarWrapper>
-            <UploadButton type="button" onClick={handleUploadClick}>
-              上傳
+            <UploadButton
+              type="button"
+              onClick={handleUploadClick}
+              disabled={uploading}
+            >
+              {uploading ? '上傳中...' : '上傳'}
             </UploadButton>
+            <HiddenFileInput
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
           </AvatarSection>
 
           <Form onSubmit={handleSubmit}>
@@ -586,7 +664,7 @@ const MemberEditPage: NextPageWithLayout = () => {
             <FormRow>
               <Label>帳號</Label>
               <StaticValue>
-                {userProfile?.email || firebaseUser.email || '-'}
+                {member?.email || firebaseUser.email || '-'}
               </StaticValue>
             </FormRow>
 

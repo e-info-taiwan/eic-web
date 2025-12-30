@@ -13,7 +13,7 @@ import {
   VALIDATION_RULES,
 } from '~/constants/auth'
 import { useAuth } from '~/hooks/useAuth'
-import { createUserProfile } from '~/lib/firebase/firestore'
+import { createMember } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type {
   InterestedCategory,
@@ -270,7 +270,7 @@ const RegisterPage: NextPageWithLayout = () => {
     signUpWithEmail,
     error,
     clearError,
-    refreshUserProfile,
+    refreshMember,
   } = useAuth()
 
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -405,6 +405,31 @@ const RegisterPage: NextPageWithLayout = () => {
     return Object.keys(newErrors).length === 0
   }
 
+  // Helper to create member from form data
+  const createMemberFromForm = async (uid: string) => {
+    // Parse name into firstName and lastName (Chinese style: lastName first)
+    const nameParts = formData.name.trim().split(/\s+/)
+    const lastName = nameParts[0] || ''
+    const firstName = nameParts.slice(1).join(' ') || ''
+
+    // Convert date to ISO 8601 format (DateTime scalar requires full ISO string)
+    const birthDateISO = formData.birthDate
+      ? new Date(formData.birthDate).toISOString()
+      : undefined
+
+    // Note: newsletterSubscription and newsletterFrequency are Keystone select fields
+    // with specific allowed values. For now, we skip these fields during registration
+    // and let users set them in the newsletter settings page.
+    await createMember({
+      firebaseId: uid,
+      email: formData.email,
+      firstName,
+      lastName,
+      city: formData.location || undefined,
+      birthDate: birthDateISO,
+    })
+  }
+
   // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -417,15 +442,15 @@ const RegisterPage: NextPageWithLayout = () => {
     try {
       // If social login, user is already authenticated
       if (provider && firebaseUser) {
-        await createUserProfile(firebaseUser.uid, formData)
-        await refreshUserProfile()
+        await createMemberFromForm(firebaseUser.uid)
+        await refreshMember()
         router.push('/auth/register-result?success=true')
       } else {
         // Email signup - signUpWithEmail now returns the User object directly
         const user = await signUpWithEmail(formData.email, formData.password)
         if (user) {
-          await createUserProfile(user.uid, formData)
-          await refreshUserProfile()
+          await createMemberFromForm(user.uid)
+          await refreshMember()
           router.push('/auth/register-result?success=true')
         } else {
           router.push('/auth/register-result?success=false')

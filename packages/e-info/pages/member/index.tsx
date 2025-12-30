@@ -8,6 +8,10 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
+import {
+  getMemberAvatarUrl,
+  getMemberDisplayName,
+} from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { getGravatarUrl } from '~/utils/gravatar'
@@ -229,7 +233,7 @@ const sidebarItems = [
 
 const MemberProfilePage: NextPageWithLayout = () => {
   const router = useRouter()
-  const { firebaseUser, userProfile, loading } = useAuth()
+  const { firebaseUser, member, loading } = useAuth()
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -263,14 +267,14 @@ const MemberProfilePage: NextPageWithLayout = () => {
     )}-${String(date.getDate()).padStart(2, '0')}`
   }
 
-  const displayName =
-    userProfile?.displayName || firebaseUser.displayName || '會員'
-  const email = userProfile?.email || firebaseUser.email || '-'
-  const createdAt = userProfile?.createdAt
-  const gravatarUrl = getGravatarUrl(
-    userProfile?.email || firebaseUser.email,
-    150
-  )
+  const displayName = member
+    ? getMemberDisplayName(member)
+    : firebaseUser.displayName || '會員'
+  const email = member?.email || firebaseUser.email || '-'
+  const createdAt = member?.createdAt
+  const avatarUrl =
+    getMemberAvatarUrl(member) ||
+    getGravatarUrl(member?.email || firebaseUser.email, 150)
 
   return (
     <PageWrapper>
@@ -308,7 +312,7 @@ const MemberProfilePage: NextPageWithLayout = () => {
 
             <AvatarWrapper>
               <AvatarImage
-                src={gravatarUrl}
+                src={avatarUrl}
                 alt={displayName}
                 width={150}
                 height={150}

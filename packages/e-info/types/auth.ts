@@ -40,6 +40,7 @@ export type UserProfile = {
   uid: string
   email: string
   displayName: string
+  avatarUrl?: string // 頭像圖片 URL
   location: LocationOption | null
   birthDate: string | null
   interestedCategories: InterestedCategory[]

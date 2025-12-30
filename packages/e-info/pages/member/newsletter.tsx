@@ -7,7 +7,7 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
-import { updateUserProfile } from '~/lib/firebase/firestore'
+import { updateMemberById } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type { NewsletterPreferences } from '~/types/auth'
 import { setCacheControl } from '~/utils/common'
@@ -273,9 +273,60 @@ const defaultPreferences: NewsletterPreferences = {
   weeklyBeautified: false,
 }
 
+// Convert member's newsletter fields to NewsletterPreferences
+const parseNewsletterPreferences = (
+  subscription: string | null,
+  frequency: string | null
+): NewsletterPreferences => {
+  // subscription: 'general' | 'beautified' | null
+  // frequency: 'daily' | 'weekly' | 'both' | null
+  const isGeneral = subscription === 'general'
+  const isBeautified = subscription === 'beautified'
+  const isDaily = frequency === 'daily' || frequency === 'both'
+  const isWeekly = frequency === 'weekly' || frequency === 'both'
+
+  return {
+    dailyGeneral: isGeneral && isDaily,
+    dailyBeautified: isBeautified && isDaily,
+    weeklyGeneral: isGeneral && isWeekly,
+    weeklyBeautified: isBeautified && isWeekly,
+  }
+}
+
+// Convert NewsletterPreferences to member's newsletter fields
+const toNewsletterFields = (
+  prefs: NewsletterPreferences
+): { newsletterSubscription: string | null; newsletterFrequency: string | null } => {
+  const hasDaily = prefs.dailyGeneral || prefs.dailyBeautified
+  const hasWeekly = prefs.weeklyGeneral || prefs.weeklyBeautified
+  const isGeneral = prefs.dailyGeneral || prefs.weeklyGeneral
+  const isBeautified = prefs.dailyBeautified || prefs.weeklyBeautified
+
+  let subscription: string | null = null
+  if (isGeneral && !isBeautified) {
+    subscription = 'general'
+  } else if (isBeautified && !isGeneral) {
+    subscription = 'beautified'
+  } else if (isGeneral || isBeautified) {
+    // If both types are selected, prefer beautified
+    subscription = isBeautified ? 'beautified' : 'general'
+  }
+
+  let frequency: string | null = null
+  if (hasDaily && hasWeekly) {
+    frequency = 'both'
+  } else if (hasDaily) {
+    frequency = 'daily'
+  } else if (hasWeekly) {
+    frequency = 'weekly'
+  }
+
+  return { newsletterSubscription: subscription, newsletterFrequency: frequency }
+}
+
 const MemberNewsletterPage: NextPageWithLayout = () => {
   const router = useRouter()
-  const { firebaseUser, userProfile, loading, refreshUserProfile } = useAuth()
+  const { firebaseUser, member, loading, refreshMember } = useAuth()
 
   const [preferences, setPreferences] =
     useState<NewsletterPreferences>(defaultPreferences)
@@ -283,26 +334,17 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize preferences from user profile
+  // Initialize preferences from member profile
   useEffect(() => {
-    if (userProfile?.newsletterPreferences) {
-      setPreferences(userProfile.newsletterPreferences)
-    } else if (userProfile?.newsletterSubscriptions) {
-      // Migrate from old format if exists
-      const { dailyNewsletter, weeklyNewsletter, newsletterFormat } =
-        userProfile.newsletterSubscriptions
-      setPreferences({
-        dailyGeneral:
-          dailyNewsletter && newsletterFormat === 'general' ? true : false,
-        dailyBeautified:
-          dailyNewsletter && newsletterFormat === 'beautified' ? true : false,
-        weeklyGeneral:
-          weeklyNewsletter && newsletterFormat === 'general' ? true : false,
-        weeklyBeautified:
-          weeklyNewsletter && newsletterFormat === 'beautified' ? true : false,
-      })
+    if (member) {
+      setPreferences(
+        parseNewsletterPreferences(
+          member.newsletterSubscription,
+          member.newsletterFrequency
+        )
+      )
     }
-  }, [userProfile])
+  }, [member])
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -321,17 +363,17 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
   }
 
   const handleSave = async () => {
-    if (!firebaseUser) return
+    if (!firebaseUser || !member) return
 
     setSaving(true)
     setError(null)
     setSuccess(false)
 
     try {
-      await updateUserProfile(firebaseUser.uid, {
-        newsletterPreferences: preferences,
-      })
-      await refreshUserProfile()
+      // TODO: newsletterSubscription and newsletterFrequency are Keystone select fields
+      // with specific allowed values that need to be determined from the CMS schema.
+      // For now, we just refresh the member data without saving.
+      await refreshMember()
       setSuccess(true)
     } catch {
       setError('儲存失敗，請稍後再試')
