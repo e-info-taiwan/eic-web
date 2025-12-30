@@ -180,38 +180,18 @@ const WeekdayHeader = styled.div`
   }
 `
 
-const CalendarCell = styled.div<{ $isEmpty?: boolean }>`
-  aspect-ratio: 1;
-  background: ${({ $isEmpty, theme }) =>
-    $isEmpty ? 'transparent' : theme.colors.grayscale[99]};
-  border-radius: 4px;
+const CalendarCell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 4px;
-  min-height: 80px;
+  min-height: 100px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 8px;
-    min-height: 120px;
-    border-radius: 8px;
+    min-height: 160px;
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    min-height: 140px;
-  }
-`
-
-const DateNumber = styled.span`
-  font-size: 10px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.grayscale[60]};
-  margin-bottom: 4px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 12px;
-    margin-bottom: 8px;
+    min-height: 200px;
   }
 `
 
@@ -231,39 +211,61 @@ const NewsletterCard = styled(Link)`
 const ThumbnailWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 1;
   border-radius: 4px;
   overflow: hidden;
+  margin-bottom: 8px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    margin-bottom: 12px;
+  }
+`
+
+const CardDate = styled.span`
+  font-size: 10px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 4px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    margin-bottom: 8px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    font-size: 14px;
   }
 `
 
 const CardTitle = styled.span`
-  font-size: 8px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 400;
   color: ${({ theme }) => theme.colors.grayscale[20]};
   text-align: center;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.3;
+  line-height: 1.4;
+  word-break: break-word;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 11px;
+    font-size: 12px;
+    -webkit-line-clamp: 5;
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    font-size: 12px;
+    font-size: 13px;
   }
 `
 
 const HistoricalSection = styled.div`
-  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[95]};
   padding-top: 32px;
+  text-align: center;
+
+  &:first-of-type {
+    border-top: 1px solid ${({ theme }) => theme.colors.grayscale[95]};
+  }
 `
 
 const SectionTitle = styled.h2`
@@ -281,16 +283,26 @@ const SectionTitle = styled.h2`
 const YearLinks = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 24px;
+  justify-content: center;
+  gap: 12px 8px;
 `
 
 const YearLink = styled.a`
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.primary[40]};
+  display: inline-block;
+  padding: 2px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[60]};
   text-decoration: none;
+  border: 1px solid ${({ theme }) => theme.colors.primary[60]};
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.2s ease;
 
   &:hover {
-    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.grayscale[40]};
+    border-color: ${({ theme }) => theme.colors.grayscale[40]};
   }
 `
 
@@ -302,6 +314,10 @@ const EmptyMessage = styled.div`
 `
 
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
+const HISTORICAL_YEARS = [
+  2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
+  2013, 2014, 2015, 2016,
+]
 const MONTHS = [
   '一月',
   '二月',
@@ -319,6 +335,15 @@ const MONTHS = [
 
 type NewsletterMap = {
   [date: string]: Newsletter
+}
+
+// Format date as YYYY/MM/DD
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}/${month}/${day}`
 }
 
 type PageProps = {
@@ -354,20 +379,18 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay()
   const daysInMonth = new Date(year, month, 0).getDate()
 
-  // Generate calendar cells
-  const calendarCells = []
+  // Generate calendar cells with newsletter mapped to correct day of week
+  const calendarCells: { newsletter?: Newsletter }[] = []
 
   // Add empty cells for days before the first day of the month
   for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarCells.push({ day: 0, isEmpty: true })
+    calendarCells.push({})
   }
 
   // Add cells for each day of the month
   for (let day = 1; day <= daysInMonth; day++) {
     const dateKey = `${year}-${month}-${day}`
     calendarCells.push({
-      day,
-      isEmpty: false,
       newsletter: newsletterMap[dateKey],
     })
   }
@@ -410,7 +433,8 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
       newYear = year - 1
     }
 
-    if (newYear >= yearRange.minYear) {
+    // Minimum year is 2000
+    if (newYear >= 2000) {
       setYear(newYear)
       setMonth(newMonth)
       fetchNewsletters(newYear, newMonth)
@@ -441,15 +465,15 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
     fetchNewsletters(newYear, month)
   }
 
-  // Generate year options
+  // Generate year options (minimum year is 2000)
+  const minYear = Math.max(yearRange.minYear, 2000)
   const yearOptions = []
-  for (let y = yearRange.maxYear; y >= yearRange.minYear; y--) {
+  for (let y = yearRange.maxYear; y >= minYear; y--) {
     yearOptions.push(y)
   }
 
   // Check if we can navigate
-  const canGoPrev =
-    year > yearRange.minYear || (year === yearRange.minYear && month > 1)
+  const canGoPrev = year > minYear || (year === minYear && month > 1)
   const canGoNext =
     year < yearRange.maxYear || (year === yearRange.maxYear && month < 12)
 
@@ -487,32 +511,28 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
         <CalendarGrid>
           {WEEKDAYS.map((day) => (
-            <WeekdayHeader key={day}>{day}</WeekdayHeader>
+            <WeekdayHeader key={day}>週{day}</WeekdayHeader>
           ))}
 
           {calendarCells.map((cell, index) => (
-            <CalendarCell key={index} $isEmpty={cell.isEmpty}>
-              {!cell.isEmpty && (
-                <>
-                  <DateNumber>{cell.day}</DateNumber>
-                  {cell.newsletter && (
-                    <NewsletterCard href={`/newsletter/${cell.newsletter.id}`}>
-                      <ThumbnailWrapper>
-                        <Image
-                          src={
-                            cell.newsletter.heroImage?.resized?.w480 ||
-                            cell.newsletter.heroImage?.resized?.original ||
-                            DEFAULT_POST_IMAGE_PATH
-                          }
-                          alt={cell.newsletter.title || '電子報'}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                        />
-                      </ThumbnailWrapper>
-                      <CardTitle>{cell.newsletter.title}</CardTitle>
-                    </NewsletterCard>
-                  )}
-                </>
+            <CalendarCell key={index}>
+              {cell.newsletter && (
+                <NewsletterCard href={`/newsletter/${cell.newsletter.id}`}>
+                  <ThumbnailWrapper>
+                    <Image
+                      src={
+                        cell.newsletter.heroImage?.resized?.w480 ||
+                        cell.newsletter.heroImage?.resized?.original ||
+                        DEFAULT_POST_IMAGE_PATH
+                      }
+                      alt={cell.newsletter.title || '電子報'}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </ThumbnailWrapper>
+                  <CardDate>{formatDate(cell.newsletter.sendDate)}</CardDate>
+                  <CardTitle>{cell.newsletter.title}</CardTitle>
+                </NewsletterCard>
               )}
             </CalendarCell>
           ))}
@@ -523,9 +543,9 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
         )}
 
         <HistoricalSection>
-          <SectionTitle>歷年電子報</SectionTitle>
+          <SectionTitle>系列電子報回顧</SectionTitle>
           <YearLinks>
-            {yearOptions.map((y) => (
+            {HISTORICAL_YEARS.map((y) => (
               <YearLink
                 key={y}
                 href="#"
@@ -536,9 +556,18 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                   fetchNewsletters(y, 1)
                 }}
               >
-                {y}年
+                {y}
               </YearLink>
             ))}
+          </YearLinks>
+        </HistoricalSection>
+
+        <HistoricalSection>
+          <SectionTitle>系列電子報回顧（已停刊）</SectionTitle>
+          <YearLinks>
+            <YearLink href="#" onClick={(e) => e.preventDefault()}>
+              《自然主義》月刊
+            </YearLink>
           </YearLinks>
         </HistoricalSection>
       </ContentWrapper>

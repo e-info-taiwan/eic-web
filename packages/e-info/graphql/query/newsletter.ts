@@ -44,10 +44,14 @@ export const newslettersByDateRange = gql`
   ${resizeImagesFragment}
 `
 
-// Query to get the year range of available newsletters
+// Query to get the year range of available newsletters (from 2000 onwards)
 export const newsletterYearRange = gql`
   query GetNewsletterYearRange {
-    oldest: newsletters(orderBy: { sendDate: asc }, take: 1) {
+    oldest: newsletters(
+      orderBy: { sendDate: asc }
+      take: 1
+      where: { sendDate: { gte: "2000-01-01T00:00:00.000Z" } }
+    ) {
       sendDate
     }
     newest: newsletters(orderBy: { sendDate: desc }, take: 1) {
