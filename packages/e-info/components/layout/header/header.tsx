@@ -38,7 +38,7 @@ const Container = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 35px 0 10px 0;
+    padding: 35px 32px 10px 40px;
   }
 `
 
@@ -181,15 +181,9 @@ const UserName = styled.span`
 `
 
 const ActionButtons = styled.div`
-  display: none;
+  display: flex;
   gap: 1rem;
-
-  /* Hide on tablet and show on desktop (>= xl) for navigation area */
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  align-items: center;
 `
 
 const ActionButton = styled.a`
@@ -239,15 +233,22 @@ const NavigationSection = styled.div<{ isOpen: boolean }>`
   }
 `
 
-const NavigationMenu = styled.nav`
+const DesktopNavWrapper = styled.div`
   display: none;
-  gap: 0;
-  min-width: max-content;
 
   /* Show only on desktop */
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
   }
+`
+
+const NavigationMenu = styled.nav`
+  display: flex;
+  gap: 0;
+  min-width: max-content;
 `
 
 const NavItem = styled.a`
@@ -530,8 +531,9 @@ const MobileMenuLogo = styled.div`
 
 const MobileMenuSection = styled.div`
   display: flex;
-  flex: wrap;
+  flex-wrap: wrap;
   flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 1rem;
 `
 
@@ -968,66 +970,71 @@ const Header = () => {
           </TopSection>
 
           {/* Desktop navigation - inside Container */}
-          <NavigationMenu>
-            {navigationItems.map((item, index) => (
-              <DropdownContainer key={index}>
-                <NavItem
-                  href={item.href}
-                  className={`${item.active ? 'active' : ''} ${
-                    item.featured ? 'featured' : ''
-                  } ${item.highlighted ? 'highlighted' : ''}`}
-                  onMouseEnter={() => handleCategoryHover(index)}
-                  onMouseLeave={handleCategoryLeave}
-                >
-                  {item.label}
-                </NavItem>
-
-                {item.subCategories && hoveredCategory === index && (
-                  <SecondaryMenuBar
-                    className="show"
-                    onMouseEnter={handleSecondaryMenuEnter}
-                    onMouseLeave={handleSecondaryMenuLeave}
+          <DesktopNavWrapper>
+            <NavigationMenu>
+              {navigationItems.map((item, index) => (
+                <DropdownContainer key={index}>
+                  <NavItem
+                    href={item.href}
+                    className={`${item.active ? 'active' : ''} ${
+                      item.featured ? 'featured' : ''
+                    } ${item.highlighted ? 'highlighted' : ''}`}
+                    onMouseEnter={() => handleCategoryHover(index)}
+                    onMouseLeave={handleCategoryLeave}
                   >
-                    <SecondaryMenuContainer>
-                      {item.subCategories.map((subCategory, subIndex) => (
-                        <SecondaryMenuItem
-                          key={subIndex}
-                          onMouseEnter={() =>
-                            handleSecondaryItemHover(subIndex)
-                          }
-                          onMouseLeave={handleSecondaryItemLeave}
-                        >
-                          {subCategory.label}
+                    {item.label}
+                  </NavItem>
 
-                          {subCategory.items &&
-                            hoveredSecondaryCategory === subIndex && (
-                              <TertiaryDropdown className="show">
-                                {subCategory.items.map(
-                                  (tertiary, tertiaryIndex) => (
-                                    <TertiaryItem key={tertiaryIndex} href="#">
-                                      {tertiary}
-                                    </TertiaryItem>
-                                  )
-                                )}
-                              </TertiaryDropdown>
-                            )}
-                        </SecondaryMenuItem>
-                      ))}
-                    </SecondaryMenuContainer>
-                  </SecondaryMenuBar>
-                )}
-              </DropdownContainer>
-            ))}
-          </NavigationMenu>
-          <ActionButtons>
-            <ActionButton
-              as="button"
-              onClick={() => setIsNewsletterModalOpen(true)}
-            >
-              訂閱電子報
-            </ActionButton>
-            <ActionButton>捐款支持</ActionButton>
-          </ActionButtons>
+                  {item.subCategories && hoveredCategory === index && (
+                    <SecondaryMenuBar
+                      className="show"
+                      onMouseEnter={handleSecondaryMenuEnter}
+                      onMouseLeave={handleSecondaryMenuLeave}
+                    >
+                      <SecondaryMenuContainer>
+                        {item.subCategories.map((subCategory, subIndex) => (
+                          <SecondaryMenuItem
+                            key={subIndex}
+                            onMouseEnter={() =>
+                              handleSecondaryItemHover(subIndex)
+                            }
+                            onMouseLeave={handleSecondaryItemLeave}
+                          >
+                            {subCategory.label}
+
+                            {subCategory.items &&
+                              hoveredSecondaryCategory === subIndex && (
+                                <TertiaryDropdown className="show">
+                                  {subCategory.items.map(
+                                    (tertiary, tertiaryIndex) => (
+                                      <TertiaryItem
+                                        key={tertiaryIndex}
+                                        href="#"
+                                      >
+                                        {tertiary}
+                                      </TertiaryItem>
+                                    )
+                                  )}
+                                </TertiaryDropdown>
+                              )}
+                          </SecondaryMenuItem>
+                        ))}
+                      </SecondaryMenuContainer>
+                    </SecondaryMenuBar>
+                  )}
+                </DropdownContainer>
+              ))}
+            </NavigationMenu>
+            <ActionButtons>
+              <ActionButton
+                as="button"
+                onClick={() => setIsNewsletterModalOpen(true)}
+              >
+                訂閱電子報
+              </ActionButton>
+              <ActionButton>捐款支持</ActionButton>
+            </ActionButtons>
+          </DesktopNavWrapper>
         </Container>
         <NewsBar>
           <NewsContent>
