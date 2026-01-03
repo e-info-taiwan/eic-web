@@ -249,41 +249,43 @@ export default function HeaderGeneral({
   }, [hasCompleteReading])
 
   return (
-    <Header>
-      <Wrapper>
-        <LeftPart>
-          <HeaderLogo />
-        </LeftPart>
-        <MiddlePart>
-          <CategoriesAndRelatedPosts
-            isCategoryPage={isCategoryPage}
-            categories={transformedCategories}
-          />
-        </MiddlePart>
-        <RightPart>
-          {isPostPage && (
-            <ProgressText>
-              閱讀進度<span>{readingPercent}%</span>
-            </ProgressText>
-          )}
-
-          {!isPostPage && (
-            <DonateBtnRect
-              onClick={() => gtag.sendEvent('header', 'click', 'donate')}
-              href="/donate"
+    <>
+      <Header>
+        <Wrapper>
+          <LeftPart>
+            <HeaderLogo />
+          </LeftPart>
+          <MiddlePart>
+            <CategoriesAndRelatedPosts
+              isCategoryPage={isCategoryPage}
+              categories={transformedCategories}
             />
-          )}
+          </MiddlePart>
+          <RightPart>
+            {isPostPage && (
+              <ProgressText>
+                閱讀進度<span>{readingPercent}%</span>
+              </ProgressText>
+            )}
 
-          <HamburgerButton
-            onClick={openHamburgerMenu}
-            aria-label="開啟選單"
-            ref={restoreFocus}
-          >
-            <IconHamburger />
-          </HamburgerButton>
-        </RightPart>
-      </Wrapper>
-      {isPostPage && <ProgressBar max="100" value={readingPercent} />}
+            {!isPostPage && (
+              <DonateBtnRect
+                onClick={() => gtag.sendEvent('header', 'click', 'donate')}
+                href="/donate"
+              />
+            )}
+
+            <HamburgerButton
+              onClick={openHamburgerMenu}
+              aria-label="開啟選單"
+              ref={restoreFocus}
+            >
+              <IconHamburger />
+            </HamburgerButton>
+          </RightPart>
+        </Wrapper>
+        {isPostPage && <ProgressBar max="100" value={readingPercent} />}
+      </Header>
       {shouldShowHamburgerMenu && (
         <HamburgerMenu
           isCategoryPage={isCategoryPage}
@@ -291,6 +293,6 @@ export default function HeaderGeneral({
           closeHandler={closeHamburgerMenu}
         />
       )}
-    </Header>
+    </>
   )
 }

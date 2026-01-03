@@ -220,41 +220,33 @@ const ActionButton = styled.a`
 `
 
 const NavigationSection = styled.div<{ isOpen: boolean }>`
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  /* Mobile/Tablet full-page menu overlay */
+  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: ${({ theme }) => theme.colors.grayscale[95]};
+  flex-direction: column;
+  z-index: 10000;
+  padding: 72px 48px;
+  overflow-y: auto;
 
-  &::-webkit-scrollbar {
+  /* Hide on desktop */
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: none;
-  }
-
-  /* Hide navigation on mobile and tablet (< xl) */
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: ${({ theme }) => theme.colors.grayscale[95]};
-    flex-direction: column;
-    z-index: 10000;
-    padding: 72px 48px;
-    overflow-y: auto;
   }
 `
 
 const NavigationMenu = styled.nav`
-  display: flex;
+  display: none;
   gap: 0;
   min-width: max-content;
 
-  /* Hide on mobile/tablet - desktop nav is handled by MobileMenuContent visibility */
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    display: none;
+  /* Show only on desktop */
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    display: flex;
   }
 `
 
@@ -928,125 +920,54 @@ const Header = () => {
   }, [])
 
   return (
-    <HeaderContainer $isHidden={isHeaderHidden}>
-      <Container>
-        <TopSection>
-          <HamburgerButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            <IconHamburger />
-          </HamburgerButton>
-          <LogoRightWrapper>
-            <Logo>
-              <Link href="/">
-                <LogoEIC />
-              </Link>
-            </Logo>
-            <RightSection>
-              <SearchButton>
-                <IconSearch />
-              </SearchButton>
-              {isLoggedIn ? (
-                <>
-                  <UserInfo href="/member">
-                    <UserName>
-                      {member ? getMemberDisplayName(member) : '會員'}
-                    </UserName>
-                    <IconMember />
-                  </UserInfo>
-                  <LogoutButton onClick={handleAuthButtonClick}>
-                    登出
-                  </LogoutButton>
-                </>
-              ) : (
-                <LoginButton onClick={handleAuthButtonClick}>
-                  {authLoading ? '...' : '登入'}
-                </LoginButton>
-              )}
-              <TabletActionButtons>
-                <ActionButton
-                  as="button"
-                  onClick={() => setIsNewsletterModalOpen(true)}
-                >
-                  訂閱電子報
-                </ActionButton>
-                <ActionButton>捐款支持</ActionButton>
-              </TabletActionButtons>
-            </RightSection>
-          </LogoRightWrapper>
-        </TopSection>
-
-        <NavigationSection isOpen={isMenuOpen}>
-          <CloseButton onClick={handleMenuClose}>
-            <IconCancel />
-          </CloseButton>
-
-          <MobileMenuHeader>
-            <MobileMenuLogo>
-              <LogoEIC />
-            </MobileMenuLogo>
-          </MobileMenuHeader>
-          {/* Mobile/Tablet full-page menu overlay */}
-          {!currentSubMenu ? (
-            <MobileMenuContent>
-              <MobileMenuSection>
-                <ActionButton>捐款支持</ActionButton>
-                <ActionButton
-                  as="button"
-                  onClick={() => {
-                    setIsNewsletterModalOpen(true)
-                    handleMenuClose()
-                  }}
-                >
-                  訂閱電子報
-                </ActionButton>
-              </MobileMenuSection>
-
-              <MobileMenuSection>
-                {navigationItems.map((item, index) => (
-                  <NavItem
-                    key={index}
-                    href={item.subCategories ? '#' : item.href}
-                    className={`${item.active ? 'active' : ''} ${
-                      item.featured ? 'featured' : ''
-                    } ${item.highlighted ? 'highlighted' : ''}`}
-                    onClick={(e) => {
-                      if (item.subCategories) {
-                        e.preventDefault()
-                        handleMobileMenuItemClick(item)
-                      }
-                    }}
+    <>
+      <HeaderContainer $isHidden={isHeaderHidden}>
+        <Container>
+          <TopSection>
+            <HamburgerButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              <IconHamburger />
+            </HamburgerButton>
+            <LogoRightWrapper>
+              <Logo>
+                <Link href="/">
+                  <LogoEIC />
+                </Link>
+              </Logo>
+              <RightSection>
+                <SearchButton>
+                  <IconSearch />
+                </SearchButton>
+                {isLoggedIn ? (
+                  <>
+                    <UserInfo href="/member">
+                      <UserName>
+                        {member ? getMemberDisplayName(member) : '會員'}
+                      </UserName>
+                      <IconMember />
+                    </UserInfo>
+                    <LogoutButton onClick={handleAuthButtonClick}>
+                      登出
+                    </LogoutButton>
+                  </>
+                ) : (
+                  <LoginButton onClick={handleAuthButtonClick}>
+                    {authLoading ? '...' : '登入'}
+                  </LoginButton>
+                )}
+                <TabletActionButtons>
+                  <ActionButton
+                    as="button"
+                    onClick={() => setIsNewsletterModalOpen(true)}
                   >
-                    {item.label}
-                  </NavItem>
-                ))}
-              </MobileMenuSection>
-            </MobileMenuContent>
-          ) : (
-            <SubMenuView>
-              <SubMenuHeader>
-                <BackButton onClick={handleBackToMainMenu}>
-                  <IconLeftArrow />
-                </BackButton>
-              </SubMenuHeader>
+                    訂閱電子報
+                  </ActionButton>
+                  <ActionButton>捐款支持</ActionButton>
+                </TabletActionButtons>
+              </RightSection>
+            </LogoRightWrapper>
+          </TopSection>
 
-              <SubMenuList>
-                {currentSubMenu.subCategories.map((subCategory, index) => (
-                  <SubMenuItem key={index} href={subCategory.href}>
-                    {subCategory.label}
-                  </SubMenuItem>
-                ))}
-              </SubMenuList>
-            </SubMenuView>
-          )}
-
-          <MobileMenuFooter>
-            <SocialIcons>
-              <IconFacebook />
-              <IconInstagram />
-              <IconMail className="mail" />
-            </SocialIcons>
-          </MobileMenuFooter>
-
-          {/* Desktop navigation - always visible on desktop */}
+          {/* Desktop navigation - inside Container */}
           <NavigationMenu>
             {navigationItems.map((item, index) => (
               <DropdownContainer key={index}>
@@ -1107,19 +1028,93 @@ const Header = () => {
             </ActionButton>
             <ActionButton>捐款支持</ActionButton>
           </ActionButtons>
-        </NavigationSection>
-      </Container>
-      <NewsBar>
-        <NewsContent>
-          《核管法》修法三讀 核電運轉年限最多再加20年、已停機核電可重啟
-        </NewsContent>
-      </NewsBar>
+        </Container>
+        <NewsBar>
+          <NewsContent>
+            《核管法》修法三讀 核電運轉年限最多再加20年、已停機核電可重啟
+          </NewsContent>
+        </NewsBar>
 
-      <NewsletterModal
-        isOpen={isNewsletterModalOpen}
-        onClose={() => setIsNewsletterModalOpen(false)}
-      />
-    </HeaderContainer>
+        <NewsletterModal
+          isOpen={isNewsletterModalOpen}
+          onClose={() => setIsNewsletterModalOpen(false)}
+        />
+      </HeaderContainer>
+
+      {/* Mobile/Tablet menu - outside HeaderContainer to avoid transform containing block issue */}
+      <NavigationSection isOpen={isMenuOpen}>
+        <CloseButton onClick={handleMenuClose}>
+          <IconCancel />
+        </CloseButton>
+
+        <MobileMenuHeader>
+          <MobileMenuLogo>
+            <LogoEIC />
+          </MobileMenuLogo>
+        </MobileMenuHeader>
+
+        {!currentSubMenu ? (
+          <MobileMenuContent>
+            <MobileMenuSection>
+              <ActionButton>捐款支持</ActionButton>
+              <ActionButton
+                as="button"
+                onClick={() => {
+                  setIsNewsletterModalOpen(true)
+                  handleMenuClose()
+                }}
+              >
+                訂閱電子報
+              </ActionButton>
+            </MobileMenuSection>
+
+            <MobileMenuSection>
+              {navigationItems.map((item, index) => (
+                <NavItem
+                  key={index}
+                  href={item.subCategories ? '#' : item.href}
+                  className={`${item.active ? 'active' : ''} ${
+                    item.featured ? 'featured' : ''
+                  } ${item.highlighted ? 'highlighted' : ''}`}
+                  onClick={(e) => {
+                    if (item.subCategories) {
+                      e.preventDefault()
+                      handleMobileMenuItemClick(item)
+                    }
+                  }}
+                >
+                  {item.label}
+                </NavItem>
+              ))}
+            </MobileMenuSection>
+          </MobileMenuContent>
+        ) : (
+          <SubMenuView>
+            <SubMenuHeader>
+              <BackButton onClick={handleBackToMainMenu}>
+                <IconLeftArrow />
+              </BackButton>
+            </SubMenuHeader>
+
+            <SubMenuList>
+              {currentSubMenu.subCategories.map((subCategory, index) => (
+                <SubMenuItem key={index} href={subCategory.href}>
+                  {subCategory.label}
+                </SubMenuItem>
+              ))}
+            </SubMenuList>
+          </SubMenuView>
+        )}
+
+        <MobileMenuFooter>
+          <SocialIcons>
+            <IconFacebook />
+            <IconInstagram />
+            <IconMail className="mail" />
+          </SocialIcons>
+        </MobileMenuFooter>
+      </NavigationSection>
+    </>
   )
 }
 

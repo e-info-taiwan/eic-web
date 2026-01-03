@@ -9,7 +9,7 @@ import styled from 'styled-components'
 
 import * as gtag from '~/utils/gtag'
 
-import type { NavigationCategoryWithRelatedList } from './header-general'
+import type { NavigationCategoryWithRelatedList } from './header-legacy'
 import RelatedListInHeader from './related-list-in-header'
 
 const Container = styled.ul`

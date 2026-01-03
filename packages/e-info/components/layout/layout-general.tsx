@@ -3,8 +3,7 @@ import styled from 'styled-components'
 import { SITE_TITLE } from '~/constants/constant'
 
 import CustomHead from './custom-head'
-import Header from './header/header-demo'
-import HeaderGeneral from './header/header-general'
+import Header from './header/header'
 
 const Main = styled.main`
   min-height: 100vh;
