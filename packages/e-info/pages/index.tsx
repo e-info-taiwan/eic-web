@@ -53,6 +53,7 @@ import { features as featuresQuery } from '~/graphql/query/feature'
 import type { Quote } from '~/graphql/query/quote'
 import { quotes as quotesQuery } from '~/graphql/query/quote'
 import type {
+  Ad,
   CategoryPost,
   CategoryWithPosts,
   HomepagePick,
@@ -63,6 +64,7 @@ import type {
 } from '~/graphql/query/section'
 import {
   categoryWithPosts,
+  homepageAds,
   homepagePicksByCategory,
   homepagePicksForCarousel,
   latestInfoGraph,
@@ -101,6 +103,7 @@ type PageProps = {
   carouselPicks: HomepagePick[]
   highlightPicks: HomepagePick[]
   infoGraph: InfoGraph | null
+  ads: Ad[]
 }
 
 const HiddenAnchor = styled.div`
@@ -141,6 +144,7 @@ const Index: NextPageWithLayout<PageProps> = ({
   carouselPicks,
   highlightPicks,
   infoGraph,
+  ads,
 }) => {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
@@ -160,11 +164,11 @@ const Index: NextPageWithLayout<PageProps> = ({
       <HighlightSection picks={highlightPicks} />
       <Inforgraphic infoGraph={infoGraph} />
       <NewsSection categories={newsCategories} />
-      <AdContent />
+      <AdContent ads={ads} />
       <SpecialColumnSection categories={columnCategories} />
       <SupplementSection categories={supplementCategories} />
       <FeaturedTopicsSection topics={topics} />
-      <AdContent />
+      <AdContent ads={ads} />
       <GreenConsumptionSection categories={greenCategories} />
       {/* Demo - end */}
 
@@ -234,6 +238,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let carouselPicks: HomepagePick[] = []
   let highlightPicks: HomepagePick[] = []
   let infoGraph: InfoGraph | null = null
+  let ads: Ad[] = []
 
   try {
     // Fetch news section (Section ID: 3 = 時事新聞)
@@ -439,6 +444,29 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
       if (data?.infoGraphs?.[0]) {
         infoGraph = data.infoGraphs[0]
+      }
+    }
+
+    // Fetch homepage ads (首頁廣告)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        ads: Ad[]
+      }>({
+        query: homepageAds,
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `ads` query'),
+          'GraphQLError',
+          'failed to complete `ads`',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.ads) {
+        ads = data.ads
       }
     }
     // TODO: Temporarily disabled until GraphQL queries are migrated to new API
@@ -779,6 +807,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       carouselPicks,
       highlightPicks,
       infoGraph,
+      ads,
     },
   }
 }

@@ -115,7 +115,10 @@ export type HomepagePick = {
 
 export const topicsWithPosts = gql`
   query ($postsPerTopic: Int = 4) {
-    topics(where: { status: { equals: "published" } }) {
+    topics(
+      where: { status: { equals: "published" }, isPinned: { equals: true } }
+      orderBy: { id: asc }
+    ) {
       id
       title
       status
@@ -327,6 +330,50 @@ export const latestInfoGraph = gql`
       description
       youtubeUrl
       state
+      image {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
+// Ad type for homepage ads
+export type Ad = {
+  id: string
+  name: string | null
+  showOnHomepage: boolean
+  state: string
+  sortOrder: number | null
+  imageUrl: string | null
+  image: {
+    resized: ResizedImages | null
+    resizedWebp: ResizedImages | null
+  } | null
+}
+
+// Query for homepage ads
+export const homepageAds = gql`
+  query {
+    ads(
+      where: {
+        showOnHomepage: { equals: true }
+        state: { equals: "active" }
+      }
+      orderBy: { sortOrder: asc }
+    ) {
+      id
+      name
+      showOnHomepage
+      state
+      sortOrder
+      imageUrl
       image {
         resized {
           ...ResizedImagesField

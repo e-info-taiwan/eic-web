@@ -1,5 +1,8 @@
+import SharedImage from '@readr-media/react-image'
 import React from 'react'
 import styled from 'styled-components'
+
+import type { Ad } from '~/graphql/query/section'
 
 import Placeholder from './placeholder'
 
@@ -28,15 +31,86 @@ const Text = styled.span`
   color: #000;
 `
 
-const AdContent: React.FC = () => {
+const AdLink = styled.a`
+  display: block;
+  flex: 1;
+  text-decoration: none;
+  cursor: pointer;
+`
+
+const AdImageWrapper = styled.div`
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+`
+
+type AdContentProps = {
+  ads?: Ad[]
+}
+
+const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
+  // If no ads, show placeholder
+  if (ads.length === 0) {
+    return (
+      <Container>
+        <Placeholder height={200}>
+          <Text>廣告</Text>
+        </Placeholder>
+        <Placeholder height={200}>
+          <Text>廣告</Text>
+        </Placeholder>
+      </Container>
+    )
+  }
+
+  // Show up to 2 ads
+  const displayAds = ads.slice(0, 2)
+
   return (
     <Container>
-      <Placeholder height={200}>
-        <Text>廣告</Text>
-      </Placeholder>
-      <Placeholder height={200}>
-        <Text>廣告</Text>
-      </Placeholder>
+      {displayAds.map((ad) => {
+        const image = ad.image?.resized
+        const imageWebp = ad.image?.resizedWebp
+
+        // If ad has imageUrl, use it as click-through link
+        const linkUrl = ad.imageUrl || '#'
+
+        return (
+          <AdLink
+            key={ad.id}
+            href={linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <AdImageWrapper>
+              <SharedImage
+                images={image || {}}
+                imagesWebP={imageWebp || {}}
+                alt={ad.name || '廣告'}
+                priority={false}
+                rwd={{
+                  mobile: '100vw',
+                  tablet: '50vw',
+                  desktop: '400px',
+                  default: '400px',
+                }}
+              />
+            </AdImageWrapper>
+          </AdLink>
+        )
+      })}
+      {/* If only 1 ad, show placeholder for second slot */}
+      {displayAds.length === 1 && (
+        <Placeholder height={200}>
+          <Text>廣告</Text>
+        </Placeholder>
+      )}
     </Container>
   )
 }
