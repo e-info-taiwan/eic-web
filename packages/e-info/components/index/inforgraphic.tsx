@@ -1,6 +1,38 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import type { InfoGraph } from '~/graphql/query/section'
+
+type InforgraphicProps = {
+  infoGraph: InfoGraph | null
+}
+
+// Helper function to convert YouTube URL to embed URL
+const getYoutubeEmbedUrl = (url: string | null): string | null => {
+  if (!url) return null
+
+  // Handle various YouTube URL formats
+  // https://www.youtube.com/watch?v=VIDEO_ID
+  // https://youtu.be/VIDEO_ID
+  // https://www.youtube.com/embed/VIDEO_ID
+  let videoId: string | null = null
+
+  if (url.includes('youtube.com/watch')) {
+    const urlParams = new URL(url).searchParams
+    videoId = urlParams.get('v')
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0]
+  } else if (url.includes('youtube.com/embed/')) {
+    videoId = url.split('youtube.com/embed/')[1]?.split('?')[0]
+  }
+
+  if (videoId) {
+    return `https://www.youtube-nocookie.com/embed/${videoId}`
+  }
+
+  return url
+}
+
 // Styled Components
 const BackgroundContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.primary['95']};
@@ -100,26 +132,31 @@ const VideoWrapper = styled.div`
   }
 `
 
-const Inforgraphic = () => {
+const Inforgraphic = ({ infoGraph }: InforgraphicProps) => {
+  // Don't render if no infoGraph data
+  if (!infoGraph) {
+    return null
+  }
+
+  const embedUrl = getYoutubeEmbedUrl(infoGraph.youtubeUrl)
+
   return (
     <BackgroundContainer>
       <Container>
-        <Title>
-          「核電延役免環評」彭啟明也覺奇怪立委呼籲環境部修法......約28字內
-        </Title>
-        <Excerpt>
-          核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機
-        </Excerpt>
-        <VideoWrapper>
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/IsmGrpJ2F4U?si=S8CyWbYNfX7d4Ase"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          ></iframe>
-        </VideoWrapper>
+        {infoGraph.title && <Title>{infoGraph.title}</Title>}
+        {infoGraph.description && <Excerpt>{infoGraph.description}</Excerpt>}
+        {embedUrl && (
+          <VideoWrapper>
+            <iframe
+              src={embedUrl}
+              title={infoGraph.title || 'YouTube video player'}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
+          </VideoWrapper>
+        )}
       </Container>
     </BackgroundContainer>
   )

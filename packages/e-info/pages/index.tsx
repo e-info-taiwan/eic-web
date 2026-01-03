@@ -56,6 +56,7 @@ import type {
   CategoryPost,
   CategoryWithPosts,
   HomepagePick,
+  InfoGraph,
   Section,
   SectionCategory,
   Topic,
@@ -64,6 +65,7 @@ import {
   categoryWithPosts,
   homepagePicksByCategory,
   homepagePicksForCarousel,
+  latestInfoGraph,
   sectionWithCategoriesAndPosts,
   topicsWithPosts,
 } from '~/graphql/query/section'
@@ -98,6 +100,7 @@ type PageProps = {
   topics: Topic[]
   carouselPicks: HomepagePick[]
   highlightPicks: HomepagePick[]
+  infoGraph: InfoGraph | null
 }
 
 const HiddenAnchor = styled.div`
@@ -137,6 +140,7 @@ const Index: NextPageWithLayout<PageProps> = ({
   topics,
   carouselPicks,
   highlightPicks,
+  infoGraph,
 }) => {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
@@ -154,7 +158,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       {/* Demo - begin */}
       <MainCarousel picks={carouselPicks} />
       <HighlightSection picks={highlightPicks} />
-      <Inforgraphic />
+      <Inforgraphic infoGraph={infoGraph} />
       <NewsSection categories={newsCategories} />
       <AdContent />
       <SpecialColumnSection categories={columnCategories} />
@@ -229,6 +233,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let topics: Topic[] = []
   let carouselPicks: HomepagePick[] = []
   let highlightPicks: HomepagePick[] = []
+  let infoGraph: InfoGraph | null = null
 
   try {
     // Fetch news section (Section ID: 3 = 時事新聞)
@@ -411,6 +416,29 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
       if (data?.homepagePicks) {
         carouselPicks = data.homepagePicks
+      }
+    }
+
+    // Fetch latest InfoGraph (重要圖表)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        infoGraphs: InfoGraph[]
+      }>({
+        query: latestInfoGraph,
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `infoGraphs` query'),
+          'GraphQLError',
+          'failed to complete `infoGraphs`',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.infoGraphs?.[0]) {
+        infoGraph = data.infoGraphs[0]
       }
     }
     // TODO: Temporarily disabled until GraphQL queries are migrated to new API
@@ -750,6 +778,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       topics,
       carouselPicks,
       highlightPicks,
+      infoGraph,
     },
   }
 }

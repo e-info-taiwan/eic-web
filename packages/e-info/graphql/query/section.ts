@@ -284,3 +284,45 @@ export const homepagePicksForCarousel = gql`
   ${resizeImagesFragment}
   ${resizeWebpImagesFragment}
 `
+
+// InfoGraph type for homepage infographic section
+export type InfoGraph = {
+  id: string
+  name: string | null
+  title: string | null
+  description: string | null
+  youtubeUrl: string | null
+  state: string
+  image: {
+    resized: ResizedImages | null
+    resizedWebp: ResizedImages | null
+  } | null
+}
+
+// Query for latest published InfoGraph
+export const latestInfoGraph = gql`
+  query {
+    infoGraphs(
+      where: { state: { equals: "published" } }
+      orderBy: { createdAt: desc }
+      take: 1
+    ) {
+      id
+      name
+      title
+      description
+      youtubeUrl
+      state
+      image {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
