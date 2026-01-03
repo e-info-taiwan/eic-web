@@ -213,6 +213,53 @@ export const sectionWithCategoriesAndPosts = gql`
   ${resizeWebpImagesFragment}
 `
 
+/**
+ * 合併多個 Section 的查詢
+ * 用於首頁一次獲取多個大分類的資料，減少 API 請求次數
+ *
+ * Section IDs 對應:
+ * - 3: 時事新聞 (latestnews) - 用於 NewsSection
+ * - 4: 專欄 (column) - 用於 ColumnSection
+ * - 5: 副刊 (sub) - 用於 SupplementSection
+ * - 6: 綠色消費 (green) - 用於 GreenSection
+ *
+ * @param sectionIds - Section ID 陣列，例如 ['3', '4', '5', '6']
+ * @param postsPerCategory - 每個分類要獲取的文章數量，預設 3 篇
+ */
+export const multipleSectionsWithCategoriesAndPosts = gql`
+  query ($sectionIds: [ID!]!, $postsPerCategory: Int = 3) {
+    sections(where: { id: { in: $sectionIds } }, orderBy: { id: asc }) {
+      id
+      slug
+      name
+      categories(orderBy: { sortOrder: asc }) {
+        id
+        slug
+        name
+        sortOrder
+        postsCount
+        posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
+          id
+          title
+          publishTime
+          brief
+          contentApiData
+          heroImage {
+            resized {
+              ...ResizedImagesField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesField
+            }
+          }
+        }
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
 // Query for homepage picks by category slug
 export const homepagePicksByCategory = gql`
   query ($categorySlug: String!) {
@@ -362,10 +409,7 @@ export type Ad = {
 export const homepageAds = gql`
   query {
     ads(
-      where: {
-        showOnHomepage: { equals: true }
-        state: { equals: "active" }
-      }
+      where: { showOnHomepage: { equals: true }, state: { equals: "active" } }
       orderBy: { sortOrder: asc }
     ) {
       id

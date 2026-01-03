@@ -5,57 +5,29 @@
 
 // @ts-ignore: no definition
 import errors from '@twreporter/errors'
-import axios from 'axios'
 import type { GetServerSideProps } from 'next'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
-import CollaborationSection from '~/components/index/collaboration-section'
-import EditorChoiceSection from '~/components/index/editor-choice-section'
-import FeatureSection from '~/components/index/feature-section'
 import FeaturedTopicsSection from '~/components/index/featured-topics-section'
 import GreenConsumptionSection from '~/components/index/green-consumption-section'
 import HighlightSection from '~/components/index/highlight-section'
 import Inforgraphic from '~/components/index/inforgraphic'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
-import LatestReportSection from '~/components/index/latest-report-section'
 import MainCarousel from '~/components/index/main-carousel'
 import NewsSection from '~/components/index/news-section'
-import OpenDataSection from '~/components/index/open-data-section'
 import SpecialColumnSection from '~/components/index/special-column-section'
 import SupplementSection from '~/components/index/supplement-section'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
-import Placeholder from '~/components/shared/placeholder'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
-import {
-  LATEST_POSTS_IN_CATEGORIES_URL,
-  LATEST_POSTS_URL,
-} from '~/constants/environment-variables'
-import type { Post } from '~/graphql/fragments/post'
-import type { Category } from '~/graphql/query/category'
-import type {
-  Collaboration,
-  FeaturedCollaboration,
-} from '~/graphql/query/collaboration'
-import { collaborations as collaborationsQuery } from '~/graphql/query/collaboration'
-import { featuredCollaborations as featuredCollaborationsQuery } from '~/graphql/query/collaboration'
-// TODO: Re-enable when migrating to new API
-// import type { DataSetWithCount } from '~/graphql/query/dataset'
-// import { dataSets as dataSetsQuery } from '~/graphql/query/dataset'
-import type { EditorChoice } from '~/graphql/query/editor-choice'
+import type { FeaturedCollaboration } from '~/graphql/query/collaboration'
 import type { EditorCard } from '~/graphql/query/editor-choice'
-import { editorChoices as editorChoicesQuery } from '~/graphql/query/editor-choice'
-import type { Feature } from '~/graphql/query/feature'
-import { features as featuresQuery } from '~/graphql/query/feature'
 import type { Quote } from '~/graphql/query/quote'
-import { quotes as quotesQuery } from '~/graphql/query/quote'
 import type {
   Ad,
-  CategoryPost,
-  CategoryWithPosts,
   HomepagePick,
   InfoGraph,
   Section,
@@ -63,25 +35,18 @@ import type {
   Topic,
 } from '~/graphql/query/section'
 import {
-  categoryWithPosts,
   homepageAds,
   homepagePicksByCategory,
   homepagePicksForCarousel,
   latestInfoGraph,
-  sectionWithCategoriesAndPosts,
+  multipleSectionsWithCategoriesAndPosts,
   topicsWithPosts,
 } from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
-import { ValidPostStyle } from '~/types/common'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
 import type { CollaborationItem } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
-// TODO: Re-enable when migrating to new API
-// import { convertDataSet } from '~/utils/data-set'
 import * as gtag from '~/utils/gtag'
-import { sortByTimeStamp } from '~/utils/index'
-import { convertPostToArticleCard } from '~/utils/post'
-import { postConvertFunc } from '~/utils/post'
 
 import type { NextPageWithLayout } from './_app'
 
@@ -127,15 +92,6 @@ const StyledAdsense_FT = styled(Adsense)`
 `
 
 const Index: NextPageWithLayout<PageProps> = ({
-  editorChoices,
-  categories,
-  latest,
-  features,
-  quotes,
-  collaborations,
-  featuredCollaboration,
-  dataSetItems,
-  dataSetCount,
   supplementCategories,
   columnCategories,
   newsCategories,
@@ -150,16 +106,9 @@ const Index: NextPageWithLayout<PageProps> = ({
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
   )
 
-  const shouldShowEditorChoiceSection = editorChoices.length > 0
-  const shouldShowLatestReportSection = categories.length > 0
-  const shouldShowFeatureSection = features.length > 0
-  const shouldShowCollaborationSection = collaborations.length > 0
-
   return (
     <>
       {/* 首頁內容 */}
-
-      {/* Demo - begin */}
       <MainCarousel picks={carouselPicks} />
       <HighlightSection picks={highlightPicks} />
       <Inforgraphic infoGraph={infoGraph} />
@@ -170,27 +119,6 @@ const Index: NextPageWithLayout<PageProps> = ({
       <FeaturedTopicsSection topics={topics} />
       <AdContent ads={ads} />
       <GreenConsumptionSection categories={greenCategories} />
-      {/* Demo - end */}
-
-      {/* {shouldShowEditorChoiceSection && (
-        <EditorChoiceSection posts={editorChoices} />
-      )}
-
-      <StyledAdsense_HD pageKey="home" adKey="HD" />
-
-      {shouldShowLatestReportSection && (
-        <LatestReportSection categories={categories} latest={latest} />
-      )}
-      {shouldShowFeatureSection && <FeatureSection posts={features} />}
-      {shouldShowCollaborationSection && (
-        <CollaborationSection
-          quotes={quotes}
-          items={collaborations}
-          featured={featuredCollaboration}
-        />
-      )}
-      <StyledAdsense_FT pageKey="home" adKey="FT" />
-      <OpenDataSection items={dataSetItems} totalCount={dataSetCount} /> */}
       <HiddenAnchor ref={anchorRef} />
     </>
   )
@@ -241,530 +169,168 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let ads: Ad[] = []
 
   try {
-    // Fetch news section (Section ID: 3 = 時事新聞)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        sections: Section[]
-      }>({
-        query: sectionWithCategoriesAndPosts,
+    /**
+     * 首頁資料查詢優化策略:
+     * 1. 使用 Promise.all 並行執行所有查詢
+     * 2. 使用 multipleSectionsWithCategoriesAndPosts 合併 4 個 section 查詢為 1 個
+     *
+     * 原本需要 9 個查詢，優化後減少為 6 個:
+     * - 1 個合併的 sections 查詢 (取代原本 4 個分開的 section 查詢)
+     * - 2 個 homepagePicks 查詢 (焦點話題 + 輪播大圖)
+     * - 1 個 topics 查詢 (深度專題)
+     * - 1 個 infoGraphs 查詢 (重要圖表)
+     * - 1 個 ads 查詢 (首頁廣告)
+     */
+    const [
+      // 合併查詢: 一次獲取所有 section 資料
+      // Section IDs: 3=時事新聞, 4=專欄, 5=副刊, 6=綠色消費
+      // 注意: postsPerCategory 統一為 8，因為時事新聞需要 8 篇，其他 section 在前端會自行截取所需數量
+      sectionsResult,
+      highlightResult,
+      topicsResult,
+      carouselResult,
+      infoGraphResult,
+      adsResult,
+    ] = await Promise.all([
+      // 1. 合併查詢: 一次獲取 4 個大分類的資料
+      client.query<{ sections: Section[] }>({
+        query: multipleSectionsWithCategoriesAndPosts,
         variables: {
-          sectionId: '3',
-          postsPerCategory: 8,
+          sectionIds: ['3', '4', '5', '6'],
+          postsPerCategory: 8, // 使用最大需求量，前端可自行截取
         },
-      })
+      }),
+      // 2. Fetch highlight section from Homepage Picks (焦點話題)
+      client.query<{ homepagePicks: HomepagePick[] }>({
+        query: homepagePicksByCategory,
+        variables: { categorySlug: 'hottopic' },
+      }),
+      // 3. Fetch topics (深度專題)
+      client.query<{ topics: Topic[] }>({
+        query: topicsWithPosts,
+        variables: { postsPerTopic: 4 },
+      }),
+      // 4. Fetch homepage carousel picks (首頁輪播大圖)
+      client.query<{ homepagePicks: HomepagePick[] }>({
+        query: homepagePicksForCarousel,
+      }),
+      // 5. Fetch latest InfoGraph (重要圖表)
+      client.query<{ infoGraphs: InfoGraph[] }>({
+        query: latestInfoGraph,
+      }),
+      // 6. Fetch homepage ads (首頁廣告)
+      client.query<{ ads: Ad[] }>({
+        query: homepageAds,
+      }),
+    ])
 
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `sections` query for news'),
-          'GraphQLError',
-          'failed to complete `sections` for news',
-          { errors: gqlErrors }
-        )
-        console.error(annotatingError)
-      }
-
-      if (data?.sections?.[0]?.categories) {
-        newsCategories = data.sections[0].categories
-      }
-    }
-
-    // Fetch column section (Section ID: 4 = 專欄)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        sections: Section[]
-      }>({
-        query: sectionWithCategoriesAndPosts,
-        variables: {
-          sectionId: '4',
-          postsPerCategory: 6,
-        },
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `sections` query for column'),
-          'GraphQLError',
-          'failed to complete `sections` for column',
-          { errors: gqlErrors }
-        )
-        console.error(annotatingError)
-      }
-
-      if (data?.sections?.[0]?.categories) {
-        columnCategories = data.sections[0].categories
-      }
-    }
-
-    // Fetch supplement section (Section ID: 5 = 副刊)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        sections: Section[]
-      }>({
-        query: sectionWithCategoriesAndPosts,
-        variables: {
-          sectionId: '5',
-          postsPerCategory: 3,
-        },
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
+    // Process combined sections result
+    // 從合併查詢結果中，根據 section id 分配到對應的變數
+    if (sectionsResult.errors) {
+      console.error(
+        errors.helpers.wrap(
           new Error('Errors returned in `sections` query'),
           'GraphQLError',
           'failed to complete `sections`',
-          { errors: gqlErrors }
+          { errors: sectionsResult.errors }
         )
-        console.error(annotatingError)
-      }
-
-      if (data?.sections?.[0]?.categories) {
-        supplementCategories = data.sections[0].categories
+      )
+    }
+    if (sectionsResult.data?.sections) {
+      // 根據 section id 分配資料到對應變數
+      // Section ID 對應: 3=時事新聞, 4=專欄, 5=副刊, 6=綠色消費
+      for (const section of sectionsResult.data.sections) {
+        switch (section.id) {
+          case '3': // 時事新聞 (latestnews)
+            newsCategories = section.categories
+            break
+          case '4': // 專欄 (column)
+            columnCategories = section.categories
+            break
+          case '5': // 副刊 (sub)
+            supplementCategories = section.categories
+            break
+          case '6': // 綠色消費 (green)
+            greenCategories = section.categories
+            break
+        }
       }
     }
 
-    // Fetch green consumption section (Section ID: 6 = 綠色消費)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        sections: Section[]
-      }>({
-        query: sectionWithCategoriesAndPosts,
-        variables: {
-          sectionId: '6',
-          postsPerCategory: 3,
-        },
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `sections` query for green'),
-          'GraphQLError',
-          'failed to complete `sections` for green',
-          { errors: gqlErrors }
-        )
-        console.error(annotatingError)
-      }
-
-      if (data?.sections?.[0]?.categories) {
-        greenCategories = data.sections[0].categories
-      }
-    }
-
-    // Fetch highlight section from Homepage Picks (焦點話題)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        homepagePicks: HomepagePick[]
-      }>({
-        query: homepagePicksByCategory,
-        variables: {
-          categorySlug: 'hottopic',
-        },
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
+    // Process highlight section result
+    if (highlightResult.errors) {
+      console.error(
+        errors.helpers.wrap(
           new Error('Errors returned in `homepagePicks` query for highlight'),
           'GraphQLError',
           'failed to complete `homepagePicks` for highlight',
-          { errors: gqlErrors }
+          { errors: highlightResult.errors }
         )
-        console.error(annotatingError)
-      }
-
-      if (data?.homepagePicks) {
-        highlightPicks = data.homepagePicks
-      }
+      )
+    }
+    if (highlightResult.data?.homepagePicks) {
+      highlightPicks = highlightResult.data.homepagePicks
     }
 
-    // Fetch topics (深度專題)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        topics: Topic[]
-      }>({
-        query: topicsWithPosts,
-        variables: {
-          postsPerTopic: 4,
-        },
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
+    // Process topics result
+    if (topicsResult.errors) {
+      console.error(
+        errors.helpers.wrap(
           new Error('Errors returned in `topics` query'),
           'GraphQLError',
           'failed to complete `topics`',
-          { errors: gqlErrors }
+          { errors: topicsResult.errors }
         )
-        console.error(annotatingError)
-      }
-
-      if (data?.topics) {
-        topics = data.topics
-      }
+      )
+    }
+    if (topicsResult.data?.topics) {
+      topics = topicsResult.data.topics
     }
 
-    // Fetch homepage carousel picks (首頁輪播大圖)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        homepagePicks: HomepagePick[]
-      }>({
-        query: homepagePicksForCarousel,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `homepagePicks` query'),
+    // Process carousel picks result
+    if (carouselResult.errors) {
+      console.error(
+        errors.helpers.wrap(
+          new Error('Errors returned in `homepagePicks` query for carousel'),
           'GraphQLError',
-          'failed to complete `homepagePicks`',
-          { errors: gqlErrors }
+          'failed to complete `homepagePicks` for carousel',
+          { errors: carouselResult.errors }
         )
-        console.error(annotatingError)
-      }
-
-      if (data?.homepagePicks) {
-        carouselPicks = data.homepagePicks
-      }
+      )
+    }
+    if (carouselResult.data?.homepagePicks) {
+      carouselPicks = carouselResult.data.homepagePicks
     }
 
-    // Fetch latest InfoGraph (重要圖表)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        infoGraphs: InfoGraph[]
-      }>({
-        query: latestInfoGraph,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
+    // Process InfoGraph result
+    if (infoGraphResult.errors) {
+      console.error(
+        errors.helpers.wrap(
           new Error('Errors returned in `infoGraphs` query'),
           'GraphQLError',
           'failed to complete `infoGraphs`',
-          { errors: gqlErrors }
+          { errors: infoGraphResult.errors }
         )
-        console.error(annotatingError)
-      }
-
-      if (data?.infoGraphs?.[0]) {
-        infoGraph = data.infoGraphs[0]
-      }
+      )
+    }
+    if (infoGraphResult.data?.infoGraphs?.[0]) {
+      infoGraph = infoGraphResult.data.infoGraphs[0]
     }
 
-    // Fetch homepage ads (首頁廣告)
-    {
-      const { data, errors: gqlErrors } = await client.query<{
-        ads: Ad[]
-      }>({
-        query: homepageAds,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
+    // Process ads result
+    if (adsResult.errors) {
+      console.error(
+        errors.helpers.wrap(
           new Error('Errors returned in `ads` query'),
           'GraphQLError',
           'failed to complete `ads`',
-          { errors: gqlErrors }
+          { errors: adsResult.errors }
         )
-        console.error(annotatingError)
-      }
-
-      if (data?.ads) {
-        ads = data.ads
-      }
+      )
     }
-    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
-    /*
-    {
-      // fetch editor choice data
-      const { data, errors: gqlErrors } = await client.query<{
-        editorChoices: EditorChoice[]
-      }>({
-        query: editorChoicesQuery,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `editorChoices` query'),
-          'GraphQLError',
-          'failed to complete `editorChoices`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      editorChoices = data.editorChoices.map((editorChoice) => {
-        if (editorChoice.choices) {
-          const { heroImage, ogImage } = editorChoice.choices ?? {}
-
-          const images =
-            editorChoice.heroImage?.resized ??
-            ogImage?.resized ??
-            heroImage?.resized ??
-            {}
-
-          const imagesWebP =
-            editorChoice.heroImage?.resizedWebp ??
-            ogImage?.resizedWebp ??
-            heroImage?.resizedWebp ??
-            {}
-
-          const choices = {
-            ...convertPostToArticleCard(
-              editorChoice?.choices,
-              images,
-              imagesWebP
-            ),
-            shouldHideBottomInfos: false,
-          }
-
-          return choices
-        } else {
-          const externalLinkEditorChoice = {
-            id: editorChoice.id ?? 'default-uid-undefined--no-id',
-            title: editorChoice.name ?? '',
-            href: editorChoice.link ?? '/',
-            date: 'Invalid Date',
-            isReport: false,
-            images: editorChoice.heroImage?.resized ?? {},
-            imagesWebP: editorChoice.heroImage?.resizedWebp ?? {},
-            readTimeText: '閱讀時間 10 分鐘',
-            shouldHideBottomInfos: true,
-          }
-
-          return externalLinkEditorChoice
-        }
-      })
+    if (adsResult.data?.ads) {
+      ads = adsResult.data.ads
     }
-    */
-    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
-    /*
-    {
-      {
-        // fetch categories and related latest reports
-        let data: { categories: Category[] }
-        const response = await axios.get<{ categories: Category[] }>(
-          LATEST_POSTS_IN_CATEGORIES_URL
-        )
-        data = response.data
-
-        const sortedCategories =
-          sortByTimeStamp(data.categories) || data.categories || []
-
-        categories = sortedCategories.map((category) => {
-          const reports = category.reports?.map(postConvertFunc)
-
-          const posts =
-            category.posts?.length && !reports?.length
-              ? category.posts
-              : category.posts?.slice(0, 4)
-
-          return {
-            id: category.id,
-            title: category.title,
-            slug: category.slug,
-            posts: posts?.map(postConvertFunc),
-            reports,
-          }
-        })
-      }
-
-      {
-        // fetch uncategorized latest reports
-
-        const response = await axios.get<{ posts: Post[] }>(LATEST_POSTS_URL)
-        const { posts: latestPosts } = response.data
-
-        const { posts, reports } = latestPosts.reduce(
-          ({ posts, reports }, latestPost) => {
-            if (latestPost.style === ValidPostStyle.NEWS) {
-              posts.push(latestPost)
-            } else {
-              reports.push(latestPost)
-            }
-            return { posts, reports }
-          },
-          {
-            posts: [] as Post[],
-            reports: [] as Post[],
-          }
-        )
-
-        if (reports.length) {
-          latest.reports = [postConvertFunc(reports[0])]
-        }
-
-        latest.posts = (reports.length ? posts.slice(0, 4) : posts).map(
-          postConvertFunc
-        )
-      }
-    }
-    */
-    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
-    /*
-    {
-      // fetch featured post data
-      const { data, errors: gqlErrors } = await client.query<{
-        features: Feature[]
-      }>({
-        query: featuresQuery,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `features` query'),
-          'GraphQLError',
-          'failed to complete `features`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      features = arrayRandomFilter(data.features, 4).map((feature) => {
-        const { description } = feature
-        const { subtitle = '', heroImage, ogImage } = feature.featurePost ?? {}
-
-        const images = ogImage?.resized ?? heroImage?.resized ?? {}
-        const imagesWebP = ogImage?.resized ?? heroImage?.resized ?? {}
-
-        const article = convertPostToArticleCard(
-          feature?.featurePost,
-          images,
-          imagesWebP
-        )
-
-        return {
-          ...article,
-          subtitle,
-          description,
-        }
-      })
-    }
-    */
-    /**
-     * this section is disabled since <CollaborationQuoteSlider /> is replaced by <CollaborationHighlight />,
-     * see <CollaborationSection />
-    {
-      // fetch quote data
-      const { data, errors: gqlErrors } = await client.query<{
-        quotes: Quote[]
-      }>({
-        query: quotesQuery,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `quotes` query'),
-          'GraphQLError',
-          'failed to complete `quotes`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      quotes = data.quotes
-    }
-    */
-    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
-    /*
-    {
-      // fetch collaboration items
-      const { data, errors: gqlErrors } = await client.query<{
-        collaborations: Collaboration[]
-      }>({
-        query: collaborationsQuery,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `collaborations` query'),
-          'GraphQLError',
-          'failed to complete `collaborations`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      collaborations = data.collaborations.map((collaboration) => {
-        const {
-          id,
-          title = '',
-          description,
-          progress,
-          achvLink,
-          collabLink,
-          requireTime,
-          endTime,
-          heroImage,
-        } = collaboration
-
-        return {
-          id,
-          title,
-          description,
-          progress,
-          achvLink,
-          collabLink,
-          requireTime,
-          endTime,
-          images: heroImage?.resized ?? {},
-          imagesWebP: heroImage?.resizedWebp ?? {},
-        }
-      })
-    }
-    */
-    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
-    /*
-    {
-      // fetch featured collaboration (collaboration banner)
-      const { data, errors: gqlErrors } = await client.query<{
-        collaborations: FeaturedCollaboration[]
-      }>({
-        query: featuredCollaborationsQuery,
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `collaborations` query'),
-          'GraphQLError',
-          'failed to complete `collaborations`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      featuredCollaboration = data.collaborations[0] ?? {}
-    }
-    */
-    // TODO: Temporarily disabled until GraphQL queries are migrated to new API
-    /*
-    {
-      // fetch open data items
-      const { data, error: gqlErrors } = await client.query<DataSetWithCount>({
-        query: dataSetsQuery,
-        variables: {
-          first: 3,
-          shouldQueryCount: true,
-        },
-      })
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `dataSets` query'),
-          'GraphQLError',
-          'failed to complete `dataSets`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      const { dataSets, count } = data
-      dataSetItems = dataSets.map(convertDataSet)
-      dataSetCount = count ?? dataSetItems.length
-    }
-    */
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
