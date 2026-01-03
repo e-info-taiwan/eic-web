@@ -74,6 +74,34 @@ export type Topic = {
   isPinned: boolean
 }
 
+export type HomepagePickPost = {
+  id: string
+  title: string
+  publishTime: string
+  heroImage: {
+    resized: ResizedImages | null
+    resizedWebp: ResizedImages | null
+  } | null
+}
+
+export type HomepagePick = {
+  id: string
+  sortOrder: number
+  customUrl: string | null
+  customTitle: string | null
+  customDescription: string | null
+  customImage: {
+    resized: ResizedImages | null
+    resizedWebp: ResizedImages | null
+  } | null
+  posts: HomepagePickPost | null
+  category: {
+    id: string
+    slug: string
+    name: string
+  } | null
+}
+
 export const topicsWithPosts = gql`
   query ($postsPerTopic: Int = 4) {
     topics(where: { status: { equals: "published" } }) {
@@ -161,6 +189,95 @@ export const sectionWithCategoriesAndPosts = gql`
             }
           }
         }
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
+// Query for homepage picks by category slug
+export const homepagePicksByCategory = gql`
+  query ($categorySlug: String!) {
+    homepagePicks(
+      where: { category: { slug: { equals: $categorySlug } } }
+      orderBy: { sortOrder: asc }
+    ) {
+      id
+      sortOrder
+      customUrl
+      customTitle
+      customDescription
+      customImage {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+      posts {
+        id
+        title
+        publishTime
+        heroImage {
+          resized {
+            ...ResizedImagesField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesField
+          }
+        }
+      }
+      category {
+        id
+        slug
+        name
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
+// Query for homepage carousel picks
+// Filter by category slug "homepepicks" (首頁輪播文章)
+export const homepagePicksForCarousel = gql`
+  query {
+    homepagePicks(
+      where: { category: { slug: { equals: "homepepicks" } } }
+      orderBy: { sortOrder: asc }
+    ) {
+      id
+      sortOrder
+      customUrl
+      customTitle
+      customDescription
+      customImage {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+      posts {
+        id
+        title
+        publishTime
+        heroImage {
+          resized {
+            ...ResizedImagesField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesField
+          }
+        }
+      }
+      category {
+        id
+        slug
+        name
       }
     }
   }

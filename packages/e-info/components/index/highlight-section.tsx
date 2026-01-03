@@ -4,7 +4,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
-import type { CategoryPost } from '~/graphql/query/section'
+import type { HomepagePick } from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -159,20 +159,46 @@ const ArticleTitle = styled.h3`
   }
 `
 
-const EmptyMessage = styled.p`
-  text-align: center;
-  color: #666;
-  padding: 2rem;
-  grid-column: 1 / -1;
-`
-
 type HighlightSectionProps = {
-  posts?: CategoryPost[]
+  picks?: HomepagePick[]
 }
 
-const HighlightSection = ({ posts = [] }: HighlightSectionProps) => {
-  // If no posts, don't render the section
-  if (posts.length === 0) {
+// Helper function to get image from pick
+const getImage = (pick: HomepagePick) => {
+  // Priority: customImage > post heroImage
+  if (pick.customImage?.resized) {
+    return {
+      resized: pick.customImage.resized,
+      resizedWebp: pick.customImage.resizedWebp,
+    }
+  }
+  if (pick.posts?.heroImage) {
+    return {
+      resized: pick.posts.heroImage.resized,
+      resizedWebp: pick.posts.heroImage.resizedWebp,
+    }
+  }
+  return { resized: null, resizedWebp: null }
+}
+
+// Helper function to get title from pick
+const getTitle = (pick: HomepagePick): string => {
+  return pick.customTitle || pick.posts?.title || ''
+}
+
+// Helper function to get link URL from pick
+const getLinkUrl = (pick: HomepagePick): string => {
+  if (pick.customUrl) return pick.customUrl
+  if (pick.posts?.id) return `/node/${pick.posts.id}`
+  return '#'
+}
+
+const HighlightSection = ({ picks = [] }: HighlightSectionProps) => {
+  // Filter picks that have valid posts or custom content
+  const validPicks = picks.filter((pick) => pick.posts || pick.customTitle)
+
+  // If no valid picks, don't render the section
+  if (validPicks.length === 0) {
     return null
   }
 
@@ -186,42 +212,34 @@ const HighlightSection = ({ posts = [] }: HighlightSectionProps) => {
 
       {/* Articles Grid */}
       <ArticlesGrid>
-        {posts.length > 0 ? (
-          posts.map((post) => {
-            const image = post.heroImage?.resized
-            const imageWebp = post.heroImage?.resizedWebp
+        {validPicks.map((pick) => {
+          const { resized, resizedWebp } = getImage(pick)
+          const title = getTitle(pick)
+          const linkUrl = getLinkUrl(pick)
 
-            return (
-              <Link
-                key={post.id}
-                href={`/node/${post.id}`}
-                passHref
-                legacyBehavior
-              >
-                <ArticleCard>
-                  <ImageContainer>
-                    <SharedImage
-                      images={image || {}}
-                      imagesWebP={imageWebp || {}}
-                      defaultImage={DEFAULT_POST_IMAGE_PATH}
-                      alt={post.title}
-                      priority={false}
-                      rwd={{
-                        mobile: '200px',
-                        tablet: '33vw',
-                        desktop: '160px',
-                        default: '160px',
-                      }}
-                    />
-                  </ImageContainer>
-                  <ArticleTitle>{post.title}</ArticleTitle>
-                </ArticleCard>
-              </Link>
-            )
-          })
-        ) : (
-          <EmptyMessage>目前沒有文章</EmptyMessage>
-        )}
+          return (
+            <Link key={pick.id} href={linkUrl} passHref legacyBehavior>
+              <ArticleCard>
+                <ImageContainer>
+                  <SharedImage
+                    images={resized || {}}
+                    imagesWebP={resizedWebp || {}}
+                    defaultImage={DEFAULT_POST_IMAGE_PATH}
+                    alt={title}
+                    priority={false}
+                    rwd={{
+                      mobile: '200px',
+                      tablet: '33vw',
+                      desktop: '160px',
+                      default: '160px',
+                    }}
+                  />
+                </ImageContainer>
+                <ArticleTitle>{title}</ArticleTitle>
+              </ArticleCard>
+            </Link>
+          )
+        })}
       </ArticlesGrid>
     </Container>
   )

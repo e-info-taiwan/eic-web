@@ -1,12 +1,19 @@
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
+import Link from 'next/link'
 import React, { useRef } from 'react'
 import Slider from 'react-slick'
 import styled from 'styled-components'
 
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { HomepagePick } from '~/graphql/query/section'
 import IconNext from '~/public/icons/next.svg'
 import IconPrev from '~/public/icons/prev.svg'
+
+type MainCarouselProps = {
+  picks: HomepagePick[]
+}
 
 // Note: You'll need to install react-slick and slick-carousel:
 // npm install react-slick slick-carousel
@@ -200,7 +207,7 @@ const SlideContent = styled.div.attrs({ className: 'slide-content' })`
   position: relative;
   overflow: hidden;
   transition: all 0.4s ease;
-  // max-width: 880px;
+  max-width: 880px;
   width: 100%;
 `
 const ImageWrap = styled.div`
@@ -288,42 +295,35 @@ const MainTitle = styled.h2.attrs({ className: 'slide-title' })`
   }
 `
 
-// Sample data
-const carouselData = [
-  {
-    id: 1,
-    title:
-      '以沉船視角看見海洋之美——紀錄片《沉睡的水下巨人》以沉船視角看見海洋之美——紀錄片《沉睡的水下巨人》',
-    mainImage:
-      'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=880&h=586&fit=crop',
-  },
-  {
-    id: 2,
-    title: '海洋保護的重要性——珊瑚礁生態系統',
-    mainImage:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=880&h=586&fit=crop',
-  },
-  {
-    id: 3,
-    title: '深海探索的新發現——未知的海底世界',
-    mainImage:
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=880&h=586&fit=crop',
-  },
-  {
-    id: 4,
-    title: '氣候變遷對海洋生態的影響',
-    mainImage:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=880&h=586&fit=crop',
-  },
-  {
-    id: 5,
-    title: '永續漁業的未來發展',
-    mainImage:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=880&h=586&fit=crop',
-  },
-]
+// Helper function to get image URL from pick
+const getImageUrl = (pick: HomepagePick): string => {
+  // Priority: customImage > post heroImage
+  const customImage =
+    pick.customImage?.resized?.w1600 || pick.customImage?.resized?.original
+  if (customImage) return customImage
 
-const MainCarousel = () => {
+  const postImage =
+    pick.posts?.heroImage?.resized?.w1600 ||
+    pick.posts?.heroImage?.resized?.original
+  if (postImage) return postImage
+
+  // Fallback placeholder
+  return DEFAULT_POST_IMAGE_PATH
+}
+
+// Helper function to get title from pick
+const getTitle = (pick: HomepagePick): string => {
+  return pick.customTitle || pick.posts?.title || ''
+}
+
+// Helper function to get link URL from pick
+const getLinkUrl = (pick: HomepagePick): string => {
+  if (pick.customUrl) return pick.customUrl
+  if (pick.posts?.id) return `/node/${pick.posts.id}`
+  return '#'
+}
+
+const MainCarousel = ({ picks }: MainCarouselProps) => {
   const sliderRef = useRef<Slider | null>(null)
   const next = () => {
     console.log('next', sliderRef)
@@ -369,34 +369,69 @@ const MainCarousel = () => {
     ],
   }
 
+  // Filter picks that have valid posts or custom content
+  const validPicks = picks.filter((pick) => pick.posts || pick.customTitle)
+
+  if (validPicks.length === 0) {
+    return null
+  }
+
   return (
     <CarouselContainer>
       <Container>
         <Slider ref={sliderRef} {...settings}>
-          {carouselData.map((slide) => (
-            <CarouselSlide key={slide.id}>
-              <SlideContent>
-                <ImageWrap>
-                  <ArrowButton onClick={previous}>
-                    <IconPrev />
-                  </ArrowButton>
-                  <MainImage src={slide.mainImage} alt={slide.title} />
-                  <ArrowButton onClick={next}>
-                    <IconNext />
-                  </ArrowButton>
-                </ImageWrap>
-                <TitleWrap>
-                  <ArrowButton onClick={previous}>
-                    <IconPrev />
-                  </ArrowButton>
-                  <MainTitle>{slide.title}</MainTitle>
-                  <ArrowButton onClick={next}>
-                    <IconNext />
-                  </ArrowButton>
-                </TitleWrap>
-              </SlideContent>
-            </CarouselSlide>
-          ))}
+          {validPicks.map((pick) => {
+            const imageUrl = getImageUrl(pick)
+            const title = getTitle(pick)
+            const linkUrl = getLinkUrl(pick)
+
+            return (
+              <CarouselSlide key={pick.id}>
+                <Link href={linkUrl}>
+                  <SlideContent>
+                    <ImageWrap>
+                      <ArrowButton
+                        onClick={(e) => {
+                          e.preventDefault()
+                          previous()
+                        }}
+                      >
+                        <IconPrev />
+                      </ArrowButton>
+                      <MainImage src={imageUrl} alt={title} />
+                      <ArrowButton
+                        onClick={(e) => {
+                          e.preventDefault()
+                          next()
+                        }}
+                      >
+                        <IconNext />
+                      </ArrowButton>
+                    </ImageWrap>
+                    <TitleWrap>
+                      <ArrowButton
+                        onClick={(e) => {
+                          e.preventDefault()
+                          previous()
+                        }}
+                      >
+                        <IconPrev />
+                      </ArrowButton>
+                      <MainTitle>{title}</MainTitle>
+                      <ArrowButton
+                        onClick={(e) => {
+                          e.preventDefault()
+                          next()
+                        }}
+                      >
+                        <IconNext />
+                      </ArrowButton>
+                    </TitleWrap>
+                  </SlideContent>
+                </Link>
+              </CarouselSlide>
+            )
+          })}
         </Slider>
       </Container>
     </CarouselContainer>

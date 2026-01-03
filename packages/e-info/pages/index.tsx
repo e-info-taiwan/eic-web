@@ -55,12 +55,15 @@ import { quotes as quotesQuery } from '~/graphql/query/quote'
 import type {
   CategoryPost,
   CategoryWithPosts,
+  HomepagePick,
   Section,
   SectionCategory,
   Topic,
 } from '~/graphql/query/section'
 import {
   categoryWithPosts,
+  homepagePicksByCategory,
+  homepagePicksForCarousel,
   sectionWithCategoriesAndPosts,
   topicsWithPosts,
 } from '~/graphql/query/section'
@@ -92,8 +95,9 @@ type PageProps = {
   columnCategories: SectionCategory[]
   newsCategories: SectionCategory[]
   greenCategories: SectionCategory[]
-  highlightPosts: CategoryPost[]
   topics: Topic[]
+  carouselPicks: HomepagePick[]
+  highlightPicks: HomepagePick[]
 }
 
 const HiddenAnchor = styled.div`
@@ -130,8 +134,9 @@ const Index: NextPageWithLayout<PageProps> = ({
   columnCategories,
   newsCategories,
   greenCategories,
-  highlightPosts,
   topics,
+  carouselPicks,
+  highlightPicks,
 }) => {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
@@ -147,8 +152,8 @@ const Index: NextPageWithLayout<PageProps> = ({
       {/* 首頁內容 */}
 
       {/* Demo - begin */}
-      <MainCarousel />
-      <HighlightSection posts={highlightPosts} />
+      <MainCarousel picks={carouselPicks} />
+      <HighlightSection picks={highlightPicks} />
       <Inforgraphic />
       <NewsSection categories={newsCategories} />
       <AdContent />
@@ -221,8 +226,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let columnCategories: SectionCategory[] = []
   let newsCategories: SectionCategory[] = []
   let greenCategories: SectionCategory[] = []
-  let highlightPosts: CategoryPost[] = []
   let topics: Topic[] = []
+  let carouselPicks: HomepagePick[] = []
+  let highlightPicks: HomepagePick[] = []
 
   try {
     // Fetch news section (Section ID: 3 = 時事新聞)
@@ -333,30 +339,29 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       }
     }
 
-    // Fetch highlight section (Category ID: 5 = 焦點話題)
+    // Fetch highlight section from Homepage Picks (焦點話題)
     {
       const { data, errors: gqlErrors } = await client.query<{
-        categories: CategoryWithPosts[]
+        homepagePicks: HomepagePick[]
       }>({
-        query: categoryWithPosts,
+        query: homepagePicksByCategory,
         variables: {
-          categoryId: '5',
-          postsCount: 3,
+          categorySlug: 'hottopic',
         },
       })
 
       if (gqlErrors) {
         const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `categories` query for highlight'),
+          new Error('Errors returned in `homepagePicks` query for highlight'),
           'GraphQLError',
-          'failed to complete `categories` for highlight',
+          'failed to complete `homepagePicks` for highlight',
           { errors: gqlErrors }
         )
         console.error(annotatingError)
       }
 
-      if (data?.categories?.[0]?.posts) {
-        highlightPosts = data.categories[0].posts
+      if (data?.homepagePicks) {
+        highlightPicks = data.homepagePicks
       }
     }
 
@@ -383,6 +388,29 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
       if (data?.topics) {
         topics = data.topics
+      }
+    }
+
+    // Fetch homepage carousel picks (首頁輪播大圖)
+    {
+      const { data, errors: gqlErrors } = await client.query<{
+        homepagePicks: HomepagePick[]
+      }>({
+        query: homepagePicksForCarousel,
+      })
+
+      if (gqlErrors) {
+        const annotatingError = errors.helpers.wrap(
+          new Error('Errors returned in `homepagePicks` query'),
+          'GraphQLError',
+          'failed to complete `homepagePicks`',
+          { errors: gqlErrors }
+        )
+        console.error(annotatingError)
+      }
+
+      if (data?.homepagePicks) {
+        carouselPicks = data.homepagePicks
       }
     }
     // TODO: Temporarily disabled until GraphQL queries are migrated to new API
@@ -719,8 +747,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       columnCategories,
       newsCategories,
       greenCategories,
-      highlightPosts,
       topics,
+      carouselPicks,
+      highlightPicks,
     },
   }
 }
