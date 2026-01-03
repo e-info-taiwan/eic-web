@@ -276,24 +276,40 @@ export default function PostContent({
 
       {shouldShowContent && (
         <Content>
-          <DraftRenderer
-            rawContentBlock={contentToRender}
-            contentType={ValidPostContentType.NORMAL}
-            disabledImageLazyLoad={false}
-          />
-
-          {blocksLength > 5 && (
+          {blocksLength <= 5 ? (
+            // Short content: render all at once
+            <DraftRenderer
+              rawContentBlock={contentToRender}
+              contentType={ValidPostContentType.NORMAL}
+              disabledImageLazyLoad={false}
+            />
+          ) : blocksLength <= 10 ? (
+            // Medium content: split at block 5 with one ad
             <>
+              <DraftRenderer
+                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 0, 5)}
+                contentType={ValidPostContentType.NORMAL}
+                disabledImageLazyLoad={false}
+              />
+              <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" />
+              <DraftRenderer
+                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5)}
+                contentType={ValidPostContentType.NORMAL}
+              />
+            </>
+          ) : (
+            // Long content: split at blocks 5 and 10 with two ads
+            <>
+              <DraftRenderer
+                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 0, 5)}
+                contentType={ValidPostContentType.NORMAL}
+                disabledImageLazyLoad={false}
+              />
               <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" />
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5, 10)}
                 contentType={ValidPostContentType.NORMAL}
               />
-            </>
-          )}
-
-          {blocksLength > 10 && (
-            <>
               <StyledAdsense_AT pageKey={categorySlug} adKey="AT2" />
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 10)}
