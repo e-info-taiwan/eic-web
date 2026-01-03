@@ -7,7 +7,10 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
-import type { SectionCategory } from '~/graphql/query/section'
+import type {
+  ContentApiDataBlock,
+  SectionCategory,
+} from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -200,6 +203,19 @@ const NewsTitle = styled.h3`
   }
 `
 
+const NewsBrief = styled.p`
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
 const FeaturedImageWrapper = styled.div`
   position: relative;
   margin-bottom: 16px;
@@ -271,6 +287,18 @@ const FeaturedTitle = styled.h2`
 
   ${FeaturedArticle}:hover & {
     color: ${({ theme }) => theme.colors.primary[20]};
+  }
+`
+
+const FeaturedBrief = styled.p`
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 18px;
   }
 `
 
@@ -382,6 +410,69 @@ const formatDate = (dateString: string): string => {
   return `${year}/${month}/${day}`
 }
 
+// Helper function to extract text from contentApiData format
+const getContentText = (
+  contentApiData: ContentApiDataBlock[] | null,
+  maxLength: number
+): string => {
+  if (!contentApiData || !Array.isArray(contentApiData)) return ''
+
+  // Find the first block with non-empty content
+  for (const block of contentApiData) {
+    if (block.content && Array.isArray(block.content)) {
+      const text = block.content.join('').trim()
+      if (text) {
+        if (text.length > maxLength) {
+          return text.slice(0, maxLength) + '...'
+        }
+        return text
+      }
+    }
+  }
+
+  return ''
+}
+
+// Helper function to extract brief text from Draft.js format
+// Returns the first non-empty text block, truncated to maxLength characters
+// Falls back to contentApiData if brief is empty
+const getBriefText = (
+  brief: string | Record<string, unknown> | null,
+  contentApiData: ContentApiDataBlock[] | null,
+  maxLength: number = 40
+): string => {
+  // First try to extract from brief
+  if (brief) {
+    // If brief is a string, return it directly (truncated)
+    if (typeof brief === 'string') {
+      if (brief.length > maxLength) {
+        return brief.slice(0, maxLength) + '...'
+      }
+      return brief
+    }
+
+    // If brief is Draft.js format with blocks array
+    if (typeof brief === 'object' && 'blocks' in brief) {
+      const blocks = brief.blocks as Array<{ text?: string }>
+      if (Array.isArray(blocks)) {
+        // Find the first non-empty text block
+        for (const block of blocks) {
+          if (block.text && block.text.trim()) {
+            const text = block.text.trim()
+            if (text.length > maxLength) {
+              return text.slice(0, maxLength) + '...'
+            }
+            return text
+          }
+        }
+      }
+    }
+  }
+
+  // Fallback to contentApiData if brief is empty
+  return getContentText(contentApiData, maxLength)
+}
+
 type NewsSectionProps = {
   categories?: SectionCategory[]
 }
@@ -445,19 +536,27 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
         {/* A - Sidebar */}
         <Sidebar>
           {sidebarPosts.length > 0 ? (
-            sidebarPosts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/node/${post.id}`}
-                passHref
-                legacyBehavior
-              >
-                <NewsItem>
-                  <NewsDate>{formatDate(post.publishTime)}</NewsDate>
-                  <NewsTitle>{post.title}</NewsTitle>
-                </NewsItem>
-              </Link>
-            ))
+            sidebarPosts.map((post, index) => {
+              // Only show brief for the first sidebar post
+              const briefText =
+                index === 0
+                  ? getBriefText(post.brief, post.contentApiData, 40)
+                  : ''
+              return (
+                <Link
+                  key={post.id}
+                  href={`/node/${post.id}`}
+                  passHref
+                  legacyBehavior
+                >
+                  <NewsItem>
+                    <NewsDate>{formatDate(post.publishTime)}</NewsDate>
+                    <NewsTitle>{post.title}</NewsTitle>
+                    {briefText && <NewsBrief>{briefText}</NewsBrief>}
+                  </NewsItem>
+                </Link>
+              )
+            })
           ) : (
             <EmptyMessage>目前沒有文章</EmptyMessage>
           )}
@@ -489,6 +588,19 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
                   {formatDate(featuredPost.publishTime)}
                 </FeaturedDate>
                 <FeaturedTitle>{featuredPost.title}</FeaturedTitle>
+                {getBriefText(
+                  featuredPost.brief,
+                  featuredPost.contentApiData,
+                  40
+                ) && (
+                  <FeaturedBrief>
+                    {getBriefText(
+                      featuredPost.brief,
+                      featuredPost.contentApiData,
+                      40
+                    )}
+                  </FeaturedBrief>
+                )}
               </FeaturedContent>
             </FeaturedArticle>
           </Link>

@@ -6,10 +6,20 @@ import {
 } from '~/graphql/fragments/resized-images'
 import type { ResizedImages } from '~/types/common'
 
+export type ContentApiDataBlock = {
+  id: string
+  type: string
+  content?: string[]
+  styles?: Record<string, unknown>
+  alignment?: string
+}
+
 export type SectionPost = {
   id: string
   title: string
   publishTime: string
+  brief: string | Record<string, unknown> | null
+  contentApiData: ContentApiDataBlock[] | null
   heroImage: {
     resized: ResizedImages | null
     resizedWebp: ResizedImages | null
@@ -20,6 +30,7 @@ export type SectionCategory = {
   id: string
   slug: string
   name: string
+  sortOrder: number | null
   postsCount: number
   posts: SectionPost[]
 }
@@ -171,15 +182,18 @@ export const sectionWithCategoriesAndPosts = gql`
       id
       slug
       name
-      categories {
+      categories(orderBy: { sortOrder: asc }) {
         id
         slug
         name
+        sortOrder
         postsCount
         posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
           id
           title
           publishTime
+          brief
+          contentApiData
           heroImage {
             resized {
               ...ResizedImagesField
