@@ -66,16 +66,41 @@ export const defaultLinkStyle = css`
 `
 
 export const defaultBlockQuoteStyle = css`
+  position: relative;
   ${({ theme }) => theme.fontSize.md};
-  line-height: 1.8;
-  color: rgba(0, 9, 40, 0.87);
-  background-color: #f0f9f4;
-  border-left: 4px solid #2d7a4f;
-  padding: 16px 20px;
-  margin: 0;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.secondary[0]};
+  padding: 20px 24px;
+  margin: 24px;
 
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 20px 24px;
+  /* Remove default Draft.js paragraph margin inside blockquote */
+  .public-DraftStyleDefault-block {
+    margin-top: 0;
+  }
+
+  /* Top-left corner bracket */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-top: 4px solid ${({ theme }) => theme.colors.secondary[0]};
+    border-left: 4px solid ${({ theme }) => theme.colors.secondary[0]};
+  }
+
+  /* Bottom-right corner bracket */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom: 4px solid ${({ theme }) => theme.colors.secondary[0]};
+    border-right: 4px solid ${({ theme }) => theme.colors.secondary[0]};
   }
 `
 

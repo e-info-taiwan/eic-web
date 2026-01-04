@@ -24,12 +24,24 @@ var defaultUnorderedListStyle = exports.defaultUnorderedListStyle = (0, _styledC
 var defaultOlStyle = exports.defaultOlStyle = (0, _styledComponents.css)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  list-style-type: decimal;\n  padding-left: 1.5rem;\n  margin-left: 0.5rem;\n"])));
 var defaultOrderedListStyle = exports.defaultOrderedListStyle = (0, _styledComponents.css)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n  letter-spacing: 0.01em;\n  text-align: justify;\n  color: rgba(0, 9, 40, 0.87);\n"])));
 var defaultLinkStyle = exports.defaultLinkStyle = (0, _styledComponents.css)(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral(["\n  display: inline;\n  color: #2d7a4f;\n  text-decoration: underline;\n  text-underline-offset: 2px;\n  letter-spacing: 0.01em;\n\n  &:hover {\n    color: #1e5a38;\n  }\n"])));
-var defaultBlockQuoteStyle = exports.defaultBlockQuoteStyle = (0, _styledComponents.css)(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral(["\n  ", ";\n  line-height: 1.8;\n  color: rgba(0, 9, 40, 0.87);\n  background-color: #f0f9f4;\n  border-left: 4px solid #2d7a4f;\n  padding: 16px 20px;\n  margin: 0;\n\n  ", " {\n    padding: 20px 24px;\n  }\n"])), function (_ref4) {
+var defaultBlockQuoteStyle = exports.defaultBlockQuoteStyle = (0, _styledComponents.css)(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral(["\n  position: relative;\n  ", ";\n  font-weight: 700;\n  line-height: 1.5;\n  color: ", ";\n  padding: 20px 24px;\n  margin: 24px;\n\n  /* Remove default Draft.js paragraph margin inside blockquote */\n  .public-DraftStyleDefault-block {\n    margin-top: 0;\n  }\n\n  /* Top-left corner bracket */\n  &::before {\n    content: '';\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 20px;\n    height: 20px;\n    border-top: 4px solid ", ";\n    border-left: 4px solid ", ";\n  }\n\n  /* Bottom-right corner bracket */\n  &::after {\n    content: '';\n    position: absolute;\n    bottom: 0;\n    right: 0;\n    width: 20px;\n    height: 20px;\n    border-bottom: 4px solid ", ";\n    border-right: 4px solid ", ";\n  }\n"])), function (_ref4) {
   var theme = _ref4.theme;
   return theme.fontSize.md;
 }, function (_ref5) {
   var theme = _ref5.theme;
-  return theme.breakpoint.md;
+  return theme.colors.secondary[0];
+}, function (_ref6) {
+  var theme = _ref6.theme;
+  return theme.colors.secondary[0];
+}, function (_ref7) {
+  var theme = _ref7.theme;
+  return theme.colors.secondary[0];
+}, function (_ref8) {
+  var theme = _ref8.theme;
+  return theme.colors.secondary[0];
+}, function (_ref9) {
+  var theme = _ref9.theme;
+  return theme.colors.secondary[0];
 });
 var defaultSpacingBetweenContent = exports.defaultSpacingBetweenContent = (0, _styledComponents.css)(_templateObject0 || (_templateObject0 = _taggedTemplateLiteral(["\n  .public-DraftStyleDefault-block {\n    margin-top: 32px;\n  }\n"])));
 var narrowSpacingBetweenContent = exports.narrowSpacingBetweenContent = (0, _styledComponents.css)(_templateObject1 || (_templateObject1 = _taggedTemplateLiteral(["\n  .public-DraftStyleDefault-block {\n    margin-top: 16px;\n  }\n"])));
