@@ -21,13 +21,37 @@ function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.fre
 var annotationDefaultSpacing = 8;
 var AnnotationText = _styledComponents["default"].span(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  ", ";\n"])), _sharedStyle.defaultLinkStyle);
 var AnnotationWrapper = _styledComponents["default"].span(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  display: inline-block;\n  cursor: pointer;\n\n  &:hover ", " {\n    border-bottom: 2px solid #04295e;\n  }\n"])), AnnotationText);
-var AnnotationBody = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  border-radius: 2px;\n  background-color: #f6f6fb;\n  padding: 12px 24px;\n  margin: 8px 0 32px;\n  font-size: 16px;\n  font-weight: 400;\n  line-height: 1.6;\n  display: inline-block;\n  text-align: left;\n  width: 100%;\n  color: rgba(0, 9, 40, 0.87);\n\n  ", " {\n    padding: 16px 32px;\n  }\n\n  > * + * {\n    margin: ", "px 0 0;\n    min-height: 0.01px; //to make margins between paragraphs effective\n  }\n\n  h2 {\n    ", "\n  }\n\n  ul {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n    }\n  }\n\n  ol {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n    }\n  }\n\n  a {\n    ", "\n  }\n\n  blockquote {\n    ", "\n  }\n"])), function (_ref) {
+var AnnotationBody = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  border-radius: 2px;\n  background-color: ", ";\n  padding: 20px 24px;\n  margin: 12px 0 28px;\n  font-size: 14px;\n  font-weight: 400;\n  line-height: 1.5;\n  display: inline-block;\n  text-align: left;\n  width: 100%;\n  color: ", ";\n\n  ", " {\n    padding: 20px;\n  }\n\n  > * + * {\n    margin: ", "px 0 0;\n    min-height: 0.01px; //to make margins between paragraphs effective\n  }\n\n  h2 {\n    ", "\n  }\n\n  ul {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n    }\n  }\n\n  ol {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n    }\n  }\n\n  a {\n    ", "\n  }\n\n  blockquote {\n    ", "\n  }\n"])), function (_ref) {
   var theme = _ref.theme;
+  return theme.colors.grayscale[95];
+}, function (_ref2) {
+  var theme = _ref2.theme;
+  return theme.colors.grayscale[20];
+}, function (_ref3) {
+  var theme = _ref3.theme;
   return theme.breakpoint.md;
 }, annotationDefaultSpacing, _sharedStyle.defaultH2Style, _sharedStyle.defaultUlStyle, annotationDefaultSpacing, _sharedStyle.defaultUnorderedListStyle, _sharedStyle.defaultOlStyle, annotationDefaultSpacing, _sharedStyle.defaultOrderedListStyle, _sharedStyle.defaultLinkStyle, _sharedStyle.defaultBlockQuoteStyle);
-var ArrowIcon = _styledComponents["default"].span(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  width: 20px;\n  height: 20px;\n  margin: auto 4px;\n  transition: transform 0.3s;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  vertical-align: text-top;\n  transform: ", ";\n\n  &::before {\n    content: '\u25BC';\n    font-size: 10px;\n    color: #2d7a4f;\n  }\n"])), function (props) {
-  return props.showContent ? 'rotate(-180deg)' : '';
+var ArrowIconWrapper = _styledComponents["default"].span(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  width: 20px;\n  height: 20px;\n  margin: auto 4px;\n  transition: transform 0.3s;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  vertical-align: text-top;\n  background-color: ", ";\n  border-radius: 10px;\n  transform: ", ";\n"])), function (_ref4) {
+  var theme = _ref4.theme;
+  return theme.colors.secondary[80];
+}, function (props) {
+  return props.$showContent ? 'rotate(-180deg)' : '';
 });
+var ArrowIcon = function ArrowIcon(_ref5) {
+  var showContent = _ref5.showContent;
+  return /*#__PURE__*/_react["default"].createElement(ArrowIconWrapper, {
+    $showContent: showContent
+  }, /*#__PURE__*/_react["default"].createElement("svg", {
+    width: "11",
+    height: "9",
+    viewBox: "0 0 11 9",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, /*#__PURE__*/_react["default"].createElement("path", {
+    d: "M5.19617 9L1.60456e-05 -9.78799e-07L10.3923 -7.02746e-08L5.19617 9Z",
+    fill: "#388A48"
+  })));
+};
 function AnnotationBlock(props) {
   var annotated = props.children;
   var _useState = (0, _react.useState)(false),

@@ -3,14 +3,14 @@ import styled from 'styled-components'
 
 const LinkWrapper = styled.a`
   display: inline;
-  border-bottom: 2px solid #ebf02c;
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary[40]};
   letter-spacing: 0.01em;
   text-align: justify;
-  color: rgba(0, 9, 40, 0.87);
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   padding-bottom: 2px;
 
   &:hover {
-    border-bottom: 2px solid #04295e;
+    border-bottom: 2px solid ${({ theme }) => theme.colors.primary[0]};
   }
 `
 

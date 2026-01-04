@@ -28,19 +28,19 @@ const AnnotationWrapper = styled.span`
 
 const AnnotationBody = styled.div`
   border-radius: 2px;
-  background-color: #f6f6fb;
-  padding: 12px 24px;
-  margin: 8px 0 32px;
-  font-size: 16px;
+  background-color: ${({ theme }) => theme.colors.grayscale[95]};
+  padding: 20px 24px;
+  margin: 12px 0 28px;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.5;
   display: inline-block;
   text-align: left;
   width: 100%;
-  color: rgba(0, 9, 40, 0.87);
+  color: ${({ theme }) => theme.colors.grayscale[20]};
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 16px 32px;
+    padding: 20px;
   }
 
   > * + * {
@@ -79,7 +79,11 @@ const AnnotationBody = styled.div`
   }
 `
 
-const ArrowIcon = styled.span`
+type ArrowIconWrapperProps = {
+  $showContent: boolean
+}
+
+const ArrowIconWrapper = styled.span<ArrowIconWrapperProps>`
   width: 20px;
   height: 20px;
   margin: auto 4px;
@@ -88,14 +92,24 @@ const ArrowIcon = styled.span`
   align-items: center;
   justify-content: center;
   vertical-align: text-top;
-  transform: ${(props) => (props.showContent ? 'rotate(-180deg)' : '')};
-
-  &::before {
-    content: '▼';
-    font-size: 10px;
-    color: #2d7a4f;
-  }
+  background-color: ${({ theme }) => theme.colors.secondary[80]};
+  border-radius: 10px;
+  transform: ${(props) => (props.$showContent ? 'rotate(-180deg)' : '')};
 `
+
+const ArrowIcon = ({ showContent }: { showContent: boolean }) => (
+  <ArrowIconWrapper $showContent={showContent}>
+    <svg
+      width="11"
+      height="9"
+      viewBox="0 0 11 9"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M5.19617 9L1.60456e-05 -9.78799e-07L10.3923 -7.02746e-08L5.19617 9Z" fill="#388A48" />
+    </svg>
+  </ArrowIconWrapper>
+)
 
 function AnnotationBlock(props) {
   const { children: annotated } = props

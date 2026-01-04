@@ -117,6 +117,10 @@ const LeftColumn = styled.aside`
   }
 `
 
+const RightColumn = styled.div`
+  padding-bottom: 100px;
+`
+
 type PostProps = {
   postData: PostDetail
 }
@@ -168,7 +172,7 @@ export default function News({ postData }: PostProps): JSX.Element {
                 />
               </LeftColumn>
 
-              <div>
+              <RightColumn>
                 <PostContent
                   postData={postData}
                   articleType={ValidPostStyle.NEWS}
@@ -176,7 +180,7 @@ export default function News({ postData }: PostProps): JSX.Element {
                   setCurrentSideIndex={setCurrentSideIndex}
                 />
                 <RelatedPosts relatedPosts={postData?.relatedPosts} />
-              </div>
+              </RightColumn>
             </TwoColumnSection>
           </ContentWrapper>
         </article>

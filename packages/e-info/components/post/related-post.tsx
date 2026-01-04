@@ -56,16 +56,11 @@ const Card = styled.a`
   display: block;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-  }
 `
 
 const ImageWrapper = styled.div`
   width: 100%;
-  aspect-ratio: 16 / 9;
+  max-height: 147px;
   overflow: hidden;
   margin-bottom: 12px;
   background-color: #f0f0f0;
@@ -109,23 +104,21 @@ export default function RelatedPost({
         }
       >
         <ImageWrapper>
-          {image && (
-            <SharedImage
-              images={image}
-              imagesWebP={
-                post.ogImage?.resizedWebp || post.heroImage?.resizedWebp
-              }
-              defaultImage={DEFAULT_POST_IMAGE_PATH}
-              alt={post.title}
-              priority={false}
-              rwd={{
-                mobile: '100vw',
-                tablet: '50vw',
-                desktop: '33vw',
-                default: '400px',
-              }}
-            />
-          )}
+          <SharedImage
+            images={image}
+            imagesWebP={
+              post.ogImage?.resizedWebp || post.heroImage?.resizedWebp
+            }
+            defaultImage={DEFAULT_POST_IMAGE_PATH}
+            alt={post.title}
+            priority={false}
+            rwd={{
+              mobile: '100vw',
+              tablet: '50vw',
+              desktop: '33vw',
+              default: '400px',
+            }}
+          />
         </ImageWrapper>
         <Title>{post.title}</Title>
       </Card>
