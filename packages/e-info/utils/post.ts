@@ -93,10 +93,7 @@ export function isReport(style: string = ''): boolean {
 }
 
 export function formatPostDate(datetime: dayjs.ConfigType): string {
-  const formatStr = dayjs().isSame(dayjs(datetime), 'year')
-    ? 'MM/DD'
-    : 'YYYY/MM/DD hh:mm'
-  return dayjs(datetime).format(formatStr)
+  return dayjs(datetime).format('YYYY-MM-DD-HH:mm')
 }
 
 export function formatReadTime(readingTime = 0): string {

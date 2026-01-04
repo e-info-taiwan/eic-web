@@ -1,36 +1,11 @@
 import Link from 'next/link'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import type { Author } from '~/graphql/fragments/author'
 import type { PostDetail } from '~/graphql/query/post'
 
 import MediaLinkList from '../shared/media-link'
 import PostTag from './tag'
-
-const DotStyle = css`
-  content: '';
-  position: absolute;
-  top: 9px;
-  left: 8px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background-color: #b2b5be;
-`
-
-const LineStyle = css`
-  content: '';
-  position: absolute;
-  top: 11px;
-  left: 4px;
-  width: 14px;
-  height: 1px;
-  background-color: #575d71;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    left: 5px;
-  }
-`
 
 const PostCreditWrapper = styled.div`
   display: flex;
@@ -98,23 +73,24 @@ const CreditList = styled.ul`
 `
 
 const CreditName = styled.span`
-  position: relative;
   font-weight: 400;
   font-size: 14px;
   color: ${({ theme }) => theme.colors.grayscale[40]};
+`
 
-  span {
-    position: relative;
-  }
+const SectionPath = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin-bottom: 8px;
 
-  span + span {
-    padding: 0 0 0 20px;
-  }
-  span + span:after {
-    ${DotStyle}
-    ${({ theme }) => theme.breakpoint.md} {
-      top: 11px;
-      left: 8px;
+  a {
+    color: ${({ theme }) => theme.colors.grayscale[0]};
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
     }
   }
 `
@@ -143,9 +119,36 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
   )
 
   const otherWriters = postData?.otherByline
+  const section = postData?.section
+  const category = postData?.category
+
+  // Build section path: section/category
+  const sectionPathParts: { name: string; href: string }[] = []
+  if (section) {
+    sectionPathParts.push({
+      name: section.name,
+      href: `/section/${section.slug}`,
+    })
+  }
+  if (category) {
+    sectionPathParts.push({
+      name: category.name,
+      href: `/category/${category.slug}`,
+    })
+  }
 
   return (
     <PostCreditWrapper>
+      {sectionPathParts.length > 0 && (
+        <SectionPath>
+          {sectionPathParts.map((part, index) => (
+            <span key={part.href}>
+              {index > 0 && '/'}
+              <Link href={part.href}>{part.name}</Link>
+            </span>
+          ))}
+        </SectionPath>
+      )}
       <CreditList>
         {authors.length > 0 && (
           <li>
@@ -153,7 +156,7 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
               作者—
               {authors.map((author, index) => (
                 <span key={author.id}>
-                  {index > 0 && ' '}
+                  {index > 0 && '，'}
                   <Link href={`/author/${author.id}`}>{author.name}</Link>
                 </span>
               ))}

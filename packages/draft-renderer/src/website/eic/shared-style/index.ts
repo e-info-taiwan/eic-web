@@ -19,10 +19,10 @@ export const textAroundPictureStyle = css`
 
 export const defaultH2Style = css`
   ${({ theme }) => theme.fontSize.lg};
-  font-weight: 700;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 32px;
   letter-spacing: 0;
-  color: #2d7a4f;
+  color: #232333;
 
   ${({ theme }) => theme.breakpoint.md} {
     ${({ theme }) => theme.fontSize.xl};

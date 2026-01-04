@@ -43,24 +43,16 @@ const Container = styled.article<StyleProps>`
   }
 `
 
-//重點摘要
+//重點摘要（前言）
 const Summary = styled.article`
-  padding: 20px 24px;
-  border-width: 16px 2px 2px 2px;
-  border-style: solid;
-  border-color: #0b2163;
-  border-radius: 2px;
   ${defaultMarginBottom}
 
-  .title {
-    font-size: 14px;
-    line-height: 21px;
-    color: #0b2163;
-    margin-bottom: 4px;
-  }
-
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 32px 48px;
+  && p,
+  && span {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.5 !important;
+    color: ${({ theme }) => theme.colors.primary[20]} !important;
   }
 `
 
@@ -264,13 +256,10 @@ export default function PostContent({
     <Container shouldPaddingTop={shouldPaddingTop} ref={articleRef}>
       {shouldShowSummary && (
         <Summary>
-          <div>
-            <p className="title">報導重點摘要</p>
-            <DraftRenderer
-              rawContentBlock={briefToRender}
-              contentType={ValidPostContentType.SUMMARY}
-            />
-          </div>
+          <DraftRenderer
+            rawContentBlock={briefToRender}
+            contentType={ValidPostContentType.SUMMARY}
+          />
         </Summary>
       )}
 
