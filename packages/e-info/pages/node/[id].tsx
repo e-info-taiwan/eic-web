@@ -1,5 +1,4 @@
 import errors from '@twreporter/errors'
-import axios from 'axios'
 import type { RawDraftContentBlock } from 'draft-js'
 import type { GetServerSideProps } from 'next'
 
@@ -11,8 +10,6 @@ import News from '~/components/post/article-type/news'
 import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
-import { LATEST_POSTS_URL } from '~/constants/environment-variables'
-import type { Post } from '~/graphql/fragments/post'
 import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -21,10 +18,9 @@ import { setCacheControl } from '~/utils/common'
 
 type PageProps = {
   postData: PostDetail
-  latestPosts: Post[]
 }
 
-const Post: NextPageWithLayout<PageProps> = ({ postData, latestPosts }) => {
+const Post: NextPageWithLayout<PageProps> = ({ postData }) => {
   let articleType: JSX.Element
 
   switch (postData.style) {
@@ -34,21 +30,19 @@ const Post: NextPageWithLayout<PageProps> = ({ postData, latestPosts }) => {
     // Legacy styles
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
-      articleType = <News postData={postData} latestPosts={latestPosts} />
+      articleType = <News postData={postData} />
       break
     case ValidPostStyle.SCROLLABLE_VIDEO:
-      articleType = (
-        <ScrollableVideo postData={postData} latestPosts={latestPosts} />
-      )
+      articleType = <ScrollableVideo postData={postData} />
       break
     case ValidPostStyle.BLANK:
       articleType = <Blank postData={postData} />
       break
     case ValidPostStyle.FRAME:
-      articleType = <Frame postData={postData} latestPosts={latestPosts} />
+      articleType = <Frame postData={postData} />
       break
     default:
-      articleType = <News postData={postData} latestPosts={latestPosts} />
+      articleType = <News postData={postData} />
       break
   }
 
@@ -117,67 +111,56 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const client = getGqlClient()
-  let postData: PostDetail, latestPosts: Post[]
+  let postData: PostDetail
 
   try {
-    {
-      // fetch post data by id
-      const postId = params?.id
+    // fetch post data by id
+    const postId = params?.id
 
-      const { data, errors: gqlErrors } = await client.query({
-        query: postQuery,
-        variables: { id: postId },
-      })
+    const { data, errors: gqlErrors } = await client.query({
+      query: postQuery,
+      variables: { id: postId },
+    })
 
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          'GraphQLError',
-          'failed to complete `postData`',
-          { errors: gqlErrors }
-        )
+    if (gqlErrors) {
+      const annotatingError = errors.helpers.wrap(
+        'GraphQLError',
+        'failed to complete `postData`',
+        { errors: gqlErrors }
+      )
 
-        throw annotatingError
-      }
-
-      if (!data.posts[0]) {
-        return { notFound: true }
-      }
-
-      const postStyle = data.posts[0].style
-
-      if (postStyle === ValidPostStyle.EMBEDDED) {
-        return { notFound: true }
-      }
-
-      // Note: New API doesn't have slug field
-      // REPORT and PROJECT3 redirects are disabled until slug is available
-      // if (postStyle === ValidPostStyle.REPORT) {
-      //   return {
-      //     redirect: {
-      //       destination: `https://${SITE_URL}/project/${postSlug}/`,
-      //       permanent: false,
-      //     },
-      //   }
-      // } else if (postStyle === ValidPostStyle.PROJECT3) {
-      //   return {
-      //     redirect: {
-      //       destination: `https://${SITE_URL}/project/3/${postSlug}/`,
-      //       permanent: false,
-      //     },
-      //   }
-      // }
-
-      postData = data.posts[0]
+      throw annotatingError
     }
 
-    {
-      // fetch the latest 4 reports
-      const postId = params?.id
-      const response = await axios.get<{ posts: Post[] }>(LATEST_POSTS_URL)
-      latestPosts =
-        response.data?.posts.filter((post) => post.id !== postId).slice(0, 4) ??
-        []
+    if (!data.posts[0]) {
+      return { notFound: true }
     }
+
+    const postStyle = data.posts[0].style
+
+    if (postStyle === ValidPostStyle.EMBEDDED) {
+      return { notFound: true }
+    }
+
+    // Note: New API doesn't have slug field
+    // REPORT and PROJECT3 redirects are disabled until slug is available
+    // if (postStyle === ValidPostStyle.REPORT) {
+    //   return {
+    //     redirect: {
+    //       destination: `https://${SITE_URL}/project/${postSlug}/`,
+    //       permanent: false,
+    //     },
+    //   }
+    // } else if (postStyle === ValidPostStyle.PROJECT3) {
+    //   return {
+    //     redirect: {
+    //       destination: `https://${SITE_URL}/project/3/${postSlug}/`,
+    //       permanent: false,
+    //     },
+    //   }
+    // }
+
+    postData = data.posts[0]
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
@@ -206,7 +189,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   return {
     props: {
       postData: postData,
-      latestPosts: latestPosts,
     },
   }
 }

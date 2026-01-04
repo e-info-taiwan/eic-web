@@ -157,7 +157,7 @@ export default function SideIndex({
             handleScrollIntoView(id)
           }}
         >
-          <a href={id}>{title}</a>
+          <a href={`#${id}`}>{title}</a>
         </SideIndexListItem>
       )
     }

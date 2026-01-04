@@ -12,7 +12,6 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
-import type { Post } from '~/graphql/fragments/post'
 import type { PostDetail } from '~/graphql/query/post'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
@@ -120,13 +119,9 @@ const LeftColumn = styled.aside`
 
 type PostProps = {
   postData: PostDetail
-  latestPosts: Post[]
 }
 
-export default function News({
-  postData,
-  latestPosts,
-}: PostProps): JSX.Element {
+export default function News({ postData }: PostProps): JSX.Element {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
@@ -180,10 +175,7 @@ export default function News({
                   currentSideIndex={currentSideIndex}
                   setCurrentSideIndex={setCurrentSideIndex}
                 />
-                <RelatedPosts
-                  relatedPosts={postData?.relatedPosts}
-                  latestPosts={latestPosts}
-                />
+                <RelatedPosts relatedPosts={postData?.relatedPosts} />
               </div>
             </TwoColumnSection>
           </ContentWrapper>

@@ -10,7 +10,6 @@ import RelatedPosts from '~/components/post/related-post'
 import SideIndex from '~/components/post/side-index'
 import SubscribeButton from '~/components/post/subscribe-button'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
-import type { Post } from '~/graphql/fragments/post'
 import type { PostDetail } from '~/graphql/query/post'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
@@ -78,13 +77,9 @@ const Aside = styled.aside`
 
 type PostProps = {
   postData: PostDetail
-  latestPosts: Post[]
 }
 
-export default function ScrollableVideo({
-  postData,
-  latestPosts,
-}: PostProps): JSX.Element {
+export default function ScrollableVideo({ postData }: PostProps): JSX.Element {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
@@ -175,10 +170,7 @@ export default function ScrollableVideo({
 
       <SubscribeButton />
 
-      <RelatedPosts
-        relatedPosts={postData?.relatedPosts}
-        latestPosts={latestPosts}
-      />
+      <RelatedPosts relatedPosts={postData?.relatedPosts} />
       <HiddenAnchor ref={anchorRef} />
     </>
   )

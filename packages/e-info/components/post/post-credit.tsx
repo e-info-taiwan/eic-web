@@ -100,15 +100,6 @@ type PostProps = {
 }
 
 export default function PostCredit({ postData }: PostProps): JSX.Element {
-  function renderAuthor(author: Author | null | undefined) {
-    if (!author) return null
-    return (
-      <span key={author.id}>
-        <Link href={`/author/${author.id}`}>{author.name}</Link>
-      </span>
-    )
-  }
-
   // Collect all authors (author1, author2, author3)
   const authors = [
     postData?.author1,

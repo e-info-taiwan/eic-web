@@ -32,6 +32,42 @@ export type Topic = {
   title: string
 }
 
+export type Attachment = {
+  id: string
+  name: string
+  description: string | null
+  file: {
+    filename: string
+    filesize: number
+    url: string
+  } | null
+  embedCode: string | null
+}
+
+export type PollOptionImage = {
+  resized: {
+    original: string
+    w480: string
+  } | null
+}
+
+export type Poll = {
+  id: string
+  name: string
+  content: string | null
+  option1: string | null
+  option2: string | null
+  option3: string | null
+  option4: string | null
+  option5: string | null
+  option1Image: PollOptionImage | null
+  option2Image: PollOptionImage | null
+  option3Image: PollOptionImage | null
+  option4Image: PollOptionImage | null
+  option5Image: PollOptionImage | null
+  status: string | null
+}
+
 export type PostDetail = Override<
   Post &
     Pick<
@@ -53,6 +89,8 @@ export type PostDetail = Override<
     briefApiData: any // JSON type for API format
     contentApiData: any // JSON type for API format
     citations: string | null
+    attachments: Attachment[]
+    poll: Poll | null
   }
 >
 
@@ -108,6 +146,60 @@ const post = gql`
       tags {
         id
         name
+      }
+
+      attachments {
+        id
+        name
+        description
+        file {
+          filename
+          filesize
+          url
+        }
+        embedCode
+      }
+
+      poll {
+        id
+        name
+        content
+        option1
+        option2
+        option3
+        option4
+        option5
+        option1Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option2Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option3Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option4Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option5Image {
+          resized {
+            original
+            w480
+          }
+        }
+        status
       }
 
       relatedPosts (

@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
+import PostAttachments from '~/components/post/post-attachments'
+import PostPoll from '~/components/post/post-poll'
 import MediaLinkList from '~/components/shared/media-link'
 import { PostDetail } from '~/graphql/query/post'
 import { ValidPostContentType, ValidPostStyle } from '~/types/common'
@@ -82,7 +84,6 @@ const ActionList = styled.article`
 //引用數據
 const Citation = styled.article`
   margin-bottom: 48px;
-
   ${({ theme }) => theme.breakpoint.xl} {
     margin-bottom: 60px;
   }
@@ -329,6 +330,10 @@ export default function PostContent({
           />
         </Citation>
       )}
+
+      <PostAttachments attachments={postData?.attachments || []} />
+
+      {postData?.poll && <PostPoll poll={postData.poll} postId={postData.id} />}
     </Container>
   )
 }

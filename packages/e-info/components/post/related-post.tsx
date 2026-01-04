@@ -10,6 +10,12 @@ const Wrapper = styled.div`
   width: 100%;
   max-width: 568px;
   margin: 48px auto 0;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[40]};
+  padding-top: 36px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding-top: 52px;
+  }
 
   ${({ theme }) => theme.breakpoint.xl} {
     max-width: none;
@@ -17,15 +23,14 @@ const Wrapper = styled.div`
 `
 
 const Header = styled.h2`
-  font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 500;
   line-height: 1.5;
-  color: #000;
+  color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 24px;
   padding: 0 20px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 24px;
     padding: 0;
   }
 `
@@ -83,14 +88,12 @@ const Title = styled.h3`
 
 type RelatedPostProps = {
   relatedPosts?: Post[]
-  latestPosts?: Post[]
 }
 
 export default function RelatedPost({
   relatedPosts,
-  latestPosts,
 }: RelatedPostProps): JSX.Element {
-  const renderPostCard = (post: Post, type: 'related' | 'latest') => {
+  const renderPostCard = (post: Post) => {
     const href = getHref({
       style: post.style,
       id: post.id,
@@ -102,7 +105,7 @@ export default function RelatedPost({
         key={post.id}
         href={href}
         onClick={() =>
-          gtag.sendEvent('post', 'click', `post-${type}-${post.title}`)
+          gtag.sendEvent('post', 'click', `post-related-${post.title}`)
         }
       >
         <ImageWrapper>
@@ -130,30 +133,15 @@ export default function RelatedPost({
   }
 
   const hasRelatedPosts = Array.isArray(relatedPosts) && relatedPosts.length > 0
-  const hasLatestPosts = Array.isArray(latestPosts) && latestPosts.length > 0
 
-  if (!hasRelatedPosts && !hasLatestPosts) {
+  if (!hasRelatedPosts) {
     return <></>
   }
 
   return (
-    <>
-      {hasRelatedPosts && (
-        <Wrapper>
-          <Header>相關文章</Header>
-          <Grid>
-            {relatedPosts.map((post) => renderPostCard(post, 'related'))}
-          </Grid>
-        </Wrapper>
-      )}
-      {hasLatestPosts && (
-        <Wrapper>
-          <Header>最新文章</Header>
-          <Grid>
-            {latestPosts.map((post) => renderPostCard(post, 'latest'))}
-          </Grid>
-        </Wrapper>
-      )}
-    </>
+    <Wrapper>
+      <Header>相關文章</Header>
+      <Grid>{relatedPosts.map((post) => renderPostCard(post))}</Grid>
+    </Wrapper>
   )
 }
