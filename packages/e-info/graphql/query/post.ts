@@ -3,7 +3,10 @@ import gql from 'graphql-tag'
 import { POST_STYLES, REPORT_STYLES } from '~/constants/constant'
 import { Author, authorFragment } from '~/graphql/fragments/author'
 import { Post, postFragment } from '~/graphql/fragments/post'
-import { resizeImagesFragment } from '~/graphql/fragments/resized-images'
+import {
+  resizeImagesFragment,
+  resizeWebpImagesFragment,
+} from '~/graphql/fragments/resized-images'
 import type {
   GenericCategory,
   GenericPost,
@@ -30,6 +33,11 @@ export type Section = {
 export type Topic = {
   id: string
   title: string
+}
+
+export type Location = {
+  id: string
+  name: string
 }
 
 export type Attachment = {
@@ -68,6 +76,14 @@ export type Poll = {
   status: string | null
 }
 
+export type PostAd = {
+  id: string
+  name: string | null
+  state: string | null
+  imageUrl: string | null
+  image: PhotoWithResizedOnly | null
+}
+
 export type PostDetail = Override<
   Post &
     Pick<
@@ -83,6 +99,7 @@ export type PostDetail = Override<
     section: Section | null
     category: Category | null
     topic: Topic | null
+    locations: Location[]
     relatedPosts: Post[]
     tags: Tag[]
     brief: any // JSON type for draft-js content
@@ -91,6 +108,7 @@ export type PostDetail = Override<
     citations: string | null
     attachments: Attachment[]
     poll: Poll | null
+    ad1: PostAd | null
   }
 >
 
@@ -129,6 +147,11 @@ const post = gql`
       topic {
         id
         title
+      }
+
+      locations {
+        id
+        name
       }
 
       author1 {
@@ -202,6 +225,21 @@ const post = gql`
         status
       }
 
+      ad1 {
+        id
+        name
+        state
+        imageUrl
+        image {
+          resized {
+            ...ResizedImagesField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesField
+          }
+        }
+      }
+
       relatedPosts (
         where: {
            state: { equals: "published" }
@@ -216,6 +254,7 @@ const post = gql`
     }
   }
   ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
   ${authorFragment}
   ${postFragment}
 `

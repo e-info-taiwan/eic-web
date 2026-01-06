@@ -24,18 +24,10 @@ const PostCreditWrapper = styled.div`
   }
 `
 
-const SnsLinksDonateBtnWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
+const SnsLinksWrapper = styled.div`
+  margin-top: 20px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
-
-  .donate-btn-oval {
-    margin-top: 16px;
-  }
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
 `
 
 const TagSection = styled.div`
@@ -157,7 +149,16 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
 
         {otherWriters && (
           <li>
-            <CreditName>其他作者—{otherWriters}</CreditName>
+            <CreditName>{otherWriters}</CreditName>
+          </li>
+        )}
+
+        {postData?.locations && postData.locations.length > 0 && (
+          <li>
+            <CreditName>
+              環境資訊中心{' '}
+              {postData.locations.map((loc) => loc.name).join('、')}報導
+            </CreditName>
           </li>
         )}
       </CreditList>
@@ -166,9 +167,9 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
         <PostTag tags={postData?.tags} />
       </TagSection>
 
-      <SnsLinksDonateBtnWrapper>
-        <MediaLinkList />
-      </SnsLinksDonateBtnWrapper>
+      <SnsLinksWrapper>
+        <MediaLinkList postId={postData?.id} />
+      </SnsLinksWrapper>
     </PostCreditWrapper>
   )
 }

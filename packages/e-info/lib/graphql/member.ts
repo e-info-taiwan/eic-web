@@ -80,6 +80,46 @@ const UPDATE_MEMBER = gql`
   }
 `
 
+// Mutation to create a favorite
+const CREATE_FAVORITE = gql`
+  mutation CreateFavorite($data: FavoriteCreateInput!) {
+    createFavorite(data: $data) {
+      id
+      member {
+        id
+      }
+      post {
+        id
+        title
+      }
+    }
+  }
+`
+
+// Mutation to delete a favorite
+const DELETE_FAVORITE = gql`
+  mutation DeleteFavorite($where: FavoriteWhereUniqueInput!) {
+    deleteFavorite(where: $where) {
+      id
+    }
+  }
+`
+
+// Query to check if a post is favorited by a member
+const CHECK_FAVORITE = gql`
+  query CheckFavorite($memberId: ID!, $postId: ID!) {
+    favorites(
+      where: {
+        member: { id: { equals: $memberId } }
+        post: { id: { equals: $postId } }
+      }
+      take: 1
+    ) {
+      id
+    }
+  }
+`
+
 // Types
 export type MemberAvatar = {
   id: string
@@ -312,4 +352,76 @@ export const getMemberDisplayName = (member: Member): string => {
 export const getMemberAvatarUrl = (member: Member | null): string | null => {
   if (!member?.avatar) return null
   return member.avatar.resized.w480 || member.avatar.resized.original
+}
+
+/**
+ * Check if a post is favorited by the member
+ */
+export const checkPostFavorited = async (
+  memberId: string,
+  postId: string
+): Promise<string | null> => {
+  const client = getGqlClient()
+
+  const result = await client.query({
+    query: CHECK_FAVORITE,
+    variables: { memberId, postId },
+    fetchPolicy: 'network-only',
+  })
+
+  if (result.errors) {
+    console.error('checkPostFavorited error:', result.errors)
+    return null
+  }
+
+  const favorites = result.data?.favorites
+  return favorites && favorites.length > 0 ? favorites[0].id : null
+}
+
+/**
+ * Add a post to member's favorites
+ */
+export const addFavorite = async (
+  memberId: string,
+  postId: string
+): Promise<string | null> => {
+  const client = getGqlClient()
+
+  const result = await client.mutate({
+    mutation: CREATE_FAVORITE,
+    variables: {
+      data: {
+        member: { connect: { id: memberId } },
+        post: { connect: { id: postId } },
+      },
+    },
+  })
+
+  if (result.errors) {
+    console.error('addFavorite error:', result.errors)
+    return null
+  }
+
+  return result.data?.createFavorite?.id || null
+}
+
+/**
+ * Remove a post from member's favorites
+ */
+export const removeFavorite = async (favoriteId: string): Promise<boolean> => {
+  const client = getGqlClient()
+
+  const result = await client.mutate({
+    mutation: DELETE_FAVORITE,
+    variables: {
+      where: { id: favoriteId },
+    },
+  })
+
+  if (result.errors) {
+    console.error('removeFavorite error:', result.errors)
+    return false
+  }
+
+  return !!result.data?.deleteFavorite
 }

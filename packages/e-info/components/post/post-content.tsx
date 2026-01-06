@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
+import PostAdContent from '~/components/post/post-ad'
 import PostAttachments from '~/components/post/post-attachments'
 import PostPoll from '~/components/post/post-poll'
 import MediaLinkList from '~/components/shared/media-link'
@@ -320,7 +321,7 @@ export default function PostContent({
 
       <StyledAdsense_E1 pageKey={categorySlug} adKey="E1" />
 
-      <MobileMediaLink />
+      <MobileMediaLink postId={postData?.id} />
 
       {shouldShowCitation && (
         <Citation>
@@ -330,6 +331,8 @@ export default function PostContent({
           />
         </Citation>
       )}
+
+      <PostAdContent ad={postData?.ad1} />
 
       <PostAttachments attachments={postData?.attachments || []} />
 

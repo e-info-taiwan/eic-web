@@ -1,42 +1,45 @@
 import NextLink from 'next/link'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import IconFacebook from '~/public/icons/facebook-circle.svg'
-import IconLine from '~/public/icons/line-circle.svg'
-import IconLink from '~/public/icons/link-circle.svg'
-import IconTwitter from '~/public/icons/twitter-circle.svg'
+import { useAuth } from '~/hooks/useAuth'
+import {
+  addFavorite,
+  checkPostFavorited,
+  removeFavorite,
+} from '~/lib/graphql/member'
+import IconBookmark from '~/public/icons/bookmark.svg'
+import IconBookmarkFilled from '~/public/icons/bookmark-filled.svg'
+import IconFacebook from '~/public/icons/facebook.svg'
+import IconLine from '~/public/icons/line.svg'
+import IconX from '~/public/icons/x.svg'
 import * as gtag from '~/utils/gtag'
 
 const MediaLinkWrapper = styled.ul<{ className: string }>`
   display: flex;
   align-items: center;
-  margin-top: 16px;
-
-  > li + li {
-    margin-left: 16px;
-  }
+  gap: 20px;
 
   a,
   button {
-    background: #f6f6fb;
-    display: inline-block;
-    width: 36px;
-    height: 36px;
-    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
-
-    &:hover {
-      background-color: rgba(246, 246, 251, 0.3);
-    }
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
   }
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+  }
+`
+
+const BookmarkButton = styled.button<{ $isActive: boolean }>`
+  svg path {
+    fill: ${({ $isActive }) => ($isActive ? '#2d7a4f' : 'black')};
   }
 `
 
@@ -48,52 +51,123 @@ type ExternalLinkItem = {
   click: () => void
 }
 
+type MediaLinkListProps = {
+  className?: string
+  postId?: string
+}
+
 export default function MediaLinkList({
   className = 'media-link-list',
-}): JSX.Element {
+  postId,
+}: MediaLinkListProps): JSX.Element {
   const [href, setHref] = useState('')
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [favoriteId, setFavoriteId] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const { member } = useAuth()
 
   useEffect(() => {
     setHref(() => window.location.href)
   }, [])
+
+  // Check if post is already favorited when member and postId are available
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (member?.id && postId) {
+        const existingFavoriteId = await checkPostFavorited(member.id, postId)
+        if (existingFavoriteId) {
+          setIsFavorited(true)
+          setFavoriteId(existingFavoriteId)
+        } else {
+          setIsFavorited(false)
+          setFavoriteId(null)
+        }
+      } else {
+        setIsFavorited(false)
+        setFavoriteId(null)
+      }
+    }
+    checkFavorite()
+  }, [member?.id, postId])
 
   const externalLinks: ExternalLinkItem[] = [
     {
       name: 'Facebook',
       href: `https://www.facebook.com/share.php?u=${href}`,
       svgIcon: IconFacebook,
-      alt: '分享至facebook',
+      alt: '分享至 Facebook',
       click: () => gtag.sendEvent('post', 'click', 'post-share-fb'),
     },
     {
-      name: 'Twitter',
+      name: 'X',
       href: `https://twitter.com/intent/tweet?url=${href}`,
-      svgIcon: IconTwitter,
-      alt: '分享至twitter',
+      svgIcon: IconX,
+      alt: '分享至 X',
       click: () => gtag.sendEvent('post', 'click', 'post-share-twitter'),
     },
     {
       name: 'Line',
       href: `https://social-plugins.line.me/lineit/share?url=${href}`,
       svgIcon: IconLine,
-      alt: '分享至line',
+      alt: '分享至 LINE',
       click: () => gtag.sendEvent('post', 'click', 'post-share-line'),
     },
   ]
-  function handleLinkClick() {
-    navigator.clipboard
-      .writeText(href)
-      .then(() => {
-        alert('連結已複製')
-      })
-      .catch(() => {
-        console.error('Failed to copy URL to clipboard')
-      })
-    gtag.sendEvent('post', 'click', 'post-copylink')
-  }
+
+  const handleBookmarkClick = useCallback(async () => {
+    gtag.sendEvent('post', 'click', 'post-bookmark')
+
+    // Check if user is logged in
+    if (!member) {
+      alert('請先登入才能收藏文章')
+      return
+    }
+
+    // Check if postId is available
+    if (!postId) {
+      console.error('postId is required for bookmark functionality')
+      return
+    }
+
+    if (isLoading) return
+    setIsLoading(true)
+
+    try {
+      if (isFavorited && favoriteId) {
+        // Remove from favorites
+        const success = await removeFavorite(favoriteId)
+        if (success) {
+          setIsFavorited(false)
+          setFavoriteId(null)
+        }
+      } else {
+        // Add to favorites
+        const newFavoriteId = await addFavorite(member.id, postId)
+        if (newFavoriteId) {
+          setIsFavorited(true)
+          setFavoriteId(newFavoriteId)
+        }
+      }
+    } catch (error) {
+      console.error('Bookmark operation failed:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [member, postId, isFavorited, favoriteId, isLoading])
 
   return (
     <MediaLinkWrapper className={className}>
+      <li key="Bookmark">
+        <BookmarkButton
+          type="button"
+          aria-label={isFavorited ? '取消收藏' : '加入收藏'}
+          onClick={handleBookmarkClick}
+          $isActive={isFavorited}
+          disabled={isLoading}
+        >
+          {isFavorited ? <IconBookmarkFilled /> : <IconBookmark />}
+        </BookmarkButton>
+      </li>
       {externalLinks.map((item) => {
         return (
           <li key={item.name} aria-label={item.alt} onClick={item.click}>
@@ -107,11 +181,6 @@ export default function MediaLinkList({
           </li>
         )
       })}
-      <li key="Line">
-        <button type="button" aria-label="複製網站連結">
-          <IconLink onClick={handleLinkClick} />
-        </button>
-      </li>
     </MediaLinkWrapper>
   )
 }
