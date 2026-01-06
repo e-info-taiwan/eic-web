@@ -191,7 +191,7 @@ const NewsDate = styled.div`
 `
 
 const NewsTitle = styled.h3`
-  color: #232333;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
@@ -204,13 +204,13 @@ const NewsTitle = styled.h3`
 `
 
 const NewsBrief = styled.p`
-  color: ${({ theme }) => theme.colors.grayscale[40]};
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
-  margin: 8px 0 0;
+  margin: 24px 0 36px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

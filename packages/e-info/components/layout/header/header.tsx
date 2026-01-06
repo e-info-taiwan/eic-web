@@ -38,7 +38,7 @@ const Container = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 35px 32px 10px 40px;
+    padding: 35px 32px 0px 40px;
   }
 `
 
@@ -381,20 +381,11 @@ const DropdownContainer = styled.div`
   padding: 10px 10px;
 `
 
-const SecondaryMenuBar = styled.div`
-  position: fixed;
-  margin-top: 6px;
-  left: 0;
-  width: 100vw;
+const SecondaryMenuBar = styled.div<{ $isVisible: boolean }>`
+  width: 100%;
   background: ${({ theme }) => theme.colors.primary[95]};
-  z-index: 10000;
-  opacity: 0;
-  visibility: hidden;
-
-  &.show {
-    opacity: 1;
-    visibility: visible;
-  }
+  display: ${({ $isVisible }) => ($isVisible ? 'block' : 'none')};
+  margin-left: 25px;
 `
 
 const SecondaryMenuContainer = styled.div`
@@ -984,44 +975,6 @@ const Header = () => {
                   >
                     {item.label}
                   </NavItem>
-
-                  {item.subCategories && hoveredCategory === index && (
-                    <SecondaryMenuBar
-                      className="show"
-                      onMouseEnter={handleSecondaryMenuEnter}
-                      onMouseLeave={handleSecondaryMenuLeave}
-                    >
-                      <SecondaryMenuContainer>
-                        {item.subCategories.map((subCategory, subIndex) => (
-                          <SecondaryMenuItem
-                            key={subIndex}
-                            onMouseEnter={() =>
-                              handleSecondaryItemHover(subIndex)
-                            }
-                            onMouseLeave={handleSecondaryItemLeave}
-                          >
-                            {subCategory.label}
-
-                            {subCategory.items &&
-                              hoveredSecondaryCategory === subIndex && (
-                                <TertiaryDropdown className="show">
-                                  {subCategory.items.map(
-                                    (tertiary, tertiaryIndex) => (
-                                      <TertiaryItem
-                                        key={tertiaryIndex}
-                                        href="#"
-                                      >
-                                        {tertiary}
-                                      </TertiaryItem>
-                                    )
-                                  )}
-                                </TertiaryDropdown>
-                              )}
-                          </SecondaryMenuItem>
-                        ))}
-                      </SecondaryMenuContainer>
-                    </SecondaryMenuBar>
-                  )}
                 </DropdownContainer>
               ))}
             </NavigationMenu>
@@ -1036,6 +989,40 @@ const Header = () => {
             </ActionButtons>
           </DesktopNavWrapper>
         </Container>
+
+        {/* Secondary menu - outside Container to push NewsBar down */}
+        <SecondaryMenuBar
+          $isVisible={hoveredCategory !== null}
+          onMouseEnter={handleSecondaryMenuEnter}
+          onMouseLeave={handleSecondaryMenuLeave}
+        >
+          <SecondaryMenuContainer>
+            {hoveredCategory !== null &&
+              navigationItems[hoveredCategory]?.subCategories?.map(
+                (subCategory, subIndex) => (
+                  <SecondaryMenuItem
+                    key={subIndex}
+                    onMouseEnter={() => handleSecondaryItemHover(subIndex)}
+                    onMouseLeave={handleSecondaryItemLeave}
+                  >
+                    {subCategory.label}
+
+                    {subCategory.items &&
+                      hoveredSecondaryCategory === subIndex && (
+                        <TertiaryDropdown className="show">
+                          {subCategory.items.map((tertiary, tertiaryIndex) => (
+                            <TertiaryItem key={tertiaryIndex} href="#">
+                              {tertiary}
+                            </TertiaryItem>
+                          ))}
+                        </TertiaryDropdown>
+                      )}
+                  </SecondaryMenuItem>
+                )
+              )}
+          </SecondaryMenuContainer>
+        </SecondaryMenuBar>
+
         <NewsBar>
           <NewsContent>
             《核管法》修法三讀 核電運轉年限最多再加20年、已停機核電可重啟

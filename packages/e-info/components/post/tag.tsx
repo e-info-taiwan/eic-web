@@ -18,11 +18,12 @@ const TagWrapper = styled.ul`
     line-height: 1.5;
     text-align: center;
     border-radius: 4px;
-    border: 1px solid #8bc890;
-    color: #8bc890;
+    border: 1px solid ${({ theme }) => theme.colors.primary[20]};
+    color: ${({ theme }) => theme.colors.primary[20]};
 
     &:hover {
-      color: #7f8493;
+      border: 1px solid ${({ theme }) => theme.colors.primary[40]};
+      color: ${({ theme }) => theme.colors.primary[40]};
     }
   }
 
