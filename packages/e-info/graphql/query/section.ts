@@ -71,6 +71,11 @@ export type TopicPost = {
   } | null
 }
 
+export type TopicTag = {
+  id: string
+  name: string
+}
+
 export type Topic = {
   id: string
   title: string
@@ -82,7 +87,9 @@ export type Topic = {
   } | null
   postsCount: number
   posts: TopicPost[]
+  tags?: TopicTag[]
   isPinned: boolean
+  updatedAt?: string
 }
 
 export type HomepagePickPost = {
@@ -147,6 +154,54 @@ export const topicsWithPosts = gql`
         }
       }
       isPinned
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
+/**
+ * Query for a single topic by ID with all posts
+ * Used for topic detail page (/topic/[id])
+ */
+export const topicById = gql`
+  query ($topicId: ID!) {
+    topics(
+      where: { id: { equals: $topicId }, status: { equals: "published" } }
+    ) {
+      id
+      title
+      status
+      content
+      heroImage {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+      postsCount
+      posts(orderBy: { publishTime: desc }) {
+        id
+        title
+        publishTime
+        brief
+        heroImage {
+          resized {
+            ...ResizedImagesField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesField
+          }
+        }
+      }
+      tags {
+        id
+        name
+      }
+      isPinned
+      updatedAt
     }
   }
   ${resizeImagesFragment}

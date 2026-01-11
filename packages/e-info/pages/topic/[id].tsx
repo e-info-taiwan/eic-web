@@ -1,11 +1,17 @@
 // Featured Topic 單頁
+// @ts-ignore: no definition
+import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
+import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { Topic, TopicPost } from '~/graphql/query/section'
+import { topicById } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
@@ -362,275 +368,78 @@ const PaginationEllipsis = styled.span`
   }
 `
 
-// Dummy data types
-type TopicArticle = {
-  id: string
-  title: string
-  excerpt: string
-  image: string
-  href: string
-}
+// Helper function to extract brief text from post
+const extractBriefText = (
+  brief: string | Record<string, unknown> | null
+): string => {
+  if (!brief) return ''
+  if (typeof brief === 'string') return brief
 
-type TopicData = {
-  id: string
-  heroImage: string
-  title: string
-  summary: string
-  updateTime: string
-  tags: {
-    editors: string[]
-    writers: string[]
-    photographers: string[]
-    designers: string[]
-    illustrators: string[]
+  // Handle draft.js format brief
+  try {
+    const blocks = (brief as { blocks?: { text?: string }[] }).blocks
+    if (blocks && Array.isArray(blocks)) {
+      return blocks.map((block) => block.text || '').join(' ')
+    }
+  } catch {
+    // If parsing fails, return empty string
   }
-  articles: TopicArticle[]
+  return ''
 }
 
-// Dummy topic data
-const DUMMY_TOPIC: TopicData = {
-  id: '1',
-  heroImage:
-    'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1600&h=900&fit=crop',
-  title: '在理想中擱淺的鯨豚觀察員',
-  summary:
-    '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-  updateTime: '2023/03/28 12:59',
-  tags: {
-    editors: ['陳慶昇', '李雪莉', '黃鈺婷'],
-    writers: ['陳立方', '劉光明', '顏聰聲', '美芳姨'],
-    photographers: ['許書豪'],
-    designers: ['黃禹禛'],
-    illustrators: ['劉紀平'],
-  },
-  articles: [
-    {
-      id: '1',
-      title: '《尼斯護照旅行》總90國家簽證單 拆來全球塑膠公約談判逐協議',
-      excerpt:
-        '聯合國海洋大會正在法國尼斯舉行，10日有超過90個會員國簽署《尼斯護照旅行》（The Nice wake up call for an ambitious plastic treat...',
-      image:
-        'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=250&fit=crop',
-      href: '/node/1',
-    },
-    {
-      id: '2',
-      title: '海洋保護區的建立與挑戰 台灣周邊海域生態調查報告',
-      excerpt:
-        '根據最新的海洋生態調查顯示，台灣周邊海域的生物多樣性正面臨嚴峻挑戰，海洋保護區的設立刻不容緩...',
-      image:
-        'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=400&h=250&fit=crop',
-      href: '/node/2',
-    },
-    {
-      id: '3',
-      title: '氣候變遷下的珊瑚礁白化危機 專家呼籲立即行動',
-      excerpt:
-        '全球暖化導致海水溫度上升，珊瑚礁白化現象日益嚴重。海洋生物學家警告，若不採取行動，珊瑚生態系統將面臨崩潰...',
-      image:
-        'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400&h=250&fit=crop',
-      href: '/node/3',
-    },
-    {
-      id: '4',
-      title: '漁業永續發展的新契機 智慧養殖技術突破',
-      excerpt:
-        '台灣養殖業者引進智慧監測系統，結合物聯網技術，大幅提升養殖效率，同時減少對環境的衝擊...',
-      image:
-        'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=400&h=250&fit=crop',
-      href: '/node/4',
-    },
-    {
-      id: '5',
-      title: '海洋廢棄物處理新方案 民間團體推動淨灘行動',
-      excerpt:
-        '環保團體發起全台淨灘活動，一年內清理超過50噸海洋垃圾，喚起民眾對海洋污染的關注...',
-      image:
-        'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=400&h=250&fit=crop',
-      href: '/node/5',
-    },
-    {
-      id: '6',
-      title: '離岸風電與海洋生態的平衡 環評爭議持續延燒',
-      excerpt:
-        '離岸風電開發案引發環保團體與能源業者論戰，如何在綠能發展與生態保護之間取得平衡成為焦點...',
-      image:
-        'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=400&h=250&fit=crop',
-      href: '/node/6',
-    },
-    {
-      id: '7',
-      title: '海龜保育有成 野放數量創新高紀錄',
-      excerpt:
-        '今年度海龜救傷中心成功野放123隻海龜，創下歷年新高。保育人員表示，這是多年努力的成果...',
-      image:
-        'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=250&fit=crop',
-      href: '/node/7',
-    },
-    {
-      id: '8',
-      title: '深海探測新發現 台灣海溝發現未知物種',
-      excerpt:
-        '研究團隊在台灣海溝進行深海探測時，發現多種未曾記錄的生物，為海洋生物學研究開啟新頁...',
-      image:
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop',
-      href: '/node/8',
-    },
-    {
-      id: '9',
-      title: '海洋教育向下扎根 偏鄉學校推動海洋課程',
-      excerpt:
-        '教育部推動海洋教育計畫，在沿海偏鄉學校開設特色課程，培養學生海洋素養與保育意識...',
-      image:
-        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop',
-      href: '/node/9',
-    },
-    {
-      id: '10',
-      title: '漁港轉型觀光 漁村再生計畫啟動',
-      excerpt:
-        '政府推動漁港多元化發展，結合觀光與在地文化，為傳統漁村注入新活力，創造就業機會...',
-      image:
-        'https://images.unsplash.com/photo-1544198365-f5d60b6d8190?w=400&h=250&fit=crop',
-      href: '/node/10',
-    },
-    {
-      id: '11',
-      title: '海洋污染監測系統升級 即時掌握水質狀況',
-      excerpt:
-        '環保署建置新一代海洋水質監測系統，運用AI技術分析數據，提供即時預警機制...',
-      image:
-        'https://images.unsplash.com/photo-1476673160081-cf065607f449?w=400&h=250&fit=crop',
-      href: '/node/11',
-    },
-    {
-      id: '12',
-      title: '鯨豚擁擠頻傳 專家呼籲加強海域巡護',
-      excerpt:
-        '今年鯨豚擱淺案件數量攀升，海洋保育專家分析原因，呼籲政府加強海域巡護與救援機制...',
-      image:
-        'https://images.unsplash.com/photo-1567551956697-b6e0520f2fb5?w=400&h=250&fit=crop',
-      href: '/node/12',
-    },
-    {
-      id: '13',
-      title: '海洋再生能源發展藍圖 2030目標出爐',
-      excerpt:
-        '政府公布海洋能源發展藍圖，規劃2030年前完成10GW離岸風電裝置容量，推動能源轉型...',
-      image:
-        'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=250&fit=crop',
-      href: '/node/13',
-    },
-    {
-      id: '14',
-      title: '海洋科技產業起飛 水下無人機需求大增',
-      excerpt:
-        '隨著海洋探測與監測需求增加，水下無人機市場快速成長，台灣廠商積極搶攻商機...',
-      image:
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop',
-      href: '/node/14',
-    },
-    {
-      id: '15',
-      title: '海洋文化資產保存 水下考古新發現',
-      excerpt:
-        '文化部水下考古團隊在澎湖海域發現清代沉船遺跡，出土大量文物，具有重要歷史價值...',
-      image:
-        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop',
-      href: '/node/15',
-    },
-    {
-      id: '16',
-      title: '永續海鮮指南發布 消費者選購新參考',
-      excerpt:
-        '環保團體推出永續海鮮指南，協助消費者辨識友善環境的海產品，推動負責任的消費行為...',
-      image:
-        'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=400&h=250&fit=crop',
-      href: '/node/16',
-    },
-    {
-      id: '17',
-      title: '海洋熱浪襲擊 漁獲量驟減引發關注',
-      excerpt:
-        '連續高溫導致海洋熱浪現象，影響魚群洄游路線，漁民收入大減，專家憂心氣候變遷加劇...',
-      image:
-        'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=400&h=250&fit=crop',
-      href: '/node/17',
-    },
-    {
-      id: '18',
-      title: '海洋生物多樣性公約 台灣參與受阻',
-      excerpt:
-        '聯合國海洋生物多樣性公約談判進入關鍵階段，台灣雖積極爭取參與，仍面臨國際政治阻力...',
-      image:
-        'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=250&fit=crop',
-      href: '/node/18',
-    },
-    {
-      id: '19',
-      title: '海洋運動風潮興起 衝浪列入正式課程',
-      excerpt:
-        '教育部將衝浪納入體育課程選項，東海岸地區學校率先試辦，培養學生親海愛海的態度...',
-      image:
-        'https://images.unsplash.com/photo-1502933691298-84fc14542831?w=400&h=250&fit=crop',
-      href: '/node/19',
-    },
-    {
-      id: '20',
-      title: '海洋塑膠微粒污染 食物鏈威脅浮現',
-      excerpt:
-        '研究發現海洋生物體內塑膠微粒濃度上升，透過食物鏈累積，對人體健康構成潛在風險...',
-      image:
-        'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=400&h=250&fit=crop',
-      href: '/node/20',
-    },
-    {
-      id: '21',
-      title: '潮間帶生態調查 公民科學家動員',
-      excerpt:
-        '海洋保育團體招募公民科學家進行潮間帶生態調查，累積寶貴數據，建立長期監測機制...',
-      image:
-        'https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=400&h=250&fit=crop',
-      href: '/node/21',
-    },
-    {
-      id: '22',
-      title: '海洋法規修訂 加重非法捕撈罰則',
-      excerpt:
-        '立法院三讀通過海洋法規修正案，大幅提高非法捕撈罰金，強化執法力度遏止違規行為...',
-      image:
-        'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=400&h=250&fit=crop',
-      href: '/node/22',
-    },
-    {
-      id: '23',
-      title: '海洋研究船隊擴編 提升科研能量',
-      excerpt:
-        '科技部投資建造新一代海洋研究船，配備先進儀器設備，強化台灣海洋科學研究實力...',
-      image:
-        'https://images.unsplash.com/photo-1544198365-f5d60b6d8190?w=400&h=250&fit=crop',
-      href: '/node/23',
-    },
-    {
-      id: '24',
-      title: '藍碳經濟新商機 紅樹林復育成焦點',
-      excerpt:
-        '紅樹林具有高效碳匯能力，政府推動沿海紅樹林復育計畫，發展藍碳經濟創造多重效益...',
-      image:
-        'https://images.unsplash.com/photo-1473773508845-188df298d2d1?w=400&h=250&fit=crop',
-      href: '/node/24',
-    },
-  ],
+// Helper function to format date
+const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return ''
+  try {
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${year}/${month}/${day} ${hours}:${minutes}`
+  } catch {
+    return ''
+  }
+}
+
+// Helper function to get image URL from post (with fallback to default image)
+const getImageUrl = (post: TopicPost): string => {
+  const resized = post.heroImage?.resized
+  const resizedWebp = post.heroImage?.resizedWebp
+  return (
+    resizedWebp?.w800 ||
+    resizedWebp?.w480 ||
+    resized?.w800 ||
+    resized?.w480 ||
+    resized?.original ||
+    DEFAULT_POST_IMAGE_PATH
+  )
+}
+
+// Helper function to get hero image URL from topic
+const getHeroImageUrl = (topic: Topic): string => {
+  const resized = topic.heroImage?.resized
+  const resizedWebp = topic.heroImage?.resizedWebp
+  return (
+    resizedWebp?.w1600 ||
+    resizedWebp?.w1200 ||
+    resized?.w1600 ||
+    resized?.w1200 ||
+    resized?.original ||
+    ''
+  )
 }
 
 type PageProps = {
-  topic: TopicData
+  topic: Topic
 }
 
 const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 6
-  const totalPages = Math.ceil(topic.articles.length / itemsPerPage)
+  const posts = topic.posts || []
+  const totalPages = Math.ceil(posts.length / itemsPerPage)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -638,10 +447,10 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
     gtag.sendEvent('topic', 'click', `page-${page}`)
   }
 
-  // Paginate articles
+  // Paginate posts
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentArticles = topic.articles.slice(startIndex, endIndex)
+  const currentPosts = posts.slice(startIndex, endIndex)
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {
@@ -676,29 +485,19 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
     return pages
   }
 
-  const renderTagRow = (label: string, tags: string[]) => {
-    if (!tags || tags.length === 0) return null
+  // Get hero image URL
+  const heroImageUrl = getHeroImageUrl(topic)
 
-    return (
-      <TagRow>
-        <TagLabel>{label}：</TagLabel>
-        <TagList>
-          {tags.map((tag, index) => (
-            <Tag key={index}>
-              {tag}
-              {index < tags.length - 1 && '、'}
-            </Tag>
-          ))}
-        </TagList>
-      </TagRow>
-    )
-  }
+  // Get tags as array of names
+  const tagNames = topic.tags?.map((tag) => tag.name) || []
 
   return (
     <PageWrapper>
       {/* Hero Section */}
       <HeroSection>
-        <HeroImage src={topic.heroImage} alt={topic.title} />
+        {heroImageUrl && (
+          <HeroImage src={heroImageUrl} alt={topic.title || ''} />
+        )}
       </HeroSection>
 
       {/* Content */}
@@ -709,39 +508,59 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
             <TopicTitle>{topic.title}</TopicTitle>
           </TopicTitleSection>
 
-          {/* Summary */}
-          <TopicSummary>{topic.summary}</TopicSummary>
+          {/* Summary (content field from API) */}
+          {topic.content && <TopicSummary>{topic.content}</TopicSummary>}
 
           {/* Update Time */}
-          <UpdateTime>
-            最新更新時間 <span>{topic.updateTime}</span>
-          </UpdateTime>
+          {topic.updatedAt && (
+            <UpdateTime>
+              最新更新時間 <span>{formatDate(topic.updatedAt)}</span>
+            </UpdateTime>
+          )}
 
           {/* Tags */}
-          <TagSection>
-            {renderTagRow('標籤記者', topic.tags.editors)}
-            {renderTagRow('文字編輯', topic.tags.writers)}
-            {renderTagRow('攝影編輯', topic.tags.photographers)}
-            {renderTagRow('設計製作', topic.tags.designers)}
-            {renderTagRow('美術編輯', topic.tags.illustrators)}
-          </TagSection>
+          {tagNames.length > 0 && (
+            <TagSection>
+              <TagRow>
+                <TagLabel>標籤：</TagLabel>
+                <TagList>
+                  {tagNames.map((tagName, index) => (
+                    <Tag key={index}>
+                      {tagName}
+                      {index < tagNames.length - 1 && '、'}
+                    </Tag>
+                  ))}
+                </TagList>
+              </TagRow>
+            </TagSection>
+          )}
         </TopicHeader>
 
         {/* Article List */}
         <ArticleList>
-          {currentArticles.map((article) => (
-            <Link key={article.id} href={article.href} passHref legacyBehavior>
+          {currentPosts.map((post) => (
+            <Link
+              key={post.id}
+              href={`/post/${post.id}`}
+              passHref
+              legacyBehavior
+            >
               <ArticleCard
                 onClick={() =>
-                  gtag.sendEvent('topic', 'click', `article-${article.title}`)
+                  gtag.sendEvent('topic', 'click', `article-${post.title}`)
                 }
               >
                 <ArticleImageWrapper>
-                  <ArticleImage src={article.image} alt={article.title} />
+                  <ArticleImage
+                    src={getImageUrl(post)}
+                    alt={post.title || ''}
+                  />
                 </ArticleImageWrapper>
                 <ArticleContent>
-                  <ArticleTitle>{article.title}</ArticleTitle>
-                  <ArticleExcerpt>{article.excerpt}</ArticleExcerpt>
+                  <ArticleTitle>{post.title}</ArticleTitle>
+                  <ArticleExcerpt>
+                    {extractBriefText(post.brief)}
+                  </ArticleExcerpt>
                 </ArticleContent>
               </ArticleCard>
             </Link>
@@ -794,21 +613,73 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({
+  params,
   res,
 }) => {
   setCacheControl(res)
 
-  // TODO: Replace with actual API call or JSON data
-  // const topicId = params?.id as string
-  const topic = DUMMY_TOPIC
+  const topicId = params?.id as string
 
-  // In production, you would fetch the topic by ID here
-  // If topic not found, return notFound: true
+  if (!topicId) {
+    return {
+      notFound: true,
+    }
+  }
 
-  return {
-    props: {
-      topic,
-    },
+  const client = getGqlClient()
+
+  try {
+    const { data, errors: gqlErrors } = await client.query<{ topics: Topic[] }>(
+      {
+        query: topicById,
+        variables: { topicId },
+      }
+    )
+
+    if (gqlErrors) {
+      console.error(
+        errors.helpers.wrap(
+          new Error('Errors returned in `topicById` query'),
+          'GraphQLError',
+          'failed to complete `topicById`',
+          { errors: gqlErrors }
+        )
+      )
+    }
+
+    const topic = data?.topics?.[0]
+
+    if (!topic) {
+      return {
+        notFound: true,
+      }
+    }
+
+    return {
+      props: {
+        topic,
+      },
+    }
+  } catch (err) {
+    const annotatingError = errors.helpers.wrap(
+      err,
+      'UnhandledError',
+      'Error occurs while fetching topic data'
+    )
+
+    console.error(
+      JSON.stringify({
+        severity: 'ERROR',
+        message: errors.helpers.printAll(annotatingError, {
+          withStack: false,
+          withPayload: true,
+        }),
+      })
+    )
+
+    return {
+      notFound: true,
+    }
   }
 }
 
@@ -816,11 +687,14 @@ TopicPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const { props } = page
   const { topic } = props
 
+  // Get hero image URL for og:image
+  const heroImageUrl = getHeroImageUrl(topic)
+
   return (
     <LayoutGeneral
-      title={topic.title}
-      description={topic.summary}
-      imageUrl={topic.heroImage}
+      title={topic.title || '專題'}
+      description={topic.content || ''}
+      imageUrl={heroImageUrl || undefined}
     >
       {page}
     </LayoutGeneral>
