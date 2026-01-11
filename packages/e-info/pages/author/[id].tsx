@@ -11,7 +11,8 @@ import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
 import SectionHeading from '~/components/shared/section-heading'
-import type { Author } from '~/graphql/fragments/author'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { Author, AuthorImage } from '~/graphql/fragments/author'
 import type { Post } from '~/graphql/fragments/post'
 import { author as authorQuery } from '~/graphql/query/author'
 import { authorPosts as authorPostsQuery } from '~/graphql/query/post'
@@ -50,12 +51,79 @@ const StyledAdsense_HD = styled(Adsense)`
   }
 `
 
+// 作者資訊區塊（頭像 + 自介）
+const AuthorInfoSection = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[0]};
+
+  ${({ theme }) => theme.breakpoint.md} {
+    gap: 32px;
+    margin-bottom: 48px;
+    padding-bottom: 48px;
+  }
+`
+
+const AuthorAvatar = styled.div`
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    width: 180px;
+    height: 180px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`
+
+const AuthorBio = styled.div`
+  flex: 1;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
+
+  ${({ theme }) => theme.breakpoint.md} {
+    font-size: 18px;
+  }
+`
+
+// Helper function to get author image URL
+const getAuthorImageUrl = (image: AuthorImage | null | undefined): string => {
+  if (!image) return DEFAULT_POST_IMAGE_PATH
+  const resized = image.resized
+  const resizedWebp = image.resizedWebp
+  return (
+    resizedWebp?.w480 ||
+    resizedWebp?.original ||
+    resized?.w480 ||
+    resized?.original ||
+    DEFAULT_POST_IMAGE_PATH
+  )
+}
+
 type PageProps = {
   authorPosts?: ArticleCard[]
   authorName: string
+  authorBio?: string | null
+  authorImage?: AuthorImage | null
 }
 
-const Author: NextPageWithLayout<PageProps> = ({ authorPosts, authorName }) => {
+const Author: NextPageWithLayout<PageProps> = ({
+  authorPosts,
+  authorName,
+  authorBio,
+  authorImage,
+}) => {
   const client = getGqlClient()
   const router = useRouter()
 
@@ -116,7 +184,9 @@ const Author: NextPageWithLayout<PageProps> = ({ authorPosts, authorName }) => {
     }
   }, [isAtBottom])
 
-  const sectionTitle = `${authorName}`
+  const sectionTitle = `tag/${authorName}`
+  const hasAuthorInfo = authorImage || authorBio
+
   return (
     <AuthorWrapper aria-label={sectionTitle}>
       <StyledAdsense_HD pageKey="author" adKey="HD" />
@@ -124,7 +194,18 @@ const Author: NextPageWithLayout<PageProps> = ({ authorPosts, authorName }) => {
         title={sectionTitle}
         highlightColor="#eee500"
         headingLevel={2}
+        showBorder={false}
       />
+      {hasAuthorInfo && (
+        <AuthorInfoSection>
+          {authorImage && (
+            <AuthorAvatar>
+              <img src={getAuthorImageUrl(authorImage)} alt={authorName} />
+            </AuthorAvatar>
+          )}
+          {authorBio && <AuthorBio>{authorBio}</AuthorBio>}
+        </AuthorInfoSection>
+      )}
 
       <ArticleLists posts={displayPosts} AdPageKey="author" />
       <span ref={ref} id="scroll-to-bottom-anchor" />
@@ -141,6 +222,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
   let authorPosts: ArticleCard[] | undefined
   let authorName: string
+  let authorBio: string | null = null
+  let authorImage: AuthorImage | null = null
 
   try {
     {
@@ -173,6 +256,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       }
 
       authorName = author.name
+      authorBio = author.bio || null
+      authorImage = author.image || null
     }
     {
       // fetch author related 12 posts
@@ -227,6 +312,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     props: {
       authorPosts,
       authorName,
+      authorBio,
+      authorImage,
     },
   }
 }

@@ -1,4 +1,6 @@
-import { GenericCategory, ResizedImages } from './common'
+import { GenericCategory, GenericTag, ResizedImages } from './common'
+
+export type ArticleCardTag = Pick<GenericTag, 'id' | 'name'>
 
 export type ArticleCard = {
   id: string
@@ -9,6 +11,7 @@ export type ArticleCard = {
   imagesWebP: ResizedImages
   date: string
   isReport: boolean
+  tags?: ArticleCardTag[]
 }
 
 export type FeaturedArticle = {

@@ -4,7 +4,7 @@ import type { RawDraftContentState } from 'draft-js'
 
 import { REPORT_STYLES } from '~/constants/constant'
 import { SITE_URL } from '~/constants/environment-variables'
-import type { Post } from '~/graphql/fragments/post'
+import type { ContentApiDataBlock, Post } from '~/graphql/fragments/post'
 import type {
   GenericPhoto,
   GenericPost,
@@ -115,22 +115,94 @@ export function getImageOfArticle({
   }, '')
 }
 
+// Helper function to extract text from contentApiData format
+const getContentText = (
+  contentApiData: ContentApiDataBlock[] | null | undefined,
+  maxLength: number
+): string => {
+  if (!contentApiData || !Array.isArray(contentApiData)) return ''
+
+  // Find the first block with non-empty content
+  for (const block of contentApiData) {
+    if (block.content && Array.isArray(block.content)) {
+      const text = block.content.join('').trim()
+      if (text) {
+        if (text.length > maxLength) {
+          return text.slice(0, maxLength) + '...'
+        }
+        return text
+      }
+    }
+  }
+
+  return ''
+}
+
+// Helper function to extract brief text from Draft.js format
+// Returns the first non-empty text block, truncated to maxLength characters
+// Falls back to contentApiData if brief is empty
+export const getBriefText = (
+  brief: string | Record<string, unknown> | null | undefined,
+  contentApiData: ContentApiDataBlock[] | null | undefined,
+  maxLength: number = 100
+): string => {
+  // First try to extract from brief
+  if (brief) {
+    // If brief is a string, return it directly (truncated)
+    if (typeof brief === 'string') {
+      if (brief.length > maxLength) {
+        return brief.slice(0, maxLength) + '...'
+      }
+      return brief
+    }
+
+    // If brief is Draft.js format with blocks array
+    if (typeof brief === 'object' && 'blocks' in brief) {
+      const blocks = brief.blocks as Array<{ text?: string }>
+      if (Array.isArray(blocks)) {
+        // Find the first non-empty text block
+        for (const block of blocks) {
+          if (block.text && block.text.trim()) {
+            const text = block.text.trim()
+            if (text.length > maxLength) {
+              return text.slice(0, maxLength) + '...'
+            }
+            return text
+          }
+        }
+      }
+    }
+  }
+
+  // Fallback to contentApiData if brief is empty
+  return getContentText(contentApiData, maxLength)
+}
+
 export function convertPostToArticleCard(
   post: Post | null,
   images?: ResizedImages,
   imagesWebP?: ResizedImages
 ): ArticleCard {
-  const { id = 'no-id', title = '', style, publishTime = '' } = post ?? {}
+  const {
+    id = 'no-id',
+    title = '',
+    style,
+    publishTime = '',
+    tags = [],
+    brief,
+    contentApiData,
+  } = post ?? {}
 
   return {
     id: getUid({ style, id }),
     title,
     href: getHref({ style, id }),
     date: formatPostDate(publishTime),
-    summary: '',
+    summary: getBriefText(brief, contentApiData, 100),
     isReport: isReport(style),
     images: images ?? {},
     imagesWebP: imagesWebP ?? {},
+    tags: tags?.map((tag) => ({ id: tag.id, name: tag.name })) ?? [],
   }
 }
 

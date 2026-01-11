@@ -7,14 +7,16 @@ import IconArrowRight from '~/public/icons/arrow-right.svg'
 
 type StyledProps = {
   $highlightColor: string
+  $showBorder: boolean
 }
 
 const Container = styled.div<StyledProps>`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  border-bottom: 1px solid #000;
-  padding: 0 0 36px;
+  border-bottom: ${({ $showBorder }) =>
+    $showBorder ? '1px solid #000' : 'none'};
+  padding: ${({ $showBorder }) => ($showBorder ? '0 0 36px' : '0')};
   > p {
     position: relative;
     font-size: 24px;
@@ -115,6 +117,7 @@ type SectionHeadingProps = {
   highlightColor?: string
   headingLevel?: number
   clickOnMore?: () => void
+  showBorder?: boolean
 }
 
 export default function SectionHeading({
@@ -124,13 +127,18 @@ export default function SectionHeading({
   highlightColor = '#fff',
   headingLevel = 2,
   clickOnMore,
+  showBorder = true,
 }: SectionHeadingProps): JSX.Element {
   const shouldShowMoreControl = showMoreText && categorySlug
 
   return (
     <>
       {title && (
-        <Container $highlightColor={highlightColor} className="section-heading">
+        <Container
+          $highlightColor={highlightColor}
+          $showBorder={showBorder}
+          className="section-heading"
+        >
           <Header>
             <AccentBar />
             <Title>{title}</Title>

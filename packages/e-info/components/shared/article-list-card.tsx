@@ -2,6 +2,7 @@
 
 import type { Breakpoint, Rwd } from '@readr-media/react-image'
 import SharedImage from '@readr-media/react-image'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
 import PostTag from '~/components/post/tag'
@@ -16,10 +17,11 @@ type StyledProps = {
   $shouldHighlightReport: boolean
 }
 
-const Link = styled.a<StyledProps>`
+const CardContainer = styled.article<StyledProps>`
   display: flex;
   position: relative;
   border-radius: 2px;
+  cursor: pointer;
   ${({ theme }) => theme.breakpoint.sm} {
     display: block;
   }
@@ -129,6 +131,7 @@ export default function ArticleListCard({
   images = {},
   imagesWebP = {},
   date = '',
+  tags = [],
   isReport = false,
   shouldReverseInMobile = false,
   shouldHighlightReport = false,
@@ -138,22 +141,31 @@ export default function ArticleListCard({
   rwd,
   breakpoint,
 }: ArticleListCardProps): JSX.Element {
+  const router = useRouter()
   const isReportAndShouldHighlight = isReport && shouldHighlightReport
 
-  function clickHander(event: unknown) {
-    ;(event as Event).stopPropagation()
+  function handleClick() {
     if (typeof onClick === 'function') {
       onClick()
+    }
+    router.push(href)
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleClick()
     }
   }
 
   return (
-    <Link
-      href={href}
-      target="_blank"
+    <CardContainer
       $shouldReverseInMobile={shouldReverseInMobile}
       $shouldHighlightReport={isReportAndShouldHighlight}
-      onClick={clickHander}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role="link"
+      tabIndex={0}
     >
       <ImageWrapper
         $shouldReverseInMobile={shouldReverseInMobile}
@@ -177,27 +189,13 @@ export default function ArticleListCard({
         <div className="title">
           <p>{title}</p>
         </div>
-        <div className="summary">
-          <p>
-            {summary ||
-              '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機'}
-          </p>
-        </div>
-        <PostTag
-          tags={[
-            { id: '1', name: '標籤1' },
-            { id: '2', name: '標籤2' },
-            { id: '3', name: '標籤3' },
-            { id: '4', name: '標籤44' },
-            { id: '5', name: '標籤5' },
-            { id: '6', name: '標籤6' },
-            { id: '7', name: '標籤7' },
-            { id: '8', name: '標籤8' },
-            { id: '9', name: '標籤9' },
-            { id: '10', name: '標籤10' },
-          ]}
-        />
+        {summary && (
+          <div className="summary">
+            <p>{summary}</p>
+          </div>
+        )}
+        {tags.length > 0 && <PostTag tags={tags} />}
       </TextWrapper>
-    </Link>
+    </CardContainer>
   )
 }
