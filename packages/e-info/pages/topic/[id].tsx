@@ -541,7 +541,7 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
           {currentPosts.map((post) => (
             <Link
               key={post.id}
-              href={`/post/${post.id}`}
+              href={`/node/${post.id}`}
               passHref
               legacyBehavior
             >

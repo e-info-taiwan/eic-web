@@ -120,6 +120,50 @@ const CHECK_FAVORITE = gql`
   }
 `
 
+// Query to get member's favorites with full post data
+const GET_MEMBER_FAVORITES = gql`
+  query GetMemberFavorites($memberId: ID!, $take: Int, $skip: Int) {
+    favorites(
+      where: { member: { id: { equals: $memberId } } }
+      orderBy: { createdAt: desc }
+      take: $take
+      skip: $skip
+    ) {
+      id
+      createdAt
+      post {
+        id
+        title
+        publishTime
+        brief
+        heroImage {
+          resized {
+            original
+            w480
+            w800
+          }
+          resizedWebp {
+            original
+            w480
+            w800
+          }
+        }
+        tags {
+          id
+          name
+        }
+      }
+    }
+  }
+`
+
+// Query to count member's favorites
+const COUNT_MEMBER_FAVORITES = gql`
+  query CountMemberFavorites($memberId: ID!) {
+    favoritesCount(where: { member: { id: { equals: $memberId } } })
+  }
+`
+
 // Types
 export type MemberAvatar = {
   id: string
@@ -141,6 +185,34 @@ export type MemberFavorite = {
   post: {
     id: string
     title: string
+  }
+}
+
+// Full favorite with complete post data for bookmarks page
+export type FavoriteWithPost = {
+  id: string
+  createdAt: string
+  post: {
+    id: string
+    title: string
+    publishTime: string
+    brief: string | Record<string, unknown> | null
+    heroImage: {
+      resized: {
+        original: string
+        w480: string
+        w800: string
+      } | null
+      resizedWebp: {
+        original: string
+        w480: string
+        w800: string
+      } | null
+    } | null
+    tags: {
+      id: string
+      name: string
+    }[]
   }
 }
 
@@ -424,4 +496,50 @@ export const removeFavorite = async (favoriteId: string): Promise<boolean> => {
   }
 
   return !!result.data?.deleteFavorite
+}
+
+/**
+ * Get member's favorites with full post data
+ */
+export const getMemberFavorites = async (
+  memberId: string,
+  take?: number,
+  skip?: number
+): Promise<FavoriteWithPost[]> => {
+  const client = getGqlClient()
+
+  const result = await client.query<{ favorites: FavoriteWithPost[] }>({
+    query: GET_MEMBER_FAVORITES,
+    variables: { memberId, take, skip },
+    fetchPolicy: 'network-only',
+  })
+
+  if (result.errors) {
+    console.error('getMemberFavorites error:', result.errors)
+    return []
+  }
+
+  return result.data?.favorites || []
+}
+
+/**
+ * Get total count of member's favorites
+ */
+export const getMemberFavoritesCount = async (
+  memberId: string
+): Promise<number> => {
+  const client = getGqlClient()
+
+  const result = await client.query<{ favoritesCount: number }>({
+    query: COUNT_MEMBER_FAVORITES,
+    variables: { memberId },
+    fetchPolicy: 'network-only',
+  })
+
+  if (result.errors) {
+    console.error('getMemberFavoritesCount error:', result.errors)
+    return 0
+  }
+
+  return result.data?.favoritesCount ?? 0
 }
