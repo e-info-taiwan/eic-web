@@ -1,10 +1,16 @@
 // 深度專題列表頁面
+// @ts-ignore: no definition
+import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
+import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { Topic } from '~/graphql/query/section'
+import { allTopics } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
@@ -308,190 +314,148 @@ const Divider = styled.hr`
   }
 `
 
-// Dummy data types
-type FeaturedTopic = {
-  id: string
-  title: string
-  summary: string
-  excerpt: string
-  href: string
-  date: string
-  image: string
-  isFeatured?: boolean
+// Helper function to format date
+const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return ''
+  try {
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${year}/${month}/${day} ${hours}:${minutes}`
+  } catch {
+    return ''
+  }
 }
 
-// Dummy featured topics with more detailed content
-const DUMMY_TOPICS: FeaturedTopic[] = [
-  {
-    id: '1',
-    title: '在理想中擱淺的鯨豚觀察員',
-    summary: '在理想中擱淺的鯨豚觀察員最多18個字...',
-    excerpt:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    href: '/topic/1',
-    date: '2023/03/28 12:59',
-    image:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=500&fit=crop',
-    isFeatured: true,
-  },
-  {
-    id: '2',
-    title: '百萬美金打造海廢初號機 犀牛盾要「在沿岸建造掃地機器人」',
-    summary: '',
-    excerpt: '',
-    href: '/topic/2',
-    date: '2023/03/28 12:59',
-    image:
-      'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=500&fit=crop',
-  },
-  {
-    id: '3',
-    title: '百萬美金打造海廢初號機 犀牛盾要「在沿岸建造掃地機器人」',
-    summary: '',
-    excerpt: '',
-    href: '/topic/3',
-    date: '2023/03/28 12:59',
-    image:
-      'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=800&h=500&fit=crop',
-  },
-  {
-    id: '4',
-    title: '百萬美金打造海廢初號機 犀牛盾要「在沿岸建造掃地機器人」',
-    summary: '',
-    excerpt: '',
-    href: '/topic/4',
-    date: '2023/03/28 12:59',
-    image:
-      'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&h=500&fit=crop',
-  },
-  {
-    id: '5',
-    title: '我推的防災生活',
-    summary: '我推的防災生活',
-    excerpt:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    href: '/topic/5',
-    date: '2023/03/28 12:59',
-    image:
-      'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=800&h=500&fit=crop',
-    isFeatured: true,
-  },
-  {
-    id: '6',
-    title: '擱淺118——打開海龜急診室',
-    summary: '擱淺118——打開海龜急診室',
-    excerpt:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    href: '/topic/6',
-    date: '2023/03/28 12:59',
-    image:
-      'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800&h=500&fit=crop',
-    isFeatured: true,
-  },
-]
+// Helper function to get image URL from topic (with fallback to default image)
+const getTopicImageUrl = (topic: Topic): string => {
+  const resized = topic.heroImage?.resized
+  const resizedWebp = topic.heroImage?.resizedWebp
+  return (
+    resizedWebp?.w800 ||
+    resizedWebp?.w480 ||
+    resized?.w800 ||
+    resized?.w480 ||
+    resized?.original ||
+    DEFAULT_POST_IMAGE_PATH
+  )
+}
 
 type PageProps = {
-  topics: FeaturedTopic[]
+  topics: Topic[]
 }
 
 const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
-  // Split topics into featured and regular
-  const featuredTopics = topics.filter((topic) => topic.isFeatured)
-  const regularTopics = topics.filter((topic) => !topic.isFeatured)
+  // Split topics into featured (isPinned) and regular
+  const featuredTopics = topics.filter((topic) => topic.isPinned)
+  const regularTopics = topics.filter((topic) => !topic.isPinned)
 
-  const renderFeaturedArticle = (topic: FeaturedTopic) => (
-    <FeaturedSection key={topic.id}>
-      <FeaturedArticle>
-        <FeaturedImageWrapper>
-          <Link href={topic.href} passHref legacyBehavior>
-            <a
-              onClick={() =>
-                gtag.sendEvent(
-                  'featured-topics',
-                  'click',
-                  `featured-${topic.title}`
-                )
-              }
-            >
-              <FeaturedImage src={topic.image} alt={topic.title} />
-            </a>
-          </Link>
-        </FeaturedImageWrapper>
+  const renderFeaturedArticle = (topic: Topic, index: number) => {
+    const topicHref = `/topic/${topic.id}`
+    const topicImage = getTopicImageUrl(topic)
+    const topicDate = formatDate(topic.updatedAt)
 
-        <FeaturedContent>
-          <FeaturedTextContent>
-            <Link href={topic.href}>
-              <FeaturedTitle>{topic.summary || topic.title}</FeaturedTitle>
-            </Link>
-            <FeaturedDate>{topic.date}</FeaturedDate>
-            {topic.excerpt && (
-              <FeaturedExcerpt>{topic.excerpt}</FeaturedExcerpt>
-            )}
-          </FeaturedTextContent>
-          <Link href={topic.href} passHref legacyBehavior>
-            <EnterButton
-              onClick={() =>
-                gtag.sendEvent(
-                  'featured-topics',
-                  'click',
-                  `enter-${topic.title}`
-                )
-              }
-            >
-              進入專題
-            </EnterButton>
-          </Link>
-        </FeaturedContent>
-      </FeaturedArticle>
-
-      {/* Show article grid after first featured topic */}
-      {topic.id === '1' && regularTopics.length > 0 && (
-        <>
-          <ArticleGrid>
-            {regularTopics.map((regularTopic) => (
-              <Link
-                key={regularTopic.id}
-                href={regularTopic.href}
-                passHref
-                legacyBehavior
+    return (
+      <FeaturedSection key={topic.id}>
+        <FeaturedArticle>
+          <FeaturedImageWrapper>
+            <Link href={topicHref} passHref legacyBehavior>
+              <a
+                onClick={() =>
+                  gtag.sendEvent(
+                    'featured-topics',
+                    'click',
+                    `featured-${topic.title}`
+                  )
+                }
               >
-                <ArticleCard
-                  onClick={() =>
-                    gtag.sendEvent(
-                      'featured-topics',
-                      'click',
-                      `article-${regularTopic.title}`
-                    )
-                  }
-                >
-                  <ArticleImageWrapper>
-                    <ArticleImage
-                      src={regularTopic.image}
-                      alt={regularTopic.title}
-                    />
-                  </ArticleImageWrapper>
-                  <ArticleContent>
-                    <ArticleDate>{regularTopic.date}</ArticleDate>
-                    <ArticleTitle>{regularTopic.title}</ArticleTitle>
-                  </ArticleContent>
-                </ArticleCard>
+                <FeaturedImage src={topicImage} alt={topic.title || ''} />
+              </a>
+            </Link>
+          </FeaturedImageWrapper>
+
+          <FeaturedContent>
+            <FeaturedTextContent>
+              <Link href={topicHref}>
+                <FeaturedTitle>{topic.title}</FeaturedTitle>
               </Link>
-            ))}
+              <FeaturedDate>{topicDate}</FeaturedDate>
+              {topic.content && (
+                <FeaturedExcerpt>{topic.content}</FeaturedExcerpt>
+              )}
+            </FeaturedTextContent>
+            <Link href={topicHref} passHref legacyBehavior>
+              <EnterButton
+                onClick={() =>
+                  gtag.sendEvent(
+                    'featured-topics',
+                    'click',
+                    `enter-${topic.title}`
+                  )
+                }
+              >
+                進入專題
+              </EnterButton>
+            </Link>
+          </FeaturedContent>
+        </FeaturedArticle>
+
+        {/* Show article grid after first featured topic */}
+        {index === 0 && regularTopics.length > 0 && (
+          <ArticleGrid>
+            {regularTopics.map((regularTopic) => {
+              const regularHref = `/topic/${regularTopic.id}`
+              const regularImage = getTopicImageUrl(regularTopic)
+              const regularDate = formatDate(regularTopic.updatedAt)
+
+              return (
+                <Link
+                  key={regularTopic.id}
+                  href={regularHref}
+                  passHref
+                  legacyBehavior
+                >
+                  <ArticleCard
+                    onClick={() =>
+                      gtag.sendEvent(
+                        'featured-topics',
+                        'click',
+                        `article-${regularTopic.title}`
+                      )
+                    }
+                  >
+                    <ArticleImageWrapper>
+                      <ArticleImage
+                        src={regularImage}
+                        alt={regularTopic.title || ''}
+                      />
+                    </ArticleImageWrapper>
+                    <ArticleContent>
+                      <ArticleDate>{regularDate}</ArticleDate>
+                      <ArticleTitle>{regularTopic.title}</ArticleTitle>
+                    </ArticleContent>
+                  </ArticleCard>
+                </Link>
+              )
+            })}
           </ArticleGrid>
-        </>
-      )}
-      <Link href={topic.href} passHref legacyBehavior>
-        <MobileEnterButton
-          onClick={() =>
-            gtag.sendEvent('featured-topics', 'click', `enter-${topic.title}`)
-          }
-        >
-          進入專題
-        </MobileEnterButton>
-      </Link>
-      <Divider />
-    </FeaturedSection>
-  )
+        )}
+        <Link href={topicHref} passHref legacyBehavior>
+          <MobileEnterButton
+            onClick={() =>
+              gtag.sendEvent('featured-topics', 'click', `enter-${topic.title}`)
+            }
+          >
+            進入專題
+          </MobileEnterButton>
+        </Link>
+        <Divider />
+      </FeaturedSection>
+    )
+  }
 
   return (
     <PageWrapper>
@@ -500,7 +464,9 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
         <Title>深度專題</Title>
       </SectionTitle>
 
-      {featuredTopics.map((topic) => renderFeaturedArticle(topic))}
+      {featuredTopics.map((topic, index) =>
+        renderFeaturedArticle(topic, index)
+      )}
     </PageWrapper>
   )
 }
@@ -510,13 +476,55 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 }) => {
   setCacheControl(res)
 
-  // TODO: Replace with actual API call or JSON data
-  const topics = DUMMY_TOPICS
+  const client = getGqlClient()
 
-  return {
-    props: {
-      topics,
-    },
+  try {
+    const { data, errors: gqlErrors } = await client.query<{ topics: Topic[] }>(
+      {
+        query: allTopics,
+      }
+    )
+
+    if (gqlErrors) {
+      console.error(
+        errors.helpers.wrap(
+          new Error('Errors returned in `allTopics` query'),
+          'GraphQLError',
+          'failed to complete `allTopics`',
+          { errors: gqlErrors }
+        )
+      )
+    }
+
+    const topics = data?.topics || []
+
+    return {
+      props: {
+        topics,
+      },
+    }
+  } catch (err) {
+    const annotatingError = errors.helpers.wrap(
+      err,
+      'UnhandledError',
+      'Error occurs while fetching topics data'
+    )
+
+    console.error(
+      JSON.stringify({
+        severity: 'ERROR',
+        message: errors.helpers.printAll(annotatingError, {
+          withStack: false,
+          withPayload: true,
+        }),
+      })
+    )
+
+    return {
+      props: {
+        topics: [],
+      },
+    }
   }
 }
 

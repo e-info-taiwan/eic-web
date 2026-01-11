@@ -161,6 +161,37 @@ export const topicsWithPosts = gql`
 `
 
 /**
+ * Query for all published topics (for featured-topics listing page)
+ * Returns all topics with basic info and updatedAt for sorting
+ */
+export const allTopics = gql`
+  query {
+    topics(
+      where: { status: { equals: "published" } }
+      orderBy: { updatedAt: desc }
+    ) {
+      id
+      title
+      status
+      content
+      heroImage {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+      postsCount
+      isPinned
+      updatedAt
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
+/**
  * Query for a single topic by ID with all posts
  * Used for topic detail page (/topic/[id])
  */
