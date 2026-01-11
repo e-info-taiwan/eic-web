@@ -115,6 +115,11 @@ export function getImageOfArticle({
   }, '')
 }
 
+// Helper function to check if text contains HTML tags (script, style, etc.)
+const containsHtmlTags = (text: string): boolean => {
+  return /<[^>]+>/.test(text)
+}
+
 // Helper function to extract text from contentApiData format
 const getContentText = (
   contentApiData: ContentApiDataBlock[] | null | undefined,
@@ -122,16 +127,42 @@ const getContentText = (
 ): string => {
   if (!contentApiData || !Array.isArray(contentApiData)) return ''
 
-  // Find the first block with non-empty content
+  // Text block types that should be processed
+  const textBlockTypes = [
+    'unstyled',
+    'header-one',
+    'header-two',
+    'header-three',
+  ]
+
+  // Find the first block with non-empty text content
   for (const block of contentApiData) {
+    // Skip non-text blocks (image, video, etc.)
+    if (!textBlockTypes.includes(block.type)) {
+      continue
+    }
+
     if (block.content && Array.isArray(block.content)) {
-      const text = block.content.join('').trim()
-      if (text) {
-        if (text.length > maxLength) {
-          return text.slice(0, maxLength) + '...'
-        }
-        return text
+      // Only process string content (skip objects like image data)
+      const stringContent = block.content.filter(
+        (item): item is string => typeof item === 'string'
+      )
+
+      if (stringContent.length === 0) {
+        continue
       }
+
+      const text = stringContent.join('').trim()
+
+      // Skip if empty or contains HTML tags (script, embedded code, etc.)
+      if (!text || containsHtmlTags(text)) {
+        continue
+      }
+
+      if (text.length > maxLength) {
+        return text.slice(0, maxLength) + '...'
+      }
+      return text
     }
   }
 
