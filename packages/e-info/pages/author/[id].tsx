@@ -184,7 +184,7 @@ const Author: NextPageWithLayout<PageProps> = ({
     }
   }, [isAtBottom])
 
-  const sectionTitle = `tag/${authorName}`
+  const sectionTitle = `${authorName}`
   const hasAuthorInfo = authorImage || authorBio
 
   return (
