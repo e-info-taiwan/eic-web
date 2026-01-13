@@ -482,6 +482,7 @@ export type Ad = {
   id: string
   name: string | null
   showOnHomepage: boolean
+  showOnHomepageDeepTopic: boolean
   state: string
   sortOrder: number | null
   imageUrl: string | null
@@ -491,7 +492,7 @@ export type Ad = {
   } | null
 }
 
-// Query for homepage ads
+// Query for homepage ads (showOnHomepage = true)
 export const homepageAds = gql`
   query {
     ads(
@@ -501,6 +502,38 @@ export const homepageAds = gql`
       id
       name
       showOnHomepage
+      showOnHomepageDeepTopic
+      state
+      sortOrder
+      imageUrl
+      image {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+`
+
+// Query for homepage deep topic ads (showOnHomepageDeepTopic = true)
+export const homepageDeepTopicAds = gql`
+  query {
+    ads(
+      where: {
+        showOnHomepageDeepTopic: { equals: true }
+        state: { equals: "active" }
+      }
+      orderBy: { sortOrder: asc }
+    ) {
+      id
+      name
+      showOnHomepage
+      showOnHomepageDeepTopic
       state
       sortOrder
       imageUrl

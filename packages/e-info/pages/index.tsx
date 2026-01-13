@@ -30,23 +30,15 @@ import type {
   Ad,
   HomepagePick,
   InfoGraph,
-  Section,
   SectionCategory,
   Topic,
-} from '~/graphql/query/section'
-import {
-  homepageAds,
-  homepagePicksByCategory,
-  homepagePicksForCarousel,
-  latestInfoGraph,
-  multipleSectionsWithCategoriesAndPosts,
-  topicsWithPosts,
 } from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
 import type { CollaborationItem } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
+import { fetchHomepageData } from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
 
@@ -69,6 +61,7 @@ type PageProps = {
   highlightPicks: HomepagePick[]
   infoGraph: InfoGraph | null
   ads: Ad[]
+  deepTopicAds: Ad[]
 }
 
 const HiddenAnchor = styled.div`
@@ -101,6 +94,7 @@ const Index: NextPageWithLayout<PageProps> = ({
   highlightPicks,
   infoGraph,
   ads,
+  deepTopicAds,
 }) => {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
@@ -117,7 +111,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       <SpecialColumnSection categories={columnCategories} />
       <SupplementSection categories={supplementCategories} />
       <FeaturedTopicsSection topics={topics} />
-      <AdContent ads={ads} />
+      <AdContent ads={deepTopicAds} />
       <GreenConsumptionSection categories={greenCategories} />
       <HiddenAnchor ref={anchorRef} />
     </>
@@ -167,170 +161,30 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let highlightPicks: HomepagePick[] = []
   let infoGraph: InfoGraph | null = null
   let ads: Ad[] = []
+  let deepTopicAds: Ad[] = []
 
   try {
     /**
-     * 首頁資料查詢優化策略:
-     * 1. 使用 Promise.all 並行執行所有查詢
-     * 2. 使用 multipleSectionsWithCategoriesAndPosts 合併 4 個 section 查詢為 1 個
+     * 首頁資料獲取策略:
+     * 1. 優先嘗試 JSON API (單一請求獲取所有資料)
+     * 2. 若 JSON API 失敗，自動 fallback 到 GraphQL 查詢
      *
-     * 原本需要 9 個查詢，優化後減少為 6 個:
-     * - 1 個合併的 sections 查詢 (取代原本 4 個分開的 section 查詢)
-     * - 2 個 homepagePicks 查詢 (焦點話題 + 輪播大圖)
-     * - 1 個 topics 查詢 (深度專題)
-     * - 1 個 infoGraphs 查詢 (重要圖表)
-     * - 1 個 ads 查詢 (首頁廣告)
+     * JSON API endpoint: /api/homepage
+     * 詳細規格請參考: docs/homepage-api-spec.md
      */
-    const [
-      // 合併查詢: 一次獲取所有 section 資料
-      // Section IDs: 3=時事新聞, 4=專欄, 5=副刊, 6=綠色消費
-      // 注意: postsPerCategory 統一為 8，因為時事新聞需要 8 篇，其他 section 在前端會自行截取所需數量
-      sectionsResult,
-      highlightResult,
-      topicsResult,
-      carouselResult,
-      infoGraphResult,
-      adsResult,
-    ] = await Promise.all([
-      // 1. 合併查詢: 一次獲取 4 個大分類的資料
-      client.query<{ sections: Section[] }>({
-        query: multipleSectionsWithCategoriesAndPosts,
-        variables: {
-          sectionIds: ['3', '4', '5', '6'],
-          postsPerCategory: 8, // 使用最大需求量，前端可自行截取
-        },
-      }),
-      // 2. Fetch highlight section from Homepage Picks (焦點話題)
-      client.query<{ homepagePicks: HomepagePick[] }>({
-        query: homepagePicksByCategory,
-        variables: { categorySlug: 'hottopic' },
-      }),
-      // 3. Fetch topics (深度專題)
-      client.query<{ topics: Topic[] }>({
-        query: topicsWithPosts,
-        variables: { postsPerTopic: 4 },
-      }),
-      // 4. Fetch homepage carousel picks (首頁輪播大圖)
-      client.query<{ homepagePicks: HomepagePick[] }>({
-        query: homepagePicksForCarousel,
-      }),
-      // 5. Fetch latest InfoGraph (重要圖表)
-      client.query<{ infoGraphs: InfoGraph[] }>({
-        query: latestInfoGraph,
-      }),
-      // 6. Fetch homepage ads (首頁廣告)
-      client.query<{ ads: Ad[] }>({
-        query: homepageAds,
-      }),
-    ])
+    const homepageData = await fetchHomepageData(client)
 
-    // Process combined sections result
-    // 從合併查詢結果中，根據 section id 分配到對應的變數
-    if (sectionsResult.errors) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `sections` query'),
-          'GraphQLError',
-          'failed to complete `sections`',
-          { errors: sectionsResult.errors }
-        )
-      )
-    }
-    if (sectionsResult.data?.sections) {
-      // 根據 section id 分配資料到對應變數
-      // Section ID 對應: 3=時事新聞, 4=專欄, 5=副刊, 6=綠色消費
-      for (const section of sectionsResult.data.sections) {
-        switch (section.id) {
-          case '3': // 時事新聞 (latestnews)
-            newsCategories = section.categories
-            break
-          case '4': // 專欄 (column)
-            columnCategories = section.categories
-            break
-          case '5': // 副刊 (sub)
-            supplementCategories = section.categories
-            break
-          case '6': // 綠色消費 (green)
-            greenCategories = section.categories
-            break
-        }
-      }
-    }
-
-    // Process highlight section result
-    if (highlightResult.errors) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `homepagePicks` query for highlight'),
-          'GraphQLError',
-          'failed to complete `homepagePicks` for highlight',
-          { errors: highlightResult.errors }
-        )
-      )
-    }
-    if (highlightResult.data?.homepagePicks) {
-      highlightPicks = highlightResult.data.homepagePicks
-    }
-
-    // Process topics result
-    if (topicsResult.errors) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `topics` query'),
-          'GraphQLError',
-          'failed to complete `topics`',
-          { errors: topicsResult.errors }
-        )
-      )
-    }
-    if (topicsResult.data?.topics) {
-      topics = topicsResult.data.topics
-    }
-
-    // Process carousel picks result
-    if (carouselResult.errors) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `homepagePicks` query for carousel'),
-          'GraphQLError',
-          'failed to complete `homepagePicks` for carousel',
-          { errors: carouselResult.errors }
-        )
-      )
-    }
-    if (carouselResult.data?.homepagePicks) {
-      carouselPicks = carouselResult.data.homepagePicks
-    }
-
-    // Process InfoGraph result
-    if (infoGraphResult.errors) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `infoGraphs` query'),
-          'GraphQLError',
-          'failed to complete `infoGraphs`',
-          { errors: infoGraphResult.errors }
-        )
-      )
-    }
-    if (infoGraphResult.data?.infoGraphs?.[0]) {
-      infoGraph = infoGraphResult.data.infoGraphs[0]
-    }
-
-    // Process ads result
-    if (adsResult.errors) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `ads` query'),
-          'GraphQLError',
-          'failed to complete `ads`',
-          { errors: adsResult.errors }
-        )
-      )
-    }
-    if (adsResult.data?.ads) {
-      ads = adsResult.data.ads
-    }
+    // 從統一的資料結構中取出各區塊資料
+    newsCategories = homepageData.newsCategories
+    columnCategories = homepageData.columnCategories
+    supplementCategories = homepageData.supplementCategories
+    greenCategories = homepageData.greenCategories
+    highlightPicks = homepageData.highlightPicks
+    carouselPicks = homepageData.carouselPicks
+    topics = homepageData.topics
+    infoGraph = homepageData.infoGraph
+    ads = homepageData.ads
+    deepTopicAds = homepageData.deepTopicAds
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
@@ -374,6 +228,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       highlightPicks,
       infoGraph,
       ads,
+      deepTopicAds,
     },
   }
 }
