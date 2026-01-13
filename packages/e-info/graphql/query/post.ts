@@ -93,9 +93,11 @@ export type PostDetail = Override<
   {
     heroImage: PhotoWithResizedOnly | null
     ogImage: PhotoWithResizedOnly | null
-    author1: Author | null
-    author2: Author | null
-    author3: Author | null
+    reporters: Author[] // 記者
+    translators: Author[] // 編譯
+    reviewers: Author[] // 審校
+    writers: Author[] // 文
+    sources: Author[] // 稿源
     section: Section | null
     category: Category | null
     topic: Topic | null
@@ -154,13 +156,19 @@ const post = gql`
         name
       }
 
-      author1 {
+      reporters {
         ...AuthorFields
       }
-      author2 {
+      translators {
         ...AuthorFields
       }
-      author3 {
+      reviewers {
+        ...AuthorFields
+      }
+      writers {
+        ...AuthorFields
+      }
+      sources {
         ...AuthorFields
       }
 
@@ -290,9 +298,11 @@ const authorPosts = gql`
       skip: $skip
       where: {
         OR: [
-          { author1: { id: { equals: $authorId } } }
-          { author2: { id: { equals: $authorId } } }
-          { author3: { id: { equals: $authorId } } }
+          { reporters: { some: { id: { equals: $authorId } } } }
+          { translators: { some: { id: { equals: $authorId } } } }
+          { reviewers: { some: { id: { equals: $authorId } } } }
+          { writers: { some: { id: { equals: $authorId } } } }
+          { sources: { some: { id: { equals: $authorId } } } }
         ]
         state: { equals: "published" }
         style: {

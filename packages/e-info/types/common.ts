@@ -100,9 +100,11 @@ export type GenericPost = {
   contentApiData: RawDraftContentState // draft-renderer JSON
   briefApiData: RawDraftContentState // draft-renderer JSON
   citations: string // 引用來源
-  author1: GenericAuthor | null
-  author2: GenericAuthor | null
-  author3: GenericAuthor | null
+  reporters: GenericAuthor[] // 記者
+  translators: GenericAuthor[] // 編譯
+  reviewers: GenericAuthor[] // 審校
+  writers: GenericAuthor[] // 文
+  sources: GenericAuthor[] // 稿源
   otherByline: string // 作者（其他）
   section: { id: string; name: string; slug: string } | null
   category: { id: string; name: string; slug: string } | null

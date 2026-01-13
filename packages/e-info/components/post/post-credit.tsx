@@ -91,17 +91,31 @@ type PostProps = {
   postData: PostDetail
 }
 
-export default function PostCredit({ postData }: PostProps): JSX.Element {
-  // Collect all authors (author1, author2, author3)
-  const authors = [
-    postData?.author1,
-    postData?.author2,
-    postData?.author3,
-  ].filter(
-    (author): author is Author => author !== null && author !== undefined
+// Helper function to render author list with links
+function renderAuthorList(authors: Author[], label: string) {
+  if (!authors || authors.length === 0) return null
+  return (
+    <li>
+      <CreditName>
+        {label}—
+        {authors.map((author, index) => (
+          <span key={author.id}>
+            {index > 0 && '、'}
+            <Link href={`/author/${author.id}`}>{author.name}</Link>
+          </span>
+        ))}
+      </CreditName>
+    </li>
   )
+}
 
-  const otherWriters = postData?.otherByline
+export default function PostCredit({ postData }: PostProps): JSX.Element {
+  const reporters = postData?.reporters ?? []
+  const translators = postData?.translators ?? []
+  const reviewers = postData?.reviewers ?? []
+  const writers = postData?.writers ?? []
+  const sources = postData?.sources ?? []
+  const otherByline = postData?.otherByline
   const section = postData?.section
   const category = postData?.category
 
@@ -133,23 +147,15 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
         </SectionPath>
       )}
       <CreditList>
-        {authors.length > 0 && (
-          <li>
-            <CreditName>
-              作者—
-              {authors.map((author, index) => (
-                <span key={author.id}>
-                  {index > 0 && '，'}
-                  <Link href={`/author/${author.id}`}>{author.name}</Link>
-                </span>
-              ))}
-            </CreditName>
-          </li>
-        )}
+        {renderAuthorList(reporters, '記者')}
+        {renderAuthorList(translators, '編譯')}
+        {renderAuthorList(reviewers, '審校')}
+        {renderAuthorList(writers, '文')}
+        {renderAuthorList(sources, '稿源')}
 
-        {otherWriters && (
+        {otherByline && (
           <li>
-            <CreditName>{otherWriters}</CreditName>
+            <CreditName>{otherByline}</CreditName>
           </li>
         )}
 
