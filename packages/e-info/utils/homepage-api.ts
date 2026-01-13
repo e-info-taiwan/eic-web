@@ -71,17 +71,28 @@ export interface HomepageData {
 }
 
 /**
+ * 建立具有 timeout 功能的 AbortController
+ * 相容於不支援 AbortSignal.timeout 的環境
+ */
+function createTimeoutController(timeoutMs: number): AbortController {
+  const controller = new AbortController()
+  setTimeout(() => controller.abort(), timeoutMs)
+  return controller
+}
+
+/**
  * 從 JSON API 獲取首頁資料
  */
 async function fetchFromJsonApi(): Promise<HomepageApiResponse> {
   const endpoint = getHomepageApiEndpoint()
+  const controller = createTimeoutController(10000) // 10 秒 timeout
+
   const response = await fetch(endpoint, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
-    // 設定 timeout 為 10 秒
-    signal: AbortSignal.timeout(10000),
+    signal: controller.signal,
   })
 
   if (!response.ok) {
@@ -248,9 +259,10 @@ export async function fetchHomepageData(
 export async function checkHomepageApiHealth(): Promise<boolean> {
   try {
     const endpoint = getHomepageApiEndpoint()
+    const controller = createTimeoutController(5000) // 5 秒 timeout
     const response = await fetch(endpoint, {
       method: 'HEAD',
-      signal: AbortSignal.timeout(5000),
+      signal: controller.signal,
     })
     return response.ok
   } catch {
