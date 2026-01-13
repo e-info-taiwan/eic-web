@@ -5,9 +5,11 @@ import styled from 'styled-components'
 import AuthContext from '~/contexts/auth-context'
 import {
   type PollResult,
+  type PollResultCounts,
   createPollResultAnonymous,
   createPollResultWithMember,
   pollResults,
+  pollResultsCounts,
 } from '~/graphql/query/poll'
 import type { Poll } from '~/graphql/query/post'
 
@@ -174,45 +176,52 @@ export default function PostPoll({
   const { member, loading: authLoading } = useContext(AuthContext)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasVoted, setHasVoted] = useState(false)
-  const [voteResults, setVoteResults] = useState<PollResult[]>([])
+  const [voteCounts, setVoteCounts] = useState<PollResultCounts | null>(null)
 
-  // Query existing poll results
-  const { data: resultsData, refetch: refetchResults } = useQuery<{
-    pollResults: PollResult[]
-  }>(pollResults, {
-    variables: { pollId: poll?.id, postId },
-    skip: !poll?.id || !postId,
-    fetchPolicy: 'network-only',
-  })
+  // Query poll results counts
+  const { data: countsData, refetch: refetchCounts } =
+    useQuery<PollResultCounts>(pollResultsCounts, {
+      variables: { pollId: poll?.id },
+      skip: !poll?.id,
+      fetchPolicy: 'network-only',
+    })
+
+  // Query member's vote (only for logged-in users)
+  const { data: memberVoteData } = useQuery<{ pollResults: PollResult[] }>(
+    pollResults,
+    {
+      variables: { pollId: poll?.id, memberId: member?.id },
+      skip: !poll?.id || !member?.id,
+      fetchPolicy: 'network-only',
+    }
+  )
+
+  // Update vote counts when data changes
+  useEffect(() => {
+    if (countsData) {
+      setVoteCounts(countsData)
+    }
+  }, [countsData])
 
   // Check if current member has already voted (logged-in user)
-  // Or check localStorage for anonymous votes
   useEffect(() => {
-    if (resultsData?.pollResults) {
-      setVoteResults(resultsData.pollResults)
+    if (member && memberVoteData?.pollResults?.length) {
+      const memberVote = memberVoteData.pollResults[0]
+      setSelectedOption(memberVote.result)
+      setHasVoted(true)
+    }
+  }, [memberVoteData, member])
 
-      // Check logged-in user's vote
-      if (member) {
-        const memberVote = resultsData.pollResults.find(
-          (r) => r.member?.id === member.id
-        )
-        if (memberVote) {
-          setSelectedOption(memberVote.result)
-          setHasVoted(true)
-          return
-        }
-      }
-
-      // Check anonymous user's vote from localStorage
-      if (poll?.id && postId) {
-        const anonymousVote = hasAnonymousVoted(poll.id, postId)
-        if (anonymousVote !== null) {
-          setSelectedOption(anonymousVote)
-          setHasVoted(true)
-        }
+  // Check anonymous user's vote from localStorage
+  useEffect(() => {
+    if (!member && poll?.id && postId) {
+      const anonymousVote = hasAnonymousVoted(poll.id, postId)
+      if (anonymousVote !== null) {
+        setSelectedOption(anonymousVote)
+        setHasVoted(true)
       }
     }
-  }, [resultsData, member, poll?.id, postId])
+  }, [member, poll?.id, postId])
 
   // Mutations for logged-in and anonymous users
   const [submitVoteWithMember, { loading: isSubmittingWithMember }] =
@@ -253,13 +262,13 @@ export default function PostPoll({
   // Allow voting during auth loading (will use anonymous if not logged in)
   const isDisabled = authLoading
 
-  // Calculate percentage for each option based on vote results
+  // Calculate percentage for each option based on vote counts
   const getPercentage = (optionKey: number): number => {
-    if (!hasVoted || voteResults.length === 0) return 0
+    if (!hasVoted || !voteCounts || voteCounts.total === 0) return 0
 
-    const totalVotes = voteResults.length
-    const optionVotes = voteResults.filter((r) => r.result === optionKey).length
-    return Math.round((optionVotes / totalVotes) * 100)
+    const optionCount =
+      voteCounts[`option${optionKey}` as keyof PollResultCounts] || 0
+    return Math.round((optionCount / voteCounts.total) * 100)
   }
 
   const handleOptionClick = async (optionKey: number) => {
@@ -288,11 +297,11 @@ export default function PostPoll({
         saveAnonymousVote(poll.id, postId, optionKey)
       }
 
-      // Refetch results after voting
-      const { data } = await refetchResults()
+      // Refetch counts after voting
+      const { data } = await refetchCounts()
 
-      if (data?.pollResults) {
-        setVoteResults(data.pollResults)
+      if (data) {
+        setVoteCounts(data)
       }
 
       setSelectedOption(optionKey)
