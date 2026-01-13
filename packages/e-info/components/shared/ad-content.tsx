@@ -31,6 +31,11 @@ const Text = styled.span`
   color: #000;
 `
 
+const StyledPlaceholder = styled(Placeholder)`
+  flex: 1;
+  min-width: 0;
+`
+
 const AdLink = styled.a`
   display: block;
   flex: 1;
@@ -59,12 +64,12 @@ const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
   if (ads.length === 0) {
     return (
       <Container>
-        <Placeholder height={200}>
+        <StyledPlaceholder height={200}>
           <Text>廣告</Text>
-        </Placeholder>
-        <Placeholder height={200}>
+        </StyledPlaceholder>
+        <StyledPlaceholder height={200}>
           <Text>廣告</Text>
-        </Placeholder>
+        </StyledPlaceholder>
       </Container>
     )
   }
@@ -107,9 +112,9 @@ const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
       })}
       {/* If only 1 ad, show placeholder for second slot */}
       {displayAds.length === 1 && (
-        <Placeholder height={200}>
+        <StyledPlaceholder height={200}>
           <Text>廣告</Text>
-        </Placeholder>
+        </StyledPlaceholder>
       )}
     </Container>
   )
