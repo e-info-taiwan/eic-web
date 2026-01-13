@@ -5,10 +5,44 @@ import styled from 'styled-components'
 import AuthContext from '~/contexts/auth-context'
 import {
   type PollResult,
-  createPollResult,
+  createPollResultAnonymous,
+  createPollResultWithMember,
   pollResults,
 } from '~/graphql/query/poll'
 import type { Poll } from '~/graphql/query/post'
+
+// Local storage key for tracking anonymous votes
+const POLL_VOTES_STORAGE_KEY = 'eic_poll_votes'
+
+// Get anonymous votes from localStorage
+function getAnonymousVotes(): Record<string, number> {
+  if (typeof window === 'undefined') return {}
+  try {
+    const stored = localStorage.getItem(POLL_VOTES_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : {}
+  } catch {
+    return {}
+  }
+}
+
+// Save anonymous vote to localStorage
+function saveAnonymousVote(pollId: string, postId: string, result: number) {
+  if (typeof window === 'undefined') return
+  try {
+    const votes = getAnonymousVotes()
+    votes[`${pollId}_${postId}`] = result
+    localStorage.setItem(POLL_VOTES_STORAGE_KEY, JSON.stringify(votes))
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+// Check if anonymous user has already voted
+function hasAnonymousVoted(pollId: string, postId: string): number | null {
+  const votes = getAnonymousVotes()
+  const key = `${pollId}_${postId}`
+  return key in votes ? votes[key] : null
+}
 
 const PollWrapper = styled.section`
   margin-bottom: 48px;
@@ -123,12 +157,6 @@ const OptionText = styled.span`
   color: ${({ theme }) => theme.colors.grayscale[0]};
 `
 
-const LoginPrompt = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
-  margin-top: 12px;
-`
-
 type PollOption = {
   key: number
   text: string
@@ -157,22 +185,42 @@ export default function PostPoll({
     fetchPolicy: 'network-only',
   })
 
-  // Check if current member has already voted
+  // Check if current member has already voted (logged-in user)
+  // Or check localStorage for anonymous votes
   useEffect(() => {
-    if (resultsData?.pollResults && member) {
-      const memberVote = resultsData.pollResults.find(
-        (r) => r.member?.id === member.id
-      )
-      if (memberVote) {
-        setSelectedOption(memberVote.result)
-        setHasVoted(true)
-        setVoteResults(resultsData.pollResults)
+    if (resultsData?.pollResults) {
+      setVoteResults(resultsData.pollResults)
+
+      // Check logged-in user's vote
+      if (member) {
+        const memberVote = resultsData.pollResults.find(
+          (r) => r.member?.id === member.id
+        )
+        if (memberVote) {
+          setSelectedOption(memberVote.result)
+          setHasVoted(true)
+          return
+        }
+      }
+
+      // Check anonymous user's vote from localStorage
+      if (poll?.id && postId) {
+        const anonymousVote = hasAnonymousVoted(poll.id, postId)
+        if (anonymousVote !== null) {
+          setSelectedOption(anonymousVote)
+          setHasVoted(true)
+        }
       }
     }
-  }, [resultsData, member])
+  }, [resultsData, member, poll?.id, postId])
 
-  // Mutation to create poll result
-  const [submitVote, { loading: isSubmitting }] = useMutation(createPollResult)
+  // Mutations for logged-in and anonymous users
+  const [submitVoteWithMember, { loading: isSubmittingWithMember }] =
+    useMutation(createPollResultWithMember)
+  const [submitVoteAnonymous, { loading: isSubmittingAnonymous }] = useMutation(
+    createPollResultAnonymous
+  )
+  const isSubmitting = isSubmittingWithMember || isSubmittingAnonymous
 
   if (!poll || poll.status !== 'active') {
     return null
@@ -202,7 +250,8 @@ export default function PostPoll({
   }
 
   const isLoggedIn = !!member
-  const isDisabled = !isLoggedIn || authLoading
+  // Allow voting during auth loading (will use anonymous if not logged in)
+  const isDisabled = authLoading
 
   // Calculate percentage for each option based on vote results
   const getPercentage = (optionKey: number): number => {
@@ -217,15 +266,27 @@ export default function PostPoll({
     if (hasVoted || isSubmitting || isDisabled) return
 
     try {
-      // Submit vote to API
-      await submitVote({
-        variables: {
-          pollId: poll.id,
-          postId,
-          memberId: member!.id,
-          result: optionKey,
-        },
-      })
+      // Submit vote to API - use appropriate mutation based on login status
+      if (isLoggedIn && member) {
+        await submitVoteWithMember({
+          variables: {
+            pollId: poll.id,
+            postId,
+            memberId: member.id,
+            result: optionKey,
+          },
+        })
+      } else {
+        await submitVoteAnonymous({
+          variables: {
+            pollId: poll.id,
+            postId,
+            result: optionKey,
+          },
+        })
+        // Save anonymous vote to localStorage to prevent duplicate votes
+        saveAnonymousVote(poll.id, postId, optionKey)
+      }
 
       // Refetch results after voting
       const { data } = await refetchResults()
@@ -261,9 +322,6 @@ export default function PostPoll({
           </OptionRow>
         ))}
       </OptionList>
-      {!isLoggedIn && !authLoading && (
-        <LoginPrompt>請登入後參與投票</LoginPrompt>
-      )}
     </PollWrapper>
   )
 }

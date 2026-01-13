@@ -23,14 +23,30 @@ export const pollResults = gql`
   }
 `
 
-// Create a new poll result (vote)
-export const createPollResult = gql`
+// Create a new poll result (vote) for logged-in users
+export const createPollResultWithMember = gql`
   mutation ($pollId: ID!, $postId: ID!, $memberId: ID!, $result: Int!) {
     createPollResult(
       data: {
         poll: { connect: { id: $pollId } }
         post: { connect: { id: $postId } }
         member: { connect: { id: $memberId } }
+        result: $result
+      }
+    ) {
+      id
+      result
+    }
+  }
+`
+
+// Create a new poll result (vote) for anonymous users
+export const createPollResultAnonymous = gql`
+  mutation ($pollId: ID!, $postId: ID!, $result: Int!) {
+    createPollResult(
+      data: {
+        poll: { connect: { id: $pollId } }
+        post: { connect: { id: $postId } }
         result: $result
       }
     ) {
