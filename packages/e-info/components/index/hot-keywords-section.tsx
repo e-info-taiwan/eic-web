@@ -4,16 +4,16 @@ import styled from 'styled-components'
 
 const SectionContainer = styled.section`
   background-color: ${({ theme }) => theme.colors.grayscale[100]};
-  padding: 24px 20px;
+  padding: 20px 20px;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    padding: 40px;
+    padding: 20px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 48px 78px;
+    padding: 20px 78px;
   }
 `
 
