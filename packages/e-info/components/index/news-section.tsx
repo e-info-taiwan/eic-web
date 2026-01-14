@@ -433,6 +433,28 @@ const getContentText = (
   return ''
 }
 
+// Helper function to sanitize text content
+// Removes script tags and ensures pure text output
+const sanitizeText = (text: string): string => {
+  if (!text) return ''
+  // Remove script tags and their content
+  let sanitized = text.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    ''
+  )
+  // Remove any remaining HTML tags
+  sanitized = sanitized.replace(/<[^>]*>/g, '')
+  // Decode HTML entities
+  sanitized = sanitized
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+  return sanitized.trim()
+}
+
 // Helper function to extract brief text from Draft.js format
 // Returns the first non-empty text block, truncated to maxLength characters
 // Falls back to contentApiData if brief is empty
@@ -443,12 +465,36 @@ const getBriefText = (
 ): string => {
   // First try to extract from brief
   if (brief) {
-    // If brief is a string, return it directly (truncated)
+    // If brief is a string, check if it looks like JSON object
     if (typeof brief === 'string') {
-      if (brief.length > maxLength) {
-        return brief.slice(0, maxLength) + '...'
+      const trimmed = brief.trim()
+      // If it starts with { and contains "blocks", it's likely stringified Draft.js JSON
+      if (trimmed.startsWith('{') && trimmed.includes('"blocks"')) {
+        try {
+          const parsed = JSON.parse(trimmed)
+          if (parsed.blocks && Array.isArray(parsed.blocks)) {
+            for (const block of parsed.blocks) {
+              if (block.text && block.text.trim()) {
+                const text = sanitizeText(block.text.trim())
+                if (text.length > maxLength) {
+                  return text.slice(0, maxLength) + '...'
+                }
+                return text
+              }
+            }
+            // JSON parsed successfully but no text found - fallback to contentApiData
+            return getContentText(contentApiData, maxLength)
+          }
+        } catch {
+          // If parsing fails, treat as regular string below
+        }
       }
-      return brief
+      // Regular string (not JSON) - sanitize and return
+      const text = sanitizeText(trimmed)
+      if (text.length > maxLength) {
+        return text.slice(0, maxLength) + '...'
+      }
+      return text
     }
 
     // If brief is Draft.js format with blocks array
@@ -458,13 +504,15 @@ const getBriefText = (
         // Find the first non-empty text block
         for (const block of blocks) {
           if (block.text && block.text.trim()) {
-            const text = block.text.trim()
+            const text = sanitizeText(block.text.trim())
             if (text.length > maxLength) {
               return text.slice(0, maxLength) + '...'
             }
             return text
           }
         }
+        // Object parsed but no text found - fallback to contentApiData
+        return getContentText(contentApiData, maxLength)
       }
     }
   }
