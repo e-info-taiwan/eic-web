@@ -14,6 +14,7 @@ import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import FeaturedTopicsSection from '~/components/index/featured-topics-section'
 import GreenConsumptionSection from '~/components/index/green-consumption-section'
 import HighlightSection from '~/components/index/highlight-section'
+import HotKeywordsSection from '~/components/index/hot-keywords-section'
 import Inforgraphic from '~/components/index/inforgraphic'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import MainCarousel from '~/components/index/main-carousel'
@@ -113,6 +114,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       <FeaturedTopicsSection topics={topics} />
       <AdContent ads={deepTopicAds} />
       <GreenConsumptionSection categories={greenCategories} />
+      <HotKeywordsSection />
       <HiddenAnchor ref={anchorRef} />
     </>
   )
