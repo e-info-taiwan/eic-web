@@ -11,7 +11,7 @@ const PlaceholderContainer = styled.div<{ height: string | number }>`
   width: 100%;
   height: ${({ height }) =>
     typeof height === 'number' ? `${height}px` : height};
-  background-color: #d9d9d9;
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -25,12 +25,6 @@ const Container = styled.div`
   }
 `
 
-const Text = styled.span`
-  font-weight: 400;
-  font-size: 48px;
-  color: #000;
-`
-
 const StyledPlaceholder = styled(Placeholder)`
   flex: 1;
   min-width: 0;
@@ -64,12 +58,8 @@ const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
   if (ads.length === 0) {
     return (
       <Container>
-        <StyledPlaceholder height={200}>
-          <Text>廣告</Text>
-        </StyledPlaceholder>
-        <StyledPlaceholder height={200}>
-          <Text>廣告</Text>
-        </StyledPlaceholder>
+        <StyledPlaceholder height={200} />
+        <StyledPlaceholder height={200} />
       </Container>
     )
   }
@@ -111,11 +101,7 @@ const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
         )
       })}
       {/* If only 1 ad, show placeholder for second slot */}
-      {displayAds.length === 1 && (
-        <StyledPlaceholder height={200}>
-          <Text>廣告</Text>
-        </StyledPlaceholder>
-      )}
+      {displayAds.length === 1 && <StyledPlaceholder height={200} />}
     </Container>
   )
 }

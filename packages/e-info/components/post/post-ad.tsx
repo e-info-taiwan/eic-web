@@ -34,12 +34,6 @@ const AdImageWrapper = styled.div`
   }
 `
 
-const PlaceholderText = styled.span`
-  font-weight: 400;
-  font-size: 48px;
-  color: #fff;
-`
-
 type PostAdContentProps = {
   ad: PostAd | null | undefined
 }
@@ -49,9 +43,7 @@ const PostAdContent: React.FC<PostAdContentProps> = ({ ad }) => {
   if (!ad || ad.state !== 'active') {
     return (
       <Container>
-        <Placeholder height={200}>
-          <PlaceholderText>廣告 680x200</PlaceholderText>
-        </Placeholder>
+        <Placeholder height={200} />
       </Container>
     )
   }
