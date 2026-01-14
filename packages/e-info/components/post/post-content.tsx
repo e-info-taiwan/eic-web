@@ -62,6 +62,115 @@ const Summary = styled.article`
 //內文
 const Content = styled.article`
   ${defaultMarginBottom}
+
+  /* Timeline styles for embeddedcode */
+  .timeline-title {
+    color: ${({ theme }) => theme.colors.secondary[0]};
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 40px;
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 30px;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    /* Orange dot */
+    &::before {
+      content: '';
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background-color: ${({ theme }) => theme.colors.secondary[0]};
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    /* Vertical line */
+    &::after {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 32px;
+      bottom: 40px;
+      width: 1px;
+      background-color: ${({ theme }) => theme.colors.secondary[0]};
+    }
+
+    &:last-child::after {
+      bottom: 0;
+    }
+  }
+
+  .timeline-content {
+    flex: 1;
+  }
+
+  .timeline-date {
+    color: ${({ theme }) => theme.colors.secondary[0]};
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .timeline-headline {
+    color: ${({ theme }) => theme.colors.secondary[0]};
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .timeline-body {
+    color: ${({ theme }) => theme.colors.grayscale[20]};
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .timeline-image {
+    flex-shrink: 0;
+    width: 200px;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .timeline-image-caption {
+    font-size: 12px;
+    color: ${({ theme }) => theme.colors.grayscale[20]};
+    margin-top: 8px;
+    line-height: 1.25;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .timeline-item {
+      grid-template-columns: 1fr;
+    }
+
+    .timeline-image {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
 `
 
 //延伸議題
