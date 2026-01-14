@@ -4,7 +4,8 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
-import type { Topic, TopicPost } from '~/graphql/query/section'
+import type { Topic } from '~/graphql/query/section'
+import { getBriefText } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -450,87 +451,6 @@ const EmptyMessage = styled.p`
   padding: 2rem;
 `
 
-// Helper function to sanitize text content
-// Removes script tags and ensures pure text output
-const sanitizeText = (text: string): string => {
-  if (!text) return ''
-  // Remove script tags and their content
-  let sanitized = text.replace(
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    ''
-  )
-  // Remove any remaining HTML tags
-  sanitized = sanitized.replace(/<[^>]*>/g, '')
-  // Decode HTML entities
-  sanitized = sanitized
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-  return sanitized.trim()
-}
-
-// Helper function to extract brief text from various formats
-// Handles: plain string, Draft.js object, stringified Draft.js JSON
-const getBriefText = (
-  brief: TopicPost['brief'],
-  maxLength: number = 100
-): string => {
-  if (!brief) return ''
-
-  // If brief is a string
-  if (typeof brief === 'string') {
-    const trimmed = brief.trim()
-    // If it starts with { and contains "blocks", it's likely stringified Draft.js JSON
-    if (trimmed.startsWith('{') && trimmed.includes('"blocks"')) {
-      try {
-        const parsed = JSON.parse(trimmed)
-        if (parsed.blocks && Array.isArray(parsed.blocks)) {
-          for (const block of parsed.blocks) {
-            if (block.text && block.text.trim()) {
-              const text = sanitizeText(block.text.trim())
-              if (text.length > maxLength) {
-                return text.slice(0, maxLength) + '...'
-              }
-              return text
-            }
-          }
-        }
-        // JSON parsed successfully but no text found
-        return ''
-      } catch {
-        // If parsing fails, treat as regular string below
-      }
-    }
-    // Regular string (not JSON) - sanitize and return
-    const text = sanitizeText(trimmed)
-    if (text.length > maxLength) {
-      return text.slice(0, maxLength) + '...'
-    }
-    return text
-  }
-
-  // If brief is Draft.js format object with blocks array
-  if (typeof brief === 'object' && 'blocks' in brief) {
-    const blocks = brief.blocks as Array<{ text?: string }>
-    if (Array.isArray(blocks)) {
-      for (const block of blocks) {
-        if (block.text && block.text.trim()) {
-          const text = sanitizeText(block.text.trim())
-          if (text.length > maxLength) {
-            return text.slice(0, maxLength) + '...'
-          }
-          return text
-        }
-      }
-    }
-  }
-
-  return ''
-}
-
 // Sample rankings data (this could be fetched from API later)
 const rankings = [
   {
@@ -643,9 +563,9 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
                     <ArticleItem>
                       <ArticleContent>
                         <ArticleTitle>{post.title}</ArticleTitle>
-                        {getBriefText(post.brief) && (
+                        {getBriefText(post.brief, null, 100) && (
                           <ArticleExcerpt>
-                            {getBriefText(post.brief)}
+                            {getBriefText(post.brief, null, 100)}
                           </ArticleExcerpt>
                         )}
                       </ArticleContent>

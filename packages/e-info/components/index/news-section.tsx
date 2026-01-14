@@ -7,10 +7,8 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
-import type {
-  ContentApiDataBlock,
-  SectionCategory,
-} from '~/graphql/query/section'
+import type { SectionCategory } from '~/graphql/query/section'
+import { getBriefText } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -408,117 +406,6 @@ const formatDate = (dateString: string): string => {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}/${month}/${day}`
-}
-
-// Helper function to extract text from contentApiData format
-const getContentText = (
-  contentApiData: ContentApiDataBlock[] | null,
-  maxLength: number
-): string => {
-  if (!contentApiData || !Array.isArray(contentApiData)) return ''
-
-  // Find the first block with non-empty content
-  for (const block of contentApiData) {
-    if (block.content && Array.isArray(block.content)) {
-      const text = block.content.join('').trim()
-      if (text) {
-        if (text.length > maxLength) {
-          return text.slice(0, maxLength) + '...'
-        }
-        return text
-      }
-    }
-  }
-
-  return ''
-}
-
-// Helper function to sanitize text content
-// Removes script tags and ensures pure text output
-const sanitizeText = (text: string): string => {
-  if (!text) return ''
-  // Remove script tags and their content
-  let sanitized = text.replace(
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    ''
-  )
-  // Remove any remaining HTML tags
-  sanitized = sanitized.replace(/<[^>]*>/g, '')
-  // Decode HTML entities
-  sanitized = sanitized
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-  return sanitized.trim()
-}
-
-// Helper function to extract brief text from Draft.js format
-// Returns the first non-empty text block, truncated to maxLength characters
-// Falls back to contentApiData if brief is empty
-const getBriefText = (
-  brief: string | Record<string, unknown> | null,
-  contentApiData: ContentApiDataBlock[] | null,
-  maxLength: number = 40
-): string => {
-  // First try to extract from brief
-  if (brief) {
-    // If brief is a string, check if it looks like JSON object
-    if (typeof brief === 'string') {
-      const trimmed = brief.trim()
-      // If it starts with { and contains "blocks", it's likely stringified Draft.js JSON
-      if (trimmed.startsWith('{') && trimmed.includes('"blocks"')) {
-        try {
-          const parsed = JSON.parse(trimmed)
-          if (parsed.blocks && Array.isArray(parsed.blocks)) {
-            for (const block of parsed.blocks) {
-              if (block.text && block.text.trim()) {
-                const text = sanitizeText(block.text.trim())
-                if (text.length > maxLength) {
-                  return text.slice(0, maxLength) + '...'
-                }
-                return text
-              }
-            }
-            // JSON parsed successfully but no text found - fallback to contentApiData
-            return getContentText(contentApiData, maxLength)
-          }
-        } catch {
-          // If parsing fails, treat as regular string below
-        }
-      }
-      // Regular string (not JSON) - sanitize and return
-      const text = sanitizeText(trimmed)
-      if (text.length > maxLength) {
-        return text.slice(0, maxLength) + '...'
-      }
-      return text
-    }
-
-    // If brief is Draft.js format with blocks array
-    if (typeof brief === 'object' && 'blocks' in brief) {
-      const blocks = brief.blocks as Array<{ text?: string }>
-      if (Array.isArray(blocks)) {
-        // Find the first non-empty text block
-        for (const block of blocks) {
-          if (block.text && block.text.trim()) {
-            const text = sanitizeText(block.text.trim())
-            if (text.length > maxLength) {
-              return text.slice(0, maxLength) + '...'
-            }
-            return text
-          }
-        }
-        // Object parsed but no text found - fallback to contentApiData
-        return getContentText(contentApiData, maxLength)
-      }
-    }
-  }
-
-  // Fallback to contentApiData if brief is empty
-  return getContentText(contentApiData, maxLength)
 }
 
 type NewsSectionProps = {

@@ -115,9 +115,26 @@ export function getImageOfArticle({
   }, '')
 }
 
-// Helper function to check if text contains HTML tags (script, style, etc.)
-const containsHtmlTags = (text: string): boolean => {
-  return /<[^>]+>/.test(text)
+// Helper function to sanitize text content
+// Removes script tags, HTML tags, and decodes HTML entities
+const sanitizeText = (text: string): string => {
+  if (!text) return ''
+  // Remove script tags and their content
+  let sanitized = text.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    ''
+  )
+  // Remove any remaining HTML tags
+  sanitized = sanitized.replace(/<[^>]*>/g, '')
+  // Decode HTML entities
+  sanitized = sanitized
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+  return sanitized.trim()
 }
 
 // Helper function to extract text from contentApiData format
@@ -128,11 +145,18 @@ const getContentText = (
   if (!contentApiData || !Array.isArray(contentApiData)) return ''
 
   // Text block types that should be processed
+  // Skip non-text blocks like image, video, slideshow, etc.
   const textBlockTypes = [
     'unstyled',
     'header-one',
     'header-two',
     'header-three',
+    'header-four',
+    'header-five',
+    'header-six',
+    'blockquote',
+    'unordered-list-item',
+    'ordered-list-item',
   ]
 
   // Find the first block with non-empty text content
@@ -152,12 +176,12 @@ const getContentText = (
         continue
       }
 
-      const text = stringContent.join('').trim()
+      const rawText = stringContent.join('').trim()
+      if (!rawText) continue
 
-      // Skip if empty or contains HTML tags (script, embedded code, etc.)
-      if (!text || containsHtmlTags(text)) {
-        continue
-      }
+      // Sanitize the text to remove HTML tags
+      const text = sanitizeText(rawText)
+      if (!text) continue
 
       if (text.length > maxLength) {
         return text.slice(0, maxLength) + '...'
@@ -169,9 +193,35 @@ const getContentText = (
   return ''
 }
 
-// Helper function to extract brief text from Draft.js format
-// Returns the first non-empty text block, truncated to maxLength characters
-// Falls back to contentApiData if brief is empty
+// Helper function to extract text from Draft.js blocks array
+const extractTextFromBlocks = (
+  blocks: Array<{ text?: string }>,
+  maxLength: number
+): string => {
+  for (const block of blocks) {
+    if (block.text && block.text.trim()) {
+      const text = sanitizeText(block.text.trim())
+      if (text) {
+        if (text.length > maxLength) {
+          return text.slice(0, maxLength) + '...'
+        }
+        return text
+      }
+    }
+  }
+  return ''
+}
+
+/**
+ * Extract brief text from various formats
+ * Handles: plain string, Draft.js object, stringified Draft.js JSON
+ * Falls back to contentApiData if brief is empty or has no text
+ *
+ * @param brief - Brief content (string, Draft.js object, or stringified JSON)
+ * @param contentApiData - Fallback content from contentApiData
+ * @param maxLength - Maximum length of returned text (default: 100)
+ * @returns Sanitized plain text, truncated to maxLength
+ */
 export const getBriefText = (
   brief: string | Record<string, unknown> | null | undefined,
   contentApiData: ContentApiDataBlock[] | null | undefined,
@@ -179,28 +229,41 @@ export const getBriefText = (
 ): string => {
   // First try to extract from brief
   if (brief) {
-    // If brief is a string, return it directly (truncated)
+    // If brief is a string
     if (typeof brief === 'string') {
-      if (brief.length > maxLength) {
-        return brief.slice(0, maxLength) + '...'
+      const trimmed = brief.trim()
+
+      // Check if it's stringified Draft.js JSON (e.g., '{"blocks": [...]}')
+      if (trimmed.startsWith('{') && trimmed.includes('"blocks"')) {
+        try {
+          const parsed = JSON.parse(trimmed)
+          if (parsed.blocks && Array.isArray(parsed.blocks)) {
+            const text = extractTextFromBlocks(parsed.blocks, maxLength)
+            if (text) return text
+            // JSON parsed but no text found - fallback to contentApiData
+            return getContentText(contentApiData, maxLength)
+          }
+        } catch {
+          // If parsing fails, treat as regular string below
+        }
       }
-      return brief
+
+      // Regular string (not JSON) - sanitize and return
+      const text = sanitizeText(trimmed)
+      if (text.length > maxLength) {
+        return text.slice(0, maxLength) + '...'
+      }
+      return text
     }
 
-    // If brief is Draft.js format with blocks array
+    // If brief is Draft.js format object with blocks array
     if (typeof brief === 'object' && 'blocks' in brief) {
       const blocks = brief.blocks as Array<{ text?: string }>
       if (Array.isArray(blocks)) {
-        // Find the first non-empty text block
-        for (const block of blocks) {
-          if (block.text && block.text.trim()) {
-            const text = block.text.trim()
-            if (text.length > maxLength) {
-              return text.slice(0, maxLength) + '...'
-            }
-            return text
-          }
-        }
+        const text = extractTextFromBlocks(blocks, maxLength)
+        if (text) return text
+        // Object parsed but no text found - fallback to contentApiData
+        return getContentText(contentApiData, maxLength)
       }
     }
   }
