@@ -125,7 +125,7 @@ export default function SlideshowLightBox({
             images={images[focusImageIndex].resized}
             defaultImage={defaultImage}
             alt={images[focusImageIndex].name}
-            objectFit={'cover'}
+            objectFit={'fill'}
             rwd={{
               desktop: '64px',
               default: '100%',
