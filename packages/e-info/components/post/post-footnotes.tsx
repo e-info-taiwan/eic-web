@@ -8,7 +8,7 @@ export type FootnoteData = {
   bodyHTML: string // HTML content
 }
 
-type FootnoteItemProps = {
+type ExpandableProps = {
   $isExpanded: boolean
 }
 
@@ -25,10 +25,14 @@ const FootnoteItem = styled.div`
   }
 `
 
-const FootnoteHeader = styled.button<FootnoteItemProps>`
+const FootnoteHeaderRow = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
+`
+
+const FootnoteHeader = styled.button`
+  display: flex;
+  align-items: center;
   padding: 0;
   background: none;
   border: none;
@@ -58,37 +62,38 @@ const FootnoteTitle = styled.span`
   }
 `
 
-const ArrowIconWrapper = styled.span<FootnoteItemProps>`
+const BackToRefLink = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 15px;
   flex-shrink: 0;
-  transition: transform 0.3s ease;
-  transform: ${({ $isExpanded }) => ($isExpanded ? 'scaleY(1)' : 'scaleY(-1)')};
   margin-left: 16px;
+  cursor: pointer;
+
+  &:hover svg path {
+    fill: ${({ theme }) => theme.colors.primary[20]};
+  }
 `
 
-const ArrowIcon = ({ isExpanded }: { isExpanded: boolean }) => (
-  <ArrowIconWrapper $isExpanded={isExpanded}>
-    <svg
-      width="20"
-      height="15"
-      viewBox="0 0 20 15"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M10 4.51361L4.30466 10L3 8.7432L10 2L17 8.7432L15.6953 10L10 4.51361Z"
-        fill="#388A48"
-      />
-      <path d="M3 12H17V13H3V12Z" fill="#388A48" />
-    </svg>
-  </ArrowIconWrapper>
+const BackToRefIcon = () => (
+  <svg
+    width="20"
+    height="15"
+    viewBox="0 0 20 15"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M10 4.51361L4.30466 10L3 8.7432L10 2L17 8.7432L15.6953 10L10 4.51361Z"
+      fill="#388A48"
+    />
+    <path d="M3 12H17V13H3V12Z" fill="#388A48" />
+  </svg>
 )
 
-const FootnoteBody = styled.div<FootnoteItemProps>`
+const FootnoteBody = styled.div<ExpandableProps>`
   display: ${({ $isExpanded }) => ($isExpanded ? 'block' : 'none')};
   background-color: ${({ theme }) => theme.colors.grayscale[99]};
   padding: 20px 28px;
@@ -152,19 +157,35 @@ function FootnoteRow({ footnote, defaultExpanded = false }: FootnoteRowProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
   const footnoteNumber = footnote.number.replace(/[^0-9]/g, '')
   const footnoteId = `footnote-${footnoteNumber}`
+  const footnoteRefId = `footnote-ref-${footnoteNumber}`
+
+  const handleBackToRef = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const refElement = document.getElementById(footnoteRefId)
+    if (refElement) {
+      refElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
 
   return (
     <FootnoteItem id={footnoteId}>
-      <FootnoteHeader
-        $isExpanded={isExpanded}
-        onClick={() => setIsExpanded(!isExpanded)}
-        aria-expanded={isExpanded}
-        aria-controls={`${footnoteId}-content`}
-      >
-        <FootnoteNumber>{footnote.number}</FootnoteNumber>
-        <FootnoteTitle>{footnote.name}</FootnoteTitle>
-        <ArrowIcon isExpanded={isExpanded} />
-      </FootnoteHeader>
+      <FootnoteHeaderRow>
+        <FootnoteHeader
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+          aria-controls={`${footnoteId}-content`}
+        >
+          <FootnoteNumber>{footnote.number}</FootnoteNumber>
+          <FootnoteTitle>{footnote.name}</FootnoteTitle>
+        </FootnoteHeader>
+        <BackToRefLink
+          href={`#${footnoteRefId}`}
+          onClick={handleBackToRef}
+          title="回到文章標注處"
+        >
+          <BackToRefIcon />
+        </BackToRefLink>
+      </FootnoteHeaderRow>
       <FootnoteBody
         id={`${footnoteId}-content`}
         $isExpanded={isExpanded}

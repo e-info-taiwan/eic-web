@@ -42,9 +42,12 @@ function Footnote(props) {
     }
   }
 
+  const footnoteNumber = number.replace(/[^0-9]/g, '')
+
   return (
     <FootnoteLink
-      href={`#footnote-${number.replace(/[^0-9]/g, '')}`}
+      id={`footnote-ref-${footnoteNumber}`}
+      href={`#footnote-${footnoteNumber}`}
       onClick={handleClick}
       title={number}
     >

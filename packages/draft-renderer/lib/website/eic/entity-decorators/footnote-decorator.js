@@ -43,8 +43,10 @@ function Footnote(props) {
       }, 2000);
     }
   };
+  var footnoteNumber = number.replace(/[^0-9]/g, '');
   return /*#__PURE__*/_react["default"].createElement(FootnoteLink, {
-    href: "#footnote-".concat(number.replace(/[^0-9]/g, '')),
+    id: "footnote-ref-".concat(footnoteNumber),
+    href: "#footnote-".concat(footnoteNumber),
     onClick: handleClick,
     title: number
   }, props.children);
