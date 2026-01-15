@@ -87,7 +87,7 @@ export default function CustomHead(props: HeadProps): JSX.Element {
     title: props.title ?? SITE_TITLE,
     description:
       props.description ??
-      'READr 是一個新聞媒體，致力於透過內容實驗，增加使用者的媒體識讀能力。團隊組成為工程師、設計師、記者、產品經理，多元專業背景的成員共同完成新聞的產製，並在專案中加上讀者參與的元素，讓以往封閉的新聞編輯室有開放的可能。',
+      '「環境資訊中心」由社團法人台灣環境資訊協會成立。我們相信，任何改變行動都源自於「知道身邊發生什麼事」開始，因著打動人心的那篇文字所乘載的資訊和情感而產生共鳴、轉化。唯有資訊公開、普及，並透過社會大眾參與，方能促進人與自然和諧，臻至永續發展。',
     site_name: SITE_TITLE,
     url: SITE_URL,
     type: 'website',
