@@ -1,14 +1,10 @@
 import gql from 'graphql-tag'
 
 import { POST_STYLES, REPORT_STYLES } from '~/constants/constant'
-import type { Post } from '~/graphql/fragments/post'
-import { postFragment } from '~/graphql/fragments/post'
-import { resizeImagesFragment } from '~/graphql/fragments/resized-images'
-import type {
-  GenericCategory,
-  Override,
-  PhotoWithResizedOnly,
-} from '~/types/common'
+import type { PhotoWithResizedCard, PostCard } from '~/graphql/fragments/post'
+import { postCardFragment } from '~/graphql/fragments/post'
+import { resizeImagesCardFragment } from '~/graphql/fragments/resized-images'
+import type { GenericCategory, Override } from '~/types/common'
 import { convertToStringList } from '~/utils/common'
 
 export type Category = Override<
@@ -26,16 +22,16 @@ export type Category = Override<
     | 'sortOrder'
   >,
   {
-    posts?: Post[]
-    reports?: Post[]
-    ogImage?: PhotoWithResizedOnly | null
+    posts?: PostCard[]
+    reports?: PostCard[]
+    ogImage?: PhotoWithResizedCard | null
   }
 >
 
 export type CategoryWithoutPosts = Override<
   Pick<GenericCategory, 'id' | 'slug' | 'title' | 'ogImage' | 'ogDescription'>,
   {
-    ogImage?: PhotoWithResizedOnly | null
+    ogImage?: PhotoWithResizedCard | null
   }
 >
 
@@ -75,7 +71,7 @@ const categories = gql`
         }
         orderBy: { publishTime: desc }
       ) @include(if: $shouldQueryRelatedPost) {
-        ...PostFields
+        ...PostFieldsCard
       }
       reports: relatedPost(
         take: $relatedReportFirst
@@ -86,19 +82,19 @@ const categories = gql`
         }
         orderBy: { publishTime: desc }
       ) @include(if: $shouldQueryRelatedReport) {
-        ...PostFields
+        ...PostFieldsCard
       }
       ogDescription
       ogImage {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
       }
-      
+
     }
   }
-  ${postFragment}
-  ${resizeImagesFragment}
+  ${postCardFragment}
+  ${resizeImagesCardFragment}
 `
 
 export { categories }

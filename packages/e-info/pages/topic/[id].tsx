@@ -418,14 +418,16 @@ const getImageUrl = (post: TopicPost): string => {
 }
 
 // Helper function to get hero image URL from topic
+// Note: Using card sizes (w800 max) to reduce payload. If larger sizes are needed,
+// create a separate query with full image fragments.
 const getHeroImageUrl = (topic: Topic): string => {
   const resized = topic.heroImage?.resized
   const resizedWebp = topic.heroImage?.resizedWebp
   return (
-    resizedWebp?.w1600 ||
-    resizedWebp?.w1200 ||
-    resized?.w1600 ||
-    resized?.w1200 ||
+    resizedWebp?.w800 ||
+    resizedWebp?.w480 ||
+    resized?.w800 ||
+    resized?.w480 ||
     resized?.original ||
     ''
   )

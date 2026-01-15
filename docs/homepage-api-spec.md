@@ -26,25 +26,58 @@ interface HomepageApiResponse {
   // 大分類資料 (時事新聞、專欄、副刊、綠色消費)
   sections: Section[]
 
-  // 焦點話題 (category slug = "hottopic")
+  // 焦點話題 (category slug = "hottopic") - 使用 card 尺寸圖片
   highlightPicks: HomepagePick[]
 
-  // 首頁輪播大圖 (category slug = "homepepicks")
-  carouselPicks: HomepagePick[]
+  // 首頁輪播大圖 (category slug = "homepepicks") - 使用完整尺寸圖片
+  carouselPicks: HomepagePickCarousel[]
 
-  // 深度專題 (isPinned = true, status = "published")
+  // 深度專題 (isPinned = true, status = "published") - 使用 card 尺寸圖片
   topics: Topic[]
 
-  // 重要圖表 (最新一筆, state = "published")
+  // 重要圖表 (最新一筆, state = "published") - 使用 card 尺寸圖片
   infoGraph: InfoGraph | null
 
-  // 首頁廣告 - 時事新聞下方 (showOnHomepage = true, state = "active")
+  // 首頁廣告 - 時事新聞下方 (showOnHomepage = true, state = "active") - 使用 card 尺寸圖片
   ads: Ad[]
 
-  // 首頁廣告 - 深度專題下方 (showOnHomepageDeepTopic = true, state = "active")
+  // 首頁廣告 - 深度專題下方 (showOnHomepageDeepTopic = true, state = "active") - 使用 card 尺寸圖片
   deepTopicAds: Ad[]
 }
 ```
+
+---
+
+## 圖片尺寸策略
+
+為了減少 API payload 大小，我們採用響應式圖片策略：
+
+### Card 尺寸 (ResizedImagesCard)
+用於：文章卡片、縮圖、列表顯示、焦點話題、深度專題、廣告等
+
+```typescript
+interface ResizedImagesCard {
+  original: string | null
+  w480: string | null
+  w800: string | null
+}
+```
+
+### 完整尺寸 (ResizedImages)
+用於：首頁輪播大圖（需要在桌面版顯示較大的 hero 圖片）
+
+```typescript
+interface ResizedImages {
+  original: string | null
+  w480: string | null
+  w800: string | null
+  w1200: string | null
+  w1600: string | null
+  w2400: string | null
+}
+```
+
+**效益**：使用 Card 尺寸可減少約 50-60% 的 API payload 大小。
 
 ---
 
@@ -59,6 +92,7 @@ interface HomepageApiResponse {
 - 每個 category 取 8 篇文章
 - Categories 依 `sortOrder` 升冪排序
 - Posts 依 `publishTime` 降冪排序
+- **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
 ```graphql
@@ -84,17 +118,11 @@ query {
             original
             w480
             w800
-            w1200
-            w1600
-            w2400
           }
           resizedWebp {
             original
             w480
             w800
-            w1200
-            w1600
-            w2400
           }
         }
       }
@@ -136,8 +164,8 @@ interface SectionPost {
   brief: string | object | null
   contentApiData: ContentApiDataBlock[] | null
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -159,12 +187,103 @@ interface ContentApiDataBlock {
 **查詢條件**:
 - Category slug: `"hottopic"`
 - 依 `sortOrder` 升冪排序
+- **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
 ```graphql
 query {
   homepagePicks(
     where: { category: { slug: { equals: "hottopic" } } }
+    orderBy: { sortOrder: asc }
+  ) {
+    id
+    sortOrder
+    customUrl
+    customTitle
+    customDescription
+    customImage {
+      resized {
+        original
+        w480
+        w800
+      }
+      resizedWebp {
+        original
+        w480
+        w800
+      }
+    }
+    posts {
+      id
+      title
+      publishTime
+      heroImage {
+        resized {
+          original
+          w480
+          w800
+        }
+        resizedWebp {
+          original
+          w480
+          w800
+        }
+      }
+    }
+    category {
+      id
+      slug
+      name
+    }
+  }
+}
+```
+
+**TypeScript 型別**:
+```typescript
+interface HomepagePick {
+  id: string
+  sortOrder: number
+  customUrl: string | null
+  customTitle: string | null
+  customDescription: string | null
+  customImage: {
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
+  } | null
+  posts: {
+    id: string
+    title: string
+    publishTime: string
+    heroImage: {
+      resized: ResizedImagesCard | null
+      resizedWebp: ResizedImagesCard | null
+    } | null
+  } | null
+  category: {
+    id: string
+    slug: string
+    name: string
+  } | null
+}
+```
+
+---
+
+### 3. carouselPicks (首頁輪播大圖)
+
+對應目前的 `homepagePicksForCarousel` 查詢。
+
+**查詢條件**:
+- Category slug: `"homepepicks"`
+- 依 `sortOrder` 升冪排序
+- **圖片尺寸**: 完整尺寸 (original, w480, w800, w1200, w1600, w2400) - 輪播需要較大圖片
+
+**GraphQL 等效查詢**:
+```graphql
+query {
+  homepagePicks(
+    where: { category: { slug: { equals: "homepepicks" } } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -224,14 +343,14 @@ query {
 
 **TypeScript 型別**:
 ```typescript
-interface HomepagePick {
+interface HomepagePickCarousel {
   id: string
   sortOrder: number
   customUrl: string | null
   customTitle: string | null
   customDescription: string | null
   customImage: {
-    resized: ResizedImages | null
+    resized: ResizedImages | null  // 完整尺寸
     resizedWebp: ResizedImages | null
   } | null
   posts: {
@@ -239,7 +358,7 @@ interface HomepagePick {
     title: string
     publishTime: string
     heroImage: {
-      resized: ResizedImages | null
+      resized: ResizedImages | null  // 完整尺寸
       resizedWebp: ResizedImages | null
     } | null
   } | null
@@ -248,28 +367,6 @@ interface HomepagePick {
     slug: string
     name: string
   } | null
-}
-```
-
----
-
-### 3. carouselPicks (首頁輪播大圖)
-
-對應目前的 `homepagePicksForCarousel` 查詢。
-
-**查詢條件**:
-- Category slug: `"homepepicks"`
-- 依 `sortOrder` 升冪排序
-
-**GraphQL 等效查詢**:
-```graphql
-query {
-  homepagePicks(
-    where: { category: { slug: { equals: "homepepicks" } } }
-    orderBy: { sortOrder: asc }
-  ) {
-    # 同 highlightPicks 欄位
-  }
 }
 ```
 
@@ -285,6 +382,7 @@ query {
 - 依 `id` 升冪排序
 - 每個 topic 取 4 篇文章
 - Posts 依 `publishTime` 降冪排序
+- **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
 ```graphql
@@ -302,17 +400,11 @@ query {
         original
         w480
         w800
-        w1200
-        w1600
-        w2400
       }
       resizedWebp {
         original
         w480
         w800
-        w1200
-        w1600
-        w2400
       }
     }
     postsCount
@@ -326,17 +418,11 @@ query {
           original
           w480
           w800
-          w1200
-          w1600
-          w2400
         }
         resizedWebp {
           original
           w480
           w800
-          w1200
-          w1600
-          w2400
         }
       }
     }
@@ -353,8 +439,8 @@ interface Topic {
   status: string
   content: string | null
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
   postsCount: number
   posts: TopicPost[]
@@ -367,8 +453,8 @@ interface TopicPost {
   publishTime: string
   brief: string | object | null
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 ```
@@ -383,6 +469,7 @@ interface TopicPost {
 - `state = "published"`
 - 依 `createdAt` 降冪排序
 - 只取 1 筆
+- **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
 ```graphql
@@ -403,17 +490,11 @@ query {
         original
         w480
         w800
-        w1200
-        w1600
-        w2400
       }
       resizedWebp {
         original
         w480
         w800
-        w1200
-        w1600
-        w2400
       }
     }
   }
@@ -430,8 +511,8 @@ interface InfoGraph {
   youtubeUrl: string | null
   state: string
   image: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 ```
@@ -446,6 +527,7 @@ interface InfoGraph {
 - `showOnHomepage = true`
 - `state = "active"`
 - 依 `sortOrder` 升冪排序
+- **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
 ```graphql
@@ -466,17 +548,11 @@ query {
         original
         w480
         w800
-        w1200
-        w1600
-        w2400
       }
       resizedWebp {
         original
         w480
         w800
-        w1200
-        w1600
-        w2400
       }
     }
   }
@@ -494,8 +570,8 @@ interface Ad {
   sortOrder: number | null
   imageUrl: string | null
   image: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 ```
@@ -510,6 +586,7 @@ interface Ad {
 - `showOnHomepageDeepTopic = true`
 - `state = "active"`
 - 依 `sortOrder` 升冪排序
+- **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
 ```graphql
@@ -527,7 +604,21 @@ query {
 
 ## 共用型別
 
-### ResizedImages
+### ResizedImagesCard (卡片尺寸)
+
+用於大部分元件（文章卡片、焦點話題、深度專題、廣告等）
+
+```typescript
+interface ResizedImagesCard {
+  original: string | null
+  w480: string | null
+  w800: string | null
+}
+```
+
+### ResizedImages (完整尺寸)
+
+僅用於首頁輪播大圖
 
 ```typescript
 interface ResizedImages {
@@ -569,18 +660,12 @@ interface ResizedImages {
                 "resized": {
                   "original": "https://...",
                   "w480": "https://...",
-                  "w800": "https://...",
-                  "w1200": "https://...",
-                  "w1600": "https://...",
-                  "w2400": "https://..."
+                  "w800": "https://..."
                 },
                 "resizedWebp": {
                   "original": "https://...",
                   "w480": "https://...",
-                  "w800": "https://...",
-                  "w1200": "https://...",
-                  "w1600": "https://...",
-                  "w2400": "https://..."
+                  "w800": "https://..."
                 }
               }
             }
@@ -589,17 +674,113 @@ interface ResizedImages {
       ]
     }
   ],
-  "highlightPicks": [],
-  "carouselPicks": [],
+  "highlightPicks": [
+    {
+      "id": "1",
+      "sortOrder": 1,
+      "customUrl": null,
+      "customTitle": "焦點話題標題",
+      "customDescription": null,
+      "customImage": {
+        "resized": {
+          "original": "https://...",
+          "w480": "https://...",
+          "w800": "https://..."
+        },
+        "resizedWebp": null
+      },
+      "posts": {
+        "id": "12345",
+        "title": "文章標題",
+        "publishTime": "2025-01-15T00:00:00.000Z",
+        "heroImage": null
+      },
+      "category": {
+        "id": "10",
+        "slug": "hottopic",
+        "name": "焦點話題"
+      }
+    }
+  ],
+  "carouselPicks": [
+    {
+      "id": "2",
+      "sortOrder": 1,
+      "customUrl": null,
+      "customTitle": "輪播標題",
+      "customDescription": "輪播描述",
+      "customImage": {
+        "resized": {
+          "original": "https://...",
+          "w480": "https://...",
+          "w800": "https://...",
+          "w1200": "https://...",
+          "w1600": "https://...",
+          "w2400": "https://..."
+        },
+        "resizedWebp": {
+          "original": "https://...",
+          "w480": "https://...",
+          "w800": "https://...",
+          "w1200": "https://...",
+          "w1600": "https://...",
+          "w2400": "https://..."
+        }
+      },
+      "posts": {
+        "id": "23456",
+        "title": "輪播文章標題",
+        "publishTime": "2025-01-14T00:00:00.000Z",
+        "heroImage": {
+          "resized": {
+            "original": "https://...",
+            "w480": "https://...",
+            "w800": "https://...",
+            "w1200": "https://...",
+            "w1600": "https://...",
+            "w2400": "https://..."
+          },
+          "resizedWebp": null
+        }
+      },
+      "category": {
+        "id": "11",
+        "slug": "homepepicks",
+        "name": "首頁輪播"
+      }
+    }
+  ],
   "topics": [
     {
       "id": "3",
       "title": "直擊阿聯氣候新時代",
       "status": "published",
       "content": "專題描述...",
-      "heroImage": null,
+      "heroImage": {
+        "resized": {
+          "original": "https://...",
+          "w480": "https://...",
+          "w800": "https://..."
+        },
+        "resizedWebp": null
+      },
       "postsCount": 4,
-      "posts": [],
+      "posts": [
+        {
+          "id": "34567",
+          "title": "專題文章標題",
+          "publishTime": "2025-01-13T00:00:00.000Z",
+          "brief": "文章摘要...",
+          "heroImage": {
+            "resized": {
+              "original": "https://...",
+              "w480": "https://...",
+              "w800": "https://..."
+            },
+            "resizedWebp": null
+          }
+        }
+      ],
       "isPinned": true
     }
   ],
@@ -610,7 +791,14 @@ interface ResizedImages {
     "description": "圖表描述",
     "youtubeUrl": null,
     "state": "published",
-    "image": null
+    "image": {
+      "resized": {
+        "original": "https://...",
+        "w480": "https://...",
+        "w800": "https://..."
+      },
+      "resizedWebp": null
+    }
   },
   "ads": [
     {
@@ -625,10 +813,7 @@ interface ResizedImages {
         "resized": {
           "original": "https://storage.googleapis.com/...",
           "w480": "https://storage.googleapis.com/...",
-          "w800": "https://storage.googleapis.com/...",
-          "w1200": null,
-          "w1600": null,
-          "w2400": null
+          "w800": "https://storage.googleapis.com/..."
         },
         "resizedWebp": null
       }
@@ -647,10 +832,7 @@ interface ResizedImages {
         "resized": {
           "original": "https://storage.googleapis.com/...",
           "w480": "https://storage.googleapis.com/...",
-          "w800": "https://storage.googleapis.com/...",
-          "w1200": null,
-          "w1600": null,
-          "w2400": null
+          "w800": "https://storage.googleapis.com/..."
         },
         "resizedWebp": null
       }
@@ -689,6 +871,7 @@ HTTP Status Codes:
 2. **資料庫查詢**: 可考慮使用 DataLoader 批次查詢，避免 N+1 問題
 3. **並行查詢**: 後端可使用 Promise.all 並行執行各個查詢
 4. **壓縮**: 啟用 gzip/brotli 壓縮
+5. **圖片尺寸**: 使用 Card 尺寸 (original, w480, w800) 可減少約 50-60% payload
 
 ---
 
@@ -698,13 +881,13 @@ HTTP Status Codes:
 - **[homepage-api-example.json](./homepage-api-example.json)** - 從 dev 環境 GraphQL API 實際查詢產生的完整 response
 
 此檔案包含：
-- 4 個 sections（共 86 個 categories，每個 category 最多 8 篇文章）
-- 3 個 highlightPicks
-- 3 個 carouselPicks
-- 4 個 topics（每個 topic 4 篇文章）
-- 1 個 infoGraph
-- 2 個 ads（showOnHomepage）
-- 1 個 deepTopicAds（showOnHomepageDeepTopic）
+- 4 個 sections（共 86 個 categories，每個 category 最多 8 篇文章）- **使用 Card 尺寸圖片**
+- 3 個 highlightPicks - **使用 Card 尺寸圖片**
+- 3 個 carouselPicks - **使用完整尺寸圖片**
+- 4 個 topics（每個 topic 4 篇文章）- **使用 Card 尺寸圖片**
+- 1 個 infoGraph - **使用 Card 尺寸圖片**
+- 2 個 ads（showOnHomepage）- **使用 Card 尺寸圖片**
+- 1 個 deepTopicAds（showOnHomepageDeepTopic）- **使用 Card 尺寸圖片**
 
 ---
 
@@ -719,3 +902,18 @@ HTTP Status Codes:
 相關程式碼位於：
 - `packages/e-info/utils/homepage-api.ts` - API 呼叫與 fallback 邏輯
 - `packages/e-info/pages/index.tsx` - 首頁資料獲取
+- `packages/e-info/graphql/fragments/resized-images.ts` - Card 與完整尺寸 fragments
+- `packages/e-info/graphql/fragments/post.ts` - PostFieldsCard 與 PostFields fragments
+
+---
+
+## 變更記錄
+
+### 2025-01-15
+- **新增響應式圖片尺寸策略**
+  - 新增 `ResizedImagesCard` 類型（僅 original, w480, w800）
+  - 大部分元件改用 Card 尺寸以減少 payload
+  - 輪播 (`carouselPicks`) 保留完整尺寸（需要大圖顯示）
+- **新增 `HomepagePickCarousel` 類型**
+  - 與 `HomepagePick` 分開，使用完整圖片尺寸
+- **預期效益**：API payload 減少約 50-60%

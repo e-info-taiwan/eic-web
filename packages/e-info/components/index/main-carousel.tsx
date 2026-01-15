@@ -7,12 +7,12 @@ import Slider from 'react-slick'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
-import type { HomepagePick } from '~/graphql/query/section'
+import type { HomepagePickCarousel } from '~/graphql/query/section'
 import IconNext from '~/public/icons/next.svg'
 import IconPrev from '~/public/icons/prev.svg'
 
 type MainCarouselProps = {
-  picks: HomepagePick[]
+  picks: HomepagePickCarousel[]
 }
 
 // Note: You'll need to install react-slick and slick-carousel:
@@ -296,7 +296,7 @@ const MainTitle = styled.h2.attrs({ className: 'slide-title' })`
 `
 
 // Helper function to get image URL from pick
-const getImageUrl = (pick: HomepagePick): string => {
+const getImageUrl = (pick: HomepagePickCarousel): string => {
   // Priority: customImage > post heroImage
   const customImage =
     pick.customImage?.resized?.w1600 || pick.customImage?.resized?.original
@@ -312,12 +312,12 @@ const getImageUrl = (pick: HomepagePick): string => {
 }
 
 // Helper function to get title from pick
-const getTitle = (pick: HomepagePick): string => {
+const getTitle = (pick: HomepagePickCarousel): string => {
   return pick.customTitle || pick.posts?.title || ''
 }
 
 // Helper function to get link URL from pick
-const getLinkUrl = (pick: HomepagePick): string => {
+const getLinkUrl = (pick: HomepagePickCarousel): string => {
   if (pick.customUrl) return pick.customUrl
   if (pick.posts?.id) return `/node/${pick.posts.id}`
   return '#'

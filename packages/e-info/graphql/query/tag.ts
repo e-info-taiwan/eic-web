@@ -1,15 +1,15 @@
 import gql from 'graphql-tag'
 
 import { POST_STYLES } from '~/constants/constant'
-import type { Post } from '~/graphql/fragments/post'
-import { postFragment } from '~/graphql/fragments/post'
+import type { PostCard } from '~/graphql/fragments/post'
+import { postCardFragment } from '~/graphql/fragments/post'
 import type { GenericTag, Override } from '~/types/common'
 import { convertToStringList } from '~/utils/common'
 
 export type Tag = Override<
   Pick<GenericTag, 'id' | 'name' | 'posts'>,
   {
-    posts?: Post[]
+    posts?: PostCard[]
   }
 >
 
@@ -20,7 +20,7 @@ const tags = gql`
     $relatedPostFirst: Int = 12
     $relatedPostTypes: [String!] = [${convertToStringList(POST_STYLES)}]
   ) {
-    tags ( where: { 
+    tags ( where: {
       name: { equals: $tagName  }
     } ) {
       id
@@ -34,11 +34,11 @@ const tags = gql`
         }
         orderBy: { publishTime: desc }
       ) {
-        ...PostFields
+        ...PostFieldsCard
       }
     }
   }
-  ${postFragment}
+  ${postCardFragment}
 `
 
 export { tags }

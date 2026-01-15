@@ -8,6 +8,7 @@ import type { ApolloClient } from '@apollo/client/core'
 import type {
   Ad,
   HomepagePick,
+  HomepagePickCarousel,
   InfoGraph,
   Section,
   SectionCategory,
@@ -47,7 +48,7 @@ function getHomepageApiEndpoint(): string {
 export interface HomepageApiResponse {
   sections: Section[]
   highlightPicks: HomepagePick[]
-  carouselPicks: HomepagePick[]
+  carouselPicks: HomepagePickCarousel[]
   topics: Topic[]
   infoGraph: InfoGraph | null
   ads: Ad[]
@@ -63,7 +64,7 @@ export interface HomepageData {
   supplementCategories: SectionCategory[]
   greenCategories: SectionCategory[]
   highlightPicks: HomepagePick[]
-  carouselPicks: HomepagePick[]
+  carouselPicks: HomepagePickCarousel[]
   topics: Topic[]
   infoGraph: InfoGraph | null
   ads: Ad[]
@@ -133,7 +134,7 @@ async function fetchFromGraphQL(
       query: topicsWithPosts,
       variables: { postsPerTopic: 4 },
     }),
-    client.query<{ homepagePicks: HomepagePick[] }>({
+    client.query<{ homepagePicks: HomepagePickCarousel[] }>({
       query: homepagePicksForCarousel,
     }),
     client.query<{ infoGraphs: InfoGraph[] }>({

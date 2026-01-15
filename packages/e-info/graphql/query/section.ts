@@ -1,9 +1,12 @@
 import gql from 'graphql-tag'
 
 import {
+  resizeImagesCardFragment,
   resizeImagesFragment,
+  resizeWebpImagesCardFragment,
   resizeWebpImagesFragment,
 } from '~/graphql/fragments/resized-images'
+import type { ResizedImagesCard } from '~/graphql/fragments/post'
 import type { ResizedImages } from '~/types/common'
 
 export type ContentApiDataBlock = {
@@ -21,8 +24,8 @@ export type SectionPost = {
   brief: string | Record<string, unknown> | null
   contentApiData: ContentApiDataBlock[] | null
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -47,8 +50,8 @@ export type CategoryPost = {
   title: string
   publishTime: string
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -66,8 +69,8 @@ export type TopicPost = {
   publishTime: string
   brief: string | Record<string, unknown> | null
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -82,8 +85,8 @@ export type Topic = {
   status: string
   content: string | null
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
   postsCount: number
   posts: TopicPost[]
@@ -92,13 +95,14 @@ export type Topic = {
   updatedAt?: string
 }
 
+// HomepagePick for highlight section (uses card sizes)
 export type HomepagePickPost = {
   id: string
   title: string
   publishTime: string
   heroImage: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -109,10 +113,39 @@ export type HomepagePick = {
   customTitle: string | null
   customDescription: string | null
   customImage: {
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
+  } | null
+  posts: HomepagePickPost | null
+  category: {
+    id: string
+    slug: string
+    name: string
+  } | null
+}
+
+// HomepagePickCarousel for main carousel (uses full sizes for large hero images)
+export type HomepagePickCarouselPost = {
+  id: string
+  title: string
+  publishTime: string
+  heroImage: {
     resized: ResizedImages | null
     resizedWebp: ResizedImages | null
   } | null
-  posts: HomepagePickPost | null
+}
+
+export type HomepagePickCarousel = {
+  id: string
+  sortOrder: number
+  customUrl: string | null
+  customTitle: string | null
+  customDescription: string | null
+  customImage: {
+    resized: ResizedImages | null
+    resizedWebp: ResizedImages | null
+  } | null
+  posts: HomepagePickCarouselPost | null
   category: {
     id: string
     slug: string
@@ -132,10 +165,10 @@ export const topicsWithPosts = gql`
       content
       heroImage {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
       postsCount
@@ -146,18 +179,18 @@ export const topicsWithPosts = gql`
         brief
         heroImage {
           resized {
-            ...ResizedImagesField
+            ...ResizedImagesCardField
           }
           resizedWebp {
-            ...ResizedWebPImagesField
+            ...ResizedWebPImagesCardField
           }
         }
       }
       isPinned
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 /**
@@ -176,10 +209,10 @@ export const allTopics = gql`
       content
       heroImage {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
       postsCount
@@ -187,8 +220,8 @@ export const allTopics = gql`
       updatedAt
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 /**
@@ -206,10 +239,10 @@ export const topicById = gql`
       content
       heroImage {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
       postsCount
@@ -220,10 +253,10 @@ export const topicById = gql`
         brief
         heroImage {
           resized {
-            ...ResizedImagesField
+            ...ResizedImagesCardField
           }
           resizedWebp {
-            ...ResizedWebPImagesField
+            ...ResizedWebPImagesCardField
           }
         }
       }
@@ -235,8 +268,8 @@ export const topicById = gql`
       updatedAt
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 export const categoryWithPosts = gql`
@@ -252,17 +285,17 @@ export const categoryWithPosts = gql`
         publishTime
         heroImage {
           resized {
-            ...ResizedImagesField
+            ...ResizedImagesCardField
           }
           resizedWebp {
-            ...ResizedWebPImagesField
+            ...ResizedWebPImagesCardField
           }
         }
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 export const sectionWithCategoriesAndPosts = gql`
@@ -285,18 +318,18 @@ export const sectionWithCategoriesAndPosts = gql`
           contentApiData
           heroImage {
             resized {
-              ...ResizedImagesField
+              ...ResizedImagesCardField
             }
             resizedWebp {
-              ...ResizedWebPImagesField
+              ...ResizedWebPImagesCardField
             }
           }
         }
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 /**
@@ -332,18 +365,18 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
           contentApiData
           heroImage {
             resized {
-              ...ResizedImagesField
+              ...ResizedImagesCardField
             }
             resizedWebp {
-              ...ResizedWebPImagesField
+              ...ResizedWebPImagesCardField
             }
           }
         }
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 // Query for homepage picks by category slug
@@ -360,10 +393,10 @@ export const homepagePicksByCategory = gql`
       customDescription
       customImage {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
       posts {
@@ -372,10 +405,10 @@ export const homepagePicksByCategory = gql`
         publishTime
         heroImage {
           resized {
-            ...ResizedImagesField
+            ...ResizedImagesCardField
           }
           resizedWebp {
-            ...ResizedWebPImagesField
+            ...ResizedWebPImagesCardField
           }
         }
       }
@@ -386,12 +419,13 @@ export const homepagePicksByCategory = gql`
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 // Query for homepage carousel picks
 // Filter by category slug "homepepicks" (首頁輪播文章)
+// Note: Carousel uses full image sizes for large hero display on desktop
 export const homepagePicksForCarousel = gql`
   query {
     homepagePicks(
@@ -444,8 +478,8 @@ export type InfoGraph = {
   youtubeUrl: string | null
   state: string
   image: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -465,16 +499,16 @@ export const latestInfoGraph = gql`
       state
       image {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 // Ad type for homepage ads
@@ -487,8 +521,8 @@ export type Ad = {
   sortOrder: number | null
   imageUrl: string | null
   image: {
-    resized: ResizedImages | null
-    resizedWebp: ResizedImages | null
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
   } | null
 }
 
@@ -508,16 +542,16 @@ export const homepageAds = gql`
       imageUrl
       image {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 // Query for homepage deep topic ads (showOnHomepageDeepTopic = true)
@@ -539,14 +573,14 @@ export const homepageDeepTopicAds = gql`
       imageUrl
       image {
         resized {
-          ...ResizedImagesField
+          ...ResizedImagesCardField
         }
         resizedWebp {
-          ...ResizedWebPImagesField
+          ...ResizedWebPImagesCardField
         }
       }
     }
   }
-  ${resizeImagesFragment}
-  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `

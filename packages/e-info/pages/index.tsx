@@ -25,6 +25,7 @@ import type { Quote } from '~/graphql/query/quote'
 import type {
   Ad,
   HomepagePick,
+  HomepagePickCarousel,
   InfoGraph,
   SectionCategory,
   Topic,
@@ -78,7 +79,7 @@ type PageProps = {
   newsCategories: SectionCategory[]
   greenCategories: SectionCategory[]
   topics: Topic[]
-  carouselPicks: HomepagePick[]
+  carouselPicks: HomepagePickCarousel[]
   highlightPicks: HomepagePick[]
   infoGraph: InfoGraph | null
   ads: Ad[]
@@ -179,7 +180,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   let newsCategories: SectionCategory[] = []
   let greenCategories: SectionCategory[] = []
   let topics: Topic[] = []
-  let carouselPicks: HomepagePick[] = []
+  let carouselPicks: HomepagePickCarousel[] = []
   let highlightPicks: HomepagePick[] = []
   let infoGraph: InfoGraph | null = null
   let ads: Ad[] = []

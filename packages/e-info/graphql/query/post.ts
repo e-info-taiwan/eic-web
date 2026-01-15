@@ -2,7 +2,12 @@ import gql from 'graphql-tag'
 
 import { POST_STYLES, REPORT_STYLES } from '~/constants/constant'
 import { Author, authorFragment } from '~/graphql/fragments/author'
-import { Post, postFragment } from '~/graphql/fragments/post'
+import {
+  Post,
+  postCardFragment,
+  PostCard,
+  postFragment,
+} from '~/graphql/fragments/post'
 import {
   resizeImagesFragment,
   resizeWebpImagesFragment,
@@ -269,7 +274,7 @@ const post = gql`
 
 const latestPosts = gql`
   query  (
-    $first: Int! = 3, 
+    $first: Int! = 3,
     $skip: Int! = 0
     $skipId: ID
   ) {
@@ -285,10 +290,10 @@ const latestPosts = gql`
       }
       orderBy: { publishTime: desc }
     ) {
-      ...PostFields
+      ...PostFieldsCard
     }
   }
-  ${postFragment}
+  ${postCardFragment}
 `
 
 const authorPosts = gql`
@@ -311,10 +316,11 @@ const authorPosts = gql`
       }
       orderBy: { publishTime: desc }
     ) {
-      ...PostFields
+      ...PostFieldsCard
     }
   }
-  ${postFragment}
+  ${postCardFragment}
 `
 
 export { authorPosts, latestPosts, post }
+export type { PostCard }
