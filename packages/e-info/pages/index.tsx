@@ -5,7 +5,7 @@
 
 // @ts-ignore: no definition
 import errors from '@twreporter/errors'
-import type { GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
@@ -14,7 +14,6 @@ import { getGqlClient } from '~/apollo-client'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import HighlightSection from '~/components/index/highlight-section'
 import Inforgraphic from '~/components/index/inforgraphic'
-import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import MainCarousel from '~/components/index/main-carousel'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
@@ -31,9 +30,9 @@ import type {
   Topic,
 } from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
+import type { NavigationCategoryWithArticleCards } from '~/types/component'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
 import type { CollaborationItem } from '~/types/component'
-import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHomepageData } from '~/utils/homepage-api'
 
@@ -148,11 +147,7 @@ function arrayRandomFilter<T>(arr: T[] = [], targetSize: number = 0): T[] {
   return shuffledArr.slice(0, targetSize)
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async ({
-  res,
-}) => {
-  setCacheControl(res)
-
+export const getStaticProps: GetStaticProps<PageProps> = async () => {
   const client = getGqlClient()
 
   let editorChoices: EditorCard[] = []
@@ -253,6 +248,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       ads,
       deepTopicAds,
     },
+    revalidate: 60, // 每 60 秒重新驗證
   }
 }
 

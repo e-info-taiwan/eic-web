@@ -9,10 +9,8 @@ import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
-import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
-import CategoryNav from '~/components/shared/category-nav'
 import SectionHeading from '~/components/shared/section-heading'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import {
@@ -28,7 +26,10 @@ import useInfiniteScroll from '~/hooks/useInfiniteScroll'
 import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
-import type { NavigationCategory } from '~/types/component'
+import type {
+  NavigationCategory,
+  NavigationCategoryWithArticleCards,
+} from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { getResizedUrl, postConvertFunc } from '~/utils/post'
@@ -466,18 +467,6 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
 
   return (
     <CategoryWrapper aria-label={sectionTitle}>
-      {/* <StyledAdsense_HD pageKey={activeCategory.slug} adKey="HD" /> */}
-      {/* <SectionHeading
-        title={sectionTitle}
-        highlightColor="#eee500"
-        headingLevel={2}
-        categorySlug={activeCategory.slug}
-      />
-      <CategoryNav
-        currentCategorySlug={activeCategory.slug}
-        categoryClickHandler={updateActiveCategory}
-      /> */}
-
       <Header>
         <AccentBar />
         <Title>{sectionTitle}</Title>

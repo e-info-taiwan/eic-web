@@ -52,3 +52,11 @@ export type DataSetItem = {
 }
 
 export type NavigationCategory = Pick<GenericCategory, 'id' | 'title' | 'slug'>
+
+export type NavigationCategoryWithArticleCards = Pick<
+  NavigationCategory,
+  'id' | 'slug' | 'title'
+> & {
+  posts?: ArticleCard[]
+  reports?: ArticleCard[]
+}
