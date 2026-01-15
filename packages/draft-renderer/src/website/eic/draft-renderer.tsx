@@ -124,6 +124,14 @@ const customStyleMap = {
     fontSize: 16,
     padding: 2,
   },
+  SUP: {
+    verticalAlign: 'super',
+    fontSize: 'smaller',
+  },
+  SUB: {
+    verticalAlign: 'sub',
+    fontSize: 'smaller',
+  },
 }
 
 const customStyleFn = (style: any) => {

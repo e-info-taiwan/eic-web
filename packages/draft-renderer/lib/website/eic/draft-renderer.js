@@ -47,6 +47,14 @@ var customStyleMap = {
     fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
     fontSize: 16,
     padding: 2
+  },
+  SUP: {
+    verticalAlign: 'super',
+    fontSize: 'smaller'
+  },
+  SUB: {
+    verticalAlign: 'sub',
+    fontSize: 'smaller'
   }
 };
 var customStyleFn = function customStyleFn(style) {
