@@ -226,14 +226,10 @@ const ArticleContent = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  // Tablet
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    justify-content: space-between;
-  }
-
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 20px;
   }
 `
 
@@ -271,12 +267,11 @@ const ArticleExcerpt = styled.p`
   display: none;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 
-  // Tablet
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+  // Desktop only
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: -webkit-box;
   }
 `

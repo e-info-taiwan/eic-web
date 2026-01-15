@@ -274,7 +274,7 @@ const SupplementSection = ({ categories = [] }: SupplementSectionProps) => {
   const currentCategory = categoriesWithPosts.find(
     (cat) => cat.id === activeCategory
   )
-  const currentPosts = currentCategory?.posts || []
+  const currentPosts = (currentCategory?.posts || []).slice(0, 3)
 
   return (
     <Container>

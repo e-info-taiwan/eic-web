@@ -436,10 +436,10 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
   )
   const currentPosts = currentCategory?.posts || []
 
-  // Featured post is the first one, sidebar gets posts 1-5, related gets posts 6-7
+  // Featured post is the first one, related gets posts 2-3, sidebar gets posts 4+
   const featuredPost = currentPosts[0]
-  const sidebarPosts = currentPosts.slice(1, 6)
-  const relatedPosts = currentPosts.slice(6, 8)
+  const relatedPosts = currentPosts.slice(1, 3)
+  const sidebarPosts = currentPosts.slice(3, 8)
 
   // Use different default image for "編輯直送" category
   const isEditorCategory = currentCategory?.slug === 'editor'
