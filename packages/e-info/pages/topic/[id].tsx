@@ -17,6 +17,7 @@ import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
+import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   max-width: 1200px;
@@ -368,25 +369,6 @@ const PaginationEllipsis = styled.span`
   }
 `
 
-// Helper function to extract brief text from post
-const extractBriefText = (
-  brief: string | Record<string, unknown> | null
-): string => {
-  if (!brief) return ''
-  if (typeof brief === 'string') return brief
-
-  // Handle draft.js format brief
-  try {
-    const blocks = (brief as { blocks?: { text?: string }[] }).blocks
-    if (blocks && Array.isArray(blocks)) {
-      return blocks.map((block) => block.text || '').join(' ')
-    }
-  } catch {
-    // If parsing fails, return empty string
-  }
-  return ''
-}
-
 // Helper function to format date
 const formatDate = (dateString: string | undefined): string => {
   if (!dateString) return ''
@@ -561,7 +543,7 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
                 <ArticleContent>
                   <ArticleTitle>{post.title}</ArticleTitle>
                   <ArticleExcerpt>
-                    {extractBriefText(post.brief)}
+                    {getBriefText(post.brief, null, 150)}
                   </ArticleExcerpt>
                 </ArticleContent>
               </ArticleCard>

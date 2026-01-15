@@ -15,6 +15,7 @@ import {
 } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -269,25 +270,6 @@ const formatDate = (dateString: string | undefined): string => {
   }
 }
 
-// Helper function to extract brief text
-const extractBriefText = (
-  brief: string | Record<string, unknown> | null
-): string => {
-  if (!brief) return ''
-  if (typeof brief === 'string') return brief
-
-  // Handle draft.js format brief
-  try {
-    const blocks = (brief as { blocks?: { text?: string }[] }).blocks
-    if (blocks && Array.isArray(blocks)) {
-      return blocks.map((block) => block.text || '').join(' ')
-    }
-  } catch {
-    // If parsing fails, return empty string
-  }
-  return ''
-}
-
 // Helper function to get image URL from favorite post
 const getImageUrl = (favorite: FavoriteWithPost): string => {
   const heroImage = favorite.post.heroImage
@@ -433,7 +415,7 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
                     </ArticleDate>
                     <ArticleTitle>{favorite.post.title}</ArticleTitle>
                     <ArticleSummary>
-                      {extractBriefText(favorite.post.brief)}
+                      {getBriefText(favorite.post.brief, null, 150)}
                     </ArticleSummary>
                     <TagList>
                       {favorite.post.tags.map((tag) => (
