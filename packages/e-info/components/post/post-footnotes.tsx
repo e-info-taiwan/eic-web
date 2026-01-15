@@ -32,7 +32,7 @@ const FootnoteHeaderRow = styled.div`
 
 const FootnoteHeader = styled.button`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 0;
   background: none;
   border: none;
@@ -50,7 +50,7 @@ const FootnoteNumber = styled.span`
 `
 
 const FootnoteTitle = styled.span`
-  color: ${({ theme }) => theme.colors.primary[40]};
+  color: ${({ theme }) => theme.colors.grayscale[40]};
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
@@ -58,7 +58,7 @@ const FootnoteTitle = styled.span`
   // flex: 1;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary[20]};
+    color: ${({ theme }) => theme.colors.grayscale[20]};
   }
 `
 
@@ -103,6 +103,8 @@ const FootnoteBody = styled.div<ExpandableProps>`
   font-weight: 400;
   line-height: 1.8;
   color: ${({ theme }) => theme.colors.grayscale[40]};
+  overflow-wrap: break-word;
+  word-break: break-word;
 
   ${({ theme }) => theme.breakpoint.md} {
     padding: 20px 28px;
