@@ -3,7 +3,6 @@
 import styled from 'styled-components'
 
 import { DEFAULT_CATEGORY } from '~/constants/constant'
-import { useCategoryListContext } from '~/hooks/useContext'
 import type { NavigationCategory } from '~/types/component'
 
 type StyledProps = {
