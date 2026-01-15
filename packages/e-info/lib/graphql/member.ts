@@ -269,13 +269,13 @@ export const getMemberByFirebaseId = async (
 ): Promise<Member | null> => {
   const client = getGqlClient()
 
-  const result = await client.query({
+  const result = await client.query<{ members: Member[] }>({
     query: GET_MEMBER_BY_FIREBASE_ID,
     variables: { firebaseId },
   })
 
-  if (result.errors) {
-    console.error('getMemberByFirebaseId error:', result.errors)
+  if (result.error) {
+    console.error('getMemberByFirebaseId error:', result.error)
     return null
   }
 
@@ -291,13 +291,13 @@ export const checkMemberExists = async (
 ): Promise<boolean> => {
   const client = getGqlClient()
 
-  const result = await client.query({
+  const result = await client.query<{ membersCount: number }>({
     query: CHECK_MEMBER_EXISTS,
     variables: { firebaseId },
   })
 
-  if (result.errors) {
-    console.error('checkMemberExists error:', result.errors)
+  if (result.error) {
+    console.error('checkMemberExists error:', result.error)
     return false
   }
 
@@ -312,13 +312,13 @@ export const createMember = async (
 ): Promise<Member> => {
   const client = getGqlClient()
 
-  const result = await client.mutate({
+  const result = await client.mutate<{ createMember: Member }>({
     mutation: CREATE_MEMBER,
     variables: { data },
   })
 
-  if (result.errors) {
-    throw new Error(result.errors[0].message)
+  if (result.error) {
+    throw new Error(result.error.message)
   }
 
   if (!result.data?.createMember) {
@@ -337,7 +337,7 @@ export const updateMemberById = async (
 ): Promise<Member> => {
   const client = getGqlClient()
 
-  const result = await client.mutate({
+  const result = await client.mutate<{ updateMember: Member }>({
     mutation: UPDATE_MEMBER,
     variables: {
       where: { id: memberId },
@@ -345,8 +345,8 @@ export const updateMemberById = async (
     },
   })
 
-  if (result.errors) {
-    throw new Error(result.errors[0].message)
+  if (result.error) {
+    throw new Error(result.error.message)
   }
 
   if (!result.data?.updateMember) {
@@ -435,14 +435,14 @@ export const checkPostFavorited = async (
 ): Promise<string | null> => {
   const client = getGqlClient()
 
-  const result = await client.query({
+  const result = await client.query<{ favorites: { id: string }[] }>({
     query: CHECK_FAVORITE,
     variables: { memberId, postId },
     fetchPolicy: 'network-only',
   })
 
-  if (result.errors) {
-    console.error('checkPostFavorited error:', result.errors)
+  if (result.error) {
+    console.error('checkPostFavorited error:', result.error)
     return null
   }
 
@@ -459,7 +459,7 @@ export const addFavorite = async (
 ): Promise<string | null> => {
   const client = getGqlClient()
 
-  const result = await client.mutate({
+  const result = await client.mutate<{ createFavorite: { id: string } }>({
     mutation: CREATE_FAVORITE,
     variables: {
       data: {
@@ -469,8 +469,8 @@ export const addFavorite = async (
     },
   })
 
-  if (result.errors) {
-    console.error('addFavorite error:', result.errors)
+  if (result.error) {
+    console.error('addFavorite error:', result.error)
     return null
   }
 
@@ -483,15 +483,15 @@ export const addFavorite = async (
 export const removeFavorite = async (favoriteId: string): Promise<boolean> => {
   const client = getGqlClient()
 
-  const result = await client.mutate({
+  const result = await client.mutate<{ deleteFavorite: { id: string } }>({
     mutation: DELETE_FAVORITE,
     variables: {
       where: { id: favoriteId },
     },
   })
 
-  if (result.errors) {
-    console.error('removeFavorite error:', result.errors)
+  if (result.error) {
+    console.error('removeFavorite error:', result.error)
     return false
   }
 
@@ -514,8 +514,8 @@ export const getMemberFavorites = async (
     fetchPolicy: 'network-only',
   })
 
-  if (result.errors) {
-    console.error('getMemberFavorites error:', result.errors)
+  if (result.error) {
+    console.error('getMemberFavorites error:', result.error)
     return []
   }
 
@@ -536,8 +536,8 @@ export const getMemberFavoritesCount = async (
     fetchPolicy: 'network-only',
   })
 
-  if (result.errors) {
-    console.error('getMemberFavoritesCount error:', result.errors)
+  if (result.error) {
+    console.error('getMemberFavoritesCount error:', result.error)
     return 0
   }
 

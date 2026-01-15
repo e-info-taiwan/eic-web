@@ -479,19 +479,17 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    const { data, errors: gqlErrors } = await client.query<{ topics: Topic[] }>(
-      {
-        query: allTopics,
-      }
-    )
+    const { data, error: gqlError } = await client.query<{ topics: Topic[] }>({
+      query: allTopics,
+    })
 
-    if (gqlErrors) {
+    if (gqlError) {
       console.error(
         errors.helpers.wrap(
           new Error('Errors returned in `allTopics` query'),
           'GraphQLError',
           'failed to complete `allTopics`',
-          { errors: gqlErrors }
+          { errors: gqlError }
         )
       )
     }

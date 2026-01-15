@@ -12,7 +12,7 @@
     "node": ">=18.18.0"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.3",
+    "@apollo/client": "^4.0.13",
     "@eic-web/draft-renderer": "1.4.4",
     "@readr-media/react-component": "^2.2.0",
     "@readr-media/react-image": "^2.2.4",
@@ -38,6 +38,7 @@
     "react-ga4": "^2.0.0",
     "react-helmet": "^6.1.0",
     "react-slick": "^0.30.3",
+    "rxjs": "^7.8.0",
     "sharp": "^0.31.3",
     "slick-carousel": "^1.8.1",
     "styled-components": "^5.3.6",

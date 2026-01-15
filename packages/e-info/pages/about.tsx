@@ -1,4 +1,3 @@
-import type { ApolloQueryResult } from '@apollo/client/core'
 import errors from '@twreporter/errors'
 import type { GetStaticProps } from 'next'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
@@ -139,14 +138,13 @@ const About: NextPageWithLayout<PageProps> = ({
   const fetchENMore = async () => {
     let moreReportDataEn: PageVariable[] = []
     try {
-      const result: ApolloQueryResult<{ pageVariables: PageVariable[] }> =
-        await client.query({
-          query: pageVariablesByPage,
-          variables: {
-            page: 'about-en',
-          },
-        })
-      moreReportDataEn = result.data.pageVariables
+      const result = await client.query<{ pageVariables: PageVariable[] }>({
+        query: pageVariablesByPage,
+        variables: {
+          page: 'about-en',
+        },
+      })
+      moreReportDataEn = result.data?.pageVariables ?? []
     } catch (err) {
       console.log(err)
     }
@@ -202,28 +200,26 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   let qAListsData: QaList[] = []
 
   try {
-    const awardsResult: ApolloQueryResult<{ awards: Award[] }> =
-      await client.query({
-        query: awardsGql,
-      })
+    const awardsResult = await client.query<{ awards: Award[] }>({
+      query: awardsGql,
+    })
 
-    const pageVariablesResult: ApolloQueryResult<{
+    const pageVariablesResult = await client.query<{
       pageVariables: PageVariable[]
-    }> = await client.query({
+    }>({
       query: pageVariablesByPage,
       variables: {
         page: 'about',
       },
     })
 
-    const membersResult: ApolloQueryResult<{ authors: Member[] }> =
-      await client.query({
-        query: membersGql,
-      })
+    const membersResult = await client.query<{ authors: Member[] }>({
+      query: membersGql,
+    })
 
-    awardsData = awardsResult.data.awards
-    moreReportData = pageVariablesResult.data.pageVariables
-    membersData = membersResult.data.authors
+    awardsData = awardsResult.data?.awards ?? []
+    moreReportData = pageVariablesResult.data?.pageVariables ?? []
+    membersData = membersResult.data?.authors ?? []
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
@@ -249,13 +245,12 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   }
 
   try {
-    const qAListsResult: ApolloQueryResult<{ qALists: QaList[] }> =
-      await editoolsClient.query({
-        query: qAListsGql,
-        variables: QA_RECORD_CONFIG.variables,
-      })
+    const qAListsResult = await editoolsClient.query<{ qALists: QaList[] }>({
+      query: qAListsGql,
+      variables: QA_RECORD_CONFIG.variables,
+    })
 
-    qAListsData = qAListsResult.data.qALists
+    qAListsData = qAListsResult.data?.qALists ?? []
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,

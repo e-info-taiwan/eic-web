@@ -117,22 +117,24 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     // fetch post data by id
     const postId = params?.id
 
-    const { data, errors: gqlErrors } = await client.query({
+    const { data, error: gqlError } = await client.query<{
+      posts: PostDetail[]
+    }>({
       query: postQuery,
       variables: { id: postId },
     })
 
-    if (gqlErrors) {
+    if (gqlError) {
       const annotatingError = errors.helpers.wrap(
         'GraphQLError',
         'failed to complete `postData`',
-        { errors: gqlErrors }
+        { errors: gqlError }
       )
 
       throw annotatingError
     }
 
-    if (!data.posts[0]) {
+    if (!data?.posts?.[0]) {
       return { notFound: true }
     }
 

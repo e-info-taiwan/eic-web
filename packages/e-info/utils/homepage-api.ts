@@ -3,7 +3,7 @@
  * 提供 JSON API 優先、GraphQL fallback 的資料獲取機制
  */
 
-import type { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import type { ApolloClient } from '@apollo/client/core'
 
 import type {
   Ad,
@@ -107,7 +107,7 @@ async function fetchFromJsonApi(): Promise<HomepageApiResponse> {
  * 從 GraphQL API 獲取首頁資料 (fallback)
  */
 async function fetchFromGraphQL(
-  client: ApolloClient<NormalizedCacheObject>
+  client: ApolloClient
 ): Promise<HomepageApiResponse> {
   const [
     sectionsResult,
@@ -207,7 +207,7 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
  * @returns 首頁資料
  */
 export async function fetchHomepageData(
-  client: ApolloClient<NormalizedCacheObject>
+  client: ApolloClient
 ): Promise<HomepageData> {
   let response: HomepageApiResponse
   let usedFallback = false

@@ -143,6 +143,10 @@ export default function OpenDataList({
         throw gqlErrors
       }
 
+      if (!data?.dataSets) {
+        return
+      }
+
       const newItems = data.dataSets.map(convertDataSet)
 
       setItemList((state) => [...state, ...newItems])

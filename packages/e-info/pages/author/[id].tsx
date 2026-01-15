@@ -162,7 +162,7 @@ const Author: NextPageWithLayout<PageProps> = ({
           throw annotatingError
         }
 
-        const newPosts = data.authorPosts?.map(postConvertFunc) || []
+        const newPosts = data?.authorPosts?.map(postConvertFunc) || []
 
         setDataAmount(newPosts.length) //amount of posts yet to be displayed.
 
@@ -229,15 +229,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     {
       // fetch author data
       const id = params?.id
-      const {
-        data: { author },
-        error: gqlErrors,
-      } = await client.query<{
+      const { data, error: gqlErrors } = await client.query<{
         author: Author
       }>({
         query: authorQuery,
         variables: { id: id },
       })
+      const author = data?.author
 
       if (gqlErrors) {
         const annotatingError = errors.helpers.wrap(
@@ -283,7 +281,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         throw annotatingError
       }
 
-      authorPosts = data.authorPosts?.map(postConvertFunc) ?? []
+      authorPosts = data?.authorPosts?.map(postConvertFunc) ?? []
     }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(

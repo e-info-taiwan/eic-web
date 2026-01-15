@@ -367,20 +367,20 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
         skip: currentItem?.posts?.length,
       }
 
-      const {
-        data: { latestPosts },
-        errors: gqlErrors,
-      } = await client.query<{ latestPosts: Post[] }>({
+      const { data, error: gqlError } = await client.query<{
+        latestPosts: Post[]
+      }>({
         query: latestPostsQuery,
         variables,
       })
+      const latestPosts = data?.latestPosts ?? []
 
-      if (gqlErrors) {
+      if (gqlError) {
         const annotatingError = errors.helpers.wrap(
           new Error('Errors returned in `latestPosts` query'),
           'GraphQLError',
           'failed to complete `latestPosts`',
-          { errors: gqlErrors }
+          { errors: gqlError }
         )
 
         throw annotatingError
@@ -407,10 +407,7 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
   ) => {
     try {
       {
-        const {
-          data: { categories },
-          error: gqlErrors,
-        } = await client.query<{
+        const { data, error: gqlError } = await client.query<{
           categories: Category[]
         }>({
           query: categoriesQuery,
@@ -423,13 +420,14 @@ const Category: NextPageWithLayout<PageProps> = ({ categories, latest }) => {
             postSkip: currentItem?.posts?.length,
           },
         })
+        const categories = data?.categories ?? []
 
-        if (gqlErrors) {
+        if (gqlError) {
           const annotatingError = errors.helpers.wrap(
             new Error('Errors returned in `categories` query'),
             'GraphQLError',
             'failed to complete `categories`',
-            { errors: gqlErrors }
+            { errors: gqlError }
           )
 
           throw annotatingError

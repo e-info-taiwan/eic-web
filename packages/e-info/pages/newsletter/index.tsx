@@ -420,7 +420,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
         variables: { startDate, endDate },
       })
 
-      setNewsletters(data.newsletters)
+      setNewsletters(data?.newsletters ?? [])
     } catch (err) {
       console.error('Error fetching newsletters:', err)
     } finally {
@@ -640,10 +640,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       query: newsletterYearRange,
     })
 
-    const minYear = rangeData.oldest[0]
+    const minYear = rangeData?.oldest?.[0]
       ? new Date(rangeData.oldest[0].sendDate).getFullYear()
       : now.getFullYear()
-    const maxYear = rangeData.newest[0]
+    const maxYear = rangeData?.newest?.[0]
       ? new Date(rangeData.newest[0].sendDate).getFullYear()
       : now.getFullYear()
 
@@ -669,7 +669,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       props: {
         initialYear,
         initialMonth,
-        newsletters: newslettersData.newsletters,
+        newsletters: newslettersData?.newsletters ?? [],
         yearRange: { minYear, maxYear },
       },
     }

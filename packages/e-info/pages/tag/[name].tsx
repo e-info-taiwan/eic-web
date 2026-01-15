@@ -67,10 +67,7 @@ const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts, tagName }) => {
     try {
       {
         // fetch tag and related 12 posts
-        const {
-          data: { tags },
-          error: gqlErrors,
-        } = await client.query<{
+        const { data, error: gqlError } = await client.query<{
           tags: Tag[]
         }>({
           query: tagQuery,
@@ -81,13 +78,14 @@ const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts, tagName }) => {
             relatedPostTypes: postStyles,
           },
         })
+        const tags = data?.tags ?? []
 
-        if (gqlErrors) {
+        if (gqlError) {
           const annotatingError = errors.helpers.wrap(
             new Error('Errors returned in `tags` query'),
             'GraphQLError',
             'failed to complete `tags`',
-            { errors: gqlErrors }
+            { errors: gqlError }
           )
 
           throw annotatingError
@@ -145,10 +143,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     {
       // fetch tag and related 12 posts
       const name = params?.name
-      const {
-        data: { tags },
-        error: gqlErrors,
-      } = await client.query<{
+      const { data, error: gqlError } = await client.query<{
         tags: Tag[]
       }>({
         query: tagQuery,
@@ -158,13 +153,14 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           relatedPostTypes: postStyles,
         },
       })
+      const tags = data?.tags ?? []
 
-      if (gqlErrors) {
+      if (gqlError) {
         const annotatingError = errors.helpers.wrap(
           new Error('Errors returned in `tags` query'),
           'GraphQLError',
           'failed to complete `tags`',
-          { errors: gqlErrors }
+          { errors: gqlError }
         )
 
         throw annotatingError

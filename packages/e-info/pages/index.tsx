@@ -6,21 +6,16 @@
 // @ts-ignore: no definition
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
-import FeaturedTopicsSection from '~/components/index/featured-topics-section'
-import GreenConsumptionSection from '~/components/index/green-consumption-section'
 import HighlightSection from '~/components/index/highlight-section'
-import HotKeywordsSection from '~/components/index/hot-keywords-section'
 import Inforgraphic from '~/components/index/inforgraphic'
 import type { NavigationCategoryWithArticleCards } from '~/components/index/latest-report-section'
 import MainCarousel from '~/components/index/main-carousel'
-import NewsSection from '~/components/index/news-section'
-import SpecialColumnSection from '~/components/index/special-column-section'
-import SupplementSection from '~/components/index/supplement-section'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
@@ -42,6 +37,31 @@ import * as gtag from '~/utils/gtag'
 import { fetchHomepageData } from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
+
+// Below-the-fold 區塊使用動態載入以減少初始 bundle 大小
+const NewsSection = dynamic(() => import('~/components/index/news-section'), {
+  ssr: true,
+})
+const SpecialColumnSection = dynamic(
+  () => import('~/components/index/special-column-section'),
+  { ssr: true }
+)
+const SupplementSection = dynamic(
+  () => import('~/components/index/supplement-section'),
+  { ssr: true }
+)
+const FeaturedTopicsSection = dynamic(
+  () => import('~/components/index/featured-topics-section'),
+  { ssr: true }
+)
+const GreenConsumptionSection = dynamic(
+  () => import('~/components/index/green-consumption-section'),
+  { ssr: true }
+)
+const HotKeywordsSection = dynamic(
+  () => import('~/components/index/hot-keywords-section'),
+  { ssr: true }
+)
 
 type PageProps = {
   editorChoices: EditorCard[]
