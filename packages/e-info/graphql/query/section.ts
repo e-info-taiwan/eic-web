@@ -584,3 +584,166 @@ export const homepageDeepTopicAds = gql`
   ${resizeImagesCardFragment}
   ${resizeWebpImagesCardFragment}
 `
+
+// Types for section listing page
+export type SectionListingCategory = {
+  id: string
+  slug: string
+  name: string
+  sortOrder: number | null
+  postsCount: number
+}
+
+export type SectionForListing = {
+  id: string
+  slug: string
+  name: string
+  postsCount: number
+  categories: SectionListingCategory[]
+}
+
+export type CategoryPostForListing = {
+  id: string
+  title: string
+  style: string
+  publishTime: string
+  brief: string | Record<string, unknown> | null
+  contentApiData: ContentApiDataBlock[] | null
+  heroImage: {
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
+  } | null
+  ogImage: {
+    resized: ResizedImagesCard | null
+    resizedWebp: ResizedImagesCard | null
+  } | null
+  tags: { id: string; name: string }[]
+}
+
+// Query section by slug with categories (no posts - just for tabs)
+export const sectionBySlug = gql`
+  query ($slug: String!) {
+    sections(where: { slug: { equals: $slug } }) {
+      id
+      slug
+      name
+      postsCount
+      categories(orderBy: { sortOrder: asc }) {
+        id
+        slug
+        name
+        sortOrder
+        postsCount
+      }
+    }
+  }
+`
+
+// Query all posts from all categories in a section with pagination
+// Uses posts query with category.section filter to get aggregated posts
+export const sectionPostsForListing = gql`
+  query ($sectionSlug: String!, $take: Int = 12, $skip: Int = 0) {
+    posts(
+      where: { category: { section: { slug: { equals: $sectionSlug } } } }
+      take: $take
+      skip: $skip
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      style
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+      ogImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+      tags {
+        id
+        name
+      }
+    }
+    postsCount(
+      where: { category: { section: { slug: { equals: $sectionSlug } } } }
+    )
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
+// Query category by ID with section info (for category page)
+export const categoryByIdWithSection = gql`
+  query ($categoryId: ID!) {
+    categories(where: { id: { equals: $categoryId } }) {
+      id
+      slug
+      name
+      postsCount
+      section {
+        id
+        slug
+        name
+        categories(orderBy: { sortOrder: asc }) {
+          id
+          slug
+          name
+          sortOrder
+          postsCount
+        }
+      }
+    }
+  }
+`
+
+// Query posts for category page with pagination
+export const categoryPostsForListing = gql`
+  query ($categoryId: ID!, $take: Int = 12, $skip: Int = 0) {
+    categories(where: { id: { equals: $categoryId } }) {
+      id
+      postsCount
+      posts(take: $take, skip: $skip, orderBy: { publishTime: desc }) {
+        id
+        title
+        style
+        publishTime
+        brief
+        contentApiData
+        heroImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+        ogImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+        tags {
+          id
+          name
+        }
+      }
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`

@@ -29,7 +29,8 @@ let FIREBASE_CONFIG = {
 
 switch (ENV) {
   case 'prod':
-    API_ENDPOINT = 'https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
+    API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     FIREBASE_CONFIG = {
@@ -43,7 +44,7 @@ switch (ENV) {
     break
   case 'staging':
     API_ENDPOINT =
-      'https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/graphql'
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     EDITOOLS_API_ENDPOINT =
       'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     FIREBASE_CONFIG = {

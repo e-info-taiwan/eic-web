@@ -90,8 +90,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
     line-height: 1.5;
     font-weight: 400;
     margin-top: 12px;
-    ${({ theme }) => theme.breakpoint.md} {
-    }
+    color: ${({ theme }) => theme.colors.primary[40]};
   }
 
   ${({ theme, $shouldHighlightReport }) =>
