@@ -130,7 +130,7 @@ export default function HamburgerMenu({
   const categoryItems = categories.map((category) => (
     <CategoryItem key={category.id}>
       <NextLink
-        href={{ pathname: '/category/[slug]', query: { slug: category.slug } }}
+        href={{ pathname: '/category/[id]', query: { id: category.id } }}
         shallow={isCategoryPage}
         onClick={() => clickHandle(category)}
       >

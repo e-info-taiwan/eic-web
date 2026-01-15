@@ -130,7 +130,7 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
   if (category) {
     sectionPathParts.push({
       name: category.name,
-      href: `/category/${category.slug}`,
+      href: `/category/${category.id}`,
     })
   }
 

@@ -113,7 +113,7 @@ const Title = styled.h1`
 type SectionHeadingProps = {
   title?: string
   showMoreText?: string
-  categorySlug?: string
+  categoryId?: string
   highlightColor?: string
   headingLevel?: number
   clickOnMore?: () => void
@@ -123,13 +123,13 @@ type SectionHeadingProps = {
 export default function SectionHeading({
   title = '',
   showMoreText = '',
-  categorySlug = '',
+  categoryId = '',
   highlightColor = '#fff',
   headingLevel = 2,
   clickOnMore,
   showBorder = true,
 }: SectionHeadingProps): JSX.Element {
-  const shouldShowMoreControl = showMoreText && categorySlug
+  const shouldShowMoreControl = showMoreText && categoryId
 
   return (
     <>
@@ -146,9 +146,9 @@ export default function SectionHeading({
           {shouldShowMoreControl && (
             <ShowMoreControl
               href={{
-                pathname: '/category/[slug]',
+                pathname: '/category/[id]',
                 query: {
-                  slug: categorySlug,
+                  id: categoryId,
                 },
               }}
               title={showMoreText}

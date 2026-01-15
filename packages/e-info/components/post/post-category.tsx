@@ -66,7 +66,7 @@ export default function PostCategory({ category }: CategoryProps): JSX.Element {
         key={item.id}
         onClick={() => gtag.sendEvent('post', 'click', `post-${item.name}`)}
       >
-        <Link href={`/category/${item.slug}`}>{item.name}</Link>
+        <Link href={`/category/${item.id}`}>{item.name}</Link>
       </li>
     )
   })
