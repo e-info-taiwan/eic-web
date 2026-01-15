@@ -7,6 +7,7 @@ exports["default"] = void 0;
 var _draftJs = require("draft-js");
 var _entityDecorators = require("./entity-decorators");
 var annotationDecorator = _entityDecorators.entityDecorators.annotationDecorator,
+  footnoteDecorator = _entityDecorators.entityDecorators.footnoteDecorator,
   linkDecorator = _entityDecorators.entityDecorators.linkDecorator;
-var decorators = new _draftJs.CompositeDecorator([annotationDecorator, linkDecorator]);
+var decorators = new _draftJs.CompositeDecorator([annotationDecorator, footnoteDecorator, linkDecorator]);
 var _default = exports["default"] = decorators;

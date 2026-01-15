@@ -1,10 +1,13 @@
 import { Eic } from '@eic-web/draft-renderer'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import PostAdContent from '~/components/post/post-ad'
 import PostAttachments from '~/components/post/post-attachments'
+import PostFootnotes, {
+  extractFootnotesFromContent,
+} from '~/components/post/post-footnotes'
 import PostPoll from '~/components/post/post-poll'
 import MediaLinkList from '~/components/shared/media-link'
 import { PostDetail } from '~/graphql/query/post'
@@ -312,6 +315,13 @@ export default function PostContent({
   const shouldShowActionList = false
   const shouldShowCitation = !!postData?.citations
 
+  // Extract footnotes from content
+  const footnotes = useMemo(
+    () => extractFootnotesFromContent(contentToRender),
+    [contentToRender]
+  )
+  const shouldShowFootnotes = footnotes.length > 0
+
   //WORKAROUND：
   //when article type is `frame`, and has `summary` or first block of `content` is not an "EMBEDDEDCODE" , `<Container>` requires "padding-top".
   const shouldPaddingTop =
@@ -431,6 +441,8 @@ export default function PostContent({
       <StyledAdsense_E1 pageKey={categorySlug} adKey="E1" />
 
       <MobileMediaLink postId={postData?.id} />
+
+      {shouldShowFootnotes && <PostFootnotes footnotes={footnotes} />}
 
       {shouldShowCitation && (
         <Citation>
