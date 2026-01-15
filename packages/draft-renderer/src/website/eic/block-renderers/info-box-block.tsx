@@ -15,7 +15,8 @@ import {
 const infoboxDefaultSpacing = 8
 
 const InfoBoxRenderWrapper = styled.div`
-  background: #f0f9f4;
+  background: ${({ theme }) => theme.colors.grayscale[99]};
+  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
   position: relative;
   padding: 24px 20px;
   width: 100%;
@@ -42,9 +43,9 @@ const InfoContent = styled.div`
   padding: 0;
   font-style: normal;
   font-weight: 400;
-  ${({ theme }) => theme.fontSize.md};
-  line-height: 1.8;
-  color: rgba(0, 9, 40, 0.87);
+  font-size: 14px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
 
   > div > * + * {
     margin: ${infoboxDefaultSpacing}px 0 0;
