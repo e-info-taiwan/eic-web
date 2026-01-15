@@ -69,6 +69,10 @@ const ContentWrapper = styled.main`
   display: block;
   max-width: 1200px;
   margin: 0 auto;
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    padding: 0 20px;
+  }
 `
 
 const TitleSection = styled.section`
