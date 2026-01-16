@@ -329,10 +329,12 @@ const HamburgerButton = styled.button`
 
 const NewsBar = styled.div`
   background: ${({ theme }) => theme.colors.primary[80]};
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  padding: 10px 0;
+  align-items: center;
+  min-height: 44px;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   font-size: 16px;
   font-weight: 700;
@@ -342,8 +344,6 @@ const NewsBar = styled.div`
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
     overflow: hidden;
     white-space: nowrap;
-    position: relative;
-    padding: 0;
   }
 `
 
