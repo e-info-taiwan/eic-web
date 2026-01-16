@@ -89,9 +89,11 @@ interface ResizedImages {
 
 **查詢條件**:
 - Section IDs: `['3', '4', '5', '6']`
-- 每個 category 取 8 篇文章
+- 每個 category 取 8 篇文章（精選文章 + 一般文章）
 - Categories 依 `sortOrder` 升冪排序
 - Posts 依 `publishTime` 降冪排序
+- **精選文章**: 使用 `featuredPostsInInputOrder` 欄位取得（依 CMS 輸入順序）
+- **顯示邏輯**: 精選文章優先顯示，再補上一般文章（去重複）
 - **圖片尺寸**: Card (original, w480, w800)
 
 **GraphQL 等效查詢**:
@@ -107,6 +109,27 @@ query {
       name
       sortOrder
       postsCount
+      # 精選文章 (依 CMS 輸入順序)
+      featuredPostsInInputOrder {
+        id
+        title
+        publishTime
+        brief
+        contentApiData
+        heroImage {
+          resized {
+            original
+            w480
+            w800
+          }
+          resizedWebp {
+            original
+            w480
+            w800
+          }
+        }
+      }
+      # 一般文章 (依發布時間)
       posts(take: 8, orderBy: { publishTime: desc }) {
         id
         title
@@ -155,6 +178,7 @@ interface SectionCategory {
   sortOrder: number | null
   postsCount: number
   posts: SectionPost[]
+  featuredPostsInInputOrder: SectionPost[]  // 精選文章 (依 CMS 輸入順序)
 }
 
 interface SectionPost {
@@ -379,7 +403,7 @@ interface HomepagePickCarousel {
 **查詢條件**:
 - `status = "published"`
 - `isPinned = true`
-- 依 `id` 升冪排序
+- 依 `sortOrder` 升冪排序（CMS 可設定顯示順序）
 - 每個 topic 取 4 篇文章
 - Posts 依 `publishTime` 降冪排序
 - **圖片尺寸**: Card (original, w480, w800)
@@ -389,7 +413,7 @@ interface HomepagePickCarousel {
 query {
   topics(
     where: { status: { equals: "published" }, isPinned: { equals: true } }
-    orderBy: { id: asc }
+    orderBy: { sortOrder: asc }
   ) {
     id
     title
@@ -445,6 +469,7 @@ interface Topic {
   postsCount: number
   posts: TopicPost[]
   isPinned: boolean
+  sortOrder: number | null  // 排序順序 (用於首頁排序)
 }
 
 interface TopicPost {
@@ -908,6 +933,16 @@ HTTP Status Codes:
 ---
 
 ## 變更記錄
+
+### 2026-01-16
+- **新增精選文章欄位 (`featuredPostsInInputOrder`)**
+  - Category 新增 `featuredPostsInInputOrder` 欄位，可在 CMS 設定精選文章
+  - 首頁顯示邏輯：精選文章優先顯示，再補上一般文章（去重複）
+  - 影響區塊：時事新聞、專欄、副刊、綠色消費
+- **Topics 排序改用 `sortOrder`**
+  - 深度專題改用 `sortOrder` 欄位排序（原本使用 `id`）
+  - Topic 型別新增 `sortOrder` 欄位
+  - 可在 CMS 設定專題顯示順序
 
 ### 2025-01-15
 - **新增響應式圖片尺寸策略**

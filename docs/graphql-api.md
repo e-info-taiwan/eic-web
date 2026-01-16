@@ -1,6 +1,6 @@
 # EIC GraphQL API 文件
 
-> 最後更新：2025-12-05
+> 最後更新：2026-01-16
 
 ## API Endpoint
 
@@ -419,8 +419,10 @@ type Category {
   heroImage: Photo
   heroImageCaption: String
   section: Section                 # 所屬大分類
-  posts: [Post]                    # 關聯文章
+  posts: [Post]                    # 關聯文章 (依發布時間排序)
   postsCount: Int
+  featuredPosts: [Post]            # 精選文章 (依加入時間排序)
+  featuredPostsInInputOrder: [Post] # 精選文章 (依 CMS 輸入順序排序)
   classifies: [Classify]           # 包含的小分類
   classifiesCount: Int
   createdAt: DateTime
@@ -478,6 +480,43 @@ query GetCategoryWithPosts($slug: String!, $postsLimit: Int = 5) {
     postsCount
   }
 }
+
+# 取得分類及其精選文章 (用於首頁區塊)
+# featuredPostsInInputOrder: 依照 CMS 中輸入的順序排列
+# 首頁顯示邏輯：精選文章優先顯示，再補上一般文章 (去重複)
+query GetCategoryWithFeaturedPosts($slug: String!) {
+  categories(where: { slug: { equals: $slug } }) {
+    id
+    slug
+    name
+    featuredPostsInInputOrder(
+      where: { state: { equals: "published" } }
+    ) {
+      id
+      title
+      publishTime
+      heroImage {
+        resized {
+          w480
+        }
+      }
+    }
+    posts(
+      take: 10
+      where: { state: { equals: "published" } }
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      heroImage {
+        resized {
+          w480
+        }
+      }
+    }
+  }
+}
 ```
 
 ### 現有資料 (Dev)
@@ -515,6 +554,7 @@ type Topic {
   tags: [Tag]                      # 關聯標籤
   tagsCount: Int
   isPinned: Boolean                # 是否置頂
+  sortOrder: Int                   # 排序順序 (首頁使用此欄位排序)
   createdAt: DateTime
   updatedAt: DateTime
   createdBy: User
@@ -525,17 +565,18 @@ type Topic {
 ### 查詢範例
 
 ```graphql
-# 取得所有已發布專題
+# 取得所有已發布專題 (依 sortOrder 排序，用於首頁)
 query GetTopics {
   topics(
     where: { status: { equals: "published" } }
-    orderBy: { createdAt: desc }
+    orderBy: { sortOrder: asc }
   ) {
     id
     title
     status
     content
     isPinned
+    sortOrder
     postsCount
     tagsCount
     heroImage {
@@ -1438,6 +1479,8 @@ query GetHomepageData {
   }
 
   # 大分類 (含中分類與文章)
+  # 首頁各區塊使用 featuredPostsInInputOrder 取得精選文章
+  # 顯示邏輯：精選文章優先，再補上一般文章 (去重複)
   sections(
     where: { showInHeader: { equals: true } }
     orderBy: { sortOrder: asc }
@@ -1449,8 +1492,22 @@ query GetHomepageData {
       id
       slug
       name
+      # 精選文章 (依 CMS 輸入順序)
+      featuredPostsInInputOrder(
+        where: { state: { equals: "published" } }
+      ) {
+        id
+        title
+        publishTime
+        heroImage {
+          resized {
+            w480
+          }
+        }
+      }
+      # 一般文章 (依發布時間)
       posts(
-        take: 4
+        take: 10
         where: { state: { equals: "published" } }
         orderBy: { publishTime: desc }
       ) {
@@ -1466,16 +1523,17 @@ query GetHomepageData {
     }
   }
 
-  # 專題
+  # 專題 (依 sortOrder 排序)
   topics(
     where: { status: { equals: "published" } }
-    orderBy: { createdAt: desc }
+    orderBy: { sortOrder: asc }
     take: 4
   ) {
     id
     title
     content
     isPinned
+    sortOrder
     postsCount
     heroImage {
       resized {

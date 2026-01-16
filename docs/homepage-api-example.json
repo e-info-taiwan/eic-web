@@ -11,6 +11,42 @@
           "name": "台灣新聞",
           "sortOrder": 1,
           "postsCount": 156,
+          "featuredPostsInInputOrder": [
+            {
+              "id": "238661",
+              "title": "精選：台灣淨零轉型路徑發布",
+              "publishTime": "2025-11-20T08:00:00.000Z",
+              "brief": "政府公布 2050 淨零轉型關鍵路徑，明確能源、產業、生活三大轉型策略。",
+              "contentApiData": null,
+              "heroImage": {
+                "resized": {
+                  "original": "https://storage.googleapis.com/eic-cms-dev/images/featured-netzero.jpg",
+                  "w480": "https://storage.googleapis.com/eic-cms-dev/images/featured-netzero-w480.jpg",
+                  "w800": "https://storage.googleapis.com/eic-cms-dev/images/featured-netzero-w800.jpg"
+                },
+                "resizedWebp": {
+                  "original": "https://storage.googleapis.com/eic-cms-dev/images/featured-netzero.webp",
+                  "w480": "https://storage.googleapis.com/eic-cms-dev/images/featured-netzero-w480.webp",
+                  "w800": "https://storage.googleapis.com/eic-cms-dev/images/featured-netzero-w800.webp"
+                }
+              }
+            },
+            {
+              "id": "238660",
+              "title": "精選：離岸風電第三階段區塊開發啟動",
+              "publishTime": "2025-11-18T10:00:00.000Z",
+              "brief": "經濟部宣布離岸風電第三階段區塊開發正式啟動。",
+              "contentApiData": null,
+              "heroImage": {
+                "resized": {
+                  "original": "https://storage.googleapis.com/eic-cms-dev/images/featured-offshore.jpg",
+                  "w480": "https://storage.googleapis.com/eic-cms-dev/images/featured-offshore-w480.jpg",
+                  "w800": "https://storage.googleapis.com/eic-cms-dev/images/featured-offshore-w800.jpg"
+                },
+                "resizedWebp": null
+              }
+            }
+          ],
           "posts": [
             {
               "id": "238659",
@@ -155,6 +191,7 @@
           "name": "國際新聞",
           "sortOrder": 2,
           "postsCount": 89,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238650",
@@ -217,6 +254,7 @@
           "name": "中國新聞",
           "sortOrder": 3,
           "postsCount": 45,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238645",
@@ -256,6 +294,23 @@
           "name": "環境觀察",
           "sortOrder": 1,
           "postsCount": 78,
+          "featuredPostsInInputOrder": [
+            {
+              "id": "238641",
+              "title": "精選：環境正義的實踐之路",
+              "publishTime": "2025-11-15T09:00:00.000Z",
+              "brief": "從社區出發的環境正義運動。",
+              "contentApiData": null,
+              "heroImage": {
+                "resized": {
+                  "original": "https://storage.googleapis.com/eic-cms-dev/images/env-justice.jpg",
+                  "w480": "https://storage.googleapis.com/eic-cms-dev/images/env-justice-w480.jpg",
+                  "w800": "https://storage.googleapis.com/eic-cms-dev/images/env-justice-w800.jpg"
+                },
+                "resizedWebp": null
+              }
+            }
+          ],
           "posts": [
             {
               "id": "238640",
@@ -299,6 +354,7 @@
           "name": "綠色生活",
           "sortOrder": 2,
           "postsCount": 56,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238635",
@@ -327,6 +383,7 @@
           "name": "生態保育",
           "sortOrder": 3,
           "postsCount": 42,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238632",
@@ -358,6 +415,7 @@
           "name": "自然書寫",
           "sortOrder": 1,
           "postsCount": 34,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238630",
@@ -401,6 +459,7 @@
           "name": "生態旅遊",
           "sortOrder": 2,
           "postsCount": 28,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238627",
@@ -432,6 +491,7 @@
           "name": "環保產品",
           "sortOrder": 1,
           "postsCount": 23,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238625",
@@ -475,6 +535,7 @@
           "name": "永續品牌",
           "sortOrder": 2,
           "postsCount": 18,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238622",
@@ -789,7 +850,8 @@
           }
         }
       ],
-      "isPinned": true
+      "isPinned": true,
+      "sortOrder": 1
     },
     {
       "id": "4",
@@ -860,7 +922,8 @@
           }
         }
       ],
-      "isPinned": true
+      "isPinned": true,
+      "sortOrder": 2
     },
     {
       "id": "5",
@@ -935,7 +998,8 @@
           "heroImage": null
         }
       ],
-      "isPinned": true
+      "isPinned": true,
+      "sortOrder": 3
     },
     {
       "id": "6",
@@ -999,7 +1063,8 @@
           }
         }
       ],
-      "isPinned": true
+      "isPinned": true,
+      "sortOrder": 4
     }
   ],
   "infoGraph": {

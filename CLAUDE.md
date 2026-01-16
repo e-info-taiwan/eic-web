@@ -135,8 +135,10 @@ type Category {
   sortOrder: Int            // Display order
   heroImage: Photo          // Hero image for category
   heroImageCaption: String  // Image caption
-  posts: [Post]             // Related posts
+  posts: [Post]             // Related posts (ordered by publishTime)
   postsCount: Int           // Number of posts
+  featuredPosts: [Post]           // Featured posts (ordered by add time)
+  featuredPostsInInputOrder: [Post] // Featured posts (ordered by CMS input order)
   section: Section          // Parent section
   classifies: [Classify]    // Classifications
   classifiesCount: Int
@@ -155,6 +157,12 @@ query {
     slug
     name
     postsCount
+    # Featured posts first (in CMS input order), then regular posts
+    featuredPostsInInputOrder {
+      id
+      title
+      publishTime
+    }
     posts(take: 10) {
       id
       title
@@ -178,6 +186,7 @@ type Topic {
   tags: [Tag]               // Related tags
   tagsCount: Int            // Number of tags
   isPinned: Boolean         // Whether pinned to top
+  sortOrder: Int            // Display order (used for homepage sorting)
   createdAt: DateTime
   updatedAt: DateTime
   createdBy: User
@@ -188,7 +197,8 @@ type Topic {
 **Example Query**:
 ```graphql
 query {
-  topics {
+  # Homepage uses sortOrder for ordering
+  topics(orderBy: { sortOrder: asc }) {
     id
     title
     status
@@ -218,6 +228,7 @@ query {
       name
     }
     isPinned
+    sortOrder
   }
 }
 ```
@@ -645,4 +656,4 @@ Includes simple-import-sort rules to ensure consistent import ordering.
 
 ---
 
-**Last Updated**: 2025-12-22
+**Last Updated**: 2026-01-16
