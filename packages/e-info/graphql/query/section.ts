@@ -432,21 +432,27 @@ export type NewsBarPick = {
     id: string
     title: string
   } | null
+  category: {
+    id: string
+    name: string
+  } | null
 }
 
 // Query for NewsBar marquee - lightweight version with only title and URL
+// Fetches all homepage picks from all categories
 export const homepagePicksForNewsBar = gql`
-  query ($categorySlug: String!) {
-    homepagePicks(
-      where: { category: { slug: { equals: $categorySlug } } }
-      orderBy: { sortOrder: asc }
-    ) {
+  query {
+    homepagePicks(orderBy: { sortOrder: asc }) {
       id
       customUrl
       customTitle
       posts {
         id
         title
+      }
+      category {
+        id
+        name
       }
     }
   }

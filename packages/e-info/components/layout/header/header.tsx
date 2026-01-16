@@ -358,34 +358,40 @@ const NewsLabel = styled.span`
 `
 
 const NewsContent = styled.a<{ $isActive?: boolean }>`
-  position: absolute;
-  left: 0;
-  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
   text-decoration: none;
   color: inherit;
-  padding: 10px 20px;
+  padding: 10px 0;
+
+  /* Desktop: centered display */
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  /* Mobile/Tablet: marquee effect */
+  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+    position: absolute;
+    left: 0;
+    justify-content: flex-start;
+    white-space: nowrap;
+    animation: ${({ $isActive }) =>
+      $isActive ? 'marquee 15s linear infinite' : 'none'};
+  }
 
   &:hover {
     text-decoration: underline;
   }
 
-  /* Marquee animation for mobile and tablet */
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    justify-content: flex-start;
-    animation: ${({ $isActive }) =>
-      $isActive ? 'marquee 15s linear infinite' : 'none'};
-    white-space: nowrap;
-    padding: 10px 0;
-  }
-
   @keyframes marquee {
     0% {
-      transform: translateX(100vw);
+      transform: translateX(100%);
     }
     100% {
       transform: translateX(-100%);
@@ -810,9 +816,6 @@ const navigationItems = [
   },
 ]
 
-// NewsBar category slug - change this to use different homepage picks category
-const NEWSBAR_CATEGORY_SLUG = 'homepepicks'
-
 const Header = () => {
   const router = useRouter()
   const { firebaseUser, member, loading: authLoading, signOut } = useAuth()
@@ -832,12 +835,9 @@ const Header = () => {
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringNavRef = useRef(false)
 
-  // Fetch homepage picks for NewsBar
+  // Fetch all homepage picks for NewsBar (from all categories)
   const { data: newsBarData } = useQuery<{ homepagePicks: NewsBarPick[] }>(
-    homepagePicksForNewsBar,
-    {
-      variables: { categorySlug: NEWSBAR_CATEGORY_SLUG },
-    }
+    homepagePicksForNewsBar
   )
 
   // Process news items from homepage picks
@@ -847,6 +847,7 @@ const Header = () => {
       id: pick.id,
       title: pick.customTitle || pick.posts?.title || '',
       url: pick.customUrl || (pick.posts ? `/node/${pick.posts.id}` : null),
+      categoryName: pick.category?.name || '',
     }))
 
   // Auto-rotate news items
@@ -1108,7 +1109,9 @@ const Header = () => {
                 $isActive={index === currentNewsIndex}
                 href={news.url || '#'}
               >
-                <NewsLabel>快訊</NewsLabel>
+                {news.categoryName && (
+                  <NewsLabel>{news.categoryName}</NewsLabel>
+                )}
                 {news.title}
               </NewsContent>
             ))}
