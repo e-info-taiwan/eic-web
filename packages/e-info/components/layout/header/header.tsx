@@ -807,6 +807,8 @@ const Header = () => {
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
+  const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const isHoveringNavRef = useRef(false)
 
   // Check if user is logged in (has firebase user and member)
   const isLoggedIn = !authLoading && firebaseUser && member
@@ -828,6 +830,8 @@ const Header = () => {
       clearTimeout(hoverTimeoutRef.current)
       hoverTimeoutRef.current = null
     }
+    // Pause scroll detection while hovering nav
+    isHoveringNavRef.current = true
     setHoveredCategory(categoryIndex)
     setHoveredSecondaryCategory(null)
   }
@@ -837,6 +841,8 @@ const Header = () => {
     const timeout = setTimeout(() => {
       setHoveredCategory(null)
       setHoveredSecondaryCategory(null)
+      // Resume scroll detection after leaving nav
+      isHoveringNavRef.current = false
     }, 300) // Increased delay to 300ms for easier cursor movement
     hoverTimeoutRef.current = timeout
   }
@@ -847,12 +853,16 @@ const Header = () => {
       clearTimeout(hoverTimeoutRef.current)
       hoverTimeoutRef.current = null
     }
+    // Keep scroll detection paused while in secondary menu
+    isHoveringNavRef.current = true
   }
 
   const handleSecondaryMenuLeave = () => {
     // Close immediately when leaving secondary menu
     setHoveredCategory(null)
     setHoveredSecondaryCategory(null)
+    // Resume scroll detection after leaving nav
+    isHoveringNavRef.current = false
   }
 
   const handleSecondaryItemHover = (itemIndex: number) => {
@@ -881,18 +891,32 @@ const Header = () => {
   // Handle scroll direction for header hide/show
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
+      // Skip if hovering on navigation menu
+      if (isHoveringNavRef.current) {
+        return
+      }
 
-      // Only hide/show if scrolled more than 10px to avoid small movements
-      if (Math.abs(currentScrollY - lastScrollY.current) > 10) {
-        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-          // Scrolling down - hide header
-          setIsHeaderHidden(true)
-        } else if (currentScrollY < lastScrollY.current) {
-          // Scrolling up - show header
-          setIsHeaderHidden(false)
+      const currentScrollY = window.scrollY
+      const scrollDelta = Math.abs(currentScrollY - lastScrollY.current)
+
+      // Only process if scrolled more than 40px to avoid small movements
+      if (scrollDelta > 40) {
+        // Clear any pending debounce
+        if (scrollDebounceRef.current) {
+          clearTimeout(scrollDebounceRef.current)
         }
-        lastScrollY.current = currentScrollY
+
+        // Debounce the state change by 150ms
+        scrollDebounceRef.current = setTimeout(() => {
+          if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+            // Scrolling down - hide header
+            setIsHeaderHidden(true)
+          } else if (currentScrollY < lastScrollY.current) {
+            // Scrolling up - show header
+            setIsHeaderHidden(false)
+          }
+          lastScrollY.current = currentScrollY
+        }, 150)
       }
     }
 
@@ -900,6 +924,9 @@ const Header = () => {
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
+      if (scrollDebounceRef.current) {
+        clearTimeout(scrollDebounceRef.current)
+      }
     }
   }, [])
 
