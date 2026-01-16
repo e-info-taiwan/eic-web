@@ -8,7 +8,7 @@ import {
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
 import type { SectionCategory } from '~/graphql/query/section'
-import { getBriefText } from '~/utils/post'
+import { getBriefText, mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -413,9 +413,12 @@ type NewsSectionProps = {
 }
 
 const NewsSection = ({ categories = [] }: NewsSectionProps) => {
-  // Filter categories that have posts
+  // Filter categories that have posts (either featured or regular)
   const categoriesWithPosts = categories.filter(
-    (cat) => cat.posts && cat.posts.length > 0
+    (cat) =>
+      (cat.featuredPostsInInputOrder &&
+        cat.featuredPostsInInputOrder.length > 0) ||
+      (cat.posts && cat.posts.length > 0)
   )
 
   const [activeCategory, setActiveCategory] = useState<string>(
@@ -434,7 +437,13 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
   const currentCategory = categoriesWithPosts.find(
     (cat) => cat.id === activeCategory
   )
-  const currentPosts = currentCategory?.posts || []
+
+  // Merge featured posts (in input order) with regular posts
+  const currentPosts = mergePostsWithFeatured(
+    currentCategory?.featuredPostsInInputOrder || [],
+    currentCategory?.posts || [],
+    8 // max 8 posts for this section
+  )
 
   // Featured post is the first one, related gets posts 2-3, sidebar gets posts 4+
   const featuredPost = currentPosts[0]

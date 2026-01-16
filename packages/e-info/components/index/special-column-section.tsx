@@ -5,6 +5,7 @@ import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { SectionCategory } from '~/graphql/query/section'
+import { mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -188,9 +189,12 @@ type SpecialColumnSectionProps = {
 const SpecialColumnSection = ({
   categories = [],
 }: SpecialColumnSectionProps) => {
-  // Filter categories that have posts
+  // Filter categories that have posts (either featured or regular)
   const categoriesWithPosts = categories.filter(
-    (cat) => cat.posts && cat.posts.length > 0
+    (cat) =>
+      (cat.featuredPostsInInputOrder &&
+        cat.featuredPostsInInputOrder.length > 0) ||
+      (cat.posts && cat.posts.length > 0)
   )
 
   const [activeCategory, setActiveCategory] = useState<string>(
@@ -209,7 +213,13 @@ const SpecialColumnSection = ({
   const currentCategory = categoriesWithPosts.find(
     (cat) => cat.id === activeCategory
   )
-  const currentPosts = (currentCategory?.posts || []).slice(0, 6)
+
+  // Merge featured posts (in input order) with regular posts
+  const currentPosts = mergePostsWithFeatured(
+    currentCategory?.featuredPostsInInputOrder || [],
+    currentCategory?.posts || [],
+    6 // max 6 posts for this section
+  )
 
   return (
     <Container>

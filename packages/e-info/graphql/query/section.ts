@@ -36,6 +36,7 @@ export type SectionCategory = {
   sortOrder: number | null
   postsCount: number
   posts: SectionPost[]
+  featuredPostsInInputOrder: SectionPost[]
 }
 
 export type Section = {
@@ -157,7 +158,7 @@ export const topicsWithPosts = gql`
   query ($postsPerTopic: Int = 4) {
     topics(
       where: { status: { equals: "published" }, isPinned: { equals: true } }
-      orderBy: { id: asc }
+      orderBy: { sortOrder: asc }
     ) {
       id
       title
@@ -357,6 +358,21 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
         name
         sortOrder
         postsCount
+        featuredPostsInInputOrder {
+          id
+          title
+          publishTime
+          brief
+          contentApiData
+          heroImage {
+            resized {
+              ...ResizedImagesCardField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesCardField
+            }
+          }
+        }
         posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
           id
           title
