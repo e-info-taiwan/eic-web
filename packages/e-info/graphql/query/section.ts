@@ -1,12 +1,12 @@
 import gql from 'graphql-tag'
 
+import type { ResizedImagesCard } from '~/graphql/fragments/post'
 import {
   resizeImagesCardFragment,
   resizeImagesFragment,
   resizeWebpImagesCardFragment,
   resizeWebpImagesFragment,
 } from '~/graphql/fragments/resized-images'
-import type { ResizedImagesCard } from '~/graphql/fragments/post'
 import type { ResizedImages } from '~/types/common'
 
 export type ContentApiDataBlock = {
@@ -421,6 +421,35 @@ export const homepagePicksByCategory = gql`
   }
   ${resizeImagesCardFragment}
   ${resizeWebpImagesCardFragment}
+`
+
+// Lightweight type for NewsBar marquee (only title and URL needed)
+export type NewsBarPick = {
+  id: string
+  customUrl: string | null
+  customTitle: string | null
+  posts: {
+    id: string
+    title: string
+  } | null
+}
+
+// Query for NewsBar marquee - lightweight version with only title and URL
+export const homepagePicksForNewsBar = gql`
+  query ($categorySlug: String!) {
+    homepagePicks(
+      where: { category: { slug: { equals: $categorySlug } } }
+      orderBy: { sortOrder: asc }
+    ) {
+      id
+      customUrl
+      customTitle
+      posts {
+        id
+        title
+      }
+    }
+  }
 `
 
 // Query for homepage carousel picks

@@ -1,9 +1,14 @@
+import { useQuery } from '@apollo/client/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import NewsletterModal from '~/components/shared/newsletter-modal'
+import {
+  type NewsBarPick,
+  homepagePicksForNewsBar,
+} from '~/graphql/query/section'
 import { useAuth } from '~/hooks/useAuth'
 import { getMemberDisplayName } from '~/lib/graphql/member'
 import LogoEIC from '~/public/eic-logo.svg'
@@ -342,27 +347,40 @@ const NewsBar = styled.div`
   }
 `
 
-const NewsContent = styled.div`
-  &::before {
-    content: '快訊';
-    margin-right: 10px;
-    font-weight: 700;
-  }
+const NewsLabel = styled.span`
+  font-weight: 700;
+  margin-right: 10px;
+  flex-shrink: 0;
 
-  /* Default: centered on desktop */
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    display: inline;
+  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+    margin-right: 8px;
+  }
+`
+
+const NewsContent = styled.a<{ $isActive?: boolean }>`
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+  transition: opacity 0.5s ease-in-out;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 20px;
+
+  &:hover {
+    text-decoration: underline;
   }
 
   /* Marquee animation for mobile and tablet */
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    display: inline-block;
-    animation: marquee 20s linear infinite;
+    justify-content: flex-start;
+    animation: ${({ $isActive }) =>
+      $isActive ? 'marquee 15s linear infinite' : 'none'};
     white-space: nowrap;
-
-    &::before {
-      margin-right: 8px;
-    }
+    padding: 10px 0;
   }
 
   @keyframes marquee {
@@ -792,6 +810,9 @@ const navigationItems = [
   },
 ]
 
+// NewsBar category slug - change this to use different homepage picks category
+const NEWSBAR_CATEGORY_SLUG = 'homepepicks'
+
 const Header = () => {
   const router = useRouter()
   const { firebaseUser, member, loading: authLoading, signOut } = useAuth()
@@ -805,10 +826,39 @@ const Header = () => {
   >(null)
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringNavRef = useRef(false)
+
+  // Fetch homepage picks for NewsBar
+  const { data: newsBarData } = useQuery<{ homepagePicks: NewsBarPick[] }>(
+    homepagePicksForNewsBar,
+    {
+      variables: { categorySlug: NEWSBAR_CATEGORY_SLUG },
+    }
+  )
+
+  // Process news items from homepage picks
+  const newsItems = (newsBarData?.homepagePicks || [])
+    .filter((pick) => pick.customTitle || pick.posts?.title)
+    .map((pick) => ({
+      id: pick.id,
+      title: pick.customTitle || pick.posts?.title || '',
+      url: pick.customUrl || (pick.posts ? `/node/${pick.posts.id}` : null),
+    }))
+
+  // Auto-rotate news items
+  useEffect(() => {
+    if (newsItems.length <= 1) return
+
+    const interval = setInterval(() => {
+      setCurrentNewsIndex((prev) => (prev + 1) % newsItems.length)
+    }, 5000) // Rotate every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [newsItems.length])
 
   // Check if user is logged in (has firebase user and member)
   const isLoggedIn = !authLoading && firebaseUser && member
@@ -1050,11 +1100,20 @@ const Header = () => {
           </SecondaryMenuContainer>
         </SecondaryMenuBar>
 
-        <NewsBar>
-          <NewsContent>
-            《核管法》修法三讀 核電運轉年限最多再加20年、已停機核電可重啟
-          </NewsContent>
-        </NewsBar>
+        {newsItems.length > 0 && (
+          <NewsBar>
+            {newsItems.map((news, index) => (
+              <NewsContent
+                key={news.id}
+                $isActive={index === currentNewsIndex}
+                href={news.url || '#'}
+              >
+                <NewsLabel>快訊</NewsLabel>
+                {news.title}
+              </NewsContent>
+            ))}
+          </NewsBar>
+        )}
 
         <NewsletterModal
           isOpen={isNewsletterModalOpen}
