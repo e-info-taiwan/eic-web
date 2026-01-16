@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client/react'
+import Lottie from 'lottie-react'
 import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
@@ -12,6 +13,7 @@ import {
   pollResultsCounts,
 } from '~/graphql/query/poll'
 import type { Poll } from '~/graphql/query/post'
+import loadingAnimation from '~/public/lottie/loading.json'
 
 // Local storage key for tracking anonymous votes
 const POLL_VOTES_STORAGE_KEY = 'eic_poll_votes'
@@ -157,6 +159,31 @@ const OptionText = styled.span`
   font-size: 16px;
   line-height: 1.8;
   color: ${({ theme }) => theme.colors.grayscale[0]};
+`
+
+const PollContainer = styled.div`
+  position: relative;
+`
+
+const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.64);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+`
+
+const LottieWrapper = styled.div`
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 type PollOption = {
@@ -315,22 +342,35 @@ export default function PostPoll({
     <PollWrapper>
       <PollTitle>心情互動</PollTitle>
       {poll.content && <PollContent>{poll.content}</PollContent>}
-      <OptionList>
-        {options.map((option) => (
-          <OptionRow
-            key={option.key}
-            $hasVoted={hasVoted}
-            $disabled={isDisabled}
-            onClick={() => handleOptionClick(option.key)}
-          >
-            <RadioCircle $isSelected={selectedOption === option.key} />
-            <OptionBar>
-              <BarFill $percentage={getPercentage(option.key)} />
-              <OptionText>{option.text}</OptionText>
-            </OptionBar>
-          </OptionRow>
-        ))}
-      </OptionList>
+      <PollContainer>
+        {isSubmitting && (
+          <LoadingOverlay>
+            <LottieWrapper>
+              <Lottie
+                animationData={loadingAnimation}
+                loop
+                style={{ width: 80, height: 80, transform: 'scale(2)' }}
+              />
+            </LottieWrapper>
+          </LoadingOverlay>
+        )}
+        <OptionList>
+          {options.map((option) => (
+            <OptionRow
+              key={option.key}
+              $hasVoted={hasVoted}
+              $disabled={isDisabled || isSubmitting}
+              onClick={() => handleOptionClick(option.key)}
+            >
+              <RadioCircle $isSelected={selectedOption === option.key} />
+              <OptionBar>
+                <BarFill $percentage={getPercentage(option.key)} />
+                <OptionText>{option.text}</OptionText>
+              </OptionBar>
+            </OptionRow>
+          ))}
+        </OptionList>
+      </PollContainer>
     </PollWrapper>
   )
 }
