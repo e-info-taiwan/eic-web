@@ -335,6 +335,7 @@ const NewsBar = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 44px;
+  overflow: hidden;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   font-size: 16px;
   font-weight: 700;
@@ -342,7 +343,6 @@ const NewsBar = styled.div`
 
   /* Marquee effect for mobile and tablet devices */
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    overflow: hidden;
     white-space: nowrap;
   }
 `
@@ -357,22 +357,31 @@ const NewsLabel = styled.span`
   }
 `
 
-const NewsContent = styled.a<{ $isActive?: boolean }>`
+type NewsContentProps = {
+  $isActive?: boolean
+  $isLeaving?: boolean
+}
+
+const NewsContent = styled.a<NewsContentProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
-  transition: opacity 0.3s ease-in-out;
   text-decoration: none;
   color: inherit;
   padding: 10px 0;
 
-  /* Desktop: centered display */
+  /* Desktop: vertical slide animation (old exits up, new enters from below) */
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
     white-space: nowrap;
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+    transform: ${({ $isActive, $isLeaving }) => {
+      if ($isActive) return 'translateX(-50%) translateY(0)'
+      if ($isLeaving) return 'translateX(-50%) translateY(-100%)'
+      return 'translateX(-50%) translateY(100%)'
+    }};
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
   }
 
   /* Mobile/Tablet: marquee effect */
@@ -381,6 +390,7 @@ const NewsContent = styled.a<{ $isActive?: boolean }>`
     left: 0;
     justify-content: flex-start;
     white-space: nowrap;
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
     animation: ${({ $isActive }) =>
       $isActive ? 'marquee 15s linear infinite' : 'none'};
   }
@@ -830,6 +840,7 @@ const Header = () => {
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0)
+  const [prevNewsIndex, setPrevNewsIndex] = useState<number | null>(null)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
@@ -851,15 +862,21 @@ const Header = () => {
     }))
 
   // Auto-rotate news items
+  // Desktop: 5 seconds (vertical slide)
+  // Mobile/Tablet: 15 seconds (match marquee animation duration)
   useEffect(() => {
     if (newsItems.length <= 1) return
 
+    const isDesktop = window.innerWidth >= 1200
+    const rotateInterval = isDesktop ? 5000 : 15000
+
     const interval = setInterval(() => {
+      setPrevNewsIndex(currentNewsIndex)
       setCurrentNewsIndex((prev) => (prev + 1) % newsItems.length)
-    }, 5000) // Rotate every 5 seconds
+    }, rotateInterval)
 
     return () => clearInterval(interval)
-  }, [newsItems.length])
+  }, [newsItems.length, currentNewsIndex])
 
   // Check if user is logged in (has firebase user and member)
   const isLoggedIn = !authLoading && firebaseUser && member
@@ -1107,6 +1124,7 @@ const Header = () => {
               <NewsContent
                 key={news.id}
                 $isActive={index === currentNewsIndex}
+                $isLeaving={index === prevNewsIndex}
                 href={news.url || '#'}
               >
                 {news.categoryName && (
