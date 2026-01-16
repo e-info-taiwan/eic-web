@@ -565,7 +565,11 @@ type Topic {
 ### 查詢範例
 
 ```graphql
-# 取得所有已發布專題 (依 sortOrder 排序，用於首頁)
+# 取得所有已發布專題 (依 sortOrder 排序)
+# 首頁顯示邏輯 (前端排序):
+#   1. isPinned = true 的 topics 優先，依 sortOrder 升冪
+#   2. isPinned = false 的 topics，依 sortOrder 升冪
+#   3. 取前 4 筆
 query GetTopics {
   topics(
     where: { status: { equals: "published" } }

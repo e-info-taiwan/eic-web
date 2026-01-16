@@ -846,7 +846,7 @@ const Header = () => {
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringNavRef = useRef(false)
 
-  // Fetch all homepage picks for NewsBar (from all categories)
+  // Fetch "快訊" (flashnews) category picks for NewsBar
   const { data: newsBarData } = useQuery<{ homepagePicks: NewsBarPick[] }>(
     homepagePicksForNewsBar
   )
@@ -858,7 +858,6 @@ const Header = () => {
       id: pick.id,
       title: pick.customTitle || pick.posts?.title || '',
       url: pick.customUrl || (pick.posts ? `/node/${pick.posts.id}` : null),
-      categoryName: pick.category?.name || '',
     }))
 
   // Auto-rotate news items
@@ -1127,9 +1126,7 @@ const Header = () => {
                 $isLeaving={index === prevNewsIndex}
                 href={news.url || '#'}
               >
-                {news.categoryName && (
-                  <NewsLabel>{news.categoryName}</NewsLabel>
-                )}
+                <NewsLabel>快訊</NewsLabel>
                 {news.title}
               </NewsContent>
             ))}

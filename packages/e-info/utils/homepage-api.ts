@@ -160,6 +160,28 @@ async function fetchFromGraphQL(
 }
 
 /**
+ * 排序 Topics 並取前 N 筆
+ * 排序邏輯：
+ *   1. isPinned = true 的 topics 優先，依 sortOrder 升冪排序
+ *   2. isPinned = false 的 topics，依 sortOrder 升冪排序
+ *   3. 取前 maxTopics 筆
+ */
+function sortAndLimitTopics(topics: Topic[], maxTopics: number = 4): Topic[] {
+  const sorted = [...topics].sort((a, b) => {
+    // isPinned = true 優先
+    if (a.isPinned && !b.isPinned) return -1
+    if (!a.isPinned && b.isPinned) return 1
+
+    // 相同 isPinned 狀態下，依 sortOrder 升冪排序
+    const sortOrderA = a.sortOrder ?? Infinity
+    const sortOrderB = b.sortOrder ?? Infinity
+    return sortOrderA - sortOrderB
+  })
+
+  return sorted.slice(0, maxTopics)
+}
+
+/**
  * 將 API Response 轉換為前端使用的資料格式
  */
 function transformApiResponse(response: HomepageApiResponse): HomepageData {
@@ -186,6 +208,9 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
     }
   }
 
+  // 排序 topics: isPinned 優先，再依 sortOrder 排序，取前 4 筆
+  const sortedTopics = sortAndLimitTopics(response.topics, 4)
+
   return {
     newsCategories,
     columnCategories,
@@ -193,7 +218,7 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
     greenCategories,
     highlightPicks: response.highlightPicks,
     carouselPicks: response.carouselPicks,
-    topics: response.topics,
+    topics: sortedTopics,
     infoGraph: response.infoGraph,
     ads: response.ads,
     deepTopicAds: response.deepTopicAds,

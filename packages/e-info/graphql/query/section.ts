@@ -93,6 +93,7 @@ export type Topic = {
   posts: TopicPost[]
   tags?: TopicTag[]
   isPinned: boolean
+  sortOrder: number | null
   updatedAt?: string
 }
 
@@ -154,10 +155,18 @@ export type HomepagePickCarousel = {
   } | null
 }
 
+/**
+ * Query for homepage topics
+ * Fetches all published topics with posts for homepage display
+ * Sorting logic (handled in frontend):
+ *   1. isPinned = true topics first, ordered by sortOrder asc
+ *   2. Then isPinned = false topics, ordered by sortOrder asc
+ *   3. Take first 4 topics total
+ */
 export const topicsWithPosts = gql`
   query ($postsPerTopic: Int = 4) {
     topics(
-      where: { status: { equals: "published" }, isPinned: { equals: true } }
+      where: { status: { equals: "published" } }
       orderBy: { sortOrder: asc }
     ) {
       id
@@ -188,6 +197,7 @@ export const topicsWithPosts = gql`
         }
       }
       isPinned
+      sortOrder
     }
   }
   ${resizeImagesCardFragment}
@@ -448,27 +458,22 @@ export type NewsBarPick = {
     id: string
     title: string
   } | null
-  category: {
-    id: string
-    name: string
-  } | null
 }
 
 // Query for NewsBar marquee - lightweight version with only title and URL
-// Fetches all homepage picks from all categories
+// Fetches only "快訊" (flashnews) category picks
 export const homepagePicksForNewsBar = gql`
   query {
-    homepagePicks(orderBy: { sortOrder: asc }) {
+    homepagePicks(
+      where: { category: { slug: { equals: "flashnews" } } }
+      orderBy: { sortOrder: asc }
+    ) {
       id
       customUrl
       customTitle
       posts {
         id
         title
-      }
-      category {
-        id
-        name
       }
     }
   }

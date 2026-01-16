@@ -402,17 +402,21 @@ interface HomepagePickCarousel {
 
 **查詢條件**:
 - `status = "published"`
-- `isPinned = true`
 - 依 `sortOrder` 升冪排序（CMS 可設定顯示順序）
 - 每個 topic 取 4 篇文章
 - Posts 依 `publishTime` 降冪排序
 - **圖片尺寸**: Card (original, w480, w800)
 
+**排序與顯示邏輯** (前端處理):
+1. `isPinned = true` 的 topics 優先顯示，依 `sortOrder` 升冪排序
+2. `isPinned = false` 的 topics，依 `sortOrder` 升冪排序
+3. 總共取前 4 筆顯示
+
 **GraphQL 等效查詢**:
 ```graphql
 query {
   topics(
-    where: { status: { equals: "published" }, isPinned: { equals: true } }
+    where: { status: { equals: "published" } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -939,10 +943,12 @@ HTTP Status Codes:
   - Category 新增 `featuredPostsInInputOrder` 欄位，可在 CMS 設定精選文章
   - 首頁顯示邏輯：精選文章優先顯示，再補上一般文章（去重複）
   - 影響區塊：時事新聞、專欄、副刊、綠色消費
-- **Topics 排序改用 `sortOrder`**
-  - 深度專題改用 `sortOrder` 欄位排序（原本使用 `id`）
+- **Topics 排序邏輯更新**
+  - 移除查詢條件中的 `isPinned = true` 限制，改為前端排序
+  - 排序邏輯：`isPinned = true` 的 topics 優先，依 `sortOrder` 排序；其次為 `isPinned = false` 的 topics，依 `sortOrder` 排序
+  - 總共取前 4 筆顯示
   - Topic 型別新增 `sortOrder` 欄位
-  - 可在 CMS 設定專題顯示順序
+  - 可在 CMS 設定專題顯示順序，並透過 `isPinned` 設定優先顯示
 
 ### 2025-01-15
 - **新增響應式圖片尺寸策略**
