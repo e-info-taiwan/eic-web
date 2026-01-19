@@ -12,6 +12,7 @@ import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
 import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
+import { useReadingTracker } from '~/hooks/useReadingTracker'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { ResizedImages, ValidPostStyle } from '~/types/common'
 import { setCacheControl } from '~/utils/common'
@@ -21,6 +22,9 @@ type PageProps = {
 }
 
 const Post: NextPageWithLayout<PageProps> = ({ postData }) => {
+  // Track reading history for logged-in members
+  useReadingTracker(postData?.id)
+
   let articleType: JSX.Element
 
   switch (postData.style) {

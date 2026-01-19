@@ -2,13 +2,20 @@ import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { useAuth } from '~/hooks/useAuth'
+import type { ReadingHistoryWithPost } from '~/lib/graphql/reading-history'
+import {
+  getReadingHistory,
+  getReadingHistoryCount,
+} from '~/lib/graphql/reading-history'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -219,6 +226,11 @@ const LoadMoreButton = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.colors.grayscale[95]};
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 `
 
 const LoadingWrapper = styled.div`
@@ -245,208 +257,76 @@ const sidebarItems = [
   { label: '通知', href: '/member/notifications' },
 ]
 
-// 假資料（之後會替換為實際資料來源）
-type MockArticle = {
-  id: string
-  title: string
-  summary: string
-  date: string
-  imageUrl: string
-  tags: { id: string; name: string }[]
+const ITEMS_PER_PAGE = 9
+
+// Helper function to format date
+const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return ''
+  try {
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${year}/${month}/${day} ${hours}:${minutes}`
+  } catch {
+    return ''
+  }
 }
 
-const generateMockArticles = (): MockArticle[] => [
-  {
-    id: '1',
-    title: '【氣候法未竟之業】強化行政院永續會權能 讓氣候治理的大腦...',
-    summary:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '2',
-    title: '《尼斯覺醒行動》逾90國家籲減塑 盼求全球塑膠公約談判達協議',
-    summary:
-      '聯合國海洋大會正於法國尼斯舉行，10日有超過90個會員國共同簽署《尼斯覺醒行動》（The Nice wake up call for an ambitious plastic treat...',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '3',
-    title: '《尼斯覺醒行動》逾90國家籲減塑 盼求全球塑膠公約談判達協議',
-    summary:
-      '聯合國海洋大會正於法國尼斯舉行，10日有超過90個會員國共同簽署《尼斯覺醒行動》（The Nice wake up call for an ambitious plastic treat...',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-    ],
-  },
-  {
-    id: '4',
-    title: '百萬美金打造海廢初號機 犀牛盾要「在沿岸建造掃地機器人」',
-    summary:
-      '海洋廢棄物挑戰日益嚴峻，台灣起家的手機配件品牌犀牛盾，宣布推出智慧海廢清理平台「破浪者」。◇ 結合太陽能、自動化與AI辨識技術，透過無人機偵測、無人船回收與水流引導系統，打造低能耗、模組化...',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '5',
-    title: '台灣首支rPET瓶裝茶實現「瓶到瓶」循環 主婦聯盟：盼環境部...',
-    summary:
-      '全台一年用約50億支寶特瓶，雖然回收率高達95%，但多數回收料被降級為衣物、建材等用途，最終仍遭丟棄。在資源永續循環概念下，盼實現「瓶到瓶」的封閉式資源循環，主婦聯盟昨（21）日首度推出...',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '6',
-    title: '台灣首支rPET瓶裝茶實現「瓶到瓶」循環 主婦聯盟：盼環境部...',
-    summary:
-      '全台一年用約50億支寶特瓶，雖然回收率高達95%，但多數回收料被降級為衣物、建材等用途，最終仍遭丟棄。在資源永續循環概念下，盼實現「瓶到瓶」的封閉式資源循環，主婦聯盟昨（21）日首度推出...',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '7',
-    title: '「核電延役免環評」彭啟明也覺奇怪 立委呼籲環境部修法',
-    summary:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '8',
-    title: '「核電延役免環評」彭啟明也覺奇怪 立委呼籲環境部修法',
-    summary:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-  {
-    id: '9',
-    title: '「核電延役免環評」彭啟明也覺奇怪 立委呼籲環境部修法',
-    summary:
-      '核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機',
-    date: '2023/03/28 12:59',
-    imageUrl: '/post-default.png',
-    tags: [
-      { id: '1', name: '標籤1' },
-      { id: '2', name: '標籤2' },
-      { id: '3', name: '標籤3' },
-      { id: '4', name: '標籤444' },
-      { id: '5', name: '標籤5' },
-      { id: '6', name: '標籤6' },
-      { id: '7', name: '標籤7' },
-      { id: '8', name: '標籤8' },
-      { id: '9', name: '標籤9' },
-      { id: '10', name: '標籤10' },
-    ],
-  },
-]
+// Helper function to get image URL from reading history post
+const getImageUrl = (history: ReadingHistoryWithPost): string => {
+  const heroImage = history.post?.heroImage
+  const resized = heroImage?.resized
+  const resizedWebp = heroImage?.resizedWebp
+  return (
+    resizedWebp?.w800 ||
+    resizedWebp?.w480 ||
+    resized?.w800 ||
+    resized?.w480 ||
+    resized?.original ||
+    DEFAULT_POST_IMAGE_PATH
+  )
+}
 
 const MemberHistoryPage: NextPageWithLayout = () => {
   const router = useRouter()
-  const { firebaseUser, loading } = useAuth()
+  const { firebaseUser, member, loading } = useAuth()
 
-  const [articles, setArticles] = useState<MockArticle[]>([])
+  const [histories, setHistories] = useState<ReadingHistoryWithPost[]>([])
+  const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
 
-  // Initialize with mock data
+  // Fetch reading history when member is available
+  const fetchHistory = useCallback(async () => {
+    if (!member?.id) return
+
+    setInitialLoading(true)
+    try {
+      const [data, count] = await Promise.all([
+        getReadingHistory(member.id, ITEMS_PER_PAGE, 0),
+        getReadingHistoryCount(member.id),
+      ])
+      // Filter out histories with null posts (deleted posts)
+      const validHistories = data.filter((h) => h.post !== null)
+      setHistories(validHistories)
+      setTotalCount(count)
+      setHasMore(validHistories.length < count)
+    } catch (err) {
+      console.error('Failed to fetch reading history:', err)
+    } finally {
+      setInitialLoading(false)
+    }
+  }, [member?.id])
+
   useEffect(() => {
-    setArticles(generateMockArticles())
-  }, [])
+    if (member?.id) {
+      fetchHistory()
+    }
+  }, [member?.id, fetchHistory])
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -455,21 +335,29 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     }
   }, [loading, firebaseUser, router])
 
-  const handleLoadMore = () => {
-    // 模擬載入更多（實際實作時會從 API 取得）
-    const moreArticles = generateMockArticles().map((article, index) => ({
-      ...article,
-      id: `more-${articles.length + index}`,
-    }))
-    setArticles((prev) => [...prev, ...moreArticles])
-    // 模擬沒有更多資料
-    if (articles.length >= 18) {
-      setHasMore(false)
+  const handleLoadMore = async () => {
+    if (!member?.id || isLoadingMore) return
+
+    setIsLoadingMore(true)
+    try {
+      const moreHistories = await getReadingHistory(
+        member.id,
+        ITEMS_PER_PAGE,
+        histories.length
+      )
+      // Filter out histories with null posts
+      const validHistories = moreHistories.filter((h) => h.post !== null)
+      setHistories((prev) => [...prev, ...validHistories])
+      setHasMore(histories.length + validHistories.length < totalCount)
+    } catch (err) {
+      console.error('Failed to load more reading history:', err)
+    } finally {
+      setIsLoadingMore(false)
     }
   }
 
   // Show loading state
-  if (loading) {
+  if (loading || initialLoading) {
     return (
       <PageWrapper>
         <ContentWrapper>
@@ -515,21 +403,31 @@ const MemberHistoryPage: NextPageWithLayout = () => {
 
           <PageTitle>閱讀紀錄</PageTitle>
 
-          {articles.length === 0 ? (
+          {histories.length === 0 ? (
             <EmptyMessage>目前沒有閱讀紀錄</EmptyMessage>
           ) : (
             <>
               <ArticleGrid>
-                {articles.map((article) => (
-                  <ArticleCard key={article.id} href={`/node/${article.id}`}>
+                {histories.map((history) => (
+                  <ArticleCard
+                    key={history.id}
+                    href={`/node/${history.post?.id}`}
+                  >
                     <ArticleImage>
-                      <img src={article.imageUrl} alt={article.title} />
+                      <img
+                        src={getImageUrl(history)}
+                        alt={history.post?.title || ''}
+                      />
                     </ArticleImage>
-                    <ArticleDate>{article.date}</ArticleDate>
-                    <ArticleTitle>{article.title}</ArticleTitle>
-                    <ArticleSummary>{article.summary}</ArticleSummary>
+                    <ArticleDate>
+                      {formatDate(history.post?.publishTime)}
+                    </ArticleDate>
+                    <ArticleTitle>{history.post?.title}</ArticleTitle>
+                    <ArticleSummary>
+                      {getBriefText(history.post?.brief, null, 150)}
+                    </ArticleSummary>
                     <TagList>
-                      {article.tags.map((tag) => (
+                      {history.post?.tags.map((tag) => (
                         <Tag key={tag.id}>{tag.name}</Tag>
                       ))}
                     </TagList>
@@ -538,8 +436,11 @@ const MemberHistoryPage: NextPageWithLayout = () => {
               </ArticleGrid>
 
               {hasMore && (
-                <LoadMoreButton onClick={handleLoadMore}>
-                  load more
+                <LoadMoreButton
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                >
+                  {isLoadingMore ? '載入中...' : 'load more'}
                 </LoadMoreButton>
               )}
             </>
