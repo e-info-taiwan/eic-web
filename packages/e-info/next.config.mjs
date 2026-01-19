@@ -12,7 +12,6 @@ const { ENV, DONATION_PAGE_URL } = await tsImport.load(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   poweredByHeader: false,
   images: {
     remotePatterns: [
