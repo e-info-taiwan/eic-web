@@ -354,7 +354,7 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
   const regularTopics = topics.filter((topic) => !topic.isPinned)
 
   const renderFeaturedArticle = (topic: Topic, index: number) => {
-    const topicHref = `/topic/${topic.id}`
+    const topicHref = `/feature/${topic.id}`
     const topicImage = getTopicImageUrl(topic)
     const topicDate = formatDate(topic.updatedAt)
 
@@ -407,7 +407,7 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
         {index === 0 && regularTopics.length > 0 && (
           <ArticleGrid>
             {regularTopics.map((regularTopic) => {
-              const regularHref = `/topic/${regularTopic.id}`
+              const regularHref = `/feature/${regularTopic.id}`
               const regularImage = getTopicImageUrl(regularTopic)
               const regularDate = formatDate(regularTopic.updatedAt)
 

@@ -516,7 +516,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
         <LeftSection>
           {/* Hero Article - Links to topic page */}
           {heroTopic && (
-            <Link href={`/topic/${heroTopic.id}`} passHref legacyBehavior>
+            <Link href={`/feature/${heroTopic.id}`} passHref legacyBehavior>
               <HeroArticle>
                 <HeroImageWrapper>
                   <SharedImage

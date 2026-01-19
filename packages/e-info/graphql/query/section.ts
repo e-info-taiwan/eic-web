@@ -205,7 +205,7 @@ export const topicsWithPosts = gql`
 `
 
 /**
- * Query for all published topics (for featured-topics listing page)
+ * Query for all published topics (for /feature listing page)
  * Returns all topics with basic info and updatedAt for sorting
  */
 export const allTopics = gql`
@@ -237,7 +237,7 @@ export const allTopics = gql`
 
 /**
  * Query for a single topic by ID with all posts
- * Used for topic detail page (/topic/[id])
+ * Used for topic detail page (/feature/[id])
  */
 export const topicById = gql`
   query ($topicId: ID!) {
