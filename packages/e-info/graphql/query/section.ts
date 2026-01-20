@@ -740,6 +740,89 @@ export const sectionPostsForListing = gql`
   ${resizeWebpImagesCardFragment}
 `
 
+// Types for new section page design
+export type SectionPageCategory = {
+  id: string
+  slug: string
+  name: string
+  sortOrder: number | null
+  postsCount: number
+  featuredPostsInInputOrder: SectionPost[]
+  posts: SectionPost[]
+}
+
+export type SectionPageData = {
+  id: string
+  slug: string
+  name: string
+  heroImage: {
+    resized: ResizedImages | null
+    resizedWebp: ResizedImages | null
+  } | null
+  categories: SectionPageCategory[]
+}
+
+// Query section with heroImage and categories with posts (for new section page design)
+// Each category includes featuredPostsInInputOrder and posts for merging
+export const sectionPageBySlug = gql`
+  query ($slug: String!, $postsPerCategory: Int = 3) {
+    sections(where: { slug: { equals: $slug } }) {
+      id
+      slug
+      name
+      heroImage {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
+      categories(orderBy: { sortOrder: asc }) {
+        id
+        slug
+        name
+        sortOrder
+        postsCount
+        featuredPostsInInputOrder {
+          id
+          title
+          publishTime
+          brief
+          contentApiData
+          heroImage {
+            resized {
+              ...ResizedImagesCardField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesCardField
+            }
+          }
+        }
+        posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
+          id
+          title
+          publishTime
+          brief
+          contentApiData
+          heroImage {
+            resized {
+              ...ResizedImagesCardField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesCardField
+            }
+          }
+        }
+      }
+    }
+  }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
 // Query category by ID with section info (for category page)
 export const categoryByIdWithSection = gql`
   query ($categoryId: ID!) {

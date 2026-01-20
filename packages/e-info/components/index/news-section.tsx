@@ -60,12 +60,17 @@ const AccentBar = styled.div`
   }
 `
 
-const Title = styled.h1`
+const TitleLink = styled(Link)`
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
@@ -461,7 +466,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
       {/* Header */}
       <Header>
         <AccentBar />
-        <Title>時事新聞</Title>
+        <TitleLink href="/section/latestnews">時事新聞</TitleLink>
         <CategoryTabs>
           {categoriesWithPosts.map((category) => (
             <CategoryTab

@@ -1,254 +1,408 @@
-// Section listing page - shows all posts from all categories in section
+// Section page - new design with hero, category tags, and category article sections
+import SharedImage from '@readr-media/react-image'
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
-import ArticleLists from '~/components/shared/article-lists'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type {
-  CategoryPostForListing,
-  SectionForListing,
-  SectionListingCategory,
+  SectionPageCategory,
+  SectionPageData,
+  SectionPost,
 } from '~/graphql/query/section'
-import { sectionBySlug, sectionPostsForListing } from '~/graphql/query/section'
+import { sectionPageBySlug } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
-import IconBack from '~/public/icons/arrow_back.svg'
-import IconForward from '~/public/icons/arrow_forward.svg'
-import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
-import { postConvertFunc } from '~/utils/post'
+import { mergePostsWithFeatured } from '~/utils/post'
 
-const POSTS_PER_PAGE = 12
+const POSTS_PER_CATEGORY = 3
+
+// ========== Styled Components ==========
 
 const PageWrapper = styled.div`
-  padding: 20px 0 24px;
+  width: 100%;
+`
 
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 20px 0 48px;
+// Hero Section - maintains 1200:420 (20:7) aspect ratio
+const HeroSection = styled.div<{ $hasImage: boolean }>`
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 1200 / 420;
+  background-color: ${({ $hasImage }) => ($hasImage ? '#333' : '#f5f5f5')};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
+
+const HeroImageWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  ${({ theme }) => theme.breakpoint.lg} {
-    padding: 20px 0 60px;
-    max-width: 1200px;
-    margin: auto;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    padding: 40px 0 60px;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
   }
 `
 
-const ArticleWrapper = styled.div`
-  padding: 0 27px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 0 98px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    padding: 0 58px;
-  }
-`
-
-const Header = styled.div`
+const HeroTitleWrapper = styled.div`
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: normal;
-  padding: 0 27px;
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    padding: 0 98px;
-  }
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 0 58px;
-  }
 `
 
-const AccentBar = styled.div`
-  background-color: ${({ theme }) => theme.colors.primary[20]};
-  width: 60px;
-  height: 20px;
+const AccentBar = styled.div<{ $hasImage: boolean }>`
+  background-color: ${({ theme }) => theme.colors.primary[80]};
+  width: 20px;
+  height: 32px;
   margin-right: 0.75rem;
   border-bottom-right-radius: 12px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    width: 80px;
+    width: 20px;
     height: 32px;
   }
 `
 
-const Title = styled.h1`
+const HeroTitle = styled.h1<{ $hasImage: boolean }>`
+  font-size: 28px;
+  font-weight: 500;
+  color: ${({ theme, $hasImage }) => ($hasImage ? theme.colors.primary[80] : '#000')};
+  margin: 0;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 32px;
+  }
+`
+
+// Category Tags Section
+const CategoryTagsWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(
+    180deg,
+    rgba(207, 237, 209, 0.6) 61.06%,
+    rgba(139, 200, 144, 0.6) 100%
+  );
+  padding: 16px 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 20px 40px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 24px 60px;
+  }
+`
+
+const CategoryTagsContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  justify-content: center;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    gap: 12px 16px;
+  }
+`
+
+const CategoryTag = styled(Link)`
+  display: inline-block;
+  padding: 8px;
+  border: 1px solid ${({ theme }) => theme.colors.grayscale[40]};
+  border-radius: 12px;
+  background-color: transparent;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary[20]};
+    border-color: ${({ theme }) => theme.colors.primary[20]};
+    color: #fff;
+  }
+`
+
+// Description Section (placeholder for future CMS field)
+const DescriptionSection = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  text-align: center;
   font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #000;
+  min-height: 80px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 24px 58px 40px 58px;
+  }
+`
+
+// Categories Grid Container (2 columns on desktop)
+const CategoriesGrid = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 32px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 60px;
+    gap: 0 48px;
+  }
+`
+
+// Category Article Section
+const CategorySection = styled.section`
+  padding-bottom: 32px;
+
+  border-bottom: 1px solid ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 32px;
+`
+
+const CategoryHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    justify-content: space-between;
+    padding-bottom: 16px;
+  }
+`
+
+const CategoryName = styled.h2`
+  font-size: 18px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin: 0;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 20px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 24px;
+  }
+`
+
+const ReadMoreLink = styled(Link)`
+  display: none;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    display: block;
+    font-size: 16px;
+  }
+`
+
+// Article List Layout (vertical stack within each category)
+const ArticleList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    gap: 20px;
+  }
+`
+
+// Large Card (First article)
+const LargeCard = styled.a`
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+`
+
+const LargeCardImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  margin-bottom: 12px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    aspect-ratio: 4 / 3;
+    margin-bottom: 16px;
+  }
+`
+
+const LargeCardDate = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 8px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 16px;
+  }
+`
+
+const LargeCardTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+
+  ${LargeCard}:hover & {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 20px;
+  }
+`
+
+// Small Card (Secondary articles)
+const SmallCard = styled.a`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: row;
+    gap: 16px;
+  }
+`
+
+const SmallCardImageWrapper = styled.div`
+  display: none;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    display: block;
+    width: 160px;
+    height: 107px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 180px;
+    height: 120px;
+  }
+`
+
+const SmallCardContent = styled.div`
+  flex: 1;
+`
+
+const SmallCardDate = styled.div`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 4px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 14px;
+  }
+`
+
+const SmallCardTitle = styled.h4`
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
 
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    font-size: 28px;
-    line-height: 32px;
-  }
-`
-
-const CategoryTabs = styled.div`
-  display: flex;
-  row-gap: 8px;
-  column-gap: 16px;
-  margin-top: 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  flex-wrap: nowrap;
-  padding: 0 27px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    width: 100%;
-    overflow-x: visible;
-    flex-wrap: wrap;
-    padding: 0 98px;
-  }
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    width: auto;
-    margin-top: 0;
-    padding: 0 58px;
-  }
-`
-
-const CategoryTab = styled(Link)`
-  background: none;
-  border: none;
-  color: #373740;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 28px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
-  text-decoration: none;
-
-  &:hover {
+  ${SmallCard}:hover & {
     color: ${({ theme }) => theme.colors.primary[20]};
   }
-`
-
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #000;
-  margin: 20px 28px 24px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    margin-top: 24px;
-    margin-left: 98px;
-    margin-right: 98px;
-    margin-bottom: 24px;
-  }
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    margin-top: 28px;
-    margin-left: 58px;
-    margin-right: 58px;
-    margin-bottom: 28px;
+    font-size: 18px;
   }
 `
 
-const PaginationWrapper = styled.div`
+const MobileReadMoreWrapper = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 13px;
-  margin-top: 24px;
-`
-
-const BackForwardButton = styled.button<{ $isDisabled?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
-  background: none;
-  border: none;
-  cursor: ${({ $isDisabled }) => ($isDisabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ $isDisabled }) => ($isDisabled ? 0.3 : 1)};
-
-  > svg {
-    width: 25px;
-    height: 25px;
-  }
+  margin-top: 16px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    min-width: 40px;
-    height: 40px;
-
-    > svg {
-      width: 40px;
-      height: 40px;
-    }
+    display: none;
   }
 `
 
-const PaginationButton = styled(Link)<{
-  $isActive?: boolean
-}>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid;
-  border-color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
-  background: #fff;
-  color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1.5;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 11px;
-  text-decoration: none;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary[20]};
-    border-color: ${({ theme }) => theme.colors.primary[20]};
-    color: #fff;
-  }
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    min-width: 36px;
-    height: 36px;
-    font-size: 16px;
-    font-weight: 700;
-    border-radius: 18px;
-  }
-`
-
-const PaginationEllipsis = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
+const MobileReadMoreLink = styled(Link)`
   color: ${({ theme }) => theme.colors.primary[20]};
   font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
 
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    min-width: 48px;
-    height: 48px;
-    font-size: 16px;
+  &:hover {
+    opacity: 0.7;
   }
 `
 
@@ -259,137 +413,179 @@ const EmptyMessage = styled.div`
   font-size: 16px;
 `
 
-type PageProps = {
-  section: SectionForListing
-  categories: SectionListingCategory[]
-  posts: ArticleCard[]
-  totalPosts: number
-  currentPage: number
-  totalPages: number
+// ========== Helper Functions ==========
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}/${month}/${day} ${hours}:${minutes}`
 }
 
-function generatePaginationItems(
-  currentPage: number,
-  totalPages: number
-): (number | 'ellipsis')[] {
-  const items: (number | 'ellipsis')[] = []
+// ========== Components ==========
 
-  if (totalPages <= 5) {
-    for (let i = 1; i <= totalPages; i++) {
-      items.push(i)
-    }
-    return items
+type CategoryArticleSectionProps = {
+  category: SectionPageCategory
+}
+
+const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
+  // Merge featured posts with regular posts
+  const posts = mergePostsWithFeatured<SectionPost>(
+    category.featuredPostsInInputOrder || [],
+    category.posts || [],
+    POSTS_PER_CATEGORY
+  )
+
+  if (posts.length === 0) {
+    return null
   }
 
-  // Always show first page
-  items.push(1)
+  const largePost = posts[0]
+  const smallPosts = posts.slice(1, 3)
 
-  if (currentPage > 3) {
-    items.push('ellipsis')
-  }
+  return (
+    <CategorySection>
+      <CategoryHeader>
+        <CategoryName>{category.name}</CategoryName>
+        <ReadMoreLink href={`/category/${category.id}`}>閱讀更多</ReadMoreLink>
+      </CategoryHeader>
 
-  // Show pages around current page
-  const start = Math.max(2, currentPage - 1)
-  const end = Math.min(totalPages - 1, currentPage + 1)
+      <ArticleList>
+        {/* Large Card */}
+        <Link href={`/node/${largePost.id}`} passHref legacyBehavior>
+          <LargeCard>
+            <LargeCardImageWrapper>
+              <SharedImage
+                images={largePost.heroImage?.resized || {}}
+                imagesWebP={largePost.heroImage?.resizedWebp || {}}
+                defaultImage={DEFAULT_POST_IMAGE_PATH}
+                alt={largePost.title}
+                priority={false}
+                rwd={{
+                  mobile: '100vw',
+                  tablet: '50vw',
+                  desktop: '540px',
+                  default: '540px',
+                }}
+              />
+            </LargeCardImageWrapper>
+            <LargeCardDate>{formatDate(largePost.publishTime)}</LargeCardDate>
+            <LargeCardTitle>{largePost.title}</LargeCardTitle>
+          </LargeCard>
+        </Link>
 
-  for (let i = start; i <= end; i++) {
-    items.push(i)
-  }
+        {/* Small Cards */}
+        {smallPosts.map((post) => (
+          <Link key={post.id} href={`/node/${post.id}`} passHref legacyBehavior>
+            <SmallCard>
+              <SmallCardImageWrapper>
+                <SharedImage
+                  images={post.heroImage?.resized || {}}
+                  imagesWebP={post.heroImage?.resizedWebp || {}}
+                  defaultImage={DEFAULT_POST_IMAGE_PATH}
+                  alt={post.title}
+                  priority={false}
+                  rwd={{
+                    mobile: '160px',
+                    tablet: '160px',
+                    desktop: '180px',
+                    default: '180px',
+                  }}
+                />
+              </SmallCardImageWrapper>
+              <SmallCardContent>
+                <SmallCardDate>{formatDate(post.publishTime)}</SmallCardDate>
+                <SmallCardTitle>{post.title}</SmallCardTitle>
+              </SmallCardContent>
+            </SmallCard>
+          </Link>
+        ))}
+      </ArticleList>
 
-  if (currentPage < totalPages - 2) {
-    items.push('ellipsis')
-  }
+      <MobileReadMoreWrapper>
+        <MobileReadMoreLink href={`/category/${category.id}`}>
+          閱讀更多
+        </MobileReadMoreLink>
+      </MobileReadMoreWrapper>
+    </CategorySection>
+  )
+}
 
-  // Always show last page
-  if (totalPages > 1) {
-    items.push(totalPages)
-  }
+// ========== Page Component ==========
 
-  return items
+type PageProps = {
+  section: SectionPageData
+  categories: SectionPageCategory[]
 }
 
 const SectionPage: NextPageWithLayout<PageProps> = ({
   section,
   categories,
-  posts,
-  currentPage,
-  totalPages,
 }) => {
-  const router = useRouter()
-  const sectionSlug = router.query.slug as string
-
-  const buildPageUrl = (page: number) => {
-    if (page === 1) {
-      return `/section/${sectionSlug}`
-    }
-    return `/section/${sectionSlug}?page=${page}`
-  }
-
-  const paginationItems = generatePaginationItems(currentPage, totalPages)
+  const hasHeroImage = !!section.heroImage?.resized
+  const categoriesWithPosts = categories.filter(
+    (cat) =>
+      (cat.featuredPostsInInputOrder &&
+        cat.featuredPostsInInputOrder.length > 0) ||
+      (cat.posts && cat.posts.length > 0)
+  )
 
   return (
     <PageWrapper>
-      <Header>
-        <AccentBar />
-        <Title>{section.name}</Title>
-      </Header>
-      <CategoryTabs>
-        {categories.map((category) => (
-          <CategoryTab key={category.id} href={`/category/${category.id}`}>
-            {category.name}
-          </CategoryTab>
-        ))}
-      </CategoryTabs>
-      <Divider />
-
-      <ArticleWrapper>
-        {posts.length > 0 ? (
-          <ArticleLists posts={posts} AdPageKey={sectionSlug} />
-        ) : (
-          <EmptyMessage>目前沒有文章</EmptyMessage>
+      {/* Hero Section */}
+      <HeroSection $hasImage={hasHeroImage}>
+        {hasHeroImage && (
+          <HeroImageWrapper>
+            <SharedImage
+              images={section.heroImage?.resized || {}}
+              imagesWebP={section.heroImage?.resizedWebp || {}}
+              alt={section.name}
+              priority={true}
+              rwd={{
+                mobile: '100vw',
+                tablet: '100vw',
+                desktop: '100vw',
+                default: '100vw',
+              }}
+            />
+          </HeroImageWrapper>
         )}
-      </ArticleWrapper>
+        <HeroTitleWrapper>
+          <AccentBar $hasImage={hasHeroImage} />
+          <HeroTitle $hasImage={hasHeroImage}>{section.name}</HeroTitle>
+        </HeroTitleWrapper>
+      </HeroSection>
 
-      {totalPages > 1 && (
-        <PaginationWrapper>
-          <BackForwardButton
-            $isDisabled={currentPage === 1}
-            onClick={() => {
-              if (currentPage > 1) {
-                router.push(buildPageUrl(currentPage - 1))
-              }
-            }}
-          >
-            <IconBack />
-          </BackForwardButton>
+      {/* Category Tags */}
+      <CategoryTagsWrapper>
+        <CategoryTagsContainer>
+          {categoriesWithPosts.map((category) => (
+            <CategoryTag key={category.id} href={`/category/${category.id}`}>
+              {category.name}
+            </CategoryTag>
+          ))}
+        </CategoryTagsContainer>
+      </CategoryTagsWrapper>
 
-          {paginationItems.map((item, index) =>
-            item === 'ellipsis' ? (
-              <PaginationEllipsis key={`ellipsis-${index}`}>
-                ......
-              </PaginationEllipsis>
-            ) : (
-              <PaginationButton
-                key={item}
-                href={buildPageUrl(item)}
-                $isActive={item === currentPage}
-              >
-                {String(item).padStart(2, '0')}
-              </PaginationButton>
-            )
-          )}
+      {/* Description Section (placeholder for future CMS field) */}
+      <DescriptionSection>
+        {/* 當 CMS 新增描述欄位後，在此顯示 section 描述 */}
+        {/* {section.description} */}
+        當全球致力於減緩生物多樣性衰退，努力踩剎車延遲步入第六次大滅絕之際，行政院內政部國家公園署——一個完全以保護區為名的部門，最有立場提供保護區在生物多樣性目標扮演的角色，由國家公園署新挑保育的價值，約100字
+      </DescriptionSection>
 
-          <BackForwardButton
-            $isDisabled={currentPage === totalPages}
-            onClick={() => {
-              if (currentPage < totalPages) {
-                router.push(buildPageUrl(currentPage + 1))
-              }
-            }}
-          >
-            <IconForward />
-          </BackForwardButton>
-        </PaginationWrapper>
+      {/* Category Article Sections - 2 columns on desktop */}
+      {categoriesWithPosts.length > 0 ? (
+        <CategoriesGrid>
+          {categoriesWithPosts.map((category) => (
+            <CategoryArticleSection key={category.id} category={category} />
+          ))}
+        </CategoriesGrid>
+      ) : (
+        <EmptyMessage>目前沒有文章</EmptyMessage>
       )}
     </PageWrapper>
   )
@@ -397,63 +593,33 @@ const SectionPage: NextPageWithLayout<PageProps> = ({
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   params,
-  query,
   res,
 }) => {
   setCacheControl(res)
 
   const slug = params?.slug as string
-  const page = Math.max(1, parseInt(query.page as string, 10) || 1)
   const client = getGqlClient()
-  const skip = (page - 1) * POSTS_PER_PAGE
 
   try {
-    // Fetch section with categories and posts in parallel
-    const [sectionResult, postsResult] = await Promise.all([
-      client.query<{ sections: SectionForListing[] }>({
-        query: sectionBySlug,
-        variables: { slug },
-      }),
-      client.query<{
-        posts: CategoryPostForListing[]
-        postsCount: number
-      }>({
-        query: sectionPostsForListing,
-        variables: {
-          sectionSlug: slug,
-          take: POSTS_PER_PAGE,
-          skip,
-        },
-      }),
-    ])
+    const result = await client.query<{ sections: SectionPageData[] }>({
+      query: sectionPageBySlug,
+      variables: {
+        slug,
+        postsPerCategory: POSTS_PER_CATEGORY,
+      },
+    })
 
-    if (sectionResult.error || !sectionResult.data?.sections?.length) {
+    if (result.error || !result.data?.sections?.length) {
       return { notFound: true }
     }
 
-    if (postsResult.error) {
-      console.error('Posts query error:', postsResult.error)
-      throw new Error('Failed to fetch posts: GraphQL error')
-    }
-
-    const section = sectionResult.data.sections[0]
-    const categories = section.categories
-    const totalPosts = postsResult.data?.postsCount ?? 0
-    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE)
-
-    // Convert posts to ArticleCard format
-    const posts: ArticleCard[] = (postsResult.data?.posts || []).map((post) =>
-      postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
-    )
+    const section = result.data.sections[0]
+    const categories = section.categories || []
 
     return {
       props: {
         section,
         categories,
-        posts,
-        totalPosts,
-        currentPage: page,
-        totalPages,
       },
     }
   } catch (err) {

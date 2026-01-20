@@ -64,12 +64,17 @@ const AccentBar = styled.div`
   }
 `
 
-const Title = styled.h1`
+const TitleLink = styled(Link)`
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[100]};
   margin: 0;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
@@ -262,7 +267,7 @@ const GreenConsumptionSection = ({
         {/* Header */}
         <Header>
           <AccentBar />
-          <Title>綠色消費</Title>
+          <TitleLink href="/section/green">綠色消費</TitleLink>
           <CategoryTabs>
             {categoriesWithPosts.map((category) => (
               <CategoryTab

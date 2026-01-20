@@ -403,10 +403,10 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
           </FeaturedContent>
         </FeaturedArticle>
 
-        {/* Show article grid after first featured topic */}
+        {/* Show article grid after first featured topic (max 3) */}
         {index === 0 && regularTopics.length > 0 && (
           <ArticleGrid>
-            {regularTopics.map((regularTopic) => {
+            {regularTopics.slice(0, 3).map((regularTopic) => {
               const regularHref = `/feature/${regularTopic.id}`
               const regularImage = getTopicImageUrl(regularTopic)
               const regularDate = formatDate(regularTopic.updatedAt)
