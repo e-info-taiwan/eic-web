@@ -92,7 +92,8 @@ const AccentBar = styled.div<{ $hasImage: boolean }>`
 const HeroTitle = styled.h1<{ $hasImage: boolean }>`
   font-size: 28px;
   font-weight: 500;
-  color: ${({ theme, $hasImage }) => ($hasImage ? theme.colors.primary[80] : '#000')};
+  color: ${({ theme, $hasImage }) =>
+    $hasImage ? theme.colors.primary[80] : '#000'};
   margin: 0;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
