@@ -34,9 +34,17 @@ const FocusImageWrapper = styled.div`
 
 const FocusImage = styled.figure`
   max-width: 900px;
-  max-height: 480px;
-  overflow: hidden;
+  max-height: 60vh;
   margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+  }
 
   ${({ theme }) => theme.breakpoint.xxl} {
     max-width: 960px;
@@ -125,9 +133,9 @@ export default function SlideshowLightBox({
             images={images[focusImageIndex].resized}
             defaultImage={defaultImage}
             alt={images[focusImageIndex].name}
-            objectFit={'fill'}
+            objectFit={'contain'}
             rwd={{
-              desktop: '64px',
+              desktop: '960px',
               default: '100%',
             }}
             priority={true}
