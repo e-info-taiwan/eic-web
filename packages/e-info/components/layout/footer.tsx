@@ -1,239 +1,298 @@
-import NextLink from 'next/link'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
-import iconFacebook from '~/public/icons/facebook.svg'
-import iconGitHub from '~/public/icons/github.svg'
-import iconInstagram from '~/public/icons/instagram.svg'
-import iconTwitter from '~/public/icons/twitter.svg'
-import * as gtag from '~/utils/gtag'
+import NewsletterModal from '~/components/shared/newsletter-modal'
+import LogoEIC from '~/public/eic-logo.svg'
 
-const Main = styled.footer`
-  display: block;
-  line-height: 1.5;
+// Styled Components
+const FooterContainer = styled.footer`
+  background-color: ${({ theme }) => theme.colors.grayscale[95]};
+  padding: 36px 24px 24px;
 
-  a {
-    text-decoration: none;
-    color: #000;
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 0;
+    column-gap: 30px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    column-gap: 64px;
   }
 `
 
 const Container = styled.div`
-  padding: 32px 0 24px 0;
-  text-align: center;
-  max-width: ${({ theme }) => theme.width.main};
+  max-width: 1200px;
   margin: 0 auto;
-  box-sizing: content-box;
 `
 
-const MediaLinkList = styled.ul`
+const TopSection = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
   justify-content: center;
-  margin: 0 0 30px 0;
-  line-height: 1.4;
+  align-items: center;
 
-  ${({ theme }) => theme.breakpoint.lg} {
-    margin: 0 0 32px 0;
-  }
-
-  li + li {
-    margin-left: 24px;
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
   }
 `
 
-const MiscLinkList = styled.ul`
-  font-size: 16px;
-  line-height: 1.7;
-  margin-bottom: 32px;
+const LeftSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 27px;
 
-  ${({ theme }) => theme.breakpoint.sm} {
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    padding: 0 20px;
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 11px;
   }
 
-  ${({ theme }) => theme.breakpoint.lg} {
-    padding: 0;
-  }
-  li {
-    ${({ theme }) => theme.breakpoint.sm} {
-      width: auto;
-    }
-  }
-  li + li {
-    margin-top: 12px;
-    ${({ theme }) => theme.breakpoint.sm} {
-      margin-top: 0px;
-      margin-left: 40px;
-    }
-    ${({ theme }) => theme.breakpoint.md} {
-      margin-left: 66px;
-    }
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    flex-direction: row;
+    gap: 51px;
   }
 `
 
-const CompanyInfoSection = styled.address`
-  font-style: normal;
-  list-style: none;
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  flex-direction: row;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: row;
+  }
+`
+
+const Button = styled.button`
+  background: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
+  color: ${({ theme }) => theme.colors.primary[40]};
+  padding: 5.5px 12px;
+  border-radius: 6px;
   font-size: 14px;
-  line-height: 20px;
-  color: rgba(0, 0, 0, 0.5);
-  margin: 0 0 12px;
-  ${({ theme }) => theme.breakpoint.md} {
-    display: flex;
-    justify-content: center;
+  line-height: 1.5;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary[40]};
+    color: white;
+  }
+`
+
+const NavigationSection = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 0;
+    column-gap: 30px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    column-gap: 64px;
+  }
+`
+
+const NavLink = styled.a`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  font-size: 14px;
+  line-height: 2;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 14px;
+    align-items: flex-start;
+  }
+`
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
+  margin: 31px 16px 18px 16px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+`
+
+const BottomSection = styled.div`
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
   }
-  p + p {
-    position: relative;
-    margin: 8px 0 0;
-    ${({ theme }) => theme.breakpoint.md} {
-      margin: 0;
-      padding: 0 0 0 17px;
-      &::before {
-        content: '';
-        position: absolute;
-        top: 1px;
-        left: 9px;
-        bottom: 2px;
-        width: 1px;
-        background-color: rgba(0, 0, 0, 0.1);
-      }
-    }
+`
+
+const CopyrightSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 30px;
   }
 `
 
-const CopyrightInfo = styled.p`
+const CopyrightText = styled.p`
+  color: #000;
   font-size: 12px;
-  line-height: 18px;
-  color: rgba(0, 0, 0, 0.3);
+  line-height: 1.25;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin: 0;
 `
 
-type ExternalLinkItem = {
-  name: string
-  href: string
-  svgIcon: any
-  clickHandle?: () => void
-}
+const SocialSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+`
 
-export default function Footer(): JSX.Element {
-  function sendGAEvent(label?: string): void {
-    gtag.sendEvent('footer', 'click', label)
+const SocialIcons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`
+
+const SocialIcon = styled.div`
+  width: 21px;
+  height: 21px;
+  background-color: ${({ theme }) => theme.colors.grayscale[60]};
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary[40]};
   }
+`
 
-  const externalLinks: ExternalLinkItem[] = [
-    {
-      name: 'Facebook',
-      href: 'https://www.facebook.com/readr.tw',
-      svgIcon: iconFacebook,
-      clickHandle: () => sendGAEvent('fb'),
-    },
-    {
-      name: 'Twitter',
-      href: 'https://twitter.com/READr_news',
-      svgIcon: iconTwitter,
-      clickHandle: () => sendGAEvent('twitter'),
-    },
-    {
-      name: 'Instagram',
-      href: 'https://www.instagram.com/readr.tw/',
-      svgIcon: iconInstagram,
-      clickHandle: () => sendGAEvent('instagram'),
-    },
-    {
-      name: 'Github',
-      href: 'https://github.com/readr-media/readr-data',
-      svgIcon: iconGitHub,
-      clickHandle: () => sendGAEvent('github'),
-    },
+const Footer = () => {
+  const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
+
+  const navigationData = [
+    [
+      { label: '關於我們', href: '/about' },
+      { label: '合作媒體', href: '#' },
+      { label: '編輯室自律公約', href: '#' },
+      { label: '活動', href: '#' },
+    ],
+    [
+      { label: '網站授權條款', href: '#' },
+      { label: '常見問題', href: '#' },
+      { label: '獲獎記錄', href: '#' },
+      { label: '綠色職缺', href: '#' },
+    ],
+    [
+      { label: '投稿須知', href: '#' },
+      { label: '隱私權政策', href: '#' },
+      { label: '網站導覽', href: '#' },
+      {
+        label: '意見回饋',
+        href: 'https://docs.google.com/forms/d/e/1FAIpQLSf17d9VPzybQZxnhU6HRhPU-3FEflWzUbNtEafgYVLsVl7rpQ/viewform',
+      },
+    ],
   ]
 
   return (
-    <Main className="layout-footer">
+    <FooterContainer>
       <Container>
-        <MediaLinkList>
-          {externalLinks.map((item) => {
-            return (
-              <li key={item.name}>
-                <NextLink
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer external nofollow"
-                  aria-label={item.name}
-                  onClick={item.clickHandle}
+        <TopSection>
+          <LeftSection>
+            <Logo>
+              <LogoEIC />
+            </Logo>
+
+            <ActionButtons>
+              <Button onClick={() => setIsNewsletterModalOpen(true)}>
+                訂閱電子報
+              </Button>
+              <Button>捐款支持</Button>
+            </ActionButtons>
+          </LeftSection>
+
+          <NavigationSection>
+            {navigationData.map((columnLinks, columnIndex) =>
+              columnLinks.map((link, linkIndex) => (
+                <NavLink
+                  key={`${columnIndex}-${linkIndex}`}
+                  href={link.href}
+                  target={link.href.startsWith('http') ? '_blank' : undefined}
+                  rel={
+                    link.href.startsWith('http')
+                      ? 'noopener noreferrer'
+                      : undefined
+                  }
                 >
-                  <item.svgIcon />
-                </NextLink>
-              </li>
-            )
-          })}
-        </MediaLinkList>
-        <MiscLinkList>
-          <li>
-            <NextLink
-              href="/about"
-              target="_blank"
-              rel="noreferrer author"
-              onClick={() => sendGAEvent('about')}
-            >
-              關於我們
-            </NextLink>
-          </li>
-          <li>
-            <NextLink
-              href="mailto:readr@readr.tw"
-              rel="author"
-              onClick={() => sendGAEvent('contact us')}
-            >
-              聯絡我們
-            </NextLink>
-          </li>
-          <li>
-            <NextLink
-              href="/privacy-rule"
-              target="_blank"
-              rel="noreferrer license"
-              onClick={() => sendGAEvent('privacy-rule')}
-            >
-              隱私政策
-            </NextLink>
-          </li>
-          <li>
-            <NextLink
-              href="https://forms.gle/C6B5MGYXLzXrmfSe6"
-              target="_blank"
-              rel="noopener noreferrer external nofollow"
-              onClick={() => sendGAEvent('feedback')}
-            >
-              意見回饋
-            </NextLink>
-          </li>
-          <li>
-            <NextLink
-              href={{
-                pathname: '/node/[postId]',
-                query: {
-                  postId: '2901',
-                },
-              }}
-              target="_blank"
-              rel="noreferrer license"
-              onClick={() => sendGAEvent('agreement')}
-            >
-              服務條款
-            </NextLink>
-          </li>
-        </MiscLinkList>
-        <CompanyInfoSection>
-          <p>精鏡傳媒股份有限公司</p>
-          <p>114 台北市內湖區堤頂大道一段 365 號 7 樓</p>
-          <p>readr@readr.tw</p>
-        </CompanyInfoSection>
-        <CopyrightInfo>
-          &copy; <time>{new Date().getFullYear()}</time> 精鏡傳媒股份有限公司
-          All Rights Reserved
-        </CopyrightInfo>
+                  {link.label}
+                </NavLink>
+              ))
+            )}
+          </NavigationSection>
+        </TopSection>
+
+        <Divider />
+
+        <BottomSection>
+          <CopyrightSection>
+            <CopyrightText>
+              © Copyright 2023 環境資訊中心 版權所有
+            </CopyrightText>
+            <CopyrightText>公益勸募字號</CopyrightText>
+          </CopyrightSection>
+
+          <SocialSection>
+            <SocialIcons>
+              {[...Array(7)].map((_, index) => (
+                <SocialIcon key={index} />
+              ))}
+            </SocialIcons>
+          </SocialSection>
+        </BottomSection>
       </Container>
-    </Main>
+
+      <NewsletterModal
+        isOpen={isNewsletterModalOpen}
+        onClose={() => setIsNewsletterModalOpen(false)}
+      />
+    </FooterContainer>
   )
 }
+
+export default Footer
