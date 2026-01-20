@@ -171,15 +171,14 @@ const EnterButton = styled.a`
   font-size: 16px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.secondary[40]};
-  text-decoration: none;
+  text-decoration: underline;
   border: none;
   background: none;
   cursor: pointer;
-  transition: color 0.3s ease;
   margin-top: 20px;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.secondary[0]};
+    color: ${({ theme }) => theme.colors.secondary[20]};
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -198,15 +197,14 @@ const MobileEnterButton = styled.a`
   font-size: 16px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.secondary[40]};
-  text-decoration: none;
+  text-decoration: underline;
   border: none;
   background: none;
   cursor: pointer;
-  transition: color 0.3s ease;
   margin: 32px auto 0;
 
   &:hover {
-    color: #c96635;
+    color: ${({ theme }) => theme.colors.secondary[20]};
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -285,10 +283,10 @@ const ArticleContent = styled.div`
 
 const ArticleDate = styled.time`
   display: block;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
-  color: #666;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   margin-bottom: 8px;
 `
 
@@ -296,7 +294,7 @@ const ArticleTitle = styled.h3`
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
-  color: #000;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
