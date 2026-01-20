@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client/react'
+import Lottie from 'lottie-react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
@@ -20,6 +21,7 @@ import IconLeftArrow from '~/public/icons/left-arrow.svg'
 import IconMail from '~/public/icons/mail.svg'
 import IconMember from '~/public/icons/member.svg'
 import IconSearch from '~/public/icons/search.svg'
+import loadingAnimation from '~/public/lottie/loading.json'
 // Styled Components
 const HeaderContainer = styled.header<{ $isHidden?: boolean }>`
   background-color: ${({ theme }) => theme.colors.grayscale[100]};
@@ -1038,7 +1040,15 @@ const Header = () => {
                   </>
                 ) : (
                   <LoginButton onClick={handleAuthButtonClick}>
-                    {authLoading ? '...' : '登入'}
+                    {authLoading ? (
+                      <Lottie
+                        animationData={loadingAnimation}
+                        loop
+                        style={{ width: 24, height: 24, transform: 'scale(2)' }}
+                      />
+                    ) : (
+                      '登入'
+                    )}
                   </LoginButton>
                 )}
                 <TabletActionButtons>
