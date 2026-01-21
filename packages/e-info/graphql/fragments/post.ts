@@ -62,6 +62,7 @@ export type PostCard = Override<
     ogImage: PhotoWithResizedCard | null
     tags: PostTag[]
     brief?: string | Record<string, unknown> | null
+    contentApiData?: ContentApiDataBlock[] | null
   }
 >
 
@@ -100,7 +101,7 @@ export const postFragment = gql`
 `
 
 // Card fragment - use for post cards, thumbnails, listings
-// Reduces payload by ~55% compared to full fragment
+// Includes contentApiData for summary fallback when brief is empty
 export const postCardFragment = gql`
   fragment PostFieldsCard on Post {
     id
@@ -128,6 +129,7 @@ export const postCardFragment = gql`
       name
     }
     brief
+    contentApiData
   }
   ${resizeImagesCardFragment}
   ${resizeWebpImagesCardFragment}
