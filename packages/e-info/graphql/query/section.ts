@@ -890,3 +890,73 @@ export const categoryPostsForListing = gql`
   ${resizeImagesCardFragment}
   ${resizeWebpImagesCardFragment}
 `
+
+// Types for header navigation
+export type HeaderNavCategory = {
+  id: string
+  slug: string
+  name: string
+}
+
+export type HeaderNavSection = {
+  id: string
+  slug: string
+  name: string
+  categories: HeaderNavCategory[]
+}
+
+// Query sections for header navigation (showInHeader = true)
+export const sectionsForHeader = gql`
+  query {
+    sections(
+      where: { showInHeader: { equals: true } }
+      orderBy: { sortOrder: asc }
+    ) {
+      id
+      slug
+      name
+      categories(orderBy: { sortOrder: asc }) {
+        id
+        slug
+        name
+      }
+    }
+  }
+`
+
+// Types for header navigation tags
+export type HeaderNavTag = {
+  id: string
+  name: string
+}
+
+// Query featured tags for header navigation
+export const featuredTagsForHeader = gql`
+  query {
+    tags(where: { isFeatured: { equals: true } }, orderBy: { sortOrder: asc }) {
+      id
+      name
+    }
+  }
+`
+
+// Types for header navigation topics (深度專題)
+export type HeaderNavTopic = {
+  id: string
+  title: string
+}
+
+// Query published topics for header navigation (深度專題 dropdown)
+// Only show topics that have posts (same as homepage featured topics)
+export const topicsForHeader = gql`
+  query {
+    topics(
+      where: { status: { equals: "published" }, posts: { some: {} } }
+      orderBy: { sortOrder: asc }
+      take: 6
+    ) {
+      id
+      title
+    }
+  }
+`

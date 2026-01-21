@@ -7,8 +7,14 @@ import styled from 'styled-components'
 
 import NewsletterModal from '~/components/shared/newsletter-modal'
 import {
+  type HeaderNavSection,
+  type HeaderNavTag,
+  type HeaderNavTopic,
   type NewsBarPick,
+  featuredTagsForHeader,
   homepagePicksForNewsBar,
+  sectionsForHeader,
+  topicsForHeader,
 } from '~/graphql/query/section'
 import { useAuth } from '~/hooks/useAuth'
 import { getMemberDisplayName } from '~/lib/graphql/member'
@@ -434,9 +440,8 @@ const SecondaryMenuContainer = styled.div`
   align-items: center;
 `
 
-const SecondaryMenuItem = styled.div`
+const SecondaryMenuItem = styled(Link)`
   position: relative;
-  cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -445,45 +450,10 @@ const SecondaryMenuItem = styled.div`
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
+  text-decoration: none;
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary[20]};
-  }
-`
-
-const TertiaryDropdown = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 100px;
-  max-width: 150px;
-  background: ${({ theme }) => theme.colors.grayscale[100]};
-  z-index: 1001;
-  opacity: 0;
-  visibility: hidden;
-  margin-top: 0;
-  padding: 9px 8px;
-
-  &.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-`
-
-const TertiaryItem = styled.a`
-  display: block;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
-  text-decoration: none;
-  font-size: 14px;
-  text-align: center;
-  padding-bottom: 12px;
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-  &:hover {
-    color: ${({ theme }) => theme.colors.primary[40]};
   }
 `
 
@@ -649,204 +619,44 @@ const SubMenuItem = styled.a`
   }
 `
 
-// Navigation data with nested structure
-const navigationItems = [
-  {
-    label: '時事新聞',
-    href: '#',
-    active: false,
-    subCategories: [
-      {
-        label: '國內新聞',
-        href: '#',
-        items: ['政治', '經濟', '社會', '地方'],
-      },
-      {
-        label: '國際新聞',
-        href: '#',
-        items: [
-          '在理想中擱淺的鯨豚觀察員',
-          '我推的防災生活',
-          '直擊阿聯氣候新時代',
-        ],
-      },
-      {
-        label: '環境新聞',
-        href: '#',
-        items: ['氣候變遷', '污染防治', '生態保護'],
-      },
-    ],
-  },
-  {
-    label: '評論',
-    href: '#',
-    subCategories: [
-      {
-        label: '專家評論',
-        href: '#',
-        items: ['學者觀點', '業界分析', '政策解讀'],
-      },
-      {
-        label: '讀者投書',
-        href: '#',
-        items: ['民眾聲音', '經驗分享'],
-      },
-    ],
-  },
-  {
-    label: '專欄',
-    href: '#',
-    subCategories: [
-      {
-        label: '名人專欄',
-        href: '#',
-        items: ['環保達人', '綠色生活家', '永續專家'],
-      },
-      {
-        label: '主題專欄',
-        href: '#',
-        items: ['週報', '月報', '特別企劃'],
-      },
-    ],
-  },
-  {
-    label: '副刊',
-    href: '#',
-    subCategories: [
-      {
-        label: '生活風格',
-        href: '#',
-        items: ['綠色旅遊', '永續時尚', '健康飲食'],
-      },
-      {
-        label: '藝文活動',
-        href: '#',
-        items: ['展覽', '講座', '工作坊'],
-      },
-    ],
-  },
-  {
-    label: '綠色消費',
-    href: '#',
-    subCategories: [
-      {
-        label: '產品評測',
-        href: '#',
-        items: ['家電用品', '日用品', '食品'],
-      },
-      {
-        label: '消費指南',
-        href: '#',
-        items: ['購買建議', '使用心得', '比較分析'],
-      },
-    ],
-  },
-  {
-    label: '深度專題',
-    href: '#',
-    featured: true,
-    subCategories: [
-      {
-        label: '調查報導',
-        href: '#',
-        items: ['環境污染', '政策追蹤', '企業責任'],
-      },
-      {
-        label: '專題企劃',
-        href: '#',
-        items: ['年度回顧', '未來展望', '國際比較'],
-      },
-    ],
-  },
-  {
-    label: '氣候能源',
-    href: '#',
-    highlighted: true,
-    subCategories: [
-      {
-        label: '再生能源',
-        href: '#',
-        items: ['太陽能', '風能', '水力發電'],
-      },
-      {
-        label: '節能減碳',
-        href: '#',
-        items: ['建築節能', '交通運輸', '工業減排'],
-      },
-    ],
-  },
-  {
-    label: '土地永續',
-    href: '#',
-    highlighted: true,
-    subCategories: [
-      {
-        label: '農業發展',
-        href: '#',
-        items: ['有機農業', '智慧農業', '農地保護'],
-      },
-      {
-        label: '都市規劃',
-        href: '#',
-        items: ['綠建築', '公園綠地', '交通規劃'],
-      },
-    ],
-  },
-  {
-    label: '循環經濟',
-    href: '#',
-    highlighted: true,
-    subCategories: [
-      {
-        label: '廢棄物管理',
-        href: '#',
-        items: ['回收再利用', '垃圾減量', '資源循環'],
-      },
-      {
-        label: '產業轉型',
-        href: '#',
-        items: ['綠色製造', '永續設計', '商業模式'],
-      },
-    ],
-  },
-  {
-    label: '生態保育',
-    href: '#',
-    highlighted: true,
-    subCategories: [
-      {
-        label: '物種保護',
-        href: '#',
-        items: ['瀕危物種', '棲地保護', '復育計畫'],
-      },
-      {
-        label: '海洋保護',
-        href: '#',
-        items: ['海洋污染', '漁業永續', '珊瑚保育'],
-      },
-    ],
-  },
-]
-
 const Header = () => {
   const router = useRouter()
   const { firebaseUser, member, loading: authLoading, signOut } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null)
-  const [hoveredSecondaryCategory, setHoveredSecondaryCategory] = useState<
-    number | null
-  >(null)
-  const [currentSubMenu, setCurrentSubMenu] = useState<
-    (typeof navigationItems)[0] | null
-  >(null)
+  const [isFeatureHovered, setIsFeatureHovered] = useState(false)
+  const [currentSubMenu, setCurrentSubMenu] = useState<HeaderNavSection | null>(
+    null
+  )
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0)
   const [prevNewsIndex, setPrevNewsIndex] = useState<number | null>(null)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const featureHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringNavRef = useRef(false)
+
+  // Fetch sections for header navigation
+  const { data: sectionsData } = useQuery<{ sections: HeaderNavSection[] }>(
+    sectionsForHeader
+  )
+
+  // Fetch featured tags for header navigation
+  const { data: tagsData } = useQuery<{ tags: HeaderNavTag[] }>(
+    featuredTagsForHeader
+  )
+
+  // Fetch topics for header navigation (深度專題 dropdown)
+  const { data: topicsData } = useQuery<{ topics: HeaderNavTopic[] }>(
+    topicsForHeader
+  )
+
+  // Navigation items from API
+  const navigationItems = sectionsData?.sections || []
+  const featuredTags = tagsData?.tags || []
+  const headerTopics = topicsData?.topics || []
 
   // Fetch "快訊" (flashnews) category picks for NewsBar
   const { data: newsBarData } = useQuery<{ homepagePicks: NewsBarPick[] }>(
@@ -899,17 +709,21 @@ const Header = () => {
       clearTimeout(hoverTimeoutRef.current)
       hoverTimeoutRef.current = null
     }
+    // Close feature menu when hovering other categories
+    setIsFeatureHovered(false)
+    if (featureHoverTimeoutRef.current) {
+      clearTimeout(featureHoverTimeoutRef.current)
+      featureHoverTimeoutRef.current = null
+    }
     // Pause scroll detection while hovering nav
     isHoveringNavRef.current = true
     setHoveredCategory(categoryIndex)
-    setHoveredSecondaryCategory(null)
   }
 
   const handleCategoryLeave = () => {
     // Set a delay before closing to allow cursor movement to secondary menu
     const timeout = setTimeout(() => {
       setHoveredCategory(null)
-      setHoveredSecondaryCategory(null)
       // Resume scroll detection after leaving nav
       isHoveringNavRef.current = false
     }, 300) // Increased delay to 300ms for easier cursor movement
@@ -929,21 +743,49 @@ const Header = () => {
   const handleSecondaryMenuLeave = () => {
     // Close immediately when leaving secondary menu
     setHoveredCategory(null)
-    setHoveredSecondaryCategory(null)
     // Resume scroll detection after leaving nav
     isHoveringNavRef.current = false
   }
 
-  const handleSecondaryItemHover = (itemIndex: number) => {
-    setHoveredSecondaryCategory(itemIndex)
+  // 深度專題 hover handlers
+  const handleFeatureHover = () => {
+    if (featureHoverTimeoutRef.current) {
+      clearTimeout(featureHoverTimeoutRef.current)
+      featureHoverTimeoutRef.current = null
+    }
+    // Close category menu when hovering feature
+    setHoveredCategory(null)
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = null
+    }
+    isHoveringNavRef.current = true
+    setIsFeatureHovered(true)
   }
 
-  const handleSecondaryItemLeave = () => {
-    setHoveredSecondaryCategory(null)
+  const handleFeatureLeave = () => {
+    const timeout = setTimeout(() => {
+      setIsFeatureHovered(false)
+      isHoveringNavRef.current = false
+    }, 300)
+    featureHoverTimeoutRef.current = timeout
   }
 
-  const handleMobileMenuItemClick = (item: (typeof navigationItems)[0]) => {
-    if (item.subCategories && item.subCategories.length > 0) {
+  const handleFeatureMenuEnter = () => {
+    if (featureHoverTimeoutRef.current) {
+      clearTimeout(featureHoverTimeoutRef.current)
+      featureHoverTimeoutRef.current = null
+    }
+    isHoveringNavRef.current = true
+  }
+
+  const handleFeatureMenuLeave = () => {
+    setIsFeatureHovered(false)
+    isHoveringNavRef.current = false
+  }
+
+  const handleMobileMenuItemClick = (item: HeaderNavSection) => {
+    if (item.categories && item.categories.length > 0) {
       setCurrentSubMenu(item)
     }
   }
@@ -1068,17 +910,31 @@ const Header = () => {
           <DesktopNavWrapper>
             <NavigationMenu>
               {navigationItems.map((item, index) => (
-                <DropdownContainer key={index}>
+                <DropdownContainer key={item.id}>
                   <NavItem
-                    href={item.href}
-                    className={`${item.active ? 'active' : ''} ${
-                      item.featured ? 'featured' : ''
-                    } ${item.highlighted ? 'highlighted' : ''}`}
+                    href={`/section/${item.slug}`}
                     onMouseEnter={() => handleCategoryHover(index)}
                     onMouseLeave={handleCategoryLeave}
                   >
-                    {item.label}
+                    {item.name}
                   </NavItem>
+                </DropdownContainer>
+              ))}
+              {/* 深度專題 - fixed link with featured style */}
+              <DropdownContainer>
+                <NavItem
+                  href="/feature"
+                  className="featured"
+                  onMouseEnter={handleFeatureHover}
+                  onMouseLeave={handleFeatureLeave}
+                >
+                  深度專題
+                </NavItem>
+              </DropdownContainer>
+              {/* Featured tags */}
+              {featuredTags.map((tag) => (
+                <DropdownContainer key={tag.id}>
+                  <NavItem href={`/tag/${tag.name}`}>{tag.name}</NavItem>
                 </DropdownContainer>
               ))}
             </NavigationMenu>
@@ -1102,28 +958,29 @@ const Header = () => {
         >
           <SecondaryMenuContainer>
             {hoveredCategory !== null &&
-              navigationItems[hoveredCategory]?.subCategories?.map(
-                (subCategory, subIndex) => (
-                  <SecondaryMenuItem
-                    key={subIndex}
-                    onMouseEnter={() => handleSecondaryItemHover(subIndex)}
-                    onMouseLeave={handleSecondaryItemLeave}
-                  >
-                    {subCategory.label}
+              navigationItems[hoveredCategory]?.categories?.map((category) => (
+                <SecondaryMenuItem
+                  key={category.id}
+                  href={`/category/${category.id}`}
+                >
+                  {category.name}
+                </SecondaryMenuItem>
+              ))}
+          </SecondaryMenuContainer>
+        </SecondaryMenuBar>
 
-                    {subCategory.items &&
-                      hoveredSecondaryCategory === subIndex && (
-                        <TertiaryDropdown className="show">
-                          {subCategory.items.map((tertiary, tertiaryIndex) => (
-                            <TertiaryItem key={tertiaryIndex} href="#">
-                              {tertiary}
-                            </TertiaryItem>
-                          ))}
-                        </TertiaryDropdown>
-                      )}
-                  </SecondaryMenuItem>
-                )
-              )}
+        {/* 深度專題 secondary menu - topics list */}
+        <SecondaryMenuBar
+          $isVisible={isFeatureHovered}
+          onMouseEnter={handleFeatureMenuEnter}
+          onMouseLeave={handleFeatureMenuLeave}
+        >
+          <SecondaryMenuContainer>
+            {headerTopics.map((topic) => (
+              <SecondaryMenuItem key={topic.id} href={`/feature/${topic.id}`}>
+                {topic.title}
+              </SecondaryMenuItem>
+            ))}
           </SecondaryMenuContainer>
         </SecondaryMenuBar>
 
@@ -1177,21 +1034,32 @@ const Header = () => {
             </MobileMenuSection>
 
             <MobileMenuSection>
-              {navigationItems.map((item, index) => (
+              {navigationItems.map((item) => (
                 <NavItem
-                  key={index}
-                  href={item.subCategories ? '#' : item.href}
-                  className={`${item.active ? 'active' : ''} ${
-                    item.featured ? 'featured' : ''
-                  } ${item.highlighted ? 'highlighted' : ''}`}
+                  key={item.id}
+                  href={
+                    item.categories && item.categories.length > 0
+                      ? '#'
+                      : `/section/${item.slug}`
+                  }
                   onClick={(e) => {
-                    if (item.subCategories) {
+                    if (item.categories && item.categories.length > 0) {
                       e.preventDefault()
                       handleMobileMenuItemClick(item)
                     }
                   }}
                 >
-                  {item.label}
+                  {item.name}
+                </NavItem>
+              ))}
+              {/* 深度專題 - fixed link with featured style */}
+              <NavItem href="/feature" className="featured">
+                深度專題
+              </NavItem>
+              {/* Featured tags */}
+              {featuredTags.map((tag) => (
+                <NavItem key={tag.id} href={`/tag/${tag.name}`}>
+                  {tag.name}
                 </NavItem>
               ))}
             </MobileMenuSection>
@@ -1205,9 +1073,12 @@ const Header = () => {
             </SubMenuHeader>
 
             <SubMenuList>
-              {currentSubMenu.subCategories.map((subCategory, index) => (
-                <SubMenuItem key={index} href={subCategory.href}>
-                  {subCategory.label}
+              {currentSubMenu.categories.map((category) => (
+                <SubMenuItem
+                  key={category.id}
+                  href={`/category/${category.id}`}
+                >
+                  {category.name}
                 </SubMenuItem>
               ))}
             </SubMenuList>
