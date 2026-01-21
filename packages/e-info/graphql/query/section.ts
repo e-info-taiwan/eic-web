@@ -654,6 +654,7 @@ export type SectionForListing = {
   id: string
   slug: string
   name: string
+  style: string | null
   postsCount: number
   categories: SectionListingCategory[]
 }
@@ -683,6 +684,7 @@ export const sectionBySlug = gql`
       id
       slug
       name
+      style
       postsCount
       categories(orderBy: { sortOrder: asc }) {
         id
@@ -755,6 +757,7 @@ export type SectionPageData = {
   id: string
   slug: string
   name: string
+  style: string | null
   heroImage: {
     resized: ResizedImages | null
     resizedWebp: ResizedImages | null
@@ -770,6 +773,7 @@ export const sectionPageBySlug = gql`
       id
       slug
       name
+      style
       heroImage {
         resized {
           ...ResizedImagesField
