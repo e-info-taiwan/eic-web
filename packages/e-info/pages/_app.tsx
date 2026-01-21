@@ -12,6 +12,8 @@ import GDPRControl from '~/components/layout/gdpr-control'
 import { NormalizeStyles } from '~/components/layout/normalize-styles'
 import { ReadrStyles } from '~/components/layout/readr-styles'
 import { AuthProvider } from '~/contexts/auth-context'
+import type { HeaderContextData } from '~/contexts/header-context'
+import { HeaderProvider } from '~/contexts/header-context'
 import theme from '~/styles/theme'
 import * as gtag from '~/utils/gtag'
 
@@ -23,6 +25,10 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
+  pageProps: {
+    headerData?: HeaderContextData
+    [key: string]: unknown
+  }
 }
 
 const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
@@ -35,6 +41,9 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout ?? ((page) => page)
 
+  // Extract headerData from pageProps (provided by getServerSideProps/getStaticProps)
+  const { headerData, ...restPageProps } = pageProps
+
   return (
     <>
       <NormalizeStyles />
@@ -42,9 +51,11 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
       <ApolloProvider client={client}>
         <ThemeProvider theme={theme}>
           <AuthProvider>
-            {getLayout(<Component {...pageProps} />)}
-            <Footer />
-            <GDPRControl />
+            <HeaderProvider data={headerData}>
+              {getLayout(<Component {...restPageProps} />)}
+              <Footer />
+              <GDPRControl />
+            </HeaderProvider>
           </AuthProvider>
         </ThemeProvider>
       </ApolloProvider>

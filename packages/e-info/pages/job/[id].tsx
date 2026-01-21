@@ -4,12 +4,14 @@ import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import BookmarkIcon from '~/public/icons/bookmark.svg'
 import FacebookIcon from '~/public/icons/facebook.svg'
 import LineIcon from '~/public/icons/line.svg'
 import XIcon from '~/public/icons/x.svg'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -224,6 +226,7 @@ const DUMMY_JOB: JobData = {
 }
 
 type PageProps = {
+  headerData: HeaderContextData
   job: JobData
 }
 
@@ -327,11 +330,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const id = params?.id as string
+  const headerData = await fetchHeaderData()
 
   // TODO: Fetch real job data from API
   // For now, return dummy data
   return {
     props: {
+      headerData,
       job: {
         ...DUMMY_JOB,
         id,

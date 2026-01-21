@@ -18,6 +18,7 @@ import MainCarousel from '~/components/index/main-carousel'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { FeaturedCollaboration } from '~/graphql/query/collaboration'
 import type { EditorCard } from '~/graphql/query/editor-choice'
 import type { Quote } from '~/graphql/query/quote'
@@ -34,6 +35,7 @@ import type { NavigationCategoryWithArticleCards } from '~/types/component'
 import type { DataSetItem, FeaturedArticle } from '~/types/component'
 import type { CollaborationItem } from '~/types/component'
 import * as gtag from '~/utils/gtag'
+import { fetchHeaderData } from '~/utils/header-data'
 import { fetchHomepageData } from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
@@ -64,6 +66,7 @@ const HotKeywordsSection = dynamic(
 )
 
 type PageProps = {
+  headerData: HeaderContextData
   editorChoices: EditorCard[]
   categories: NavigationCategoryWithArticleCards[]
   latest: NavigationCategoryWithArticleCards
@@ -190,7 +193,10 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
      * JSON API endpoint: /api/homepage
      * 詳細規格請參考: docs/homepage-api-spec.md
      */
-    const homepageData = await fetchHomepageData(client)
+    const [headerData, homepageData] = await Promise.all([
+      fetchHeaderData(),
+      fetchHomepageData(client),
+    ])
 
     // 從統一的資料結構中取出各區塊資料
     newsCategories = homepageData.newsCategories
@@ -203,6 +209,32 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     infoGraph = homepageData.infoGraph
     ads = homepageData.ads
     deepTopicAds = homepageData.deepTopicAds
+
+    return {
+      props: {
+        headerData,
+        editorChoices,
+        categories,
+        latest,
+        features,
+        quotes,
+        collaborations,
+        featuredCollaboration,
+        dataSetItems,
+        dataSetCount,
+        supplementCategories,
+        columnCategories,
+        newsCategories,
+        greenCategories,
+        topics,
+        carouselPicks,
+        highlightPicks,
+        infoGraph,
+        ads,
+        deepTopicAds,
+      },
+      revalidate: 60, // 每 60 秒重新驗證
+    }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
@@ -224,31 +256,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     )
 
     throw new Error('Error occurs while fetching data.')
-  }
-
-  return {
-    props: {
-      editorChoices,
-      categories,
-      latest,
-      features,
-      quotes,
-      collaborations,
-      featuredCollaboration,
-      dataSetItems,
-      dataSetCount,
-      supplementCategories,
-      columnCategories,
-      newsCategories,
-      greenCategories,
-      topics,
-      carouselPicks,
-      highlightPicks,
-      infoGraph,
-      ads,
-      deepTopicAds,
-    },
-    revalidate: 60, // 每 60 秒重新驗證
   }
 }
 

@@ -10,6 +10,7 @@ import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
 import SectionHeading from '~/components/shared/section-heading'
+import type { HeaderContextData } from '~/contexts/header-context'
 import { postStyles } from '~/graphql/query/post'
 import type { Tag } from '~/graphql/query/tag'
 import { tags as tagQuery } from '~/graphql/query/tag'
@@ -17,6 +18,7 @@ import useInfiniteScroll from '~/hooks/useInfiniteScroll'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
 
 const TagWrapper = styled.div`
@@ -49,6 +51,7 @@ const StyledAdsense_HD = styled(Adsense)`
 `
 
 type PageProps = {
+  headerData: HeaderContextData
   tagRelatedPosts?: ArticleCard[]
   tagName?: string | string[]
 }
@@ -136,14 +139,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const client = getGqlClient()
-  let tagRelatedPosts: ArticleCard[] | undefined
-  let tagName: string | string[] | undefined
+  const name = params?.name
 
   try {
-    {
-      // fetch tag and related 12 posts
-      const name = params?.name
-      const { data, error: gqlError } = await client.query<{
+    // fetch header data and tag posts in parallel
+    const [headerData, { data, error: gqlError }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{
         tags: Tag[]
       }>({
         query: tagQuery,
@@ -152,27 +154,35 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           relatedPostFirst: 12,
           relatedPostTypes: postStyles,
         },
-      })
-      const tags = data?.tags ?? []
+      }),
+    ])
 
-      if (gqlError) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `tags` query'),
-          'GraphQLError',
-          'failed to complete `tags`',
-          { errors: gqlError }
-        )
+    const tags = data?.tags ?? []
 
-        throw annotatingError
-      }
+    if (gqlError) {
+      const annotatingError = errors.helpers.wrap(
+        new Error('Errors returned in `tags` query'),
+        'GraphQLError',
+        'failed to complete `tags`',
+        { errors: gqlError }
+      )
 
-      //if this tag not exist, return 404
-      if (!tags[0]?.posts) {
-        return { notFound: true }
-      }
+      throw annotatingError
+    }
 
-      tagName = name // open graph title
-      tagRelatedPosts = tags[0]?.posts?.map(postConvertFunc) || []
+    //if this tag not exist, return 404
+    if (!tags[0]?.posts) {
+      return { notFound: true }
+    }
+
+    const tagRelatedPosts = tags[0]?.posts?.map(postConvertFunc) || []
+
+    return {
+      props: {
+        headerData,
+        tagRelatedPosts,
+        tagName: name,
+      },
     }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
@@ -195,13 +205,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     )
 
     throw new Error('Error occurs while fetching data.')
-  }
-
-  return {
-    props: {
-      tagRelatedPosts,
-      tagName,
-    },
   }
 }
 

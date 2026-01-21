@@ -6,11 +6,13 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -426,6 +428,7 @@ const DUMMY_JOBS: Job[] = [
 ]
 
 type PageProps = {
+  headerData: HeaderContextData
   jobs: Job[]
 }
 
@@ -569,11 +572,16 @@ JobsPage.getLayout = function getLayout(page: ReactElement) {
   return <LayoutGeneral>{page}</LayoutGeneral>
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async ({
+  res,
+}) => {
   setCacheControl(res)
+
+  const headerData = await fetchHeaderData()
 
   return {
     props: {
+      headerData,
       jobs: DUMMY_JOBS,
     },
   }

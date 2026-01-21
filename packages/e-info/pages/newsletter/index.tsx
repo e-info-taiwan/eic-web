@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { Newsletter } from '~/graphql/query/newsletter'
 import {
   newslettersByMonth,
@@ -18,6 +19,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -352,6 +354,7 @@ const formatDate = (dateString: string): string => {
 }
 
 type PageProps = {
+  headerData: HeaderContextData
   initialYear: number
   initialMonth: number
   newsletters: Newsletter[]
@@ -632,13 +635,16 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     : now.getMonth() + 1
 
   try {
-    // Get year range
-    const { data: rangeData } = await client.query<{
-      oldest: { sendDate: string }[]
-      newest: { sendDate: string }[]
-    }>({
-      query: newsletterYearRange,
-    })
+    // Get header data and year range in parallel
+    const [headerData, { data: rangeData }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{
+        oldest: { sendDate: string }[]
+        newest: { sendDate: string }[]
+      }>({
+        query: newsletterYearRange,
+      }),
+    ])
 
     const minYear = rangeData?.oldest?.[0]
       ? new Date(rangeData.oldest[0].sendDate).getFullYear()
@@ -667,6 +673,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
     return {
       props: {
+        headerData,
         initialYear,
         initialMonth,
         newsletters: newslettersData?.newsletters ?? [],
@@ -693,6 +700,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     // Return empty state on error
     return {
       props: {
+        headerData: {
+          sections: [],
+          featuredTags: [],
+          topics: [],
+          newsBarPicks: [],
+        },
         initialYear,
         initialMonth,
         newsletters: [],

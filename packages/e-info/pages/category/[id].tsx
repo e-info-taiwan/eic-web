@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
   SectionListingCategory,
@@ -22,6 +23,7 @@ import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
 
 const POSTS_PER_PAGE = 12
@@ -282,6 +284,7 @@ type SectionInfo = {
 }
 
 type PageProps = {
+  headerData: HeaderContextData
   category: CategoryInfo
   section: SectionInfo
   categories: SectionListingCategory[]
@@ -435,19 +438,23 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    // Fetch category with section info
-    const { data: categoryData, error: categoryError } = await client.query<{
-      categories: Array<{
-        id: string
-        slug: string
-        name: string
-        postsCount: number
-        section: SectionInfo
-      }>
-    }>({
-      query: categoryByIdWithSection,
-      variables: { categoryId },
-    })
+    // Fetch header data and category with section info in parallel
+    const [headerData, { data: categoryData, error: categoryError }] =
+      await Promise.all([
+        fetchHeaderData(),
+        client.query<{
+          categories: Array<{
+            id: string
+            slug: string
+            name: string
+            postsCount: number
+            section: SectionInfo
+          }>
+        }>({
+          query: categoryByIdWithSection,
+          variables: { categoryId },
+        }),
+      ])
 
     if (categoryError || !categoryData?.categories?.length) {
       return { notFound: true }
@@ -494,6 +501,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
     return {
       props: {
+        headerData,
         category: {
           id: categoryInfo.id,
           slug: categoryInfo.slug,

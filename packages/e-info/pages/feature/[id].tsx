@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { Topic, TopicPost } from '~/graphql/query/section'
 import { topicById } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -17,6 +18,7 @@ import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
+import { fetchHeaderData } from '~/utils/header-data'
 import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
@@ -416,6 +418,7 @@ const getHeroImageUrl = (topic: Topic): string => {
 }
 
 type PageProps = {
+  headerData: HeaderContextData
   topic: Topic
 }
 
@@ -613,10 +616,14 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    const { data, error: gqlError } = await client.query<{ topics: Topic[] }>({
-      query: topicById,
-      variables: { topicId },
-    })
+    // fetch header data and topic data in parallel
+    const [headerData, { data, error: gqlError }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{ topics: Topic[] }>({
+        query: topicById,
+        variables: { topicId },
+      }),
+    ])
 
     if (gqlError) {
       console.error(
@@ -639,6 +646,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
     return {
       props: {
+        headerData,
         topic,
       },
     }

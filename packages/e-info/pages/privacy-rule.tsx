@@ -4,6 +4,8 @@ import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { HeaderContextData } from '~/contexts/header-context'
+import { fetchHeaderData } from '~/utils/header-data'
 
 import type { NextPageWithLayout } from './_app'
 
@@ -203,7 +205,8 @@ PrivacyRule.getLayout = function getLayout(page: ReactElement) {
 
 // force this page to be static
 export const getStaticProps: GetStaticProps = async () => {
-  return { props: {} }
+  const headerData = await fetchHeaderData()
+  return { props: { headerData } }
 }
 
 export default PrivacyRule

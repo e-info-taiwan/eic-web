@@ -11,6 +11,7 @@ import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
   SectionForListing,
@@ -29,6 +30,7 @@ import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 import { mergePostsWithFeatured, postConvertFunc } from '~/utils/post'
 
 const POSTS_PER_PAGE = 12
@@ -808,7 +810,11 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
 
 // ========== Page Props Types ==========
 
-type SectionDefaultPageProps = {
+type BasePageProps = {
+  headerData: HeaderContextData
+}
+
+type SectionDefaultPageProps = BasePageProps & {
   pageType: 'default'
   section: SectionForListing
   categories: SectionListingCategory[]
@@ -818,7 +824,7 @@ type SectionDefaultPageProps = {
   totalPages: number
 }
 
-type SectionColumnPageProps = {
+type SectionColumnPageProps = BasePageProps & {
   pageType: 'column'
   section: SectionPageData
   categories: SectionPageCategory[]
@@ -1007,13 +1013,14 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    // First, fetch section basic info to determine style
-    const sectionResult = await client.query<{
-      sections: SectionForListing[]
-    }>({
-      query: sectionBySlug,
-      variables: { slug },
-    })
+    // Fetch header data and section basic info in parallel
+    const [headerData, sectionResult] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{ sections: SectionForListing[] }>({
+        query: sectionBySlug,
+        variables: { slug },
+      }),
+    ])
 
     if (sectionResult.error || !sectionResult.data?.sections?.length) {
       return { notFound: true }
@@ -1061,6 +1068,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           totalPosts,
           currentPage: page,
           totalPages,
+          headerData,
         },
       }
     } else {
@@ -1085,6 +1093,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           pageType: 'column',
           section,
           categories,
+          headerData,
         },
       }
     }

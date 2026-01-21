@@ -10,14 +10,17 @@ import News from '~/components/post/article-type/news'
 import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
 import { useReadingTracker } from '~/hooks/useReadingTracker'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { ResizedImages, ValidPostStyle } from '~/types/common'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 
 type PageProps = {
+  headerData: HeaderContextData
   postData: PostDetail
 }
 
@@ -115,18 +118,19 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const client = getGqlClient()
-  let postData: PostDetail
+  const postId = params?.id
 
   try {
-    // fetch post data by id
-    const postId = params?.id
-
-    const { data, error: gqlError } = await client.query<{
-      posts: PostDetail[]
-    }>({
-      query: postQuery,
-      variables: { id: postId },
-    })
+    // fetch header data and post data in parallel
+    const [headerData, { data, error: gqlError }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{
+        posts: PostDetail[]
+      }>({
+        query: postQuery,
+        variables: { id: postId },
+      }),
+    ])
 
     if (gqlError) {
       const annotatingError = errors.helpers.wrap(
@@ -166,7 +170,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     //   }
     // }
 
-    postData = data.posts[0]
+    return {
+      props: {
+        headerData,
+        postData: data.posts[0],
+      },
+    }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
       err,
@@ -190,12 +199,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     )
 
     throw new Error('Error occurs while fetching data.')
-  }
-
-  return {
-    props: {
-      postData: postData,
-    },
   }
 }
 

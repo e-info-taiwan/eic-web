@@ -9,11 +9,13 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { Topic } from '~/graphql/query/section'
 import { allTopics } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   max-width: 1200px;
@@ -343,6 +345,7 @@ const getTopicImageUrl = (topic: Topic): string => {
 }
 
 type PageProps = {
+  headerData: HeaderContextData
   topics: Topic[]
 }
 
@@ -477,9 +480,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    const { data, error: gqlError } = await client.query<{ topics: Topic[] }>({
-      query: allTopics,
-    })
+    // fetch header data and topics in parallel
+    const [headerData, { data, error: gqlError }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{ topics: Topic[] }>({
+        query: allTopics,
+      }),
+    ])
 
     if (gqlError) {
       console.error(
@@ -496,6 +503,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
     return {
       props: {
+        headerData,
         topics,
       },
     }
@@ -516,8 +524,15 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       })
     )
 
+    // Return empty headerData on error
     return {
       props: {
+        headerData: {
+          sections: [],
+          featuredTags: [],
+          topics: [],
+          newsBarPicks: [],
+        },
         topics: [],
       },
     }

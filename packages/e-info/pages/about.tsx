@@ -11,6 +11,7 @@ import More from '~/components/about/more'
 import Qa from '~/components/about/qa'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { QA_RECORD_CONFIG } from '~/constants/environment-variables'
+import type { HeaderContextData } from '~/contexts/header-context'
 import editoolsClient from '~/editools-apollo-client'
 import type { Award } from '~/graphql/query/award'
 import { awards as awardsGql } from '~/graphql/query/award'
@@ -21,6 +22,7 @@ import { pageVariablesByPage } from '~/graphql/query/page-variable'
 import type { QaList } from '~/graphql/query/qa'
 import { qALists as qAListsGql } from '~/graphql/query/qa'
 import type { Language, RenderedAward } from '~/types/about'
+import { fetchHeaderData } from '~/utils/header-data'
 
 import type { NextPageWithLayout } from './_app'
 
@@ -80,6 +82,7 @@ const Page = styled.div`
 `
 
 type PageProps = {
+  headerData: HeaderContextData
   awardsData: Award[]
   moreReportData: PageVariable[]
   membersData: Member[]
@@ -199,6 +202,9 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   let membersData: Member[] = []
   let qAListsData: QaList[] = []
 
+  // Fetch header data first
+  const headerData = await fetchHeaderData()
+
   try {
     const awardsResult = await client.query<{ awards: Award[] }>({
       query: awardsGql,
@@ -277,6 +283,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
 
   return {
     props: {
+      headerData,
       awardsData,
       moreReportData,
       membersData,

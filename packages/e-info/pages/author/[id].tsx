@@ -12,6 +12,7 @@ import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
 import SectionHeading from '~/components/shared/section-heading'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { Author, AuthorImage } from '~/graphql/fragments/author'
 import type { Post } from '~/graphql/fragments/post'
 import { author as authorQuery } from '~/graphql/query/author'
@@ -20,6 +21,7 @@ import useInfiniteScroll from '~/hooks/useInfiniteScroll'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
 
 const AuthorWrapper = styled.div`
@@ -112,6 +114,7 @@ const getAuthorImageUrl = (image: AuthorImage | null | undefined): string => {
 }
 
 type PageProps = {
+  headerData: HeaderContextData
   authorPosts?: ArticleCard[]
   authorName: string
   authorBio?: string | null
@@ -220,68 +223,61 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const client = getGqlClient()
-  let authorPosts: ArticleCard[] | undefined
-  let authorName: string
-  let authorBio: string | null = null
-  let authorImage: AuthorImage | null = null
+  const id = params?.id
 
   try {
-    {
-      // fetch author data
-      const id = params?.id
-      const { data, error: gqlErrors } = await client.query<{
-        author: Author
-      }>({
+    // fetch header data, author data, and author posts in parallel
+    const [headerData, authorResult, postsResult] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{ author: Author }>({
         query: authorQuery,
-        variables: { id: id },
-      })
-      const author = data?.author
-
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `author` query'),
-          'GraphQLError',
-          'failed to complete `author`',
-          { errors: gqlErrors }
-        )
-
-        throw annotatingError
-      }
-
-      //if author id not exist, return 404
-      if (!author) {
-        return { notFound: true }
-      }
-
-      authorName = author.name
-      authorBio = author.bio || null
-      authorImage = author.image || null
-    }
-    {
-      // fetch author related 12 posts
-      const id = params?.id
-      const { data, error: gqlErrors } = await client.query<{
-        authorPosts: Post[]
-      }>({
+        variables: { id },
+      }),
+      client.query<{ authorPosts: Post[] }>({
         query: authorPostsQuery,
-        variables: {
-          authorId: id,
-          first: 12,
-        },
-      })
+        variables: { authorId: id, first: 12 },
+      }),
+    ])
 
-      if (gqlErrors) {
-        const annotatingError = errors.helpers.wrap(
-          new Error('Errors returned in `author` query'),
-          'GraphQLError',
-          'failed to complete `author`',
-          { errors: gqlErrors }
-        )
+    const { data: authorData, error: authorError } = authorResult
+    const { data: postsData, error: postsError } = postsResult
+    const author = authorData?.author
 
-        throw annotatingError
-      }
+    if (authorError) {
+      const annotatingError = errors.helpers.wrap(
+        new Error('Errors returned in `author` query'),
+        'GraphQLError',
+        'failed to complete `author`',
+        { errors: authorError }
+      )
+      throw annotatingError
+    }
 
-      authorPosts = data?.authorPosts?.map(postConvertFunc) ?? []
+    if (postsError) {
+      const annotatingError = errors.helpers.wrap(
+        new Error('Errors returned in `authorPosts` query'),
+        'GraphQLError',
+        'failed to complete `authorPosts`',
+        { errors: postsError }
+      )
+      throw annotatingError
+    }
+
+    //if author id not exist, return 404
+    if (!author) {
+      return { notFound: true }
+    }
+
+    const authorPosts = postsData?.authorPosts?.map(postConvertFunc) ?? []
+
+    return {
+      props: {
+        headerData,
+        authorPosts,
+        authorName: author.name,
+        authorBio: author.bio || null,
+        authorImage: author.image || null,
+      },
     }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
@@ -304,15 +300,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     )
 
     throw new Error('Error occurs while fetching data.')
-  }
-
-  return {
-    props: {
-      authorPosts,
-      authorName,
-      authorBio,
-      authorImage,
-    },
   }
 }
 

@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client/react'
 import Lottie from 'lottie-react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -6,16 +5,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import NewsletterModal from '~/components/shared/newsletter-modal'
-import {
-  type HeaderNavSection,
-  type HeaderNavTag,
-  type HeaderNavTopic,
-  type NewsBarPick,
-  featuredTagsForHeader,
-  homepagePicksForNewsBar,
-  sectionsForHeader,
-  topicsForHeader,
-} from '~/graphql/query/section'
+import { useHeaderData } from '~/contexts/header-context'
+import type { HeaderNavSection } from '~/graphql/query/section'
 import { useAuth } from '~/hooks/useAuth'
 import { getMemberDisplayName } from '~/lib/graphql/member'
 import LogoEIC from '~/public/eic-logo.svg'
@@ -638,33 +629,16 @@ const Header = () => {
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringNavRef = useRef(false)
 
-  // Fetch sections for header navigation
-  const { data: sectionsData } = useQuery<{ sections: HeaderNavSection[] }>(
-    sectionsForHeader
-  )
-
-  // Fetch featured tags for header navigation
-  const { data: tagsData } = useQuery<{ tags: HeaderNavTag[] }>(
-    featuredTagsForHeader
-  )
-
-  // Fetch topics for header navigation (深度專題 dropdown)
-  const { data: topicsData } = useQuery<{ topics: HeaderNavTopic[] }>(
-    topicsForHeader
-  )
-
-  // Navigation items from API
-  const navigationItems = sectionsData?.sections || []
-  const featuredTags = tagsData?.tags || []
-  const headerTopics = topicsData?.topics || []
-
-  // Fetch "快訊" (flashnews) category picks for NewsBar
-  const { data: newsBarData } = useQuery<{ homepagePicks: NewsBarPick[] }>(
-    homepagePicksForNewsBar
-  )
+  // Get header data from context (pre-fetched on server side)
+  const {
+    sections: navigationItems,
+    featuredTags,
+    topics: headerTopics,
+    newsBarPicks,
+  } = useHeaderData()
 
   // Process news items from homepage picks
-  const newsItems = (newsBarData?.homepagePicks || [])
+  const newsItems = newsBarPicks
     .filter((pick) => pick.customTitle || pick.posts?.title)
     .map((pick) => ({
       id: pick.id,
