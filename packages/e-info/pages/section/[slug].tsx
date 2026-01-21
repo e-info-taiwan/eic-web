@@ -412,7 +412,7 @@ const DescriptionSection = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 20px;
-  text-align: center;
+  text-align: left;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
@@ -457,38 +457,42 @@ const CategoryHeader = styled.div`
   align-items: center;
   padding-bottom: 20px;
 
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     justify-content: space-between;
     padding-bottom: 16px;
   }
 `
 
 const CategoryName = styled.h2`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
+  line-height: 28px;
   color: ${({ theme }) => theme.colors.primary[20]};
   margin: 0;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     font-size: 20px;
+    line-height: 28px;
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    font-size: 24px;
+    font-size: 28px;
+    line-height: 32px;
   }
 `
 
 const ReadMoreLink = styled(Link)`
   display: none;
   font-size: 14px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.primary[20]};
-  text-decoration: none;
+  text-decoration: underline;
 
   &:hover {
-    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.primary[40]};
   }
 
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: block;
     font-size: 16px;
   }
@@ -533,23 +537,20 @@ const LargeCardImageWrapper = styled.div`
 
 const LargeCardDate = styled.div`
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
+  line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 8px;
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    font-size: 16px;
-  }
 `
 
 const LargeCardTitle = styled.h3`
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.2s ease;
@@ -559,7 +560,15 @@ const LargeCardTitle = styled.h3`
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-weight: 700;
     font-size: 20px;
+    line-height: 28px;
+    min-height: 56px;
   }
 `
 
@@ -607,17 +616,14 @@ const SmallCardContent = styled.div`
 
 const SmallCardDate = styled.div`
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
+  line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 4px;
-
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    font-size: 14px;
-  }
 `
 
 const SmallCardTitle = styled.h4`
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
@@ -642,20 +648,20 @@ const MobileReadMoreWrapper = styled.div`
   justify-content: center;
   margin-top: 16px;
 
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     display: none;
   }
 `
 
 const MobileReadMoreLink = styled(Link)`
-  color: ${({ theme }) => theme.colors.primary[20]};
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: opacity 0.2s ease;
+  color: ${({ theme }) => theme.colors.primary[40]};
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: underline;
 
   &:hover {
-    opacity: 0.7;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
 
