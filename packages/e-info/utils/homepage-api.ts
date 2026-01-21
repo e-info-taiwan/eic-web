@@ -27,6 +27,11 @@ import {
 // API Endpoints 設定
 const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
 
+// In-memory cache for homepage data
+let cachedHomepageData: HomepageData | null = null
+let cacheTimestamp = 0
+const CACHE_TTL_MS = 60 * 1000 // 60 seconds
+
 function getHomepageApiEndpoint(): string {
   switch (ENV) {
     case 'prod':
@@ -229,12 +234,24 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
  * 獲取首頁資料
  * 優先使用 JSON API，失敗時 fallback 到 GraphQL
  *
+ * Includes in-memory caching with 60-second TTL to reduce API calls
+ * for SSR pages within the same Node.js process
+ *
  * @param client - Apollo Client instance (用於 fallback)
  * @returns 首頁資料
  */
 export async function fetchHomepageData(
   client: ApolloClient
 ): Promise<HomepageData> {
+  const now = Date.now()
+
+  // Return cached data if still valid
+  if (cachedHomepageData && now - cacheTimestamp < CACHE_TTL_MS) {
+    // eslint-disable-next-line no-console
+    console.log('[Homepage] Returning cached data')
+    return cachedHomepageData
+  }
+
   let response: HomepageApiResponse
   let usedFallback = false
 
@@ -259,9 +276,19 @@ export async function fetchHomepageData(
         '[Homepage] Successfully fetched data from GraphQL (fallback)'
       )
     } catch (graphqlError) {
-      // 兩個都失敗，拋出錯誤
+      // 兩個都失敗
       // eslint-disable-next-line no-console
       console.error('[Homepage] Both JSON API and GraphQL failed')
+
+      // If we have stale cache, return it instead of throwing
+      if (cachedHomepageData) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          '[Homepage] Returning stale cached data due to fetch error'
+        )
+        return cachedHomepageData
+      }
+
       throw graphqlError
     }
   }
@@ -275,7 +302,13 @@ export async function fetchHomepageData(
     console.log('[Homepage] Data source: JSON API')
   }
 
-  return transformApiResponse(response)
+  const data = transformApiResponse(response)
+
+  // Update cache
+  cachedHomepageData = data
+  cacheTimestamp = now
+
+  return data
 }
 
 /**
