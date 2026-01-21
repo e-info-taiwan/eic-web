@@ -282,13 +282,12 @@ const EmptyMessage = styled.div`
 // ========== Column Style (Grid) Styled Components ==========
 
 // Hero Section - maintains 1200:420 (20:7) aspect ratio
-const HeroSection = styled.div<{ $hasImage: boolean }>`
+const HeroSection = styled.div`
   position: relative;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   aspect-ratio: 1200 / 420;
-  background-color: ${({ $hasImage }) => ($hasImage ? '#333' : '#f5f5f5')};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -343,11 +342,10 @@ const HeroAccentBar = styled.div`
   }
 `
 
-const HeroTitle = styled.h1<{ $hasImage: boolean }>`
+const HeroTitle = styled.h1`
   font-size: 28px;
   font-weight: 500;
-  color: ${({ theme, $hasImage }) =>
-    $hasImage ? theme.colors.primary[80] : '#000'};
+  color: ${({ theme }) => theme.colors.primary[80]};
   margin: 0;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
@@ -938,9 +936,9 @@ const SectionColumnPage = ({ section, categories }: SectionColumnPageProps) => {
   return (
     <PageWrapper>
       {/* Hero Section */}
-      <HeroSection $hasImage={hasHeroImage}>
-        {hasHeroImage && (
-          <HeroImageWrapper>
+      <HeroSection>
+        <HeroImageWrapper>
+          {hasHeroImage ? (
             <SharedImage
               images={section.heroImage?.resized || {}}
               imagesWebP={section.heroImage?.resizedWebp || {}}
@@ -953,11 +951,13 @@ const SectionColumnPage = ({ section, categories }: SectionColumnPageProps) => {
                 default: '100vw',
               }}
             />
-          </HeroImageWrapper>
-        )}
+          ) : (
+            <img src={DEFAULT_POST_IMAGE_PATH} alt={section.name} />
+          )}
+        </HeroImageWrapper>
         <HeroTitleWrapper>
           <HeroAccentBar />
-          <HeroTitle $hasImage={hasHeroImage}>{section.name}</HeroTitle>
+          <HeroTitle>{section.name}</HeroTitle>
         </HeroTitleWrapper>
       </HeroSection>
 

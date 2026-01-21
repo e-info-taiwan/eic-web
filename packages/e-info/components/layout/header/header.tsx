@@ -267,19 +267,6 @@ const NavItem = styled.a`
   white-space: nowrap;
   border-top: 3px solid transparent;
 
-  /* Mobile menu styling */
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 2;
-    border-bottom: none;
-    border-top: none;
-
-    &.highlighted {
-      font-weight: 500;
-    }
-  }
-
   &:hover {
     color: ${({ theme }) => theme.colors.primary[40]};
   }
@@ -298,6 +285,43 @@ const NavItem = styled.a`
     &.active {
       color: ${({ theme }) => theme.colors.secondary[20]};
       border-bottom-color: ${({ theme }) => theme.colors.secondary[20]};
+    }
+  }
+
+  /* Mobile menu styling */
+  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 2;
+    border-bottom: none;
+    border-top: none;
+    /* Mobile: section names use primary 40 */
+    color: ${({ theme }) => theme.colors.primary[40]};
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.primary[20]};
+    }
+
+    &.highlighted {
+      font-weight: 500;
+    }
+  }
+
+  /* Desktop: featured tags use primary 40 */
+  &.featured-tag {
+    color: ${({ theme }) => theme.colors.primary[40]};
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.primary[20]};
+    }
+
+    /* Mobile: featured tags use grayscale 40 */
+    @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
+      color: ${({ theme }) => theme.colors.grayscale[40]};
+
+      &:hover {
+        color: ${({ theme }) => theme.colors.grayscale[20]};
+      }
     }
   }
 
@@ -525,10 +549,16 @@ const MobileMenuSection = styled.div`
   margin-bottom: 1rem;
 `
 
+const MobileMenuDivider = styled.hr`
+  width: 88px;
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
+  margin: 8px 0;
+`
+
 const MobileMenuFooter = styled.div`
   display: none;
-  margin-top: auto;
-  padding-top: 2rem;
+  padding-top: 1rem;
 
   /* Show on mobile and tablet (< xl) */
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
@@ -908,7 +938,9 @@ const Header = () => {
               {/* Featured tags */}
               {featuredTags.map((tag) => (
                 <DropdownContainer key={tag.id}>
-                  <NavItem href={`/tag/${tag.name}`}>{tag.name}</NavItem>
+                  <NavItem href={`/tag/${tag.name}`} className="featured-tag">
+                    {tag.name}
+                  </NavItem>
                 </DropdownContainer>
               ))}
             </NavigationMenu>
@@ -1030,12 +1062,26 @@ const Header = () => {
               <NavItem href="/feature" className="featured">
                 深度專題
               </NavItem>
+              {/* Divider between 深度專題 and Featured tags */}
+              <MobileMenuDivider />
               {/* Featured tags */}
               {featuredTags.map((tag) => (
-                <NavItem key={tag.id} href={`/tag/${tag.name}`}>
+                <NavItem
+                  key={tag.id}
+                  href={`/tag/${tag.name}`}
+                  className="featured-tag"
+                >
                   {tag.name}
                 </NavItem>
               ))}
+              {/* Social icons - below featured tags */}
+              <MobileMenuFooter>
+                <SocialIcons>
+                  <IconFacebook />
+                  <IconInstagram />
+                  <IconMail className="mail" />
+                </SocialIcons>
+              </MobileMenuFooter>
             </MobileMenuSection>
           </MobileMenuContent>
         ) : (
@@ -1058,14 +1104,6 @@ const Header = () => {
             </SubMenuList>
           </SubMenuView>
         )}
-
-        <MobileMenuFooter>
-          <SocialIcons>
-            <IconFacebook />
-            <IconInstagram />
-            <IconMail className="mail" />
-          </SocialIcons>
-        </MobileMenuFooter>
       </NavigationSection>
     </>
   )
