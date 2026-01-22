@@ -10,6 +10,7 @@ import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -290,8 +291,12 @@ LoginPage.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   setCacheControl(res)
 
+  const headerData = await fetchHeaderData()
+
   return {
-    props: {},
+    props: {
+      headerData,
+    },
   }
 }
 

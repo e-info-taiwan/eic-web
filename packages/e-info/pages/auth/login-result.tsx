@@ -7,6 +7,7 @@ import AuthResultCard from '~/components/auth/auth-result-card'
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.grayscale[95]};
@@ -44,8 +45,12 @@ LoginResultPage.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   setCacheControl(res)
 
+  const headerData = await fetchHeaderData()
+
   return {
-    props: {},
+    props: {
+      headerData,
+    },
   }
 }
 

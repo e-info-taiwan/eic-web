@@ -15,6 +15,7 @@ import {
 } from '~/lib/graphql/reading-history'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
 import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
@@ -462,8 +463,12 @@ MemberHistoryPage.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   setCacheControl(res)
 
+  const headerData = await fetchHeaderData()
+
   return {
-    props: {},
+    props: {
+      headerData,
+    },
   }
 }
 

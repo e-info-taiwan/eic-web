@@ -12,6 +12,7 @@ import { getMemberAvatarUrl, getMemberDisplayName } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { getGravatarUrl } from '~/utils/gravatar'
+import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -347,8 +348,12 @@ MemberProfilePage.getLayout = function getLayout(page: ReactElement) {
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   setCacheControl(res)
 
+  const headerData = await fetchHeaderData()
+
   return {
-    props: {},
+    props: {
+      headerData,
+    },
   }
 }
 
