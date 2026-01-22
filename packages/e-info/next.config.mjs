@@ -9,6 +9,8 @@ const { ENV, DONATION_PAGE_URL } = await tsImport.load(
   './constants/environment-variables.ts'
 )
 
+const { getNextRewrites } = await tsImport.load('./constants/redirects.ts')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -32,6 +34,8 @@ const nextConfig = {
         source: '/robots.txt',
         destination: '/api/robots',
       },
+      // 頁面轉址設定（從 constants/redirects.ts 載入）
+      ...getNextRewrites(),
     ]
   },
   webpack: (config, /* eslint-disable-line no-unused-vars */ options) => {
