@@ -111,9 +111,14 @@ function DraftRenderer(_ref4) {
     insertRecommend = _ref4$insertRecommend === void 0 ? [] : _ref4$insertRecommend,
     _ref4$contentType = _ref4.contentType,
     contentType = _ref4$contentType === void 0 ? _types.ValidPostContentType.NORMAL : _ref4$contentType;
-  //if `rawContentBlock` has no data, throw error
+  // Check if rawContentBlock has no data or no actual content
   if (!rawContentBlock || !rawContentBlock.blocks || !rawContentBlock.blocks.length) {
-    throw new Error('There is no content in rawContentBlock, please check again.');
+    return null;
+  }
+
+  // Check if there's actual content (not just empty blocks)
+  if (!(0, _common.hasContentInRawContentBlock)(rawContentBlock)) {
+    return null;
   }
   var contentState;
 

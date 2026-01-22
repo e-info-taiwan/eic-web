@@ -20,7 +20,7 @@ var FocusImageWrapper = _styledComponents["default"].div(_templateObject2 || (_t
   var theme = _ref2.theme;
   return theme.fontSize.sm;
 });
-var FocusImage = _styledComponents["default"].figure(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  max-width: 900px;\n  max-height: 480px;\n  overflow: hidden;\n  margin-bottom: 32px;\n\n  ", " {\n    max-width: 960px;\n  }\n"])), function (_ref3) {
+var FocusImage = _styledComponents["default"].figure(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  max-width: 900px;\n  max-height: 60vh;\n  margin-bottom: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n\n  img {\n    max-width: 100%;\n    max-height: 60vh;\n    object-fit: contain;\n  }\n\n  ", " {\n    max-width: 960px;\n  }\n"])), function (_ref3) {
   var theme = _ref3.theme;
   return theme.breakpoint.xxl;
 });
@@ -44,9 +44,9 @@ function SlideshowLightBox(_ref4) {
     images: images[focusImageIndex].resized,
     defaultImage: defaultImage,
     alt: images[focusImageIndex].name,
-    objectFit: 'fill',
+    objectFit: 'contain',
     rwd: {
-      desktop: '64px',
+      desktop: '960px',
       "default": '100%'
     },
     priority: true

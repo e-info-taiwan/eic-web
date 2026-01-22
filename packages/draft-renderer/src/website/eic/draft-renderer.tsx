@@ -29,7 +29,10 @@ import theme from './theme'
 // eslint-disable-next-line prettier/prettier
 import type { Post } from './types'
 import { ValidPostContentType } from './types'
-import { removeEmptyContentBlock } from './utils/common'
+import {
+  hasContentInRawContentBlock,
+  removeEmptyContentBlock,
+} from './utils/common'
 import { insertRecommendInContentBlock } from './utils/post'
 
 type DraftEditorProps = {
@@ -203,15 +206,18 @@ export default function DraftRenderer({
   insertRecommend = [],
   contentType = ValidPostContentType.NORMAL,
 }: DraftRendererProps) {
-  //if `rawContentBlock` has no data, throw error
+  // Check if rawContentBlock has no data or no actual content
   if (
     !rawContentBlock ||
     !rawContentBlock.blocks ||
     !rawContentBlock.blocks.length
   ) {
-    throw new Error(
-      'There is no content in rawContentBlock, please check again.'
-    )
+    return null
+  }
+
+  // Check if there's actual content (not just empty blocks)
+  if (!hasContentInRawContentBlock(rawContentBlock)) {
+    return null
   }
 
   let contentState
