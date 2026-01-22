@@ -1,10 +1,30 @@
-// 地區選項
+// 地區選項 - 台灣所有縣市
 export type LocationOption =
+  // 六都
   | '台北市'
   | '新北市'
   | '桃園市'
   | '台中市'
   | '台南市'
+  | '高雄市'
+  // 其他縣市
+  | '基隆市'
+  | '新竹市'
+  | '新竹縣'
+  | '苗栗縣'
+  | '彰化縣'
+  | '南投縣'
+  | '雲林縣'
+  | '嘉義市'
+  | '嘉義縣'
+  | '屏東縣'
+  | '宜蘭縣'
+  | '花蓮縣'
+  | '台東縣'
+  | '澎湖縣'
+  | '金門縣'
+  | '連江縣'
+  // 其他
   | '其他'
 
 // 感興趣的分類選項
@@ -30,10 +50,7 @@ export type NewsletterPreferences = {
 }
 
 // 通知分類選項（之後會擴充）
-export type NotificationCategory =
-  | '台灣新聞'
-  | '生物多樣性'
-  | '編輯直送'
+export type NotificationCategory = '台灣新聞' | '生物多樣性' | '編輯直送'
 
 // Firestore 使用者資料結構
 export type UserProfile = {
@@ -61,6 +78,7 @@ export type RegisterFormData = {
   password: string
   confirmPassword: string
   location: LocationOption | ''
+  customLocation: string // 當選擇「其他」時的自訂地區
   birthDate: string
   interestedCategories: InterestedCategory[]
   dailyNewsletter: boolean

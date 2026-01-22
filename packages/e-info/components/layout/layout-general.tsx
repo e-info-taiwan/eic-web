@@ -38,7 +38,6 @@ export default function LayoutGeneral({
         description={description}
         imageUrl={imageUrl}
       ></CustomHead>
-      {/* <HeaderGeneral onCompleteReadingHandle={onCompleteReadingHandle} /> */}
       <Header />
       <Main>{children}</Main>
     </>

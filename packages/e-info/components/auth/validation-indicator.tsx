@@ -43,7 +43,12 @@ const ValidationIndicator = ({
   message,
   errorMessage,
 }: ValidationIndicatorProps) => {
-  const status = isValid === null ? 'neutral' : isValid ? 'valid' : 'invalid'
+  // Don't show anything when not yet validated
+  if (isValid === null) {
+    return null
+  }
+
+  const status = isValid ? 'valid' : 'invalid'
   const displayMessage =
     isValid === false && errorMessage ? errorMessage : message
 
@@ -51,7 +56,6 @@ const ValidationIndicator = ({
     <IndicatorWrapper $status={status}>
       {isValid === true && <CheckIcon />}
       {isValid === false && <CrossIcon />}
-      {isValid === null && <CheckIcon />}
       {displayMessage}
     </IndicatorWrapper>
   )

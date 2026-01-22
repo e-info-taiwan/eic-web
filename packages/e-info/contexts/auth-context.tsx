@@ -14,9 +14,9 @@ import {
   signUpWithEmail as signUpWithEmailApi,
 } from '~/lib/firebase/auth'
 import {
+  type Member,
   checkMemberExists,
   getMemberByFirebaseId,
-  type Member,
 } from '~/lib/graphql/member'
 
 export type AuthContextType = {
@@ -127,11 +127,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
       return true // Login successful
     } catch (err: unknown) {
+      console.error('[AuthContext] Google sign-in error:', err)
       const errorCode =
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      setError(getFirebaseErrorMessage(errorCode))
+      const errorMessage = getFirebaseErrorMessage(errorCode)
+      console.error(
+        '[AuthContext] Error code:',
+        errorCode,
+        '| Message:',
+        errorMessage
+      )
+      setError(errorMessage)
       return false
     }
   }, [])
@@ -147,11 +155,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
       return true // Login successful
     } catch (err: unknown) {
+      console.error('[AuthContext] Facebook sign-in error:', err)
       const errorCode =
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      setError(getFirebaseErrorMessage(errorCode))
+      const errorMessage = getFirebaseErrorMessage(errorCode)
+      console.error(
+        '[AuthContext] Error code:',
+        errorCode,
+        '| Message:',
+        errorMessage
+      )
+      setError(errorMessage)
       return false
     }
   }, [])
@@ -167,11 +183,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
       return true // Login successful
     } catch (err: unknown) {
+      console.error('[AuthContext] Apple sign-in error:', err)
       const errorCode =
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      setError(getFirebaseErrorMessage(errorCode))
+      const errorMessage = getFirebaseErrorMessage(errorCode)
+      console.error(
+        '[AuthContext] Error code:',
+        errorCode,
+        '| Message:',
+        errorMessage
+      )
+      setError(errorMessage)
       return false
     }
   }, [])
@@ -183,11 +207,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         await signInWithEmailApi(email, password)
         return true
       } catch (err: unknown) {
+        console.error('[AuthContext] Email sign-in error:', err)
         const errorCode =
           err && typeof err === 'object' && 'code' in err
             ? (err as { code: string }).code
             : ''
-        setError(getFirebaseErrorMessage(errorCode))
+        const errorMessage = getFirebaseErrorMessage(errorCode)
+        console.error(
+          '[AuthContext] Error code:',
+          errorCode,
+          '| Message:',
+          errorMessage
+        )
+        setError(errorMessage)
         return false
       }
     },
@@ -202,11 +234,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setNeedsRegistration(true)
         return result.user
       } catch (err: unknown) {
+        console.error('[AuthContext] Email sign-up error:', err)
         const errorCode =
           err && typeof err === 'object' && 'code' in err
             ? (err as { code: string }).code
             : ''
-        setError(getFirebaseErrorMessage(errorCode))
+        const errorMessage = getFirebaseErrorMessage(errorCode)
+        console.error(
+          '[AuthContext] Error code:',
+          errorCode,
+          '| Message:',
+          errorMessage
+        )
+        setError(errorMessage)
         return null
       }
     },
@@ -219,11 +259,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setMember(null)
       setNeedsRegistration(false)
     } catch (err: unknown) {
+      console.error('[AuthContext] Sign-out error:', err)
       const errorCode =
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      setError(getFirebaseErrorMessage(errorCode))
+      const errorMessage = getFirebaseErrorMessage(errorCode)
+      console.error(
+        '[AuthContext] Error code:',
+        errorCode,
+        '| Message:',
+        errorMessage
+      )
+      setError(errorMessage)
     }
   }, [])
 
@@ -245,11 +293,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         await sendPasswordResetApi(email)
         return true
       } catch (err: unknown) {
+        console.error('[AuthContext] Password reset error:', err)
         const errorCode =
           err && typeof err === 'object' && 'code' in err
             ? (err as { code: string }).code
             : ''
-        setError(getFirebaseErrorMessage(errorCode))
+        const errorMessage = getFirebaseErrorMessage(errorCode)
+        console.error(
+          '[AuthContext] Error code:',
+          errorCode,
+          '| Message:',
+          errorMessage
+        )
+        setError(errorMessage)
         return false
       }
     },

@@ -67,9 +67,9 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
+  color: ${({ theme }) => theme.colors.primary[20]};
 `
 
 const Input = styled.input`
@@ -78,8 +78,8 @@ const Input = styled.input`
   font-size: 16px;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
-  background-color: ${({ theme }) => theme.colors.grayscale[99]};
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  background-color: white;
+  border: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
   border-radius: 4px;
 
   &:focus {
@@ -131,7 +131,7 @@ const Select = styled.select`
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   background-color: white;
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  border: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
   border-radius: 4px;
   cursor: pointer;
   appearance: none;
@@ -146,13 +146,13 @@ const Select = styled.select`
   }
 `
 
-const RadioGroup = styled.div`
+const CheckboxGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 12px 24px;
 `
 
-const RadioLabel = styled.label`
+const CheckboxItem = styled.label`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -162,11 +162,38 @@ const RadioLabel = styled.label`
   cursor: pointer;
 `
 
-const Radio = styled.input`
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: ${({ theme }) => theme.colors.primary[20]};
+const HiddenCheckbox = styled.input`
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+`
+
+const CheckboxIcon = styled.span<{ $checked: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid
+    ${({ theme, $checked }) =>
+      $checked ? theme.colors.primary[40] : theme.colors.grayscale[60]};
+  background-color: ${({ theme, $checked }) =>
+    $checked ? theme.colors.primary[40] : 'transparent'};
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    display: ${({ $checked }) => ($checked ? 'block' : 'none')};
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
+  }
 `
 
 const ButtonGroup = styled.div`
@@ -183,7 +210,7 @@ const PrimaryButton = styled.button`
   font-weight: 700;
   line-height: 1.5;
   color: white;
-  background-color: ${({ theme }) => theme.colors.primary[40]};
+  background-color: ${({ theme }) => theme.colors.primary[20]};
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -207,7 +234,7 @@ const SecondaryButton = styled.button`
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[40]};
   background-color: white;
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -226,9 +253,9 @@ const ErrorMessage = styled.div`
 
 const SectionLabel = styled.div`
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
+  color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 8px;
 `
 
@@ -275,6 +302,7 @@ const RegisterPage: NextPageWithLayout = () => {
     password: '',
     confirmPassword: '',
     location: '',
+    customLocation: '',
     birthDate: '',
     interestedCategories: [],
     dailyNewsletter: false,
@@ -293,16 +321,38 @@ const RegisterPage: NextPageWithLayout = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // If user came from social login, prefill email
+  // If user came from social login, prefill email and validate
   useEffect(() => {
     if (firebaseUser && provider) {
+      const email = firebaseUser.email || ''
       setFormData((prev) => ({
         ...prev,
-        email: firebaseUser.email || '',
+        email,
         name: firebaseUser.displayName || '',
       }))
+      // Validate prefilled email
+      if (email) {
+        setValidation((prev) => ({
+          ...prev,
+          email: VALIDATION_RULES.email.pattern.test(email),
+        }))
+      }
     }
   }, [firebaseUser, provider])
+
+  // Validate email from URL query parameter on initial load
+  useEffect(() => {
+    if (queryEmail && typeof queryEmail === 'string') {
+      setFormData((prev) => ({
+        ...prev,
+        email: queryEmail,
+      }))
+      setValidation((prev) => ({
+        ...prev,
+        email: VALIDATION_RULES.email.pattern.test(queryEmail),
+      }))
+    }
+  }, [queryEmail])
 
   // Validate email format
   const validateEmail = useCallback((email: string): boolean => {
@@ -413,6 +463,12 @@ const RegisterPage: NextPageWithLayout = () => {
       ? new Date(formData.birthDate).toISOString()
       : undefined
 
+    // Use customLocation if "其他" is selected, otherwise use location
+    const city =
+      formData.location === '其他'
+        ? formData.customLocation || undefined
+        : formData.location || undefined
+
     // Note: newsletterSubscription and newsletterFrequency are Keystone select fields
     // with specific allowed values. For now, we skip these fields during registration
     // and let users set them in the newsletter settings page.
@@ -421,7 +477,7 @@ const RegisterPage: NextPageWithLayout = () => {
       email: formData.email,
       firstName,
       lastName,
-      city: formData.location || undefined,
+      city,
       birthDate: birthDateISO,
     })
   }
@@ -470,11 +526,11 @@ const RegisterPage: NextPageWithLayout = () => {
 
         <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <Label htmlFor="name">姓名</Label>
             <Input
               id="name"
               name="name"
               type="text"
+              placeholder="姓名 *"
               value={formData.name}
               onChange={handleInputChange}
               disabled={loading}
@@ -483,11 +539,11 @@ const RegisterPage: NextPageWithLayout = () => {
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               name="email"
               type="email"
+              placeholder="Email *"
               value={formData.email}
               onChange={handleInputChange}
               disabled={loading || !!provider}
@@ -503,12 +559,12 @@ const RegisterPage: NextPageWithLayout = () => {
           {!provider && (
             <>
               <FormGroup>
-                <Label htmlFor="password">密碼</Label>
                 <PasswordWrapper>
                   <PasswordInput
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
+                    placeholder="密碼 *"
                     value={formData.password}
                     onChange={handleInputChange}
                     disabled={loading}
@@ -532,16 +588,15 @@ const RegisterPage: NextPageWithLayout = () => {
               </FormGroup>
 
               <FormGroup>
-                <Label htmlFor="confirmPassword">確認密碼</Label>
                 <PasswordWrapper>
                   <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="確認密碼 *"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     disabled={loading}
-                    placeholder="再輸入一次密碼"
                   />
                   <ToggleButton
                     type="button"
@@ -564,7 +619,6 @@ const RegisterPage: NextPageWithLayout = () => {
           )}
 
           <FormGroup>
-            <Label htmlFor="location">居住地</Label>
             <Select
               id="location"
               name="location"
@@ -572,13 +626,25 @@ const RegisterPage: NextPageWithLayout = () => {
               onChange={handleInputChange}
               disabled={loading}
             >
-              <option value="">請輸入居住地</option>
+              <option value="">居住地</option>
               {LOCATION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </Select>
+            {formData.location === '其他' && (
+              <Input
+                id="customLocation"
+                name="customLocation"
+                type="text"
+                placeholder="請輸入您的居住地"
+                value={formData.customLocation}
+                onChange={handleInputChange}
+                disabled={loading}
+                style={{ marginTop: '8px' }}
+              />
+            )}
           </FormGroup>
 
           <FormGroup>
@@ -595,10 +661,10 @@ const RegisterPage: NextPageWithLayout = () => {
 
           <FormGroup>
             <SectionLabel>感興趣的分類</SectionLabel>
-            <RadioGroup>
+            <CheckboxGroup>
               {INTERESTED_CATEGORIES.map((category) => (
-                <RadioLabel key={category.value}>
-                  <Radio
+                <CheckboxItem key={category.value}>
+                  <HiddenCheckbox
                     type="checkbox"
                     checked={formData.interestedCategories.includes(
                       category.value
@@ -606,14 +672,18 @@ const RegisterPage: NextPageWithLayout = () => {
                     onChange={() => handleCategoryChange(category.value)}
                     disabled={loading}
                   />
+                  <CheckboxIcon
+                    $checked={formData.interestedCategories.includes(
+                      category.value
+                    )}
+                  />
                   {category.label}
-                </RadioLabel>
+                </CheckboxItem>
               ))}
-            </RadioGroup>
+            </CheckboxGroup>
           </FormGroup>
 
           <FormGroup>
-            <SectionLabel>訂閱電子報</SectionLabel>
             <NewsletterOptions
               dailyNewsletter={formData.dailyNewsletter}
               weeklyNewsletter={formData.weeklyNewsletter}
