@@ -2,7 +2,7 @@ import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import SocialLoginButtons from '~/components/auth/social-login-buttons'
@@ -162,10 +162,19 @@ const LoginPage: NextPageWithLayout = () => {
     sendPasswordReset,
     error,
     clearError,
+    needsRegistration,
   } = useAuth()
 
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
+  const [currentProvider, setCurrentProvider] = useState<string | null>(null)
+
+  // Redirect to registration when needsRegistration becomes true
+  useEffect(() => {
+    if (needsRegistration && currentProvider) {
+      router.push(`/auth/register?provider=${currentProvider}`)
+    }
+  }, [needsRegistration, currentProvider, router])
 
   const handleSocialLogin = async (
     loginFn: () => Promise<boolean>,
@@ -173,16 +182,16 @@ const LoginPage: NextPageWithLayout = () => {
   ) => {
     setLoading(true)
     clearError()
+    setCurrentProvider(provider)
 
     try {
       const success = await loginFn()
       if (success) {
         // Login successful, redirect to success page
         router.push('/auth/login-result?success=true')
-      } else {
-        // User needs to complete registration
-        router.push(`/auth/register?provider=${provider}`)
       }
+      // If not success and needsRegistration is true, useEffect will handle redirect
+      // If error occurred (e.g., user closed popup), error will be shown on page
     } catch {
       // Error is handled in context
     } finally {
