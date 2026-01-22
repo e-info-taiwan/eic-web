@@ -125,59 +125,97 @@ const PageTitle = styled.h1`
 
 const FormSection = styled.div`
   margin-bottom: 32px;
+  max-width: 344px;
 `
 
-const SectionTitle = styled.h2`
+const ToggleGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+`
+
+const ToggleRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+`
+
+const ToggleLabel = styled.span`
   font-size: 16px;
   font-weight: 700;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  margin: 0 0 16px;
-  text-align: left;
+  color: #000;
 `
 
-const RadioGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`
-
-const RadioLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.primary[40]};
-  }
-`
-
-const RadioInput = styled.input`
-  width: 20px;
-  height: 20px;
-  accent-color: ${({ theme }) => theme.colors.primary[40]};
-  cursor: pointer;
+const ToggleSwitch = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
   flex-shrink: 0;
 `
 
+const ToggleInput = styled.input`
+  opacity: 0;
+  width: 0;
+  height: 0;
+
+  &:checked + span {
+    background-color: ${({ theme }) => theme.colors.primary[40]};
+    border-color: ${({ theme }) => theme.colors.primary[40]};
+  }
+
+  &:checked + span:before {
+    transform: translateX(22px);
+    background-color: white;
+  }
+
+  &:disabled + span {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`
+
+const ToggleSlider = styled.span`
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  border: 2px solid ${({ theme }) => theme.colors.primary[40]};
+  transition: 0.3s;
+  border-radius: 26px;
+
+  &:before {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: ${({ theme }) => theme.colors.primary[40]};
+    transition: 0.3s;
+    border-radius: 50%;
+  }
+`
+
 const SaveButton = styled.button`
-  padding: 10px 24px;
+  padding: 6px 10px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.5;
-  color: white;
-  background-color: ${({ theme }) => theme.colors.grayscale[60]};
+  color: ${({ theme }) => theme.colors.grayscale[100]};
+  background-color: ${({ theme }) => theme.colors.grayscale[80]};
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.grayscale[40]};
+    background-color: ${({ theme }) => theme.colors.grayscale[60]};
   }
 
   &:disabled {
@@ -233,45 +271,134 @@ const sidebarItems = [
   { label: '通知', href: '/member/notifications' },
 ]
 
-// Newsletter subscription options matching CMS schema
-type NewsletterSubscription = 'none' | 'standard' | 'beautified'
-type NewsletterFrequency = 'weekday' | 'saturday' | 'both'
+// Newsletter toggle options
+type NewsletterToggles = {
+  dailyStandard: boolean
+  dailyBeautified: boolean
+  weeklyStandard: boolean
+  weeklyBeautified: boolean
+}
 
-const subscriptionOptions: { value: NewsletterSubscription; label: string }[] =
-  [
-    { value: 'none', label: '未訂閱' },
-    { value: 'standard', label: '一般版' },
-    { value: 'beautified', label: '美化版' },
-  ]
+const defaultToggles: NewsletterToggles = {
+  dailyStandard: false,
+  dailyBeautified: false,
+  weeklyStandard: false,
+  weeklyBeautified: false,
+}
 
-const frequencyOptions: { value: NewsletterFrequency; label: string }[] = [
-  { value: 'weekday', label: '每個工作日' },
-  { value: 'saturday', label: '每週六' },
-  { value: 'both', label: '兩者都有' },
+const newsletterOptions = [
+  {
+    key: 'dailyStandard' as const,
+    label: '《環境資訊電子報》每日報（一般版）',
+  },
+  {
+    key: 'dailyBeautified' as const,
+    label: '《環境資訊電子報》每日報（美化版）',
+  },
+  {
+    key: 'weeklyStandard' as const,
+    label: '《環境資訊電子報一週回顧》（一般版）',
+  },
+  {
+    key: 'weeklyBeautified' as const,
+    label: '《環境資訊電子報一週回顧》（美化版）',
+  },
 ]
+
+/**
+ * TODO: 這是臨時的前端轉換 workaround
+ *
+ * 目前後端 Member schema 只有兩個欄位：
+ * - newsletterSubscription: 'none' | 'standard' | 'beautified'
+ * - newsletterFrequency: 'weekday' | 'saturday' | 'both'
+ *
+ * 但 UI 需要 4 個獨立的 toggle，所以用前端轉換來對應。
+ *
+ * 限制：無法同時訂閱「每日報一般版」和「一週回顧美化版」這種組合，
+ * 因為只有一個 subscription 欄位。美化版會覆蓋一般版。
+ *
+ * 理想解法：請後端新增 4 個 boolean 欄位：
+ * - dailyStandard
+ * - dailyBeautified
+ * - weeklyStandard
+ * - weeklyBeautified
+ */
+
+// Convert from backend schema (subscription + frequency) to toggles
+const convertToToggles = (
+  subscription: string | null,
+  frequency: string | null
+): NewsletterToggles => {
+  const isStandard = subscription === 'standard'
+  const isBeautified = subscription === 'beautified'
+  const isWeekday = frequency === 'weekday' || frequency === 'both'
+  const isSaturday = frequency === 'saturday' || frequency === 'both'
+
+  return {
+    dailyStandard: isStandard && isWeekday,
+    dailyBeautified: isBeautified && isWeekday,
+    weeklyStandard: isStandard && isSaturday,
+    weeklyBeautified: isBeautified && isSaturday,
+  }
+}
+
+// Convert from toggles to backend schema
+const convertFromToggles = (
+  toggles: NewsletterToggles
+): { newsletterSubscription: string; newsletterFrequency: string } => {
+  const hasDaily = toggles.dailyStandard || toggles.dailyBeautified
+  const hasWeekly = toggles.weeklyStandard || toggles.weeklyBeautified
+  const hasStandard = toggles.dailyStandard || toggles.weeklyStandard
+  const hasBeautified = toggles.dailyBeautified || toggles.weeklyBeautified
+
+  // Determine subscription type (beautified takes priority)
+  let subscription = 'none'
+  if (hasBeautified) {
+    subscription = 'beautified'
+  } else if (hasStandard) {
+    subscription = 'standard'
+  }
+
+  // Determine frequency
+  let frequency = 'weekday'
+  if (hasDaily && hasWeekly) {
+    frequency = 'both'
+  } else if (hasWeekly) {
+    frequency = 'saturday'
+  } else if (hasDaily) {
+    frequency = 'weekday'
+  }
+
+  return {
+    newsletterSubscription: subscription,
+    newsletterFrequency: frequency,
+  }
+}
 
 const MemberNewsletterPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { firebaseUser, member, loading, refreshMember } = useAuth()
 
-  const [subscription, setSubscription] =
-    useState<NewsletterSubscription>('none')
-  const [frequency, setFrequency] = useState<NewsletterFrequency>('weekday')
+  const [toggles, setToggles] = useState<NewsletterToggles>(defaultToggles)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize from member profile
+  // Initialize from member profile (convert from backend schema)
   useEffect(() => {
     if (member) {
-      setSubscription(
-        (member.newsletterSubscription as NewsletterSubscription) || 'none'
-      )
-      setFrequency(
-        (member.newsletterFrequency as NewsletterFrequency) || 'weekday'
+      setToggles(
+        convertToToggles(
+          member.newsletterSubscription,
+          member.newsletterFrequency
+        )
       )
     }
   }, [member])
+
+  const handleToggle = (key: keyof NewsletterToggles) => {
+    setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -288,10 +415,9 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
     setSuccess(false)
 
     try {
-      await updateMemberById(member.id, {
-        newsletterSubscription: subscription,
-        newsletterFrequency: frequency,
-      })
+      // Convert toggles back to backend schema
+      const backendData = convertFromToggles(toggles)
+      await updateMemberById(member.id, backendData)
       await refreshMember()
       setSuccess(true)
     } catch {
@@ -352,45 +478,22 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <FormSection>
-            <SectionTitle>訂閱版本</SectionTitle>
-            <RadioGroup>
-              {subscriptionOptions.map((option) => (
-                <RadioLabel key={option.value}>
-                  <RadioInput
-                    type="radio"
-                    name="subscription"
-                    value={option.value}
-                    checked={subscription === option.value}
-                    onChange={(e) =>
-                      setSubscription(e.target.value as NewsletterSubscription)
-                    }
-                    disabled={saving}
-                  />
-                  {option.label}
-                </RadioLabel>
+            <ToggleGroup>
+              {newsletterOptions.map((option) => (
+                <ToggleRow key={option.key}>
+                  <ToggleLabel>{option.label}</ToggleLabel>
+                  <ToggleSwitch>
+                    <ToggleInput
+                      type="checkbox"
+                      checked={toggles[option.key]}
+                      onChange={() => handleToggle(option.key)}
+                      disabled={saving}
+                    />
+                    <ToggleSlider />
+                  </ToggleSwitch>
+                </ToggleRow>
               ))}
-            </RadioGroup>
-          </FormSection>
-
-          <FormSection>
-            <SectionTitle>訂閱頻率</SectionTitle>
-            <RadioGroup>
-              {frequencyOptions.map((option) => (
-                <RadioLabel key={option.value}>
-                  <RadioInput
-                    type="radio"
-                    name="frequency"
-                    value={option.value}
-                    checked={frequency === option.value}
-                    onChange={(e) =>
-                      setFrequency(e.target.value as NewsletterFrequency)
-                    }
-                    disabled={saving || subscription === 'none'}
-                  />
-                  {option.label}
-                </RadioLabel>
-              ))}
-            </RadioGroup>
+            </ToggleGroup>
           </FormSection>
 
           <SaveButton onClick={handleSave} disabled={saving}>

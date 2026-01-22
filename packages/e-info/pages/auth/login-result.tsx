@@ -13,9 +13,10 @@ const PageWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.grayscale[95]};
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 20px;
+  padding-top: 120px;
 `
 
 const LoginResultPage: NextPageWithLayout = () => {
