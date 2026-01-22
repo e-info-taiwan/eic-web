@@ -88,7 +88,7 @@ const LogoRightWrapper = styled.div`
 const RightSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5px;
 
   ${({ theme }) => theme.breakpoint.md} {
     gap: 0.75rem;
@@ -136,40 +136,69 @@ const LoginButton = styled.button`
 `
 
 const LogoutButton = styled.button`
-  background-color: ${({ theme }) => theme.colors.primary[40]};
-  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
-  color: white;
-  padding: 5.5px 12px;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  border: 1px solid ${({ theme }) => theme.colors.primary[20]};
+  color: ${({ theme }) => theme.colors.primary[95]};
+  padding: 2.5px 4px;
   border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primary[20]};
-    border-color: ${({ theme }) => theme.colors.primary[20]};
+    background-color: ${({ theme }) => theme.colors.primary[0]};
+    border-color: ${({ theme }) => theme.colors.primary[0]};
+  }
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 1.5px 12px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    padding: 5.5px 12px;
   }
 `
 
 const UserInfo = styled(Link)`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0;
   color: ${({ theme }) => theme.colors.primary[20]};
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.5;
   text-decoration: none;
   cursor: pointer;
 
-  &:hover {
-    color: ${({ theme }) => theme.colors.primary[40]};
-  }
-
   svg {
     width: 28px;
-    height: 32px;
+    height: 23px;
+
+    > path {
+      fill: ${({ theme }) => theme.colors.primary[20]};
+    }
+  }
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[0]};
+
+    svg > path {
+      fill: ${({ theme }) => theme.colors.primary[0]};
+    }
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 500;
+
+    svg {
+      height: 32px;
+    }
   }
 `
 
