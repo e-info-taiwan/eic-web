@@ -57,6 +57,17 @@ const CHECK_MEMBER_EXISTS = gql`
   }
 `
 
+// Query to get all sections for notification settings
+const GET_ALL_SECTIONS = gql`
+  query GetAllSections {
+    sections(orderBy: { sortOrder: asc }) {
+      id
+      slug
+      name
+    }
+  }
+`
+
 // Mutation to create a new member
 const CREATE_MEMBER = gql`
   ${MEMBER_FIELDS}
@@ -542,4 +553,29 @@ export const getMemberFavoritesCount = async (
   }
 
   return result.data?.favoritesCount ?? 0
+}
+
+// Section type for notification settings
+export type NotificationSection = {
+  id: string
+  slug: string
+  name: string
+}
+
+/**
+ * Get all sections for notification settings
+ */
+export const getAllSections = async (): Promise<NotificationSection[]> => {
+  const client = getGqlClient()
+
+  const result = await client.query<{ sections: NotificationSection[] }>({
+    query: GET_ALL_SECTIONS,
+  })
+
+  if (result.error) {
+    console.error('getAllSections error:', result.error)
+    return []
+  }
+
+  return result.data?.sections || []
 }

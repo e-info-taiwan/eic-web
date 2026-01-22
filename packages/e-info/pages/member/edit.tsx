@@ -163,19 +163,18 @@ const AvatarImage = styled(Image)`
 `
 
 const UploadButton = styled.button`
-  padding: 8px 16px;
+  padding: 1.5px 10px;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
-  background-color: ${({ theme }) => theme.colors.grayscale[95]};
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  color: ${({ theme }) => theme.colors.grayscale[100]};
+  background-color: ${({ theme }) => theme.colors.grayscale[40]};
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.grayscale[80]};
+    background-color: ${({ theme }) => theme.colors.grayscale[20]};
   }
 
   &:disabled {
@@ -224,13 +223,14 @@ const Label = styled.label`
 
 const Input = styled.input`
   flex: 1;
-  padding: 10px 14px;
+  padding: 6px 12px;
   font-size: 16px;
+  font-weight: 400;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
-  background-color: white;
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  color: #000;
+  background-color: ${({ theme }) => theme.colors.grayscale[99]};
   border-radius: 4px;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.05) inset;
 
   &:focus {
     outline: none;
@@ -253,8 +253,9 @@ const Input = styled.input`
 
 const StaticValue = styled.span`
   font-size: 16px;
+  font-weight: 400;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
+  color: #000;
 `
 
 const PasswordWrapper = styled.div`
@@ -292,11 +293,11 @@ const ToggleButton = styled.button`
 `
 
 const SubmitButton = styled.button`
-  padding: 10px 24px;
+  padding: 6px 10px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.5;
-  color: white;
+  color: ${({ theme }) => theme.colors.grayscale[100]};
   background-color: ${({ theme }) => theme.colors.primary[40]};
   border: none;
   border-radius: 4px;
@@ -304,12 +305,12 @@ const SubmitButton = styled.button`
   transition: background-color 0.2s ease;
   margin-top: 16px;
 
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary[0]};
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   &:disabled {
-    background-color: ${({ theme }) => theme.colors.grayscale[60]};
+    opacity: 0.6;
     cursor: not-allowed;
   }
 
@@ -695,7 +696,7 @@ const MemberEditPage: NextPageWithLayout = () => {
                 </FormRow>
 
                 <FormRow>
-                  <Label htmlFor="newPassword">新密碼</Label>
+                  <Label htmlFor="newPassword">變更密碼</Label>
                   <PasswordWrapper>
                     <PasswordInput
                       id="newPassword"

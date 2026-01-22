@@ -198,18 +198,18 @@ const InfoValue = styled.dd`
 
 const EditButton = styled(Link)`
   display: inline-block;
-  padding: 10px 24px;
+  padding: 6px 10px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.5;
-  color: white;
-  background-color: ${({ theme }) => theme.colors.grayscale[60]};
+  color: ${({ theme }) => theme.colors.grayscale[100]};
+  background-color: ${({ theme }) => theme.colors.primary[40]};
   border-radius: 4px;
   text-decoration: none;
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.grayscale[40]};
+    background-color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
 

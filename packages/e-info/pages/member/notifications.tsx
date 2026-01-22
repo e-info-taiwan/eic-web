@@ -1,4 +1,4 @@
-import type { GetServerSideProps } from 'next'
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
@@ -7,12 +7,14 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
+import {
+  type NotificationSection,
+  getAllSections,
+  updateMemberById,
+} from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
-
-// Notification category type based on section names
-type NotificationCategory = '台灣新聞' | '生物多樣性' | '編輯直送'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -139,7 +141,7 @@ const Description = styled.p`
 const CategoryList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: 16px 32px;
   margin-bottom: 32px;
 `
 
@@ -164,12 +166,13 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid
+  border: 1px solid
     ${({ theme, $checked }) =>
-      $checked ? theme.colors.primary[40] : theme.colors.grayscale[60]};
+      $checked ? theme.colors.primary[40] : theme.colors.grayscale[80]};
   background-color: ${({ theme, $checked }) =>
     $checked ? theme.colors.primary[40] : 'transparent'};
   transition: all 0.2s ease;
+  flex-shrink: 0;
 
   &::after {
     content: '';
@@ -190,19 +193,19 @@ const CategoryLabel = styled.span`
 `
 
 const SaveButton = styled.button`
-  padding: 10px 24px;
+  padding: 6px 10px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.5;
-  color: white;
-  background-color: ${({ theme }) => theme.colors.grayscale[60]};
+  color: ${({ theme }) => theme.colors.grayscale[100]};
+  background-color: ${({ theme }) => theme.colors.primary[40]};
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.grayscale[40]};
+    background-color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   &:disabled {
@@ -258,32 +261,24 @@ const sidebarItems = [
   { label: '通知', href: '/member/notifications' },
 ]
 
-// 通知分類選項（之後會擴充）
-const notificationCategoryOptions: NotificationCategory[] = [
-  '台灣新聞',
-  '生物多樣性',
-  '編輯直送',
-]
+type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
-const MemberNotificationsPage: NextPageWithLayout = () => {
+const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
+  sections,
+}) => {
   const router = useRouter()
   const { firebaseUser, member, loading, refreshMember } = useAuth()
 
-  const [selectedCategories, setSelectedCategories] = useState<
-    NotificationCategory[]
-  >([])
+  const [selectedSectionIds, setSelectedSectionIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize selected categories from member's interested sections
+  // Initialize selected sections from member's interested sections
   useEffect(() => {
     if (member?.interestedSections) {
-      // Map section names to notification categories
-      const categories = member.interestedSections
-        .map((section) => section.name as NotificationCategory)
-        .filter((name) => notificationCategoryOptions.includes(name))
-      setSelectedCategories(categories)
+      const sectionIds = member.interestedSections.map((section) => section.id)
+      setSelectedSectionIds(sectionIds)
     }
   }, [member])
 
@@ -294,12 +289,12 @@ const MemberNotificationsPage: NextPageWithLayout = () => {
     }
   }, [loading, firebaseUser, router])
 
-  const handleCategoryToggle = (category: NotificationCategory) => {
-    setSelectedCategories((prev) => {
-      if (prev.includes(category)) {
-        return prev.filter((c) => c !== category)
+  const handleSectionToggle = (sectionId: string) => {
+    setSelectedSectionIds((prev) => {
+      if (prev.includes(sectionId)) {
+        return prev.filter((id) => id !== sectionId)
       } else {
-        return [...prev, category]
+        return [...prev, sectionId]
       }
     })
     setSuccess(false)
@@ -314,9 +309,12 @@ const MemberNotificationsPage: NextPageWithLayout = () => {
     setSuccess(false)
 
     try {
-      // Note: Notification categories are tied to interestedSections in the Member schema
-      // For now, we just refresh the member data
-      // TODO: Implement section-based notification preferences when section IDs are available
+      // Update member's interestedSections using set operation
+      await updateMemberById(member.id, {
+        interestedSections: {
+          set: selectedSectionIds.map((id) => ({ id })),
+        },
+      })
       await refreshMember()
       setSuccess(true)
     } catch {
@@ -380,18 +378,18 @@ const MemberNotificationsPage: NextPageWithLayout = () => {
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <CategoryList>
-            {notificationCategoryOptions.map((category) => (
-              <CategoryItem key={category}>
+            {sections.map((section) => (
+              <CategoryItem key={section.id}>
                 <HiddenCheckbox
                   type="checkbox"
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryToggle(category)}
+                  checked={selectedSectionIds.includes(section.id)}
+                  onChange={() => handleSectionToggle(section.id)}
                   disabled={saving}
                 />
                 <CheckboxIcon
-                  $checked={selectedCategories.includes(category)}
+                  $checked={selectedSectionIds.includes(section.id)}
                 />
-                <CategoryLabel>{category}</CategoryLabel>
+                <CategoryLabel>{section.name}</CategoryLabel>
               </CategoryItem>
             ))}
           </CategoryList>
@@ -413,14 +411,21 @@ MemberNotificationsPage.getLayout = function getLayout(page: ReactElement) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps<{
+  headerData: Awaited<ReturnType<typeof fetchHeaderData>>
+  sections: NotificationSection[]
+}> = async ({ res }) => {
   setCacheControl(res)
 
-  const headerData = await fetchHeaderData()
+  const [headerData, sections] = await Promise.all([
+    fetchHeaderData(),
+    getAllSections(),
+  ])
 
   return {
     props: {
       headerData,
+      sections,
     },
   }
 }

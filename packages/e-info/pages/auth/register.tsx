@@ -176,9 +176,9 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid
+  border: 1px solid
     ${({ theme, $checked }) =>
-      $checked ? theme.colors.primary[40] : theme.colors.grayscale[60]};
+      $checked ? theme.colors.primary[40] : theme.colors.grayscale[80]};
   background-color: ${({ theme, $checked }) =>
     $checked ? theme.colors.primary[40] : 'transparent'};
   transition: all 0.2s ease;

@@ -5,13 +5,15 @@ import { SITE_TITLE } from '~/constants/constant'
 import CustomHead from './custom-head'
 import Header from './header/header'
 
-const Main = styled.main`
+const LayoutWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  // padding: 64px 0 0;
+`
+
+const Main = styled.main`
+  flex: 1;
   overflow: hidden;
-  ${({ theme }) => theme.breakpoint.sm} {
-    // padding: 80px 0 0;
-  }
 `
 
 type LayoutProps = {
@@ -32,7 +34,7 @@ export default function LayoutGeneral({
   const pageTitle = title ? `${title} - ${SITE_TITLE}` : title
 
   return (
-    <>
+    <LayoutWrapper>
       <CustomHead
         title={pageTitle}
         description={description}
@@ -40,6 +42,6 @@ export default function LayoutGeneral({
       ></CustomHead>
       <Header />
       <Main>{children}</Main>
-    </>
+    </LayoutWrapper>
   )
 }
