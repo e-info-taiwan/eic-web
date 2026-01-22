@@ -5,11 +5,13 @@ import type {
   HeaderNavTag,
   HeaderNavTopic,
   NewsBarPick,
+  SiteConfig,
 } from '~/graphql/query/section'
 import {
   featuredTagsForHeader,
   homepagePicksForNewsBar,
   sectionsForHeader,
+  siteConfigsForFooter,
   topicsForHeader,
 } from '~/graphql/query/section'
 
@@ -37,27 +39,36 @@ export async function fetchHeaderData(): Promise<HeaderContextData> {
 
   try {
     // Fetch all data in parallel for better performance
-    const [sectionsResult, tagsResult, topicsResult, newsBarResult] =
-      await Promise.all([
-        client.query<{ sections: HeaderNavSection[] }>({
-          query: sectionsForHeader,
-        }),
-        client.query<{ tags: HeaderNavTag[] }>({
-          query: featuredTagsForHeader,
-        }),
-        client.query<{ topics: HeaderNavTopic[] }>({
-          query: topicsForHeader,
-        }),
-        client.query<{ homepagePicks: NewsBarPick[] }>({
-          query: homepagePicksForNewsBar,
-        }),
-      ])
+    const [
+      sectionsResult,
+      tagsResult,
+      topicsResult,
+      newsBarResult,
+      configsResult,
+    ] = await Promise.all([
+      client.query<{ sections: HeaderNavSection[] }>({
+        query: sectionsForHeader,
+      }),
+      client.query<{ tags: HeaderNavTag[] }>({
+        query: featuredTagsForHeader,
+      }),
+      client.query<{ topics: HeaderNavTopic[] }>({
+        query: topicsForHeader,
+      }),
+      client.query<{ homepagePicks: NewsBarPick[] }>({
+        query: homepagePicksForNewsBar,
+      }),
+      client.query<{ configs: SiteConfig[] }>({
+        query: siteConfigsForFooter,
+      }),
+    ])
 
     const data: HeaderContextData = {
       sections: sectionsResult.data?.sections || [],
       featuredTags: tagsResult.data?.tags || [],
       topics: topicsResult.data?.topics || [],
       newsBarPicks: newsBarResult.data?.homepagePicks || [],
+      siteConfigs: configsResult.data?.configs || [],
     }
 
     // Update cache
@@ -80,6 +91,7 @@ export async function fetchHeaderData(): Promise<HeaderContextData> {
       featuredTags: [],
       topics: [],
       newsBarPicks: [],
+      siteConfigs: [],
     }
   }
 }

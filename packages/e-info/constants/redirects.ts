@@ -29,6 +29,11 @@ export type PageRedirect = {
  */
 export const pageRedirects: PageRedirect[] = [
   {
+    path: '/about',
+    postId: '2',
+    description: '關於我們',
+  },
+  {
     path: '/faq',
     postId: '238663',
     description: '常見問題',
@@ -47,6 +52,26 @@ export const pageRedirects: PageRedirect[] = [
     path: '/terms',
     postId: '238662',
     description: '網站授權條款',
+  },
+  {
+    path: '/editorial-guidelines',
+    postId: '210972',
+    description: '編輯室自律公約',
+  },
+  {
+    path: '/media-partners',
+    postId: '228474',
+    description: '合作媒體',
+  },
+  {
+    path: '/sitemap',
+    postId: '55973',
+    description: '網站導覽',
+  },
+  {
+    path: '/submission-guidelines',
+    postId: '210973',
+    description: '投稿須知',
   },
 ]
 

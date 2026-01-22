@@ -5,6 +5,7 @@ import type {
   HeaderNavTag,
   HeaderNavTopic,
   NewsBarPick,
+  SiteConfig,
 } from '~/graphql/query/section'
 
 // Header data type shared between server and client
@@ -13,6 +14,7 @@ export type HeaderContextData = {
   featuredTags: HeaderNavTag[]
   topics: HeaderNavTopic[]
   newsBarPicks: NewsBarPick[]
+  siteConfigs: SiteConfig[]
 }
 
 // Default empty data
@@ -21,6 +23,7 @@ const defaultHeaderData: HeaderContextData = {
   featuredTags: [],
   topics: [],
   newsBarPicks: [],
+  siteConfigs: [],
 }
 
 // Create context with default empty values

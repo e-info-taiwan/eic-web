@@ -960,3 +960,23 @@ export const topicsForHeader = gql`
     }
   }
 `
+
+// Types for site config (e.g., donation permit number)
+export type SiteConfig = {
+  id: string
+  name: string
+  content: string | null
+  state: string | null
+}
+
+// Query active site configs for footer
+export const siteConfigsForFooter = gql`
+  query {
+    configs(where: { state: { equals: "active" } }) {
+      id
+      name
+      content
+      state
+    }
+  }
+`

@@ -705,6 +705,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           featuredTags: [],
           topics: [],
           newsBarPicks: [],
+          siteConfigs: [],
         },
         initialYear,
         initialMonth,

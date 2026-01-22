@@ -933,7 +933,14 @@ const Header = () => {
                   >
                     訂閱電子報
                   </ActionButton>
-                  <ActionButton>捐款支持</ActionButton>
+                  <ActionButton
+                    as="a"
+                    href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    捐款支持
+                  </ActionButton>
                 </TabletActionButtons>
               </RightSection>
             </LogoRightWrapper>
@@ -980,7 +987,14 @@ const Header = () => {
               >
                 訂閱電子報
               </ActionButton>
-              <ActionButton>捐款支持</ActionButton>
+              <ActionButton
+                as="a"
+                href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                捐款支持
+              </ActionButton>
             </ActionButtons>
           </DesktopNavWrapper>
         </Container>
@@ -1056,7 +1070,14 @@ const Header = () => {
         {!currentSubMenu ? (
           <MobileMenuContent>
             <MobileMenuSection>
-              <ActionButton>捐款支持</ActionButton>
+              <ActionButton
+                as="a"
+                href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                捐款支持
+              </ActionButton>
               <ActionButton
                 as="button"
                 onClick={() => {
