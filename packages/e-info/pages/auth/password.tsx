@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
@@ -146,11 +146,28 @@ const EyeOffIcon = () => (
 const PasswordPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { email } = router.query
-  const { signInWithEmail, error, clearError } = useAuth()
+  const { signInWithEmail, error, clearError, needsRegistration, member } =
+    useAuth()
 
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loginAttempted, setLoginAttempted] = useState(false)
+
+  // Handle redirect after login based on CMS member status
+  useEffect(() => {
+    if (loginAttempted) {
+      if (needsRegistration) {
+        // Firebase user exists but CMS member doesn't - redirect to registration
+        router.push(
+          `/auth/register?email=${encodeURIComponent(email as string)}`
+        )
+      } else if (member) {
+        // Both Firebase user and CMS member exist - login success
+        router.push('/auth/login-result?success=true')
+      }
+    }
+  }, [loginAttempted, needsRegistration, member, email, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -162,7 +179,9 @@ const PasswordPage: NextPageWithLayout = () => {
     try {
       const success = await signInWithEmail(email as string, password)
       if (success) {
-        router.push('/auth/login-result?success=true')
+        // Firebase login succeeded - let useEffect handle redirect
+        // based on whether CMS member exists
+        setLoginAttempted(true)
       } else {
         router.push('/auth/login-result?success=false')
       }
