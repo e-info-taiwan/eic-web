@@ -20,8 +20,10 @@ const PageWrapper = styled.div`
 
 const RegisterResultPage: NextPageWithLayout = () => {
   const router = useRouter()
-  const { success } = router.query
+  const { success, error } = router.query
   const isSuccess = success === 'true'
+  const errorMessage =
+    typeof error === 'string' ? decodeURIComponent(error) : undefined
 
   const handleRetry = () => {
     router.push('/auth/register')
@@ -33,6 +35,7 @@ const RegisterResultPage: NextPageWithLayout = () => {
         type="register"
         success={isSuccess}
         onRetry={handleRetry}
+        errorMessage={errorMessage}
       />
     </PageWrapper>
   )

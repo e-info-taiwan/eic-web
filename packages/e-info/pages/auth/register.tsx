@@ -505,11 +505,16 @@ const RegisterPage: NextPageWithLayout = () => {
           await refreshMember()
           router.push('/auth/register-result?success=true')
         } else {
-          router.push('/auth/register-result?success=false')
+          // signUpWithEmail failed, error is set in auth context
+          const errorMsg = encodeURIComponent(error || '註冊失敗')
+          router.push(`/auth/register-result?success=false&error=${errorMsg}`)
         }
       }
-    } catch {
-      router.push('/auth/register-result?success=false')
+    } catch (err) {
+      const errorMsg = encodeURIComponent(
+        err instanceof Error ? err.message : '註冊時發生錯誤'
+      )
+      router.push(`/auth/register-result?success=false&error=${errorMsg}`)
     } finally {
       setLoading(false)
     }

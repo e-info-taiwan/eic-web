@@ -59,13 +59,27 @@ const StyledLink = styled(Link)`
   }
 `
 
+const ErrorMessage = styled.p`
+  font-size: 14px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  margin: 0 0 16px;
+  word-break: break-word;
+`
+
 type AuthResultCardProps = {
   type: 'login' | 'register'
   success: boolean
   onRetry?: () => void
+  errorMessage?: string
 }
 
-const AuthResultCard = ({ type, success, onRetry }: AuthResultCardProps) => {
+const AuthResultCard = ({
+  type,
+  success,
+  onRetry,
+  errorMessage,
+}: AuthResultCardProps) => {
   if (type === 'login') {
     if (success) {
       return (
@@ -96,6 +110,7 @@ const AuthResultCard = ({ type, success, onRetry }: AuthResultCardProps) => {
     return (
       <CardWrapper>
         <Title $success={false}>註冊失敗！</Title>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ActionButton onClick={onRetry}>重新註冊</ActionButton>
       </CardWrapper>
     )
