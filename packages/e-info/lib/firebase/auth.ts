@@ -19,7 +19,10 @@ import { auth } from './config'
 
 // Providers
 const googleProvider = new GoogleAuthProvider()
+
 const facebookProvider = new FacebookAuthProvider()
+facebookProvider.addScope('email')
+
 const appleProvider = new OAuthProvider('apple.com')
 
 // Sign in with Google (popup method)

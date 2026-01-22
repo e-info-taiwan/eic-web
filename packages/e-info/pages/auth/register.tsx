@@ -546,7 +546,7 @@ const RegisterPage: NextPageWithLayout = () => {
               placeholder="Email *"
               value={formData.email}
               onChange={handleInputChange}
-              disabled={loading || !!provider}
+              disabled={loading || (!!provider && !!firebaseUser?.email)}
             />
             <ValidationIndicator
               isValid={validation.email}
