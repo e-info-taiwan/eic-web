@@ -22,6 +22,7 @@ export function getHref({
 }: Partial<Pick<GenericPost, 'style' | 'id'> & { slug: string }>): string {
   switch (style) {
     case ValidPostStyle.DEFAULT:
+    case ValidPostStyle.EDITOR:
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
     case ValidPostStyle.FRAME:
@@ -361,9 +362,7 @@ export const getBlocksCount = (content: RawDraftContentState): number => {
  * @param maxCount - 最大文章數量（可選，預設不限制）
  * @returns 合併後的文章陣列
  */
-export function mergePostsWithFeatured<
-  T extends { id: string }
->(
+export function mergePostsWithFeatured<T extends { id: string }>(
   featuredPosts: T[] = [],
   regularPosts: T[] = [],
   maxCount?: number
