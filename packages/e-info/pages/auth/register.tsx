@@ -1,4 +1,4 @@
-import type { GetServerSideProps } from 'next'
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -7,16 +7,15 @@ import styled from 'styled-components'
 import NewsletterOptions from '~/components/auth/newsletter-options'
 import ValidationIndicator from '~/components/auth/validation-indicator'
 import LayoutGeneral from '~/components/layout/layout-general'
-import {
-  INTERESTED_CATEGORIES,
-  LOCATION_OPTIONS,
-  VALIDATION_RULES,
-} from '~/constants/auth'
+import { LOCATION_OPTIONS, VALIDATION_RULES } from '~/constants/auth'
 import { useAuth } from '~/hooks/useAuth'
-import { createMember } from '~/lib/graphql/member'
+import {
+  type NotificationSection,
+  createMember,
+  getAllSections,
+} from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type {
-  InterestedCategory,
   RegisterFormData,
   RegisterFormErrors,
   RegisterFormValidation,
@@ -290,7 +289,9 @@ const EyeOffIcon = () => (
   </svg>
 )
 
-const RegisterPage: NextPageWithLayout = () => {
+type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>
+
+const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
   const router = useRouter()
   const { email: queryEmail, provider } = router.query
   const { firebaseUser, signUpWithEmail, error, clearError, refreshMember } =
@@ -304,7 +305,7 @@ const RegisterPage: NextPageWithLayout = () => {
     location: '',
     customLocation: '',
     birthDate: '',
-    interestedCategories: [],
+    interestedSectionIds: [],
     dailyNewsletter: false,
     weeklyNewsletter: false,
     newsletterFormat: 'general',
@@ -408,13 +409,13 @@ const RegisterPage: NextPageWithLayout = () => {
     }
   }
 
-  // Handle category selection
-  const handleCategoryChange = (category: InterestedCategory) => {
+  // Handle section selection
+  const handleSectionToggle = (sectionId: string) => {
     setFormData((prev) => ({
       ...prev,
-      interestedCategories: prev.interestedCategories.includes(category)
-        ? prev.interestedCategories.filter((c) => c !== category)
-        : [...prev.interestedCategories, category],
+      interestedSectionIds: prev.interestedSectionIds.includes(sectionId)
+        ? prev.interestedSectionIds.filter((id) => id !== sectionId)
+        : [...prev.interestedSectionIds, sectionId],
     }))
   }
 
@@ -469,9 +470,36 @@ const RegisterPage: NextPageWithLayout = () => {
         ? formData.customLocation || undefined
         : formData.location || undefined
 
-    // Note: newsletterSubscription and newsletterFrequency are Keystone select fields
-    // with specific allowed values. For now, we skip these fields during registration
-    // and let users set them in the newsletter settings page.
+    // Connect interested sections if any selected
+    const interestedSections =
+      formData.interestedSectionIds.length > 0
+        ? { connect: formData.interestedSectionIds.map((id) => ({ id })) }
+        : undefined
+
+    // Convert newsletter options to backend schema
+    // Backend uses: newsletterSubscription ('none'|'standard'|'beautified')
+    //               newsletterFrequency ('weekday'|'saturday'|'both')
+    const hasDaily = formData.dailyNewsletter
+    const hasWeekly = formData.weeklyNewsletter
+    const isBeautified = formData.newsletterFormat === 'beautified'
+
+    let newsletterSubscription: string | undefined = undefined
+    let newsletterFrequency: string | undefined = undefined
+
+    if (hasDaily || hasWeekly) {
+      // Determine subscription type (general maps to standard)
+      newsletterSubscription = isBeautified ? 'beautified' : 'standard'
+
+      // Determine frequency
+      if (hasDaily && hasWeekly) {
+        newsletterFrequency = 'both'
+      } else if (hasWeekly) {
+        newsletterFrequency = 'saturday'
+      } else {
+        newsletterFrequency = 'weekday'
+      }
+    }
+
     await createMember({
       firebaseId: uid,
       email: formData.email,
@@ -479,6 +507,9 @@ const RegisterPage: NextPageWithLayout = () => {
       lastName,
       city,
       birthDate: birthDateISO,
+      interestedSections,
+      newsletterSubscription,
+      newsletterFrequency,
     })
   }
 
@@ -667,22 +698,20 @@ const RegisterPage: NextPageWithLayout = () => {
           <FormGroup>
             <SectionLabel>感興趣的分類</SectionLabel>
             <CheckboxGroup>
-              {INTERESTED_CATEGORIES.map((category) => (
-                <CheckboxItem key={category.value}>
+              {sections.map((section) => (
+                <CheckboxItem key={section.id}>
                   <HiddenCheckbox
                     type="checkbox"
-                    checked={formData.interestedCategories.includes(
-                      category.value
-                    )}
-                    onChange={() => handleCategoryChange(category.value)}
+                    checked={formData.interestedSectionIds.includes(section.id)}
+                    onChange={() => handleSectionToggle(section.id)}
                     disabled={loading}
                   />
                   <CheckboxIcon
-                    $checked={formData.interestedCategories.includes(
-                      category.value
+                    $checked={formData.interestedSectionIds.includes(
+                      section.id
                     )}
                   />
-                  {category.label}
+                  {section.name}
                 </CheckboxItem>
               ))}
             </CheckboxGroup>
@@ -736,14 +765,21 @@ RegisterPage.getLayout = function getLayout(page: ReactElement) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps<{
+  headerData: Awaited<ReturnType<typeof fetchHeaderData>>
+  sections: NotificationSection[]
+}> = async ({ res }) => {
   setCacheControl(res)
 
-  const headerData = await fetchHeaderData()
+  const [headerData, sections] = await Promise.all([
+    fetchHeaderData(),
+    getAllSections(),
+  ])
 
   return {
     props: {
       headerData,
+      sections,
     },
   }
 }

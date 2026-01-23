@@ -80,7 +80,7 @@ export type RegisterFormData = {
   location: LocationOption | ''
   customLocation: string // 當選擇「其他」時的自訂地區
   birthDate: string
-  interestedCategories: InterestedCategory[]
+  interestedSectionIds: string[] // 感興趣的分類（Section IDs）
   dailyNewsletter: boolean
   weeklyNewsletter: boolean
   newsletterFormat: 'general' | 'beautified'
