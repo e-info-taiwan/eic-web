@@ -251,13 +251,11 @@ const Footer = () => {
       { label: '關於我們', href: '/about' },
       { label: '合作媒體', href: '/media-partners' },
       { label: '編輯室自律公約', href: '/editorial-guidelines' },
-      { label: '活動', href: '/events' },
     ],
     [
       { label: '網站授權條款', href: '/copyright' },
       { label: '常見問題', href: '/faq' },
       { label: '獲獎記錄', href: '/awards' },
-      { label: '綠色職缺', href: '/jobs' },
     ],
     [
       { label: '投稿須知', href: '/submission-guidelines' },
