@@ -536,9 +536,10 @@ const MemberEditPage: NextPageWithLayout = () => {
     const file = e.target.files?.[0]
     if (!file || !firebaseUser) return
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('請選擇圖片檔案')
+    // Validate file type - only allow jpg, png, gif, webp
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      setError('只支援 JPG、PNG、GIF、WebP 格式的圖片')
       return
     }
 
@@ -650,7 +651,7 @@ const MemberEditPage: NextPageWithLayout = () => {
             <HiddenFileInput
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/gif,image/webp"
               onChange={handleFileChange}
             />
           </AvatarSection>

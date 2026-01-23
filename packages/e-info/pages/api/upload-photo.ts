@@ -60,6 +60,15 @@ export default async function handler(
       return res.status(400).json({ success: false, error: 'No file uploaded' })
     }
 
+    // Validate file type - only allow jpg, png, gif, webp
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!file.mimetype || !allowedTypes.includes(file.mimetype)) {
+      return res.status(400).json({
+        success: false,
+        error: '只支援 JPG、PNG、GIF、WebP 格式的圖片',
+      })
+    }
+
     const nameField = fields.name
     const name = Array.isArray(nameField) ? nameField[0] : nameField
     if (!name || typeof name !== 'string') {
