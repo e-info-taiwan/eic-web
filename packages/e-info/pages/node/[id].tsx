@@ -1,6 +1,6 @@
 import errors from '@twreporter/errors'
 import type { RawDraftContentBlock } from 'draft-js'
-import type { GetServerSideProps } from 'next'
+import type { GetStaticPaths, GetStaticProps } from 'next'
 
 import { getGqlClient } from '~/apollo-client'
 import CustomHead from '~/components/layout/custom-head'
@@ -16,7 +16,6 @@ import { post as postQuery } from '~/graphql/query/post'
 import { useReadingTracker } from '~/hooks/useReadingTracker'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { ResizedImages, ValidPostStyle } from '~/types/common'
-import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
 type PageProps = {
@@ -111,12 +110,16 @@ const Post: NextPageWithLayout<PageProps> = ({ postData }) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async ({
-  params,
-  res,
-}) => {
-  setCacheControl(res)
+export const getStaticPaths: GetStaticPaths = async () => {
+  // 使用 fallback: 'blocking' 按需生成頁面
+  // 不預先生成任何頁面，所有頁面都在首次訪問時生成
+  return {
+    paths: [],
+    fallback: 'blocking',
+  }
+}
 
+export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   const client = getGqlClient()
   const postId = params?.id
 
@@ -175,6 +178,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         headerData,
         postData: data.posts[0],
       },
+      // ISR: 每 5 分鐘重新驗證一次
+      // 可根據需求調整：60（1分鐘）、300（5分鐘）、3600（1小時）
+      revalidate: 300,
     }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(

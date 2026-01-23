@@ -107,7 +107,7 @@ export type PostDetail = Override<
     category: Category | null
     topic: Topic | null
     locations: Location[]
-    relatedPosts: Post[]
+    relatedPosts: PostCard[]
     tags: Tag[]
     brief: any // JSON type for draft-js content
     briefApiData: any // JSON type for API format
@@ -262,7 +262,7 @@ const post = gql`
          },
         orderBy: { publishTime: desc }
       ) {
-        ...PostFields
+        ...PostFieldsCard
       }
     }
   }
@@ -270,6 +270,7 @@ const post = gql`
   ${resizeWebpImagesFragment}
   ${authorFragment}
   ${postFragment}
+  ${postCardFragment}
 `
 
 const latestPosts = gql`

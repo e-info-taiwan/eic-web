@@ -155,7 +155,7 @@ export default function News({ postData }: PostProps): JSX.Element {
                 imagesWebP={postData?.heroImage?.resizedWebp}
                 defaultImage={defaultImage}
                 alt={postData?.title}
-                priority={false}
+                priority={true}
               />
               <figcaption>{postData?.heroCaption}</figcaption>
             </HeroImage>
