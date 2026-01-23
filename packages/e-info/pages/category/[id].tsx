@@ -1,4 +1,5 @@
 // Category listing page - shows posts from specific category
+import SharedImage from '@readr-media/react-image'
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
@@ -273,6 +274,149 @@ const EmptyMessage = styled.div`
   font-size: 16px;
 `
 
+// ========== Column Style Header Styled Components ==========
+
+const ColumnPageWrapper = styled.div`
+  width: 100%;
+`
+
+const ColumnHeroSection = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 1200 / 420;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
+
+const ColumnHeroImageWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  }
+`
+
+const ColumnHeroTitleWrapper = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+`
+
+const ColumnHeroAccentBar = styled.div`
+  background-color: ${({ theme }) => theme.colors.primary[80]};
+  width: 20px;
+  height: 32px;
+  margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
+`
+
+const ColumnHeroTitle = styled.h1`
+  font-size: 28px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.primary[80]};
+  margin: 0;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 32px;
+  }
+`
+
+const ColumnCategoryTagsWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(
+    180deg,
+    rgba(207, 237, 209, 0.6) 61.06%,
+    rgba(139, 200, 144, 0.6) 100%
+  );
+  padding: 16px 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 20px 40px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 24px 60px;
+  }
+`
+
+const ColumnCategoryTagsContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  justify-content: center;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    gap: 12px 16px;
+  }
+`
+
+const ColumnCategoryTag = styled(Link)<{ $isActive?: boolean }>`
+  display: inline-block;
+  padding: 8px;
+  border: 1px solid
+    ${({ $isActive, theme }) =>
+      $isActive ? theme.colors.primary[20] : theme.colors.grayscale[40]};
+  border-radius: 12px;
+  background-color: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.primary[20] : 'transparent'};
+  color: ${({ $isActive, theme }) =>
+    $isActive ? '#fff' : theme.colors.grayscale[40]};
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary[20]};
+    border-color: ${({ theme }) => theme.colors.primary[20]};
+    color: #fff;
+  }
+`
+
+const ColumnContentWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 27px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 24px 98px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 24px 58px;
+  }
+`
+
 type CategoryInfo = {
   id: string
   slug: string
@@ -280,10 +424,31 @@ type CategoryInfo = {
   postsCount: number
 }
 
+type SectionHeroImage = {
+  resized: {
+    original?: string
+    w480?: string
+    w800?: string
+    w1200?: string
+    w1600?: string
+    w2400?: string
+  } | null
+  resizedWebp: {
+    original?: string
+    w480?: string
+    w800?: string
+    w1200?: string
+    w1600?: string
+    w2400?: string
+  } | null
+} | null
+
 type SectionInfo = {
   id: string
   slug: string
   name: string
+  style: string | null
+  heroImage: SectionHeroImage
   categories: SectionListingCategory[]
 }
 
@@ -348,6 +513,7 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
 }) => {
   const router = useRouter()
   const categoryId = router.query.id as string
+  const isColumnStyle = section.style !== 'default' && section.style !== null
 
   const buildPageUrl = (page: number) => {
     if (page === 1) {
@@ -357,7 +523,116 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
   }
 
   const paginationItems = generatePaginationItems(currentPage, totalPages)
+  const hasHeroImage = !!section.heroImage?.resized
 
+  // Column style header (when section.style is not 'default')
+  if (isColumnStyle) {
+    return (
+      <ColumnPageWrapper>
+        {/* Hero Section */}
+        <ColumnHeroSection>
+          <ColumnHeroImageWrapper>
+            {hasHeroImage ? (
+              <SharedImage
+                images={section.heroImage?.resized || {}}
+                imagesWebP={section.heroImage?.resizedWebp || {}}
+                alt={section.name}
+                priority={true}
+                rwd={{
+                  mobile: '100vw',
+                  tablet: '100vw',
+                  desktop: '100vw',
+                  default: '100vw',
+                }}
+              />
+            ) : (
+              <img src={DEFAULT_POST_IMAGE_PATH} alt={section.name} />
+            )}
+          </ColumnHeroImageWrapper>
+          <ColumnHeroTitleWrapper>
+            <ColumnHeroAccentBar />
+            <ColumnHeroTitle>{section.name}</ColumnHeroTitle>
+          </ColumnHeroTitleWrapper>
+        </ColumnHeroSection>
+
+        {/* Category Tags */}
+        <ColumnCategoryTagsWrapper>
+          <ColumnCategoryTagsContainer>
+            {categories.map((cat) => (
+              <ColumnCategoryTag
+                key={cat.id}
+                href={`/category/${cat.id}`}
+                $isActive={cat.id === category.id}
+              >
+                {cat.name}
+              </ColumnCategoryTag>
+            ))}
+          </ColumnCategoryTagsContainer>
+        </ColumnCategoryTagsWrapper>
+
+        {/* Article Content */}
+        <ColumnContentWrapper>
+          {posts.length > 0 ? (
+            <ArticleLists
+              posts={posts}
+              AdPageKey={category.slug}
+              defaultImage={
+                category.slug === 'editor'
+                  ? DEFAULT_NEWS_IMAGE_PATH
+                  : DEFAULT_POST_IMAGE_PATH
+              }
+            />
+          ) : (
+            <EmptyMessage>目前沒有文章</EmptyMessage>
+          )}
+        </ColumnContentWrapper>
+
+        {totalPages > 1 && (
+          <PaginationWrapper>
+            <BackForwardButton
+              $isDisabled={currentPage === 1}
+              onClick={() => {
+                if (currentPage > 1) {
+                  router.push(buildPageUrl(currentPage - 1))
+                }
+              }}
+            >
+              <IconBack />
+            </BackForwardButton>
+
+            {paginationItems.map((item, index) =>
+              item === 'ellipsis' ? (
+                <PaginationEllipsis key={`ellipsis-${index}`}>
+                  ......
+                </PaginationEllipsis>
+              ) : (
+                <PaginationButton
+                  key={item}
+                  href={buildPageUrl(item)}
+                  $isActive={item === currentPage}
+                >
+                  {String(item).padStart(2, '0')}
+                </PaginationButton>
+              )
+            )}
+
+            <BackForwardButton
+              $isDisabled={currentPage === totalPages}
+              onClick={() => {
+                if (currentPage < totalPages) {
+                  router.push(buildPageUrl(currentPage + 1))
+                }
+              }}
+            >
+              <IconForward />
+            </BackForwardButton>
+          </PaginationWrapper>
+        )}
+      </ColumnPageWrapper>
+    )
+  }
+
+  // Default style header
   return (
     <PageWrapper>
       <Header>
@@ -524,6 +799,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           id: section.id,
           slug: section.slug,
           name: section.name,
+          style: section.style,
+          heroImage: section.heroImage || null,
           categories: section.categories,
         },
         categories,

@@ -830,6 +830,7 @@ export const sectionPageBySlug = gql`
 `
 
 // Query category by ID with section info (for category page)
+// Includes heroImage for column-style category pages
 export const categoryByIdWithSection = gql`
   query ($categoryId: ID!) {
     categories(where: { id: { equals: $categoryId } }) {
@@ -841,6 +842,15 @@ export const categoryByIdWithSection = gql`
         id
         slug
         name
+        style
+        heroImage {
+          resized {
+            ...ResizedImagesField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesField
+          }
+        }
         categories(orderBy: { sortOrder: asc }) {
           id
           slug
@@ -851,6 +861,8 @@ export const categoryByIdWithSection = gql`
       }
     }
   }
+  ${resizeImagesFragment}
+  ${resizeWebpImagesFragment}
 `
 
 // Query posts for category page with pagination
