@@ -10,7 +10,10 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
-import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import {
+  DEFAULT_NEWS_IMAGE_PATH,
+  DEFAULT_POST_IMAGE_PATH,
+} from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
@@ -738,6 +741,12 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
   const largePost = posts[0]
   const smallPosts = posts.slice(1, 3)
 
+  // Use different default image for "編輯直送" category
+  const isEditorCategory = category.slug === 'editor'
+  const defaultImage = isEditorCategory
+    ? DEFAULT_NEWS_IMAGE_PATH
+    : DEFAULT_POST_IMAGE_PATH
+
   return (
     <CategorySection>
       <CategoryHeader>
@@ -753,7 +762,7 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
               <SharedImage
                 images={largePost.heroImage?.resized || {}}
                 imagesWebP={largePost.heroImage?.resizedWebp || {}}
-                defaultImage={DEFAULT_POST_IMAGE_PATH}
+                defaultImage={defaultImage}
                 alt={largePost.title}
                 priority={false}
                 rwd={{
@@ -777,7 +786,7 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
                 <SharedImage
                   images={post.heroImage?.resized || {}}
                   imagesWebP={post.heroImage?.resizedWebp || {}}
-                  defaultImage={DEFAULT_POST_IMAGE_PATH}
+                  defaultImage={defaultImage}
                   alt={post.title}
                   priority={false}
                   rwd={{

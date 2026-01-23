@@ -121,6 +121,7 @@ type ArticleListCardProps = Omit<ArticleCard, 'id'> & {
   onClick?: () => any
   rwd?: Rwd
   breakpoint?: Breakpoint
+  defaultImage?: string
 }
 
 export default function ArticleListCard({
@@ -139,6 +140,7 @@ export default function ArticleListCard({
   onClick,
   rwd,
   breakpoint,
+  defaultImage = DEFAULT_POST_IMAGE_PATH,
 }: ArticleListCardProps): JSX.Element {
   const router = useRouter()
   const isReportAndShouldHighlight = isReport && shouldHighlightReport
@@ -174,7 +176,7 @@ export default function ArticleListCard({
           <SharedImage
             images={images}
             imagesWebP={imagesWebP}
-            defaultImage={DEFAULT_POST_IMAGE_PATH}
+            defaultImage={defaultImage}
             alt={title}
             priority={shouldNotLazyload}
             rwd={rwd}

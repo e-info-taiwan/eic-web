@@ -46,11 +46,13 @@ const StyledAsense_FT = styled(Adsense)`
 type ArticleListsProps = {
   posts?: ArticleCard[]
   AdPageKey: string
+  defaultImage?: string
 }
 
 export default function ArticleLists({
   posts,
   AdPageKey,
+  defaultImage,
 }: ArticleListsProps): JSX.Element {
   const theme = useTheme()
   const itemsBeforeAd = posts?.slice(0, 12).map((article) => {
@@ -73,6 +75,7 @@ export default function ArticleLists({
           onClick={() =>
             gtag.sendEvent('listing', 'click', `listing-${article.title}`)
           }
+          defaultImage={defaultImage}
         />
       </Item>
     )
@@ -98,6 +101,7 @@ export default function ArticleLists({
           onClick={() =>
             gtag.sendEvent('listing', 'click', `listing-${article.title}`)
           }
+          defaultImage={defaultImage}
         />
       </Item>
     )

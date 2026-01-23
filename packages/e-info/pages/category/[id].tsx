@@ -9,6 +9,10 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
+import {
+  DEFAULT_NEWS_IMAGE_PATH,
+  DEFAULT_POST_IMAGE_PATH,
+} from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
@@ -375,7 +379,15 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
 
       <ArticleWrapper>
         {posts.length > 0 ? (
-          <ArticleLists posts={posts} AdPageKey={category.slug} />
+          <ArticleLists
+            posts={posts}
+            AdPageKey={category.slug}
+            defaultImage={
+              category.slug === 'editor'
+                ? DEFAULT_NEWS_IMAGE_PATH
+                : DEFAULT_POST_IMAGE_PATH
+            }
+          />
         ) : (
           <EmptyMessage>目前沒有文章</EmptyMessage>
         )}
