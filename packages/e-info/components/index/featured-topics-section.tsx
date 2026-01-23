@@ -247,7 +247,7 @@ const ArticleTitle = styled.h3`
   transition: color 0.3s ease;
 
   ${ArticleItem}:hover & {
-    color: #059669;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   // Tablet
