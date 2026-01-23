@@ -1,14 +1,15 @@
+import SharedImage from '@readr-media/react-image'
 import type { GetServerSideProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
-import { getMemberAvatarUrl, getMemberDisplayName } from '~/lib/graphql/member'
+import { getMemberDisplayName } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { getGravatarUrl } from '~/utils/gravatar'
@@ -232,7 +233,6 @@ const sidebarItems = [
 const MemberProfilePage: NextPageWithLayout = () => {
   const router = useRouter()
   const { firebaseUser, member, loading } = useAuth()
-  const [avatarError, setAvatarError] = useState(false)
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -272,9 +272,8 @@ const MemberProfilePage: NextPageWithLayout = () => {
   const email = member?.email || firebaseUser.email || '-'
   const createdAt = member?.createdAt
   const gravatarUrl = getGravatarUrl(member?.email || firebaseUser.email, 150)
-  const memberAvatarUrl = getMemberAvatarUrl(member)
-  // Use Gravatar as fallback when member avatar fails to load
-  const avatarUrl = avatarError ? gravatarUrl : memberAvatarUrl || gravatarUrl
+  // Use member avatar if available, otherwise use Gravatar
+  const hasAvatar = !!member?.avatar
 
   return (
     <PageWrapper>
@@ -311,14 +310,26 @@ const MemberProfilePage: NextPageWithLayout = () => {
             <UserName>{displayName}</UserName>
 
             <AvatarWrapper>
-              <AvatarImage
-                src={avatarUrl}
-                alt={displayName}
-                width={150}
-                height={150}
-                unoptimized
-                onError={() => setAvatarError(true)}
-              />
+              {hasAvatar ? (
+                <SharedImage
+                  images={member.avatar?.resized}
+                  defaultImage={member.avatar?.imageFile?.url || gravatarUrl}
+                  alt={displayName}
+                  priority={false}
+                  rwd={{
+                    mobile: '150px',
+                    default: '150px',
+                  }}
+                />
+              ) : (
+                <AvatarImage
+                  src={gravatarUrl}
+                  alt={displayName}
+                  width={150}
+                  height={150}
+                  unoptimized
+                />
+              )}
             </AvatarWrapper>
 
             <InfoList>
