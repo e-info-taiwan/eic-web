@@ -17,6 +17,9 @@ const MEMBER_FIELDS = gql`
     newsletterFrequency
     avatar {
       id
+      imageFile {
+        url
+      }
       resized {
         original
         w480
@@ -178,11 +181,14 @@ const COUNT_MEMBER_FAVORITES = gql`
 // Types
 export type MemberAvatar = {
   id: string
+  imageFile: {
+    url: string
+  } | null
   resized: {
     original: string
     w480: string
     w800: string
-  }
+  } | null
 }
 
 export type MemberSection = {
@@ -433,10 +439,17 @@ export const getMemberDisplayName = (member: Member): string => {
 
 /**
  * Helper to get avatar URL from member
+ * Falls back to original image URL if resized versions are not yet available
  */
 export const getMemberAvatarUrl = (member: Member | null): string | null => {
   if (!member?.avatar) return null
-  return member.avatar.resized.w480 || member.avatar.resized.original
+  // Try resized versions first, then fall back to original imageFile URL
+  return (
+    member.avatar.resized?.w480 ||
+    member.avatar.resized?.original ||
+    member.avatar.imageFile?.url ||
+    null
+  )
 }
 
 /**
