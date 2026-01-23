@@ -416,6 +416,7 @@ const MemberEditPage: NextPageWithLayout = () => {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [avatarCacheBuster, setAvatarCacheBuster] = useState<number>(Date.now())
 
   // Initialize form data from member profile
   useEffect(() => {
@@ -561,6 +562,8 @@ const MemberEditPage: NextPageWithLayout = () => {
       await updateMemberAvatar(member.id, file, firebaseUser.uid)
 
       await refreshMember()
+      // Force image refresh by updating cache buster
+      setAvatarCacheBuster(Date.now())
       setSuccess(true)
     } catch (err: unknown) {
       console.error('Avatar upload error:', err)
@@ -593,9 +596,11 @@ const MemberEditPage: NextPageWithLayout = () => {
   }
 
   // Use custom avatar if available, otherwise fallback to Gravatar
-  const avatarUrl =
-    getMemberAvatarUrl(member) ||
-    getGravatarUrl(member?.email || firebaseUser.email, 150)
+  // Add cache buster to force image refresh after upload
+  const memberAvatarUrl = getMemberAvatarUrl(member)
+  const avatarUrl = memberAvatarUrl
+    ? `${memberAvatarUrl}?t=${avatarCacheBuster}`
+    : getGravatarUrl(member?.email || firebaseUser.email, 150)
 
   return (
     <PageWrapper>

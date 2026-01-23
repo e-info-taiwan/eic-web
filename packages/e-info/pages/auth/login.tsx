@@ -277,9 +277,8 @@ const LoginPage: NextPageWithLayout = () => {
         <ForgotPassword onClick={handleForgotPassword}>忘記密碼</ForgotPassword>
 
         <TermsText>
-          繼續使用代表您同意與接受《
-          <TermsLink href="/privacy-rule">服務條款</TermsLink>》以及《
-          <TermsLink href="/privacy-rule">隱私政策</TermsLink>》
+          繼續使用代表您同意接受《
+          <TermsLink href="/privacy">隱私權政策</TermsLink>》
         </TermsText>
       </ContentWrapper>
     </PageWrapper>
