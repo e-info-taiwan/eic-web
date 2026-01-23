@@ -255,7 +255,7 @@ const Footer = () => {
     [
       { label: '網站授權條款', href: '/copyright' },
       { label: '常見問題', href: '/faq' },
-      { label: '獲獎記錄', href: '/awards' },
+      { label: '獲獎紀錄', href: '/awards' },
     ],
     [
       { label: '投稿須知', href: '/submission-guidelines' },

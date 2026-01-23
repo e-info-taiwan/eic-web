@@ -46,7 +46,7 @@ export const pageRedirects: PageRedirect[] = [
   {
     path: '/awards',
     postId: '12',
-    description: '獲獎記錄',
+    description: '獲獎紀錄',
   },
   {
     path: '/copyright',

@@ -64,13 +64,6 @@ const FormGroup = styled.div`
   gap: 8px;
 `
 
-const Label = styled.label`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[20]};
-`
-
 const Input = styled.input`
   width: 100%;
   padding: 10px 14px;
@@ -148,6 +141,7 @@ const Select = styled.select`
 const CheckboxGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px 24px;
 `
 
@@ -172,8 +166,8 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 1px solid
     ${({ theme, $checked }) =>
@@ -256,6 +250,7 @@ const SectionLabel = styled.div`
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 8px;
+  text-align: center;
 `
 
 // Eye icon for showing password
@@ -478,7 +473,8 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
 
     // Convert newsletter options to backend schema
     // Backend uses: newsletterSubscription ('none'|'standard'|'beautified')
-    //               newsletterFrequency ('weekday'|'saturday'|'both')
+    //               newsletterFrequency ('weekday'|'saturday')
+    // Note: daily and weekly are mutually exclusive (no 'both' option)
     const hasDaily = formData.dailyNewsletter
     const hasWeekly = formData.weeklyNewsletter
     const isBeautified = formData.newsletterFormat === 'beautified'
@@ -489,15 +485,8 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
     if (hasDaily || hasWeekly) {
       // Determine subscription type (general maps to standard)
       newsletterSubscription = isBeautified ? 'beautified' : 'standard'
-
-      // Determine frequency
-      if (hasDaily && hasWeekly) {
-        newsletterFrequency = 'both'
-      } else if (hasWeekly) {
-        newsletterFrequency = 'saturday'
-      } else {
-        newsletterFrequency = 'weekday'
-      }
+      // Determine frequency (daily = weekday, weekly = saturday)
+      newsletterFrequency = hasWeekly ? 'saturday' : 'weekday'
     }
 
     await createMember({
@@ -684,7 +673,7 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="birthDate">出生年月日</Label>
+            <SectionLabel>出生年月日</SectionLabel>
             <Input
               id="birthDate"
               name="birthDate"
@@ -723,10 +712,20 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
               weeklyNewsletter={formData.weeklyNewsletter}
               newsletterFormat={formData.newsletterFormat}
               onDailyChange={(checked) =>
-                setFormData((prev) => ({ ...prev, dailyNewsletter: checked }))
+                // Daily and weekly are mutually exclusive
+                setFormData((prev) => ({
+                  ...prev,
+                  dailyNewsletter: checked,
+                  weeklyNewsletter: checked ? false : prev.weeklyNewsletter,
+                }))
               }
               onWeeklyChange={(checked) =>
-                setFormData((prev) => ({ ...prev, weeklyNewsletter: checked }))
+                // Daily and weekly are mutually exclusive
+                setFormData((prev) => ({
+                  ...prev,
+                  weeklyNewsletter: checked,
+                  dailyNewsletter: checked ? false : prev.dailyNewsletter,
+                }))
               }
               onFormatChange={(format) =>
                 setFormData((prev) => ({ ...prev, newsletterFormat: format }))

@@ -25,11 +25,11 @@ const ModalContainer = styled.div`
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 32px 24px;
+  padding: 40px 6px;
   position: relative;
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 40px 48px;
+    padding: 29px 14px;
   }
 `
 
@@ -73,8 +73,9 @@ const Description = styled.p`
 const CheckboxGroup = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 `
 
 // Main checkbox item (Daily / Weekly)
@@ -82,6 +83,10 @@ const CheckboxItem = styled.label`
   display: flex;
   align-items: center;
   gap: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
   cursor: pointer;
 `
 
@@ -97,10 +102,10 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid
+  border: 1px solid
     ${({ theme, $checked }) =>
       $checked ? theme.colors.primary[40] : theme.colors.grayscale[60]};
   background-color: ${({ theme, $checked }) =>
@@ -120,76 +125,79 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   }
 `
 
-// Checkbox label text
-const CheckboxLabel = styled.span`
-  font-size: 16px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.primary[40]};
-`
-
 // Sub-option container (for beautified version)
-const SubOptionContainer = styled.div`
-  margin-left: 36px;
-  margin-top: 8px;
+const FormatContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 `
 
-// Orange checkbox for beautified version
-const OrangeCheckboxIcon = styled.span<{ $checked: boolean }>`
+// Secondary checkbox for beautified version
+const SecondaryCheckboxIcon = styled.span<{ $checked: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
-  border-radius: 4px;
-  border: 2px solid ${({ $checked }) => ($checked ? '#e8a66c' : '#ccc')};
-  background-color: ${({ $checked }) => ($checked ? '#fdecd8' : 'transparent')};
+  border-radius: 50%;
+  border: 1px solid
+    ${({ theme, $checked }) =>
+      $checked ? theme.colors.secondary[20] : theme.colors.grayscale[60]};
+  background-color: ${({ theme, $checked }) =>
+    $checked ? theme.colors.secondary[20] : 'transparent'};
   transition: all 0.2s ease;
   flex-shrink: 0;
 
   &::after {
     content: '';
     display: ${({ $checked }) => ($checked ? 'block' : 'none')};
-    width: 5px;
-    height: 8px;
-    border: solid #e8a66c;
+    width: 6px;
+    height: 10px;
+    border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
     margin-top: -2px;
   }
 `
 
-const SubCheckboxItem = styled.label`
+const FormatItem = styled.label`
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   cursor: pointer;
 `
 
-const SubCheckboxLabel = styled.span`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-`
-
 const InfoLink = styled.a`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.primary[40]};
-  text-decoration: none;
-  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.secondary[20]};
+  text-decoration: underline;
+  cursor: pointer;
 
   &:hover {
-    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.secondary[0]};
   }
 `
 
 // Info box for beautified version explanation
 const InfoBox = styled.div`
-  background-color: #fdecd8;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 12px;
   font-size: 14px;
-  line-height: 1.6;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
+  font-weight: 400;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  background-color: ${({ theme }) => theme.colors.secondary[80]};
+  border: 0.5px solid ${({ theme }) => theme.colors.grayscale[80]};
+  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+  padding: 25.5px 4px;
+  border-radius: 4px;
+  margin: 8px auto 0;
+  max-width: 272px;
   text-align: center;
 `
 
@@ -198,6 +206,7 @@ const FormSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-top: 12px;
   margin-bottom: 24px;
 `
 
@@ -364,10 +373,14 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                 <HiddenCheckbox
                   type="checkbox"
                   checked={dailyChecked}
-                  onChange={(e) => setDailyChecked(e.target.checked)}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    setDailyChecked(checked)
+                    if (checked) setWeeklyChecked(false)
+                  }}
                 />
                 <CheckboxIcon $checked={dailyChecked} />
-                <CheckboxLabel>訂閱《環境資訊電子報》每日報</CheckboxLabel>
+                訂閱《環境資訊電子報》每日報
               </CheckboxItem>
 
               {/* Weekly newsletter option */}
@@ -375,42 +388,48 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                 <HiddenCheckbox
                   type="checkbox"
                   checked={weeklyChecked}
-                  onChange={(e) => setWeeklyChecked(e.target.checked)}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    setWeeklyChecked(checked)
+                    if (checked) setDailyChecked(false)
+                  }}
                 />
                 <CheckboxIcon $checked={weeklyChecked} />
-                <CheckboxLabel>訂閱《環境資訊電子報一週回顧》</CheckboxLabel>
+                訂閱《環境資訊電子報一週回顧》
               </CheckboxItem>
+            </CheckboxGroup>
 
-              {/* Beautified version sub-option (shown when any newsletter is checked) */}
-              {(dailyChecked || weeklyChecked) && (
-                <SubOptionContainer>
-                  <SubCheckboxItem>
+            {/* Beautified version sub-option (shown when any newsletter is checked) */}
+            {(dailyChecked || weeklyChecked) && (
+              <>
+                <FormatContainer>
+                  <FormatItem>
                     <HiddenCheckbox
                       type="checkbox"
                       checked={beautifiedChecked}
                       onChange={(e) => setBeautifiedChecked(e.target.checked)}
                     />
-                    <OrangeCheckboxIcon $checked={beautifiedChecked} />
-                    <SubCheckboxLabel>訂閱美化版</SubCheckboxLabel>
-                    <InfoLink
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setShowBeautifiedInfo(!showBeautifiedInfo)
-                      }}
-                    >
-                      （什麼是美化版）
-                    </InfoLink>
-                  </SubCheckboxItem>
+                    <SecondaryCheckboxIcon $checked={beautifiedChecked} />
+                    訂閱美化版
+                  </FormatItem>
+                  <InfoLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setShowBeautifiedInfo(!showBeautifiedInfo)
+                    }}
+                  >
+                    （什麼是美化版）
+                  </InfoLink>
+                </FormatContainer>
 
-                  {showBeautifiedInfo && (
-                    <InfoBox>
-                      美化版可放大重要資訊字體，帶來更友善的閱讀體驗
-                    </InfoBox>
-                  )}
-                </SubOptionContainer>
-              )}
-            </CheckboxGroup>
+                {showBeautifiedInfo && (
+                  <InfoBox>
+                    美化版可放大重要資訊字體，帶來更友善的閱讀體驗
+                  </InfoBox>
+                )}
+              </>
+            )}
 
             <FormSection>
               <Input

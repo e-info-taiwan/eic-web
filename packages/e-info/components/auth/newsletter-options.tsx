@@ -1,11 +1,11 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 
 const OptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
-  background-color: ${({ theme }) => theme.colors.grayscale[95]};
-  padding: 16px;
 `
 
 const SectionTitle = styled.div`
@@ -13,6 +13,7 @@ const SectionTitle = styled.div`
   font-weight: 400;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
+  text-align: center;
 `
 
 const CheckboxGroup = styled.div`
@@ -24,10 +25,11 @@ const CheckboxGroup = styled.div`
 const CheckboxItem = styled.label`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 16px;
+  font-weight: 700;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
+  color: ${({ theme }) => theme.colors.primary[20]};
   cursor: pointer;
 `
 
@@ -42,10 +44,10 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid
+  border: 1px solid
     ${({ theme, $checked }) =>
       $checked ? theme.colors.primary[40] : theme.colors.grayscale[60]};
   background-color: ${({ theme, $checked }) =>
@@ -65,56 +67,48 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   }
 `
 
-const RadioGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 8px;
-`
-
-const RadioItem = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
-  cursor: pointer;
-`
-
-const HiddenRadio = styled.input`
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-`
-
-const RadioIcon = styled.span<{ $checked: boolean }>`
+const SecondaryCheckboxIcon = styled.span<{ $checked: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid
+  border: 1px solid
     ${({ theme, $checked }) =>
-      $checked ? theme.colors.primary[40] : theme.colors.grayscale[60]};
-  background-color: transparent;
+      $checked ? theme.colors.secondary[20] : theme.colors.grayscale[60]};
+  background-color: ${({ theme, $checked }) =>
+    $checked ? theme.colors.secondary[20] : 'transparent'};
   transition: all 0.2s ease;
   flex-shrink: 0;
 
   &::after {
     content: '';
     display: ${({ $checked }) => ($checked ? 'block' : 'none')};
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: ${({ theme }) => theme.colors.primary[40]};
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
   }
 `
 
+const FormatItem = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  cursor: pointer;
+`
+
 const BeautifiedLink = styled.a`
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
   color: ${({ theme }) => theme.colors.secondary[20]};
   text-decoration: underline;
   cursor: pointer;
@@ -127,7 +121,6 @@ const BeautifiedLink = styled.a`
 const FormatContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
 `
 
@@ -141,7 +134,8 @@ const InfoText = styled.p`
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
   padding: 4px 15.5px;
   border-radius: 4px;
-  margin: 8px -8px -8px;
+  margin: 8px 0 0;
+  max-width: 272px;
   text-align: center;
 `
 
@@ -162,6 +156,8 @@ const NewsletterOptions = ({
   onWeeklyChange,
   onFormatChange,
 }: NewsletterOptionsProps) => {
+  const [showInfo, setShowInfo] = useState(false)
+
   return (
     <OptionsContainer>
       <SectionTitle>訂閱電子報</SectionTitle>
@@ -173,7 +169,7 @@ const NewsletterOptions = ({
             onChange={(e) => onDailyChange(e.target.checked)}
           />
           <CheckboxIcon $checked={dailyNewsletter} />
-          《環境資訊電子報》每日報
+          訂閱《環境資訊電子報》每日報
         </CheckboxItem>
         <CheckboxItem>
           <HiddenCheckbox
@@ -182,50 +178,42 @@ const NewsletterOptions = ({
             onChange={(e) => onWeeklyChange(e.target.checked)}
           />
           <CheckboxIcon $checked={weeklyNewsletter} />
-          《環境資訊電子報一週回顧》
+          訂閱《環境資訊電子報一週回顧》
         </CheckboxItem>
       </CheckboxGroup>
 
-      <FormatContainer>
-        <RadioGroup>
-          <RadioItem>
-            <HiddenRadio
-              type="radio"
-              name="newsletterFormat"
-              value="general"
-              checked={newsletterFormat === 'general'}
-              onChange={() => onFormatChange('general')}
-            />
-            <RadioIcon $checked={newsletterFormat === 'general'} />
-            一般版
-          </RadioItem>
-          <RadioItem>
-            <HiddenRadio
-              type="radio"
-              name="newsletterFormat"
-              value="beautified"
-              checked={newsletterFormat === 'beautified'}
-              onChange={() => onFormatChange('beautified')}
-            />
-            <RadioIcon $checked={newsletterFormat === 'beautified'} />
-            美化版
-          </RadioItem>
-        </RadioGroup>
-        <BeautifiedLink
-          href="#"
-          onClick={(e) => {
-            e.preventDefault()
-            // TODO: Show beautified version info modal
-            alert('什麼是美化版？（功能待實作）')
-          }}
-        >
-          （什麼是美化版）
-        </BeautifiedLink>
-      </FormatContainer>
+      {(dailyNewsletter || weeklyNewsletter) && (
+        <>
+          <FormatContainer>
+            <FormatItem>
+              <HiddenCheckbox
+                type="checkbox"
+                checked={newsletterFormat === 'beautified'}
+                onChange={(e) =>
+                  onFormatChange(e.target.checked ? 'beautified' : 'general')
+                }
+              />
+              <SecondaryCheckboxIcon
+                $checked={newsletterFormat === 'beautified'}
+              />
+              訂閱美化版
+            </FormatItem>
+            <BeautifiedLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                setShowInfo(!showInfo)
+              }}
+            >
+              （什麼是美化版）
+            </BeautifiedLink>
+          </FormatContainer>
 
-      <InfoText>
-        我們是環境資訊中心，耕耘了二十多年的獨立媒體，我們相信生長在台灣的每一個人，都有權利知道這片土地發生的事情。
-      </InfoText>
+          {showInfo && (
+            <InfoText>美化版可放大重要資訊字體，帶來更友善的閱讀體驗</InfoText>
+          )}
+        </>
+      )}
     </OptionsContainer>
   )
 }

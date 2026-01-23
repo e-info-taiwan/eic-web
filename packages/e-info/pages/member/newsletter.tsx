@@ -306,22 +306,17 @@ const newsletterOptions = [
 ]
 
 /**
- * TODO: 這是臨時的前端轉換 workaround
+ * 電子報訂閱邏輯
  *
- * 目前後端 Member schema 只有兩個欄位：
+ * 後端 Member schema 有兩個欄位：
  * - newsletterSubscription: 'none' | 'standard' | 'beautified'
- * - newsletterFrequency: 'weekday' | 'saturday' | 'both'
+ * - newsletterFrequency: 'weekday' | 'saturday'
  *
- * 但 UI 需要 4 個獨立的 toggle，所以用前端轉換來對應。
- *
- * 限制：無法同時訂閱「每日報一般版」和「一週回顧美化版」這種組合，
- * 因為只有一個 subscription 欄位。美化版會覆蓋一般版。
- *
- * 理想解法：請後端新增 4 個 boolean 欄位：
- * - dailyStandard
- * - dailyBeautified
- * - weeklyStandard
- * - weeklyBeautified
+ * 四個選項互斥，只能選擇一個：
+ * - dailyStandard: weekday + standard
+ * - dailyBeautified: weekday + beautified
+ * - weeklyStandard: saturday + standard
+ * - weeklyBeautified: saturday + beautified
  */
 
 // Convert from backend schema (subscription + frequency) to toggles
@@ -331,8 +326,8 @@ const convertToToggles = (
 ): NewsletterToggles => {
   const isStandard = subscription === 'standard'
   const isBeautified = subscription === 'beautified'
-  const isWeekday = frequency === 'weekday' || frequency === 'both'
-  const isSaturday = frequency === 'saturday' || frequency === 'both'
+  const isWeekday = frequency === 'weekday'
+  const isSaturday = frequency === 'saturday'
 
   return {
     dailyStandard: isStandard && isWeekday,
@@ -346,33 +341,34 @@ const convertToToggles = (
 const convertFromToggles = (
   toggles: NewsletterToggles
 ): { newsletterSubscription: string; newsletterFrequency: string } => {
-  const hasDaily = toggles.dailyStandard || toggles.dailyBeautified
-  const hasWeekly = toggles.weeklyStandard || toggles.weeklyBeautified
-  const hasStandard = toggles.dailyStandard || toggles.weeklyStandard
-  const hasBeautified = toggles.dailyBeautified || toggles.weeklyBeautified
-
-  // Determine subscription type (beautified takes priority)
-  let subscription = 'none'
-  if (hasBeautified) {
-    subscription = 'beautified'
-  } else if (hasStandard) {
-    subscription = 'standard'
+  // Since toggles are mutually exclusive, only one can be true
+  if (toggles.dailyStandard) {
+    return {
+      newsletterSubscription: 'standard',
+      newsletterFrequency: 'weekday',
+    }
+  }
+  if (toggles.dailyBeautified) {
+    return {
+      newsletterSubscription: 'beautified',
+      newsletterFrequency: 'weekday',
+    }
+  }
+  if (toggles.weeklyStandard) {
+    return {
+      newsletterSubscription: 'standard',
+      newsletterFrequency: 'saturday',
+    }
+  }
+  if (toggles.weeklyBeautified) {
+    return {
+      newsletterSubscription: 'beautified',
+      newsletterFrequency: 'saturday',
+    }
   }
 
-  // Determine frequency
-  let frequency = 'weekday'
-  if (hasDaily && hasWeekly) {
-    frequency = 'both'
-  } else if (hasWeekly) {
-    frequency = 'saturday'
-  } else if (hasDaily) {
-    frequency = 'weekday'
-  }
-
-  return {
-    newsletterSubscription: subscription,
-    newsletterFrequency: frequency,
-  }
+  // None selected
+  return { newsletterSubscription: 'none', newsletterFrequency: 'weekday' }
 }
 
 const MemberNewsletterPage: NextPageWithLayout = () => {
@@ -396,8 +392,24 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
     }
   }, [member])
 
+  // Handle toggle with mutual exclusivity - only one option can be selected
   const handleToggle = (key: keyof NewsletterToggles) => {
-    setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
+    setToggles((prev) => {
+      const isCurrentlyOn = prev[key]
+      if (isCurrentlyOn) {
+        // Turning off - just turn off this one
+        return { ...prev, [key]: false }
+      } else {
+        // Turning on - turn off all others, turn on this one
+        return {
+          dailyStandard: false,
+          dailyBeautified: false,
+          weeklyStandard: false,
+          weeklyBeautified: false,
+          [key]: true,
+        }
+      }
+    })
   }
 
   // Redirect to login if not authenticated
