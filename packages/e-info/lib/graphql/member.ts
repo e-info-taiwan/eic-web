@@ -283,6 +283,7 @@ export const getMemberByFirebaseId = async (
   const result = await client.query<{ members: Member[] }>({
     query: GET_MEMBER_BY_FIREBASE_ID,
     variables: { firebaseId },
+    fetchPolicy: 'network-only',
   })
 
   if (result.error) {
@@ -305,6 +306,7 @@ export const checkMemberExists = async (
   const result = await client.query<{ membersCount: number }>({
     query: CHECK_MEMBER_EXISTS,
     variables: { firebaseId },
+    fetchPolicy: 'network-only',
   })
 
   if (result.error) {
