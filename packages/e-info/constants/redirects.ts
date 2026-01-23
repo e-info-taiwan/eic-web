@@ -49,7 +49,7 @@ export const pageRedirects: PageRedirect[] = [
     description: '獲獎記錄',
   },
   {
-    path: '/terms',
+    path: '/copyright',
     postId: '238662',
     description: '網站授權條款',
   },

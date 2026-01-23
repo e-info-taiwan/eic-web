@@ -254,7 +254,7 @@ const Footer = () => {
       { label: '活動', href: '/events' },
     ],
     [
-      { label: '網站授權條款', href: '/terms' },
+      { label: '網站授權條款', href: '/copyright' },
       { label: '常見問題', href: '/faq' },
       { label: '獲獎記錄', href: '/awards' },
       { label: '綠色職缺', href: '/jobs' },
