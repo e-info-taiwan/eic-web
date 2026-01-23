@@ -973,9 +973,7 @@ const SectionColumnPage = ({ section, categories }: SectionColumnPageProps) => {
       </CategoryTagsWrapper>
 
       {/* Description Section */}
-      {section.description && (
-        <DescriptionSection>{section.description}</DescriptionSection>
-      )}
+      <DescriptionSection>{section.description || ''}</DescriptionSection>
 
       {/* Category Article Sections - 2 columns on desktop */}
       {categoriesWithPosts.length > 0 ? (
