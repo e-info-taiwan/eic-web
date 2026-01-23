@@ -35,22 +35,22 @@ export const pageRedirects: PageRedirect[] = [
   },
   {
     path: '/faq',
-    postId: '238663',
+    postId: '10',
     description: '常見問題',
   },
   {
     path: '/privacy',
-    postId: '238660',
+    postId: '11',
     description: '隱私權政策',
   },
   {
     path: '/awards',
-    postId: '238661',
+    postId: '12',
     description: '獲獎記錄',
   },
   {
     path: '/copyright',
-    postId: '238662',
+    postId: '13',
     description: '網站授權條款',
   },
   {
