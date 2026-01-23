@@ -758,6 +758,7 @@ export type SectionPageData = {
   slug: string
   name: string
   style: string | null
+  description: string | null
   heroImage: {
     resized: ResizedImages | null
     resizedWebp: ResizedImages | null
@@ -774,6 +775,7 @@ export const sectionPageBySlug = gql`
       slug
       name
       style
+      description
       heroImage {
         resized {
           ...ResizedImagesField

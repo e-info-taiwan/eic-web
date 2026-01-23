@@ -972,12 +972,10 @@ const SectionColumnPage = ({ section, categories }: SectionColumnPageProps) => {
         </CategoryTagsContainer>
       </CategoryTagsWrapper>
 
-      {/* Description Section (placeholder for future CMS field) */}
-      <DescriptionSection>
-        {/* 當 CMS 新增描述欄位後，在此顯示 section 描述 */}
-        {/* {section.description} */}
-        當全球致力於減緩生物多樣性衰退，努力踩剎車延遲步入第六次大滅絕之際，行政院內政部國家公園署——一個完全以保護區為名的部門，最有立場提供保護區在生物多樣性目標扮演的角色，由國家公園署新挑保育的價值，約100字
-      </DescriptionSection>
+      {/* Description Section */}
+      {section.description && (
+        <DescriptionSection>{section.description}</DescriptionSection>
+      )}
 
       {/* Category Article Sections - 2 columns on desktop */}
       {categoriesWithPosts.length > 0 ? (
