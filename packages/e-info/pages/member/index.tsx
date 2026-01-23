@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
@@ -232,6 +232,7 @@ const sidebarItems = [
 const MemberProfilePage: NextPageWithLayout = () => {
   const router = useRouter()
   const { firebaseUser, member, loading } = useAuth()
+  const [avatarError, setAvatarError] = useState(false)
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -270,9 +271,10 @@ const MemberProfilePage: NextPageWithLayout = () => {
     : firebaseUser.displayName || '會員'
   const email = member?.email || firebaseUser.email || '-'
   const createdAt = member?.createdAt
-  const avatarUrl =
-    getMemberAvatarUrl(member) ||
-    getGravatarUrl(member?.email || firebaseUser.email, 150)
+  const gravatarUrl = getGravatarUrl(member?.email || firebaseUser.email, 150)
+  const memberAvatarUrl = getMemberAvatarUrl(member)
+  // Use Gravatar as fallback when member avatar fails to load
+  const avatarUrl = avatarError ? gravatarUrl : memberAvatarUrl || gravatarUrl
 
   return (
     <PageWrapper>
@@ -315,6 +317,7 @@ const MemberProfilePage: NextPageWithLayout = () => {
                 width={150}
                 height={150}
                 unoptimized
+                onError={() => setAvatarError(true)}
               />
             </AvatarWrapper>
 
