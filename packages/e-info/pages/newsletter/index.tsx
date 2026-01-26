@@ -2,6 +2,7 @@ import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -371,6 +372,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   newsletters: initialNewsletters,
   yearRange,
 }) => {
+  const router = useRouter()
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
   const [newsletters, setNewsletters] =
@@ -407,9 +409,20 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
     })
   }
 
-  // Fetch newsletters for a specific month
+  // Fetch newsletters for a specific month and update URL
   const fetchNewsletters = async (targetYear: number, targetMonth: number) => {
     setLoading(true)
+
+    // Update URL with query parameters (shallow to avoid SSR refetch)
+    router.replace(
+      {
+        pathname: '/newsletter',
+        query: { year: targetYear, month: targetMonth },
+      },
+      undefined,
+      { shallow: true }
+    )
+
     try {
       const client = getGqlClient()
       const startDate = new Date(targetYear, targetMonth - 1, 1).toISOString()
