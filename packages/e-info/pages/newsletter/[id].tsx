@@ -72,7 +72,8 @@ const Banner = styled.div`
 const ReferralSection = styled.section`
   border: 3px solid ${({ theme }) => theme.colors.primary[20]};
   padding: 24px 16px;
-  margin-bottom: 48px;
+  margin-top: 53px;
+  margin-bottom: 53px;
   text-align: center;
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -133,17 +134,18 @@ const ReferralSubLink = styled.a`
 `
 
 const NewsletterContent = styled.div`
-  background-color: #ffffff;
+  background-color: #eee;
 
   /* Override inline styles from standardHtml */
   img {
     max-width: 100%;
     height: auto;
+    display: block;
   }
 
   a {
     color: #2d7a4f;
-    text-decoration: underline;
+    text-decoration: none;
 
     &:hover {
       opacity: 0.8;
@@ -152,16 +154,99 @@ const NewsletterContent = styled.div`
 
   table {
     max-width: 100% !important;
+    border-collapse: collapse;
   }
 
-  /* News title styling */
+  td.mcnTextContent {
+    padding: 0;
+  }
+
+  /* News title bar - green background */
   .news-tit {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 12px;
+    color: #fff;
+    background-color: #2d7a4f;
+    padding: 10px 15px;
+    margin-bottom: 0;
+
+    a,
+    a div {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+  }
+
+  /* News scan title */
+  .news-scan-tit {
+    background-color: #2d7a4f;
+    color: #fff;
+    padding: 10px 15px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Field content styling */
+  .views-field-field--1 .field-content {
+    padding: 15px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+    background: #fff;
+  }
+
+  .views-field-body .field-content {
+    padding: 0 15px 15px;
+    background: #fff;
+  }
+
+  /* Read more link */
+  .float-right {
+    text-align: right;
+    padding: 10px 15px;
+    background: #fff;
 
     a {
-      color: ${({ theme }) => theme.colors.grayscale[20]};
+      font-size: 14px;
+      text-decoration: none;
+    }
+  }
+
+  /* Section labels (近期活動, 特別推薦活動) */
+  .field-label {
+    background-color: #2d7a4f;
+    color: #fff;
+    padding: 8px 15px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .views-field {
+    background: #fff;
+    padding: 10px 15px;
+  }
+
+  /* Event list styling */
+  .view-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .view-content ul li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    line-height: 1.6;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    a {
+      color: #333;
       text-decoration: none;
 
       &:hover {
@@ -170,32 +255,53 @@ const NewsletterContent = styled.div`
     }
   }
 
-  /* Field content styling */
-  .field-content {
-    font-size: 16px;
-    line-height: 1.8;
-    color: ${({ theme }) => theme.colors.grayscale[40]};
+  .date-display-single {
+    color: #2d7a4f;
+    font-weight: 700;
+    margin-right: 8px;
   }
 
-  /* Read more link */
-  .float-right {
-    text-align: right;
-    margin-top: 12px;
+  /* View header for special sections */
+  .view-header {
+    margin-top: 15px;
+  }
 
-    a {
-      font-size: 14px;
+  /* Ad banners container */
+  .content.clearfix {
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  /* Ad banners */
+  .node-simpleads {
+    display: inline-block;
+    margin: 0 10px 25px;
+
+    img {
+      max-width: 250px;
+      height: auto;
     }
   }
 
-  /* List styling */
-  ul {
-    padding-left: 20px;
-    margin: 8px 0;
+  /* Table row spacing */
+  tr[id^='focus-row-'],
+  tr[id^='topic-row-'] {
+    display: block;
+    background: #fff;
+    line-height: 1.5;
+    margin-bottom: 20px;
   }
 
-  li {
-    margin-bottom: 8px;
-    line-height: 1.6;
+  /* Responsive adjustments */
+  ${({ theme }) => theme.breakpoint.md} {
+    .news-tit a,
+    .news-tit a div {
+      font-size: 20px;
+    }
+
+    .views-field-field--1 .field-content {
+      font-size: 16px;
+    }
   }
 `
 
@@ -204,6 +310,74 @@ const ErrorMessage = styled.div`
   padding: 60px 20px;
   color: ${({ theme }) => theme.colors.grayscale[60]};
   font-size: 16px;
+`
+
+const NewsletterFooter = styled.footer`
+  background-color: #fff;
+  padding: 40px 16px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+  margin-top: 40px;
+`
+
+const SocialLinks = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 24px;
+`
+
+const SocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #333;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+    fill: currentColor;
+  }
+`
+
+const FooterText = styled.p`
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 8px;
+  line-height: 1.6;
+`
+
+const FooterActions = styled.div`
+  margin: 32px 0;
+
+  a {
+    font-size: 18px;
+    font-weight: 500;
+    color: #2d7a4f;
+    text-decoration: underline;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  span {
+    color: #2d7a4f;
+    margin: 0 8px;
+  }
+`
+
+const Copyright = styled.p`
+  font-size: 14px;
+  color: #999;
+  margin: 0;
 `
 
 // Format date as yyyy/mm/dd
@@ -257,8 +431,8 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
         <ReferralSection>
           <ReferralTitle>你的推薦狀態</ReferralTitle>
           <ReferralText>
-            你總共有 <strong>0</strong> 個推薦。邀請{' '}
-            <strong>1</strong> 個朋友訂閱來獲得點數。
+            你總共有 <strong>0</strong> 個推薦。邀請 <strong>1</strong>{' '}
+            個朋友訂閱來獲得點數。
           </ReferralText>
           <ReferralLinkWrapper>
             <ReferralLink href="#">點擊此處邀請你的朋友訂閱！</ReferralLink>
@@ -269,8 +443,66 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
         </ReferralSection>
 
         {newsletter.poll && (
-          <PostPoll poll={newsletter.poll} postId={newsletter.id} hideBorderTop />
+          <PostPoll
+            poll={newsletter.poll}
+            postId={newsletter.id}
+            hideBorderTop
+          />
         )}
+
+        <NewsletterFooter>
+          <SocialLinks>
+            <SocialLink
+              href="https://www.facebook.com/enc.teia"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+              </svg>
+            </SocialLink>
+            <SocialLink
+              href="https://twitter.com/e_aborras"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X"
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </SocialLink>
+            <SocialLink
+              href="https://line.me/R/ti/p/@e-info"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LINE"
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
+              </svg>
+            </SocialLink>
+          </SocialLinks>
+          <FooterText>電子報由社團法人台灣環境資訊協會發行</FooterText>
+          <FooterText>對我們有任何疑問或指教歡迎利用以上連結連繫</FooterText>
+          <FooterActions>
+            <a href="#">更新資料</a>
+            <span>|</span>
+            <a href="#">退訂電子報</a>
+            <span>|</span>
+            <a
+              href="https://e-info.neticrm.tw/civicrm/contribute/transact?reset=1&id=9"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              我要捐款
+            </a>
+          </FooterActions>
+          <Copyright>
+            Copyright © {new Date().getFullYear()} Taiwan Environmental
+            Information Association, All rights reserved.
+          </Copyright>
+        </NewsletterFooter>
       </ContentWrapper>
     </PageWrapper>
   )
