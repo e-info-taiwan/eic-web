@@ -16,8 +16,6 @@ import {
   newsletterYearRange,
 } from '~/graphql/query/newsletter'
 import type { NextPageWithLayout } from '~/pages/_app'
-import IconBack from '~/public/icons/arrow_back.svg'
-import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
@@ -26,37 +24,71 @@ const PageWrapper = styled.div`
   min-height: 100vh;
 `
 
-const HeroBanner = styled.div`
+// Hero Section - maintains 1200:420 (20:7) aspect ratio like section page
+const HeroSection = styled.div`
   position: relative;
   width: 100%;
-  height: 200px;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 1200 / 420;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
+
+const HeroImageWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, #2d7a4f 0%, #1a4d31 100%);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  }
+`
+
+const HeroTitleWrapper = styled.div`
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
+`
 
-  ${({ theme }) => theme.breakpoint.md} {
-    height: 280px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    height: 320px;
-  }
+const HeroAccentBar = styled.div`
+  background-color: ${({ theme }) => theme.colors.primary[80]};
+  width: 20px;
+  height: 32px;
+  margin-right: 0.75rem;
+  border-bottom-right-radius: 12px;
 `
 
 const HeroTitle = styled.h1`
   font-size: 28px;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.primary[80]};
   margin: 0;
-  text-align: center;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 36px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    font-size: 48px;
+    font-size: 32px;
   }
 `
 
@@ -66,11 +98,7 @@ const ContentWrapper = styled.div`
   padding: 24px 20px 60px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 40px 40px 80px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    padding: 60px 20px 100px;
+    padding: 28px 20px 100px;
   }
 `
 
@@ -82,7 +110,7 @@ const NavigationWrapper = styled.div`
   margin-bottom: 32px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    gap: 24px;
+    gap: 28px;
     margin-bottom: 40px;
   }
 `
@@ -91,12 +119,17 @@ const NavButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  border: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 16px;
+  background-color: ${({ theme }) => theme.colors.grayscale[40]};
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.05) inset;
+  box-sizing: border-box;
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.primary[40]};
+  color: #fff;
   transition: opacity 0.2s ease;
 
   &:hover:not(:disabled) {
@@ -107,21 +140,6 @@ const NavButton = styled.button`
     opacity: 0.3;
     cursor: not-allowed;
   }
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  ${({ theme }) => theme.breakpoint.md} {
-    width: 40px;
-    height: 40px;
-
-    svg {
-      width: 28px;
-      height: 28px;
-    }
-  }
 `
 
 const MonthDisplay = styled.div`
@@ -131,31 +149,30 @@ const MonthDisplay = styled.div`
 `
 
 const YearSelect = styled.select`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  background: transparent;
+  line-height: 1.5;
+  color: #fff;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px 10px;
 
   &:focus {
     outline: none;
   }
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 24px;
-  }
 `
 
 const MonthText = styled.span`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 24px;
-  }
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  background-color: ${({ theme }) => theme.colors.grayscale[99]};
+  padding: 6px 10px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.05) inset;
 `
 
 // Desktop calendar grid (hidden on mobile/tablet)
@@ -189,9 +206,10 @@ const MobileTabletGrid = styled.div`
 
 const WeekdayHeader = styled.div`
   text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.grayscale[60]};
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  color: #000;
   padding: 12px 0;
 `
 
@@ -324,20 +342,6 @@ const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
 const HISTORICAL_YEARS = [
   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
   2013, 2014, 2015, 2016,
-]
-const MONTHS = [
-  '一月',
-  '二月',
-  '三月',
-  '四月',
-  '五月',
-  '六月',
-  '七月',
-  '八月',
-  '九月',
-  '十月',
-  '十一月',
-  '十二月',
 ]
 
 type NewsletterMap = {
@@ -487,14 +491,26 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
   return (
     <PageWrapper>
-      <HeroBanner>
-        <HeroTitle>電子報總覽</HeroTitle>
-      </HeroBanner>
+      <HeroSection>
+        <HeroImageWrapper>
+          <Image
+            src="/newsletter-hero.png"
+            alt="環境資訊電子報"
+            fill
+            style={{ objectFit: 'cover' }}
+            priority
+          />
+        </HeroImageWrapper>
+        <HeroTitleWrapper>
+          <HeroAccentBar />
+          <HeroTitle>環境資訊電子報</HeroTitle>
+        </HeroTitleWrapper>
+      </HeroSection>
 
       <ContentWrapper>
         <NavigationWrapper>
           <NavButton onClick={goToPrevMonth} disabled={!canGoPrev || loading}>
-            <IconBack />
+            上一個月
           </NavButton>
 
           <MonthDisplay>
@@ -509,11 +525,13 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                 </option>
               ))}
             </YearSelect>
-            <MonthText>{MONTHS[month - 1]}</MonthText>
+            <MonthText>
+              {year}-{String(month).padStart(2, '0')}
+            </MonthText>
           </MonthDisplay>
 
           <NavButton onClick={goToNextMonth} disabled={!canGoNext || loading}>
-            <IconForward />
+            下一個月
           </NavButton>
         </NavigationWrapper>
 
