@@ -1,7 +1,8 @@
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Image from 'next/image'
-import type { ReactElement } from 'react'
+import { useRouter } from 'next/router'
+import { type ReactElement, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
@@ -397,6 +398,28 @@ type PageProps = {
 const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
   newsletter,
 }) => {
+  const router = useRouter()
+  const pollRef = useRef<HTMLElement>(null)
+
+  // Get vote and utm_source from query parameters
+  const { vote, utm_source } = router.query
+  const voteOption = vote ? parseInt(vote as string, 10) : undefined
+  const isValidVote = voteOption && voteOption >= 1 && voteOption <= 5
+
+  // Only auto-vote when both vote AND utm_source=email are present
+  const shouldAutoVote = isValidVote && utm_source === 'email'
+
+  // Auto-scroll to poll section when vote parameter exists
+  useEffect(() => {
+    if (isValidVote && pollRef.current) {
+      // Small delay to ensure the page is fully rendered
+      const timer = setTimeout(() => {
+        pollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [isValidVote])
+
   if (!newsletter) {
     return (
       <PageWrapper>
@@ -444,9 +467,11 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
 
         {newsletter.poll && (
           <PostPoll
+            ref={pollRef}
             poll={newsletter.poll}
             postId={newsletter.id}
             hideBorderTop
+            autoVote={shouldAutoVote ? voteOption : undefined}
           />
         )}
 

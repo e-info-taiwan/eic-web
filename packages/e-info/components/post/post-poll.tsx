@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react'
 import Lottie from 'lottie-react'
-import { useContext, useEffect, useState } from 'react'
+import { forwardRef, useContext, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import AuthContext from '~/contexts/auth-context'
@@ -223,17 +223,27 @@ type PostPollProps = {
   poll: Poll
   postId: string
   hideBorderTop?: boolean
+  autoVote?: number // Option number to auto-vote (1-5), used for email voting
 }
 
-export default function PostPoll({
-  poll,
-  postId,
-  hideBorderTop = false,
-}: PostPollProps): JSX.Element | null {
+const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
+  { poll, postId, hideBorderTop = false, autoVote },
+  ref
+) {
+  const wrapperRef = useRef<HTMLElement>(null)
+  const combinedRef = (node: HTMLElement | null) => {
+    ;(wrapperRef as React.MutableRefObject<HTMLElement | null>).current = node
+    if (typeof ref === 'function') {
+      ref(node)
+    } else if (ref) {
+      ref.current = node
+    }
+  }
   const { member, loading: authLoading } = useContext(AuthContext)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasVoted, setHasVoted] = useState(false)
   const [voteCounts, setVoteCounts] = useState<PollResultCounts | null>(null)
+  const [autoVoteTriggered, setAutoVoteTriggered] = useState(false)
 
   // Query poll results counts
   const { data: countsData, refetch: refetchCounts } =
@@ -287,6 +297,82 @@ export default function PostPoll({
     createPollResultAnonymous
   )
   const isSubmitting = isSubmittingWithMember || isSubmittingAnonymous
+
+  // Auto-vote from email link (when autoVote prop is provided)
+  useEffect(() => {
+    const performAutoVote = async () => {
+      // Only trigger auto-vote if:
+      // - autoVote prop is provided (1-5)
+      // - User hasn't already voted
+      // - Auto-vote hasn't been triggered yet
+      // - Auth loading is complete
+      // - Poll is active
+      if (
+        !autoVote ||
+        autoVote < 1 ||
+        autoVote > 5 ||
+        hasVoted ||
+        autoVoteTriggered ||
+        authLoading ||
+        !poll?.id ||
+        poll.status !== 'active'
+      ) {
+        return
+      }
+
+      setAutoVoteTriggered(true)
+
+      try {
+        // Submit vote to API - use appropriate mutation based on login status
+        if (member) {
+          await submitVoteWithMember({
+            variables: {
+              pollId: poll.id,
+              postId,
+              memberId: member.id,
+              result: autoVote,
+            },
+          })
+        } else {
+          await submitVoteAnonymous({
+            variables: {
+              pollId: poll.id,
+              postId,
+              result: autoVote,
+            },
+          })
+          // Save anonymous vote to localStorage to prevent duplicate votes
+          saveAnonymousVote(poll.id, postId, autoVote)
+        }
+
+        // Refetch counts after voting
+        const { data } = await refetchCounts()
+
+        if (data) {
+          setVoteCounts(data)
+        }
+
+        setSelectedOption(autoVote)
+        setHasVoted(true)
+      } catch (error) {
+        console.error('Failed to auto-vote:', error)
+      }
+    }
+
+    performAutoVote()
+  }, [
+    autoVote,
+    hasVoted,
+    autoVoteTriggered,
+    authLoading,
+    poll?.id,
+    poll?.status,
+    member,
+    postId,
+    submitVoteWithMember,
+    submitVoteAnonymous,
+    refetchCounts,
+  ])
 
   if (!poll || poll.status !== 'active') {
     return null
@@ -389,7 +475,7 @@ export default function PostPoll({
   }
 
   return (
-    <PollWrapper $hideBorderTop={hideBorderTop}>
+    <PollWrapper ref={combinedRef} $hideBorderTop={hideBorderTop}>
       <PollTitle>心情互動</PollTitle>
       {poll.content && <PollContent>{poll.content}</PollContent>}
       <PollContainer>
@@ -428,4 +514,6 @@ export default function PostPoll({
       </PollContainer>
     </PollWrapper>
   )
-}
+})
+
+export default PostPoll
