@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
 
 import { resizeImagesFragment } from '~/graphql/fragments/resized-images'
+import type { Poll } from '~/graphql/query/post'
 
 // Newsletter type definition (for list view)
 export type Newsletter = {
@@ -34,6 +35,7 @@ export type NewsletterDetail = {
   readerResponseTitle: string | null
   readerResponseLink: string | null
   readerResponseText: string | null
+  poll: Poll | null
 }
 
 // Query to get newsletters by date range
@@ -117,7 +119,57 @@ export const newsletterById = gql`
       readerResponseTitle
       readerResponseLink
       readerResponseText
+      poll {
+        id
+        name
+        content
+        option1
+        option2
+        option3
+        option4
+        option5
+        option1Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option2Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option3Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option4Image {
+          resized {
+            original
+            w480
+          }
+        }
+        option5Image {
+          resized {
+            original
+            w480
+          }
+        }
+        status
+      }
     }
   }
   ${resizeImagesFragment}
+`
+
+// Query to find newsletter by originalUrl (for redirect from /node/[id])
+export const newsletterByOriginalUrl = gql`
+  query GetNewsletterByOriginalUrl($url: String!) {
+    newsletters(where: { originalUrl: { contains: $url } }, take: 1) {
+      id
+    }
+  }
 `

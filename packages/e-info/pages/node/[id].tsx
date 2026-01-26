@@ -11,6 +11,7 @@ import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
+import { newsletterByOriginalUrl } from '~/graphql/query/newsletter'
 import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
 import { useReadingTracker } from '~/hooks/useReadingTracker'
@@ -149,10 +150,30 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
       return { notFound: true }
     }
 
-    const postStyle = data.posts[0].style
+    const postData = data.posts[0]
+    const postStyle = postData.style
 
     if (postStyle === ValidPostStyle.EMBEDDED) {
       return { notFound: true }
+    }
+
+    // Redirect newsletter posts to /newsletter/[id]
+    if (postData.isNewsletter) {
+      const { data: newsletterData } = await client.query<{
+        newsletters: { id: string }[]
+      }>({
+        query: newsletterByOriginalUrl,
+        variables: { url: `/node/${postId}` },
+      })
+
+      if (newsletterData?.newsletters?.[0]) {
+        return {
+          redirect: {
+            destination: `/newsletter/${newsletterData.newsletters[0].id}`,
+            permanent: true,
+          },
+        }
+      }
     }
 
     // Note: New API doesn't have slug field
@@ -176,7 +197,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     return {
       props: {
         headerData,
-        postData: data.posts[0],
+        postData,
       },
       // ISR: 每 5 分鐘重新驗證一次
       // 可根據需求調整：60（1分鐘）、300（5分鐘）、3600（1小時）

@@ -48,13 +48,18 @@ function hasAnonymousVoted(pollId: string, postId: string): number | null {
   return key in votes ? votes[key] : null
 }
 
-const PollWrapper = styled.section`
+type PollWrapperProps = {
+  $hideBorderTop?: boolean
+}
+
+const PollWrapper = styled.section<PollWrapperProps>`
   margin-bottom: 48px;
-  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[40]};
-  padding-top: 36px;
+  border-top: ${({ $hideBorderTop, theme }) =>
+    $hideBorderTop ? 'none' : `1px solid ${theme.colors.grayscale[40]}`};
+  padding-top: ${({ $hideBorderTop }) => ($hideBorderTop ? '0' : '36px')};
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding-top: 52px;
+    padding-top: ${({ $hideBorderTop }) => ($hideBorderTop ? '0' : '52px')};
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
@@ -149,15 +154,37 @@ const BarFill = styled.div<BarFillProps>`
   transition: width 0.3s ease;
 `
 
-const OptionText = styled.span`
-  position: relative;
+type OptionTextProps = {
+  $percentage: number
+}
+
+const OptionTextWrapper = styled.span<OptionTextProps>`
+  position: absolute;
   z-index: 1;
   display: flex;
   align-items: center;
   height: 100%;
-  padding: 0 9px;
+  top: 0;
+  left: ${(props) => Math.min(props.$percentage, 80)}%;
+  padding: 0 8px;
   font-size: 16px;
-  line-height: 1.8;
+  line-height: 1;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  white-space: nowrap;
+  transition: left 0.3s ease;
+`
+
+const OptionImage = styled.img`
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  margin-right: 4px;
+  flex-shrink: 0;
+`
+
+const OptionText = styled.span`
+  font-size: 16px;
+  line-height: 1;
   color: ${({ theme }) => theme.colors.grayscale[0]};
 `
 
@@ -189,16 +216,19 @@ const LottieWrapper = styled.div`
 type PollOption = {
   key: number
   text: string
+  imageUrl: string | null
 }
 
 type PostPollProps = {
   poll: Poll
   postId: string
+  hideBorderTop?: boolean
 }
 
 export default function PostPoll({
   poll,
   postId,
+  hideBorderTop = false,
 }: PostPollProps): JSX.Element | null {
   const { member, loading: authLoading } = useContext(AuthContext)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
@@ -266,19 +296,39 @@ export default function PostPoll({
   const options: PollOption[] = []
 
   if (poll.option1) {
-    options.push({ key: 1, text: poll.option1 })
+    options.push({
+      key: 1,
+      text: poll.option1,
+      imageUrl: poll.option1Image?.resized?.w480 || null,
+    })
   }
   if (poll.option2) {
-    options.push({ key: 2, text: poll.option2 })
+    options.push({
+      key: 2,
+      text: poll.option2,
+      imageUrl: poll.option2Image?.resized?.w480 || null,
+    })
   }
   if (poll.option3) {
-    options.push({ key: 3, text: poll.option3 })
+    options.push({
+      key: 3,
+      text: poll.option3,
+      imageUrl: poll.option3Image?.resized?.w480 || null,
+    })
   }
   if (poll.option4) {
-    options.push({ key: 4, text: poll.option4 })
+    options.push({
+      key: 4,
+      text: poll.option4,
+      imageUrl: poll.option4Image?.resized?.w480 || null,
+    })
   }
   if (poll.option5) {
-    options.push({ key: 5, text: poll.option5 })
+    options.push({
+      key: 5,
+      text: poll.option5,
+      imageUrl: poll.option5Image?.resized?.w480 || null,
+    })
   }
 
   if (options.length === 0) {
@@ -339,7 +389,7 @@ export default function PostPoll({
   }
 
   return (
-    <PollWrapper>
+    <PollWrapper $hideBorderTop={hideBorderTop}>
       <PollTitle>心情互動</PollTitle>
       {poll.content && <PollContent>{poll.content}</PollContent>}
       <PollContainer>
@@ -365,7 +415,12 @@ export default function PostPoll({
               <RadioCircle $isSelected={selectedOption === option.key} />
               <OptionBar>
                 <BarFill $percentage={getPercentage(option.key)} />
-                <OptionText>{option.text}</OptionText>
+                <OptionTextWrapper $percentage={getPercentage(option.key)}>
+                  {option.imageUrl && (
+                    <OptionImage src={option.imageUrl} alt="" />
+                  )}
+                  <OptionText>{option.text}</OptionText>
+                </OptionTextWrapper>
               </OptionBar>
             </OptionRow>
           ))}

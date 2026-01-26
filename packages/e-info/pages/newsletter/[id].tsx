@@ -6,6 +6,7 @@ import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import PostPoll from '~/components/post/post-poll'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NewsletterDetail } from '~/graphql/query/newsletter'
 import { newsletterById } from '~/graphql/query/newsletter'
@@ -14,7 +15,7 @@ import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
-  background-color: #eeeeee;
+  background-color: #ffffff;
   min-height: 100vh;
 `
 
@@ -68,8 +69,71 @@ const Banner = styled.div`
   }
 `
 
+const ReferralSection = styled.section`
+  border: 3px solid ${({ theme }) => theme.colors.primary[20]};
+  padding: 24px 16px;
+  margin-bottom: 48px;
+  text-align: center;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 32px 24px;
+  }
+`
+
+const ReferralTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[40]};
+  margin: 0 0 16px;
+`
+
+const ReferralText = styled.p`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
+  margin: 0 0 24px;
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary[40]};
+  }
+`
+
+const ReferralLinkWrapper = styled.div`
+  margin-bottom: 8px;
+`
+
+const ReferralLink = styled.a`
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[40]};
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`
+
+const ReferralSubLinkWrapper = styled.div``
+
+const ReferralSubLink = styled.a`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
 const NewsletterContent = styled.div`
-  background-color: #eeeeee;
+  background-color: #ffffff;
 
   /* Override inline styles from standardHtml */
   img {
@@ -188,6 +252,24 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
           <NewsletterContent
             dangerouslySetInnerHTML={{ __html: newsletter.standardHtml }}
           />
+        )}
+
+        <ReferralSection>
+          <ReferralTitle>你的推薦狀態</ReferralTitle>
+          <ReferralText>
+            你總共有 <strong>0</strong> 個推薦。邀請{' '}
+            <strong>1</strong> 個朋友訂閱來獲得點數。
+          </ReferralText>
+          <ReferralLinkWrapper>
+            <ReferralLink href="#">點擊此處邀請你的朋友訂閱！</ReferralLink>
+          </ReferralLinkWrapper>
+          <ReferralSubLinkWrapper>
+            <ReferralSubLink href="#">或查看集點狀態及獎勵。</ReferralSubLink>
+          </ReferralSubLinkWrapper>
+        </ReferralSection>
+
+        {newsletter.poll && (
+          <PostPoll poll={newsletter.poll} postId={newsletter.id} hideBorderTop />
         )}
       </ContentWrapper>
     </PageWrapper>

@@ -116,6 +116,7 @@ export type PostDetail = Override<
     attachments: Attachment[]
     poll: Poll | null
     ad1: PostAd | null
+    isNewsletter: boolean | null
   }
 >
 
@@ -140,6 +141,7 @@ const post = gql`
       briefApiData
       heroCaption
       citations
+      isNewsletter
 
       section {
         id
