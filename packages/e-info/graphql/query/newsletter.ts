@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 import { resizeImagesFragment } from '~/graphql/fragments/resized-images'
 
-// Newsletter type definition
+// Newsletter type definition (for list view)
 export type Newsletter = {
   id: string
   title: string
@@ -14,6 +14,26 @@ export type Newsletter = {
       w800: string
     }
   } | null
+}
+
+// Newsletter detail type definition (for detail page)
+export type NewsletterDetail = {
+  id: string
+  title: string
+  sendDate: string
+  heroImage: {
+    resized: {
+      original: string
+      w480: string
+      w800: string
+      w1200: string
+    }
+  } | null
+  standardHtml: string | null
+  originalUrl: string | null
+  readerResponseTitle: string | null
+  readerResponseLink: string | null
+  readerResponseText: string | null
 }
 
 // Query to get newsletters by date range
@@ -75,6 +95,28 @@ export const newslettersByMonth = gql`
           ...ResizedImagesField
         }
       }
+    }
+  }
+  ${resizeImagesFragment}
+`
+
+// Query to get a single newsletter by ID
+export const newsletterById = gql`
+  query GetNewsletterById($id: ID!) {
+    newsletter(where: { id: $id }) {
+      id
+      title
+      sendDate
+      heroImage {
+        resized {
+          ...ResizedImagesField
+        }
+      }
+      standardHtml
+      originalUrl
+      readerResponseTitle
+      readerResponseLink
+      readerResponseText
     }
   }
   ${resizeImagesFragment}
