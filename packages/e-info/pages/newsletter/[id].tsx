@@ -134,9 +134,12 @@ const ReferralSubLink = styled.a`
   }
 `
 
-const NewsletterContent = styled.div`
+const NewsletterContent = styled.div<{ $raw?: boolean }>`
   background-color: #eee;
 
+  ${({ $raw }) =>
+    !$raw &&
+    `
   /* Override inline styles from standardHtml */
   img {
     max-width: 100%;
@@ -147,10 +150,10 @@ const NewsletterContent = styled.div`
   a {
     color: #2d7a4f;
     text-decoration: none;
+  }
 
-    &:hover {
-      opacity: 0.8;
-    }
+  a:hover {
+    opacity: 0.8;
   }
 
   table {
@@ -168,15 +171,15 @@ const NewsletterContent = styled.div`
     background-color: #2d7a4f;
     padding: 10px 15px;
     margin-bottom: 0;
+  }
 
-    a,
-    a div {
-      color: #fff;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 1.4;
-    }
+  .news-tit a,
+  .news-tit a div {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
   }
 
   /* News scan title */
@@ -207,11 +210,11 @@ const NewsletterContent = styled.div`
     text-align: right;
     padding: 10px 15px;
     background: #fff;
+  }
 
-    a {
-      font-size: 14px;
-      text-decoration: none;
-    }
+  .float-right a {
+    font-size: 14px;
+    text-decoration: none;
   }
 
   /* Section labels (近期活動, 特別推薦活動) */
@@ -241,19 +244,19 @@ const NewsletterContent = styled.div`
     border-bottom: 1px solid #eee;
     font-size: 14px;
     line-height: 1.6;
+  }
 
-    &:last-child {
-      border-bottom: none;
-    }
+  .view-content ul li:last-child {
+    border-bottom: none;
+  }
 
-    a {
-      color: #333;
-      text-decoration: none;
+  .view-content ul li a {
+    color: #333;
+    text-decoration: none;
+  }
 
-      &:hover {
-        color: #2d7a4f;
-      }
-    }
+  .view-content ul li a:hover {
+    color: #2d7a4f;
   }
 
   .date-display-single {
@@ -277,11 +280,11 @@ const NewsletterContent = styled.div`
   .node-simpleads {
     display: inline-block;
     margin: 0 10px 25px;
+  }
 
-    img {
-      max-width: 250px;
-      height: auto;
-    }
+  .node-simpleads img {
+    max-width: 250px;
+    height: auto;
   }
 
   /* Table row spacing */
@@ -294,7 +297,7 @@ const NewsletterContent = styled.div`
   }
 
   /* Responsive adjustments */
-  ${({ theme }) => theme.breakpoint.md} {
+  @media (min-width: 768px) {
     .news-tit a,
     .news-tit a div {
       font-size: 20px;
@@ -304,6 +307,7 @@ const NewsletterContent = styled.div`
       font-size: 16px;
     }
   }
+  `}
 `
 
 const ErrorMessage = styled.div`
@@ -401,8 +405,9 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
   const router = useRouter()
   const pollRef = useRef<HTMLElement>(null)
 
-  // Get vote and utm_source from query parameters
-  const { vote, utm_source } = router.query
+  // Get vote, utm_source, and raw from query parameters
+  const { vote, utm_source, raw } = router.query
+  const isRawMode = raw === 'true'
   const voteOption = vote ? parseInt(vote as string, 10) : undefined
   const isValidVote = voteOption && voteOption >= 1 && voteOption <= 5
 
@@ -447,6 +452,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
 
         {newsletter.standardHtml && (
           <NewsletterContent
+            $raw={isRawMode}
             dangerouslySetInnerHTML={{ __html: newsletter.standardHtml }}
           />
         )}
