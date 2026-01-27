@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>環境資訊電子報 EIC Newsletter</title>
+  <style>
+    /* Reset & Base */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Microsoft JhengHei", "PingFang TC", "Heiti TC", "Noto Sans TC", sans-serif;
+      background-color: #f5f5f5;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    a {
+      color: #388A48;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+
+    /* ===== 00-Header ===== */
+    .header-banner {
+      width: 100%;
+      display: block;
+    }
+    .reader-count {
+      text-align: center;
+      padding: 20px 20px 10px;
+      font-size: 15px;
+      color: #333;
+    }
+    .date-section {
+      text-align: center;
+      padding: 5px 20px 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+    .main-title {
+      padding: 10px 20px 25px;
+    }
+    .main-title h1 {
+      font-size: 22px;
+      font-weight: bold;
+      color: #388A48;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* ===== 01-Content ===== */
+    .section-header {
+      text-align: center;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 2px solid #eee;
+    }
+    .toc-list {
+      padding: 15px 20px;
+    }
+    .toc-item {
+      padding: 8px 0;
+      font-size: 14px;
+      color: #333;
+      border-bottom: 1px dashed #ddd;
+    }
+    .toc-item:last-child {
+      border-bottom: none;
+    }
+    .toc-item::before {
+      content: "·";
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    .article-section {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .article-image {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    .article-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #388A48;
+      margin: 0 0 10px;
+      line-height: 1.4;
+    }
+    .article-content {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.8;
+      margin-bottom: 10px;
+    }
+    .read-more {
+      text-align: right;
+      font-size: 14px;
+    }
+    .read-more a {
+      color: #DD8346;
+      font-weight: bold;
+    }
+
+    /* ===== 02-Highlight (焦點話題) ===== */
+    .green-header {
+      background-color: #388A48;
+      color: white;
+      text-align: center;
+      padding: 12px 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .highlight-item {
+      display: flex;
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      align-items: flex-start;
+    }
+    .highlight-item:last-child {
+      border-bottom: none;
+    }
+    .highlight-thumb {
+      width: 120px;
+      height: 80px;
+      object-fit: cover;
+      flex-shrink: 0;
+      margin-right: 15px;
+    }
+    .highlight-content {
+      flex: 1;
+    }
+    .highlight-title {
+      font-size: 15px;
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .highlight-content .read-more {
+      text-align: right;
+    }
+
+    /* ===== 03-Ranking (閱讀排名) ===== */
+    .ranking-item {
+      display: flex;
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      align-items: flex-start;
+    }
+    .ranking-item:last-child {
+      border-bottom: none;
+    }
+    .ranking-thumb {
+      width: 100px;
+      height: 70px;
+      object-fit: cover;
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+    .ranking-number {
+      font-size: 42px;
+      font-weight: bold;
+      color: #388A48;
+      width: 50px;
+      flex-shrink: 0;
+      text-align: center;
+      line-height: 1;
+      margin-right: 10px;
+    }
+    .ranking-content {
+      flex: 1;
+    }
+    .ranking-title {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    /* Ads Section */
+    .ads-section {
+      padding: 20px;
+      background-color: #fff;
+    }
+    .ad-placeholder {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #D98B4B;
+      margin-bottom: 15px;
+    }
+    .ad-placeholder:last-child {
+      margin-bottom: 0;
+    }
+    .ad-placeholder span {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 8px;
+    }
+
+    /* ===== 04-Events (近期活動) ===== */
+    .event-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    .event-item:last-child {
+      border-bottom: none;
+    }
+    .event-date {
+      font-size: 15px;
+      color: #388A48;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .event-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .event-org {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* ===== 05-Jobs (環境徵才) ===== */
+    .job-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #333;
+    }
+    .job-item:last-child {
+      border-bottom: none;
+    }
+    .job-date {
+      font-size: 15px;
+      color: #388A48;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .job-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .job-org {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* ===== 06-Comment (推薦讀者回應) ===== */
+    .comment-section {
+      padding: 30px 20px;
+      background-color: #fff;
+    }
+    .comment-quote {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .comment-source {
+      font-size: 15px;
+      color: #DD8346;
+      margin-bottom: 15px;
+    }
+    .comment-link {
+      text-align: center;
+    }
+    .comment-link a {
+      color: #388A48;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    /* ===== 07-Referral (你的推薦狀態) ===== */
+    .referral-section {
+      padding: 20px;
+    }
+    .referral-box {
+      border: 2px solid #388A48;
+      padding: 25px 20px;
+      text-align: center;
+    }
+    .referral-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #388A48;
+      margin-bottom: 20px;
+    }
+    .referral-text {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 25px;
+    }
+    .referral-text .highlight-num {
+      color: #388A48;
+      font-weight: bold;
+    }
+    .referral-links {
+      font-size: 15px;
+    }
+    .referral-links a {
+      color: #388A48;
+      display: block;
+      margin: 8px 0;
+    }
+
+    /* ===== 08-Poll (心情互動) ===== */
+    .poll-section {
+      padding: 20px;
+    }
+    .poll-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #388A48;
+      margin-bottom: 16px;
+    }
+    .poll-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: #232333;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .poll-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .poll-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .poll-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #A0A0A2;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+    }
+    .poll-radio.selected::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #5B9D68;
+    }
+    .poll-bar-container {
+      flex: 1;
+      height: 25px;
+      background-color: #EAEAEA;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .poll-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: #CFEDD1;
+      transition: width 0.3s ease;
+    }
+    .poll-option-content {
+      position: absolute;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      top: 0;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+    .poll-emoji {
+      font-size: 20px;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+    .poll-text {
+      font-size: 16px;
+      line-height: 1;
+      color: #232333;
+    }
+
+    /* ===== 09-Footer ===== */
+    .footer {
+      padding: 30px 20px;
+      text-align: center;
+      background-color: #fff;
+    }
+    .social-icons {
+      margin-bottom: 20px;
+    }
+    .social-icons a {
+      display: inline-block;
+      margin: 0 8px;
+      font-size: 24px;
+      color: #333;
+    }
+    .social-icon {
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .footer-text {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+    .footer-links {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #388A48;
+      text-decoration: underline;
+    }
+    .footer-links a {
+      color: #388A48;
+      font-size: 15px;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .footer-links a:hover {
+      color: #126020;
+    }
+    .footer-links span {
+      color: #388A48;
+      text-decoration: underline;
+    }
+    .copyright {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ===== 00-Header ===== -->
+    <img src="https://eic-web-dev-1090198686704.asia-east1.run.app/newsletter-banner.png" alt="環境資訊電子報 EIC Newsletter" class="header-banner">
+    
+    <div class="reader-count">
+      你現在正與XXXXX人一起閱讀環境新聞
+    </div>
+    
+    <div class="date-section">
+      2025/00/00
+    </div>
+    
+    <div class="main-title">
+      <h1>230131電子報｜違背傳統獵熊禁忌？從霧台母熊獵殺事件看山林經驗傳承的難題</h1>
+    </div>
+
+    <!-- ===== 01-Content ===== -->
+    <div class="section-header">
+      本期內容
+    </div>
+    
+    <div class="toc-list">
+      <div class="toc-item">環團經濟部前抗議 端「美花咖啡」不滿補 盼「建仁環團經濟部前抗議 端「美花咖啡」不滿補 盼「建仁</div>
+      <div class="toc-item">環團經濟部前抗議 端「美花咖啡」不滿補 盼「建仁環團經濟部前抗議 端「美花咖啡」不滿補 盼「建仁</div>
+      <div class="toc-item">環團經濟部前抗議 端「美花咖啡」不滿補 盼「建仁環團經濟部前抗議 端「美花咖啡」不滿補 盼「建仁</div>
+    </div>
+
+    <!-- Article 1 -->
+    <div class="article-section">
+      <img src="https://placehold.co/560x320/e8e8e8/666666?text=新聞圖片" alt="新聞圖片" class="article-image">
+      <h2 class="article-title">環團經濟部前抗議 端「美花咖啡」不滿補貼褐色產業 盼「建仁綠茶」轉苦回甘</h2>
+      <p class="article-content">
+        核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「届期前」都可提出申請、核電廠運轉年限最多再延長20年
+      </p>
+      <div class="read-more"><a href="#">閱讀更多</a></div>
+    </div>
+
+    <!-- Article 2 -->
+    <div class="article-section">
+      <img src="https://placehold.co/560x320/d5e5d5/666666?text=衛星影像" alt="衛星影像" class="article-image">
+      <h2 class="article-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</h2>
+      <p class="article-content">
+        空中巴士基金會（Airbus Foundation）與連結保育基金會（Connected Conservation Foundation, CCF）近期宣布新的研究計畫獎項，鼓勵參加者利用衛星影像保育生物多樣性。 全球的物種正大量消失中家
+      </p>
+      <div class="read-more"><a href="#">閱讀更多</a></div>
+    </div>
+
+    <!-- ===== 02-Highlight (焦點話題) ===== -->
+    <div class="green-header">焦點話題</div>
+    
+    <div class="highlight-item">
+      <img src="https://placehold.co/120x80/d0d0d0/666666?text=圖片" alt="縮圖" class="highlight-thumb">
+      <div class="highlight-content">
+        <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+        <div class="read-more"><a href="#">閱讀更多</a></div>
+      </div>
+    </div>
+    
+    <div class="highlight-item">
+      <img src="https://placehold.co/120x80/d0d0d0/666666?text=圖片" alt="縮圖" class="highlight-thumb">
+      <div class="highlight-content">
+        <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+        <div class="read-more"><a href="#">閱讀更多</a></div>
+      </div>
+    </div>
+    
+    <div class="highlight-item">
+      <img src="https://placehold.co/120x80/d0d0d0/666666?text=圖片" alt="縮圖" class="highlight-thumb">
+      <div class="highlight-content">
+        <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+        <div class="read-more"><a href="#">閱讀更多</a></div>
+      </div>
+    </div>
+
+    <!-- ===== 03-Ranking (閱讀排名) ===== -->
+    <div class="green-header">閱讀排名</div>
+    
+    <div class="ranking-item">
+      <img src="https://placehold.co/100x70/d0d0d0/666666?text=圖片" alt="縮圖" class="ranking-thumb">
+      <div class="ranking-number">1</div>
+      <div class="ranking-content">
+        <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+        <div class="read-more"><a href="#">閱讀更多</a></div>
+      </div>
+    </div>
+    
+    <div class="ranking-item">
+      <img src="https://placehold.co/100x70/d0d0d0/666666?text=圖片" alt="縮圖" class="ranking-thumb">
+      <div class="ranking-number">2</div>
+      <div class="ranking-content">
+        <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+        <div class="read-more"><a href="#">閱讀更多</a></div>
+      </div>
+    </div>
+    
+    <div class="ranking-item">
+      <img src="https://placehold.co/100x70/d0d0d0/666666?text=圖片" alt="縮圖" class="ranking-thumb">
+      <div class="ranking-number">3</div>
+      <div class="ranking-content">
+        <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+        <div class="read-more"><a href="#">閱讀更多</a></div>
+      </div>
+    </div>
+
+    <!-- Ads -->
+    <div class="ads-section">
+      <div class="ad-placeholder"><span>廣告</span></div>
+      <div class="ad-placeholder"><span>廣告</span></div>
+    </div>
+
+    <!-- ===== 04-Events (近期活動) ===== -->
+    <div class="green-header">近期活動</div>
+    
+    <div class="event-item">
+      <div class="event-date">2025年06月02日</div>
+      <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
+      <div class="event-org">社團法人中華民國自然生態保育協會</div>
+    </div>
+    
+    <div class="event-item">
+      <div class="event-date">2025年06月02日</div>
+      <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
+      <div class="event-org">社團法人中華民國自然生態保育協會</div>
+    </div>
+    
+    <div class="event-item">
+      <div class="event-date">2025年06月02日</div>
+      <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
+      <div class="event-org">社團法人中華民國自然生態保育協會</div>
+    </div>
+
+    <!-- ===== 05-Jobs (環境徵才) ===== -->
+    <div class="green-header">環境徵才</div>
+    
+    <div class="job-item">
+      <div class="job-date">2025年06月02日</div>
+      <div class="job-title">【自然環資】專案執行（環境教育）</div>
+      <div class="job-org">社團法人中華民國自然生態保育協會</div>
+    </div>
+    
+    <div class="job-item">
+      <div class="job-date">2025年06月02日</div>
+      <div class="job-title">【自然環資】專案執行（環境教育）</div>
+      <div class="job-org">社團法人中華民國自然生態保育協會</div>
+    </div>
+    
+    <div class="job-item">
+      <div class="job-date">2025年06月02日</div>
+      <div class="job-title">【自然環資】專案執行（環境教育）</div>
+      <div class="job-org">社團法人中華民國自然生態保育協會</div>
+    </div>
+
+    <!-- ===== 06-Comment (推薦讀者回應) ===== -->
+    <div class="green-header">推薦讀者回應</div>
+    
+    <div class="comment-section">
+      <p class="comment-quote">
+        不過，中世紀的格陵蘭確實是種得出小麥還有辦法出口的地方。
+      </p>
+      <p class="comment-source">
+        融冰之島另一章 格陵蘭住民：小時候沒有樹，現在不僅有樹，還有森林
+      </p>
+      <div class="comment-link">
+        <a href="#">閱讀全文</a>
+      </div>
+    </div>
+
+    <!-- ===== 07-Referral (你的推薦狀態) ===== -->
+    <div class="referral-section">
+      <div class="referral-box">
+        <div class="referral-title">你的推薦狀態</div>
+        <p class="referral-text">
+          你總共有 <span class="highlight-num">0</span> 個推薦。邀請 <span class="highlight-num">1</span> 個朋友訂閱來獲得點數。
+        </p>
+        <div class="referral-links">
+          <a href="#">點擊此處邀請你的朋友訂閱！</a>
+          <a href="#">或查看集點狀態及獎勵。</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 08-Poll (心情互動) ===== -->
+    <div class="poll-section">
+      <div class="poll-title">心情互動</div>
+      <div class="poll-subtitle">留下今天看完電子報的心情</div>
+
+      <div class="poll-options">
+        <div class="poll-option">
+          <div class="poll-radio"></div>
+          <div class="poll-bar-container">
+            <div class="poll-bar" style="width: 70%;"></div>
+            <div class="poll-option-content" style="left: 70%;">
+              <span class="poll-emoji">👍</span>
+              <span class="poll-text">很棒</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="poll-option">
+          <div class="poll-radio"></div>
+          <div class="poll-bar-container">
+            <div class="poll-bar" style="width: 15%;"></div>
+            <div class="poll-option-content" style="left: 15%;">
+              <span class="poll-emoji">😂</span>
+              <span class="poll-text">有趣</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="poll-option">
+          <div class="poll-radio"></div>
+          <div class="poll-bar-container">
+            <div class="poll-bar" style="width: 45%;"></div>
+            <div class="poll-option-content" style="left: 45%;">
+              <span class="poll-emoji">🤩</span>
+              <span class="poll-text">驚訝</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="poll-option">
+          <div class="poll-radio"></div>
+          <div class="poll-bar-container">
+            <div class="poll-bar" style="width: 10%;"></div>
+            <div class="poll-option-content" style="left: 10%;">
+              <span class="poll-emoji">🙂</span>
+              <span class="poll-text">還好</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="poll-option">
+          <div class="poll-radio selected"></div>
+          <div class="poll-bar-container">
+            <div class="poll-bar" style="width: 20%;"></div>
+            <div class="poll-option-content" style="left: 20%;">
+              <span class="poll-emoji">🥺</span>
+              <span class="poll-text">擔憂</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 09-Footer ===== -->
+    <div class="footer">
+      <div class="social-icons">
+        <a href="https://www.facebook.com/enc.teia" title="Facebook" target="_blank" rel="noopener noreferrer">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+          </svg>
+        </a>
+        <a href="https://x.com/e_info" title="X (Twitter)" target="_blank" rel="noopener noreferrer">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a href="https://line.me/R/ti/p/@e-info" title="LINE" target="_blank" rel="noopener noreferrer">
+          <svg class="social-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.4913 0H4.50875C2.01864 0 0 2.01864 0 4.50875V15.4913C0 17.9814 2.01864 20 4.50875 20H15.4913C17.9814 20 20 17.9814 20 15.4913V4.50875C20 2.01864 17.9814 0 15.4913 0Z" fill="#232333"/>
+            <path d="M16.6663 9.05725C16.6663 6.0735 13.6751 3.646 9.9982 3.646C6.32133 3.646 3.33008 6.0735 3.33008 9.05725C3.33008 11.7322 5.70258 13.9722 8.90695 14.396C9.12383 14.4429 9.41945 14.5391 9.49445 14.7247C9.56195 14.8935 9.5382 15.1572 9.51633 15.3279C9.51633 15.3279 9.4382 15.7985 9.42133 15.8985C9.39195 16.0672 9.28758 16.5579 9.99883 16.2579C10.7107 15.9579 13.8388 13.9966 15.2376 12.3866C16.2038 11.3266 16.667 10.2516 16.667 9.05725H16.6663Z" fill="white"/>
+            <path d="M14.4476 10.7807H12.5745C12.5039 10.7807 12.447 10.7238 12.447 10.6532V10.6513V7.74635V7.74322C12.447 7.6726 12.5039 7.61572 12.5745 7.61572H14.4476C14.5176 7.61572 14.5751 7.67322 14.5751 7.74322V8.21635C14.5751 8.28697 14.5183 8.34385 14.4476 8.34385H13.1745V8.8351H14.4476C14.5176 8.8351 14.5751 8.8926 14.5751 8.9626V9.43572C14.5751 9.50635 14.5183 9.56322 14.4476 9.56322H13.1745V10.0545H14.4476C14.5176 10.0545 14.5751 10.112 14.5751 10.182V10.6551C14.5751 10.7257 14.5183 10.7826 14.4476 10.7826V10.7807Z" fill="#232333"/>
+            <path d="M7.51834 10.7809C7.58834 10.7809 7.64584 10.724 7.64584 10.6534V10.1802C7.64584 10.1102 7.58834 10.0527 7.51834 10.0527H6.24521V7.74273C6.24521 7.67273 6.18771 7.61523 6.11771 7.61523H5.64459C5.57396 7.61523 5.51709 7.67211 5.51709 7.74273V10.6509V10.6534C5.51709 10.724 5.57396 10.7809 5.64459 10.7809H7.51771H7.51834Z" fill="#232333"/>
+            <path d="M8.6459 7.61572H8.1734C8.10298 7.61572 8.0459 7.67281 8.0459 7.74322V10.6532C8.0459 10.7236 8.10298 10.7807 8.1734 10.7807H8.6459C8.71632 10.7807 8.7734 10.7236 8.7734 10.6532V7.74322C8.7734 7.67281 8.71632 7.61572 8.6459 7.61572Z" fill="#232333"/>
+            <path d="M11.8649 7.61572H11.3918C11.3212 7.61572 11.2643 7.6726 11.2643 7.74322V9.47135L9.93303 7.67322C9.9299 7.66885 9.92615 7.66447 9.92303 7.6601C9.92303 7.6601 9.92303 7.6601 9.9224 7.65947C9.9199 7.65697 9.9174 7.65385 9.9149 7.65135C9.91428 7.65072 9.91303 7.6501 9.9124 7.64947C9.9099 7.6476 9.90803 7.64572 9.90553 7.64385C9.90428 7.64322 9.90303 7.64197 9.90178 7.64135C9.8999 7.63947 9.8974 7.63822 9.8949 7.63697C9.89365 7.63635 9.8924 7.6351 9.89115 7.63447C9.88865 7.63322 9.88678 7.63197 9.88428 7.63072C9.88303 7.6301 9.88178 7.62947 9.88053 7.62885C9.87803 7.6276 9.87553 7.62635 9.87303 7.62572C9.87178 7.62572 9.87053 7.62447 9.86865 7.62447C9.86615 7.62385 9.86365 7.6226 9.86115 7.62197C9.8599 7.62197 9.85803 7.62135 9.85678 7.62072C9.85428 7.62072 9.85178 7.61947 9.84928 7.61885C9.8474 7.61885 9.84553 7.61885 9.84365 7.61822C9.84115 7.61822 9.83928 7.6176 9.83678 7.6176C9.83428 7.6176 9.8324 7.6176 9.8299 7.6176C9.82865 7.6176 9.82678 7.6176 9.82553 7.6176H9.35553C9.28553 7.6176 9.22803 7.67447 9.22803 7.7451V10.6551C9.22803 10.7251 9.2849 10.7826 9.35553 10.7826H9.82865C9.89928 10.7826 9.95615 10.7257 9.95615 10.6551V8.92697L11.2893 10.7276C11.2987 10.7407 11.3099 10.7513 11.3224 10.7595C11.3224 10.7595 11.3237 10.7601 11.3237 10.7607C11.3262 10.7626 11.3287 10.7638 11.3318 10.7657C11.333 10.7663 11.3343 10.767 11.3355 10.7676C11.3374 10.7688 11.3399 10.7695 11.3418 10.7707C11.3437 10.772 11.3462 10.7726 11.348 10.7732C11.3493 10.7732 11.3505 10.7745 11.3518 10.7745C11.3549 10.7757 11.3574 10.7763 11.3605 10.777C11.3605 10.777 11.3618 10.777 11.3624 10.777C11.373 10.7795 11.3843 10.7813 11.3955 10.7813H11.8655C11.9355 10.7813 11.993 10.7245 11.993 10.6538V7.74385C11.993 7.67385 11.9362 7.61635 11.8655 7.61635L11.8649 7.61572Z" fill="#232333"/>
+          </svg>
+        </a>
+      </div>
+      
+      <div class="footer-text">
+        電子報由社團法人台灣環境資訊協會發行<br>
+        對我們有任何疑問或指教歡迎利用以上連結連繫
+      </div>
+      
+      <div class="footer-links">
+        <a href="#">更新資料</a>
+        <span>|</span>
+        <a href="#">退訂電子報</a>
+        <span>|</span>
+        <a href="https://e-info.neticrm.tw/civicrm/contribute/transact?reset=1&id=9" target="_blank" rel="noopener noreferrer">我要捐款</a>
+      </div>
+      
+      <div class="copyright">
+        Copyright © 2020Taiwan Environmental Information Association, All rights reserved.
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

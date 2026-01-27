@@ -494,7 +494,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
               </svg>
             </SocialLink>
             <SocialLink
-              href="https://twitter.com/e_aborras"
+              href="https://x.com/e_info"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X"
