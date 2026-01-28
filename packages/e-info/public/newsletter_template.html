@@ -76,16 +76,15 @@
       font-size: 18px;
       font-weight: bold;
       color: #333;
-      border-bottom: 2px solid #eee;
     }
     .toc-list {
       padding: 15px 20px;
+      border-bottom: 20px solid #D9D9D9;
     }
     .toc-item {
       padding: 8px 0;
       font-size: 14px;
       color: #333;
-      border-bottom: 1px dashed #ddd;
     }
     .toc-item:last-child {
       border-bottom: none;
@@ -136,28 +135,30 @@
     }
     .highlight-item {
       display: flex;
-      padding: 15px 20px;
+      padding: 20px;
       border-bottom: 1px solid #eee;
-      align-items: flex-start;
+      align-items: stretch;
     }
     .highlight-item:last-child {
       border-bottom: none;
     }
     .highlight-thumb {
       width: 120px;
-      height: 80px;
+      height: 120px;
       object-fit: cover;
       flex-shrink: 0;
       margin-right: 15px;
     }
     .highlight-content {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .highlight-title {
       font-size: 15px;
       color: #333;
       line-height: 1.5;
-      margin-bottom: 10px;
     }
     .highlight-content .read-more {
       text-align: right;
@@ -167,15 +168,14 @@
     .ranking-item {
       display: flex;
       padding: 15px 20px;
-      border-bottom: 1px solid #eee;
-      align-items: flex-start;
+      align-items: stretch;
     }
     .ranking-item:last-child {
       border-bottom: none;
     }
     .ranking-thumb {
-      width: 100px;
-      height: 70px;
+      width: 120px;
+      height: 120px;
       object-fit: cover;
       flex-shrink: 0;
       margin-right: 10px;
@@ -192,12 +192,17 @@
     }
     .ranking-content {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ranking-content .read-more {
+      text-align: right;
     }
     .ranking-title {
       font-size: 14px;
       color: #333;
       line-height: 1.5;
-      margin-bottom: 8px;
     }
 
     /* Ads Section */
@@ -288,14 +293,14 @@
     }
     .comment-source {
       font-size: 15px;
-      color: #DD8346;
+      color: #388A48;
       margin-bottom: 15px;
     }
     .comment-link {
       text-align: center;
     }
     .comment-link a {
-      color: #388A48;
+      color: #DD8346;
       font-size: 16px;
       font-weight: bold;
     }
@@ -475,16 +480,18 @@
     <img src="https://eic-web-dev-1090198686704.asia-east1.run.app/newsletter-banner.png" alt="環境資訊電子報 EIC Newsletter" class="header-banner">
     
     <div class="reader-count">
-      你現在正與XXXXX人一起閱讀環境新聞
+      你現在正與 1234567 人一起閱讀環境新聞
     </div>
     
     <div class="date-section">
-      2025/00/00
+      2023/01/31
     </div>
     
     <div class="main-title">
       <h1>230131電子報｜違背傳統獵熊禁忌？從霧台母熊獵殺事件看山林經驗傳承的難題</h1>
     </div>
+
+    <!-- ===== 這裡以下是電子報儲存的內容 ===== -->
 
     <!-- ===== 01-Content ===== -->
     <div class="section-header">
@@ -521,7 +528,7 @@
     <div class="green-header">焦點話題</div>
     
     <div class="highlight-item">
-      <img src="https://placehold.co/120x80/d0d0d0/666666?text=圖片" alt="縮圖" class="highlight-thumb">
+      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
       <div class="highlight-content">
         <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
         <div class="read-more"><a href="#">閱讀更多</a></div>
@@ -529,7 +536,7 @@
     </div>
     
     <div class="highlight-item">
-      <img src="https://placehold.co/120x80/d0d0d0/666666?text=圖片" alt="縮圖" class="highlight-thumb">
+      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
       <div class="highlight-content">
         <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
         <div class="read-more"><a href="#">閱讀更多</a></div>
@@ -537,7 +544,7 @@
     </div>
     
     <div class="highlight-item">
-      <img src="https://placehold.co/120x80/d0d0d0/666666?text=圖片" alt="縮圖" class="highlight-thumb">
+      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
       <div class="highlight-content">
         <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
         <div class="read-more"><a href="#">閱讀更多</a></div>
@@ -548,7 +555,7 @@
     <div class="green-header">閱讀排名</div>
     
     <div class="ranking-item">
-      <img src="https://placehold.co/100x70/d0d0d0/666666?text=圖片" alt="縮圖" class="ranking-thumb">
+      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
       <div class="ranking-number">1</div>
       <div class="ranking-content">
         <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
@@ -557,7 +564,7 @@
     </div>
     
     <div class="ranking-item">
-      <img src="https://placehold.co/100x70/d0d0d0/666666?text=圖片" alt="縮圖" class="ranking-thumb">
+      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
       <div class="ranking-number">2</div>
       <div class="ranking-content">
         <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
@@ -566,7 +573,7 @@
     </div>
     
     <div class="ranking-item">
-      <img src="https://placehold.co/100x70/d0d0d0/666666?text=圖片" alt="縮圖" class="ranking-thumb">
+      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
       <div class="ranking-number">3</div>
       <div class="ranking-content">
         <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
@@ -636,6 +643,8 @@
         <a href="#">閱讀全文</a>
       </div>
     </div>
+
+    <!-- ===== 這裡以上是電子報儲存的內容 ===== -->
 
     <!-- ===== 07-Referral (你的推薦狀態) ===== -->
     <div class="referral-section">
