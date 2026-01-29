@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import styled from 'styled-components'
+
+import AuthContext from '~/contexts/auth-context'
+import { updateMemberById } from '~/lib/graphql/member'
 
 // Modal overlay
 const Overlay = styled.div`
@@ -277,6 +280,14 @@ const SuccessMessage = styled.p`
   text-align: center;
 `
 
+// Error message
+const ErrorText = styled.p`
+  font-size: 14px;
+  color: #d32f2f;
+  text-align: center;
+  margin: 0 0 16px;
+`
+
 const CloseButtonLarge = styled.button`
   width: 100%;
   max-width: 200px;
@@ -300,7 +311,10 @@ type NewsletterModalProps = {
   onClose: () => void
 }
 
+type SubscriptionState = 'idle' | 'loading' | 'success' | 'error'
+
 const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
+  const { member } = useContext(AuthContext)
   const [dailyChecked, setDailyChecked] = useState(false)
   const [weeklyChecked, setWeeklyChecked] = useState(false)
   const [beautifiedChecked, setBeautifiedChecked] = useState(false)
@@ -309,6 +323,9 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
   const [confirmEmail, setConfirmEmail] = useState('')
   const [mounted, setMounted] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [subscriptionState, setSubscriptionState] =
+    useState<SubscriptionState>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
   // Ensure we only render portal on client side
   useEffect(() => {
@@ -324,6 +341,8 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     setShowBeautifiedInfo(false)
     setEmail('')
     setConfirmEmail('')
+    setSubscriptionState('idle')
+    setErrorMessage('')
     onClose()
   }
 
@@ -333,16 +352,57 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     }
   }
 
-  const handleSubmit = () => {
-    // TODO: Implement actual subscription logic
-    console.log('Subscribe:', {
-      daily: dailyChecked,
-      weekly: weeklyChecked,
-      beautified: beautifiedChecked,
-      email,
-      confirmEmail,
-    })
-    setIsSubmitted(true)
+  const handleSubmit = async () => {
+    // Reset error state
+    setErrorMessage('')
+    setSubscriptionState('loading')
+
+    // Determine frequency and format from checkboxes
+    const frequency = dailyChecked ? 'daily' : 'weekly'
+    const format = beautifiedChecked ? 'beautified' : 'standard'
+
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          frequency,
+          format,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSubscriptionState('success')
+        setIsSubmitted(true)
+
+        // Sync to member system if user is logged in
+        if (member) {
+          try {
+            await updateMemberById(member.id, {
+              newsletterSubscription: format,
+              newsletterFrequency:
+                frequency === 'daily' ? 'weekday' : 'saturday',
+            })
+            console.log('[Newsletter] Member subscription synced')
+          } catch (syncError) {
+            // Don't fail the overall subscription if member sync fails
+            console.error('[Newsletter] Member sync error:', syncError)
+          }
+        }
+      } else {
+        setSubscriptionState('error')
+        setErrorMessage(data.error || '訂閱失敗，請稍後再試')
+      }
+    } catch (error) {
+      console.error('[Newsletter] Subscription error:', error)
+      setSubscriptionState('error')
+      setErrorMessage('網路錯誤，請稍後再試')
+    }
   }
 
   if (!isOpen || !mounted) return null
@@ -447,11 +507,21 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
               />
             </FormSection>
 
+            {subscriptionState === 'error' && errorMessage && (
+              <ErrorText>{errorMessage}</ErrorText>
+            )}
+
             <SubmitButton
               onClick={handleSubmit}
-              disabled={!email || !confirmEmail || email !== confirmEmail}
+              disabled={
+                !email ||
+                !confirmEmail ||
+                email !== confirmEmail ||
+                (!dailyChecked && !weeklyChecked) ||
+                subscriptionState === 'loading'
+              }
             >
-              訂閱
+              {subscriptionState === 'loading' ? '訂閱中...' : '訂閱'}
             </SubmitButton>
           </>
         )}

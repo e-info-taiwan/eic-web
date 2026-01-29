@@ -5,6 +5,15 @@ const USE_MOCK_SERVER = (process.env.USE_MOCK_SERVER ?? 'false') === 'true'
 const MOCK_API_SERVER_PORT = Number(process.env.MOCK_API_SERVER_PORT ?? 4000)
 const MISO_API_KEY = 'IHtn9b9tfPsO1EQpGV74OMf2syhELb6XVZe8u9FT'
 
+// Mailchimp Configuration
+// API Key format: <key>-<dc> where dc is the data center (e.g., us21)
+const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY ?? ''
+const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID ?? ''
+// Server prefix is derived from API key (last part after hyphen) or set explicitly
+const MAILCHIMP_SERVER_PREFIX =
+  process.env.MAILCHIMP_SERVER_PREFIX ??
+  (MAILCHIMP_API_KEY.split('-').pop() || '')
+
 // Google OAuth Client
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID ?? ''
 const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET ?? ''
@@ -102,6 +111,9 @@ export {
   API_ENDPOINT,
   EDITOOLS_API_ENDPOINT,
   FIREBASE_CONFIG,
+  MAILCHIMP_API_KEY,
+  MAILCHIMP_LIST_ID,
+  MAILCHIMP_SERVER_PREFIX,
   MISO_API_KEY,
   MOCK_API_SERVER_PORT,
   OAUTH_CLIENT_ID,
