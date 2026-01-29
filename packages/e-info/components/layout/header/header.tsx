@@ -119,6 +119,7 @@ const SearchButton = styled.button`
 `
 
 const LoginButton = styled.button`
+  white-space: nowrap;
   background: none;
   border: 1px solid ${({ theme }) => theme.colors.primary[40]};
   color: ${({ theme }) => theme.colors.primary[40]};

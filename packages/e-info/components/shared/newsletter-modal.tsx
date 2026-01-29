@@ -24,7 +24,7 @@ const Overlay = styled.div`
 const ModalContainer = styled.div`
   background-color: white;
   border-radius: 12px;
-  max-width: 500px;
+  max-width: 300px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -221,7 +221,8 @@ const Input = styled.input`
   color: ${({ theme }) => theme.colors.grayscale[0]};
   background-color: ${({ theme }) => theme.colors.grayscale[99]};
   box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.05) inset;
-  border-radius: 0;
+  border-radius: 4px;
+  text-align: center;
 
   &:focus {
     outline: none;
@@ -241,17 +242,16 @@ const InputLabel = styled.span`
 
 // Submit button
 const SubmitButton = styled.button`
-  width: 100%;
-  max-width: 200px;
   margin: 0 auto;
   display: block;
-  padding: 12px 24px;
+  padding: 4px 52px;
   background-color: ${({ theme }) => theme.colors.primary[40]};
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 700;
+  line-height: 1.5;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
