@@ -1,4 +1,5 @@
 import errors from '@twreporter/errors'
+import Lottie from 'lottie-react'
 import type { GetServerSideProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -17,6 +18,7 @@ import {
   newsletterYearRange,
 } from '~/graphql/query/newsletter'
 import type { NextPageWithLayout } from '~/pages/_app'
+import loadingAnimation from '~/public/lottie/loading.json'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
@@ -339,6 +341,24 @@ const EmptyMessage = styled.div`
   font-size: 16px;
 `
 
+const CalendarWrapper = styled.div`
+  position: relative;
+  min-height: 300px;
+`
+
+const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+`
+
 const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六']
 const HISTORICAL_YEARS = [
   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
@@ -548,64 +568,76 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
           </NavButton>
         </NavigationWrapper>
 
-        {/* Desktop: Calendar grid with weekday headers */}
-        <DesktopCalendarGrid>
-          {WEEKDAYS.map((day) => (
-            <WeekdayHeader key={day}>週{day}</WeekdayHeader>
-          ))}
+        <CalendarWrapper>
+          {loading && (
+            <LoadingOverlay>
+              <Lottie
+                animationData={loadingAnimation}
+                loop
+                style={{ width: 80, height: 80, transform: 'scale(4)' }}
+              />
+            </LoadingOverlay>
+          )}
 
-          {calendarCells.map((cell, index) => (
-            <CalendarCell key={index}>
-              {cell.newsletter && (
-                <NewsletterCard href={`/newsletter/${cell.newsletter.id}`}>
-                  <ThumbnailWrapper>
-                    <Image
-                      src={
-                        cell.newsletter.heroImage?.resized?.w480 ||
-                        cell.newsletter.heroImage?.resized?.original ||
-                        DEFAULT_POST_IMAGE_PATH
-                      }
-                      alt={cell.newsletter.title || '電子報'}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </ThumbnailWrapper>
-                  <CardDate>{formatDate(cell.newsletter.sendDate)}</CardDate>
-                  <CardTitle>{cell.newsletter.title}</CardTitle>
-                </NewsletterCard>
-              )}
-            </CalendarCell>
-          ))}
-        </DesktopCalendarGrid>
+          {/* Desktop: Calendar grid with weekday headers */}
+          <DesktopCalendarGrid>
+            {WEEKDAYS.map((day) => (
+              <WeekdayHeader key={day}>週{day}</WeekdayHeader>
+            ))}
 
-        {/* Mobile/Tablet: Simple grid without empty cells */}
-        <MobileTabletGrid>
-          {newsletters.map((newsletter) => (
-            <NewsletterCard
-              key={newsletter.id}
-              href={`/newsletter/${newsletter.id}`}
-            >
-              <ThumbnailWrapper>
-                <Image
-                  src={
-                    newsletter.heroImage?.resized?.w480 ||
-                    newsletter.heroImage?.resized?.original ||
-                    DEFAULT_POST_IMAGE_PATH
-                  }
-                  alt={newsletter.title || '電子報'}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </ThumbnailWrapper>
-              <CardDate>{formatDate(newsletter.sendDate)}</CardDate>
-              <CardTitle>{newsletter.title}</CardTitle>
-            </NewsletterCard>
-          ))}
-        </MobileTabletGrid>
+            {calendarCells.map((cell, index) => (
+              <CalendarCell key={index}>
+                {cell.newsletter && (
+                  <NewsletterCard href={`/newsletter/${cell.newsletter.id}`}>
+                    <ThumbnailWrapper>
+                      <Image
+                        src={
+                          cell.newsletter.heroImage?.resized?.w480 ||
+                          cell.newsletter.heroImage?.resized?.original ||
+                          DEFAULT_POST_IMAGE_PATH
+                        }
+                        alt={cell.newsletter.title || '電子報'}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </ThumbnailWrapper>
+                    <CardDate>{formatDate(cell.newsletter.sendDate)}</CardDate>
+                    <CardTitle>{cell.newsletter.title}</CardTitle>
+                  </NewsletterCard>
+                )}
+              </CalendarCell>
+            ))}
+          </DesktopCalendarGrid>
 
-        {newsletters.length === 0 && !loading && (
-          <EmptyMessage>本月份暫無電子報</EmptyMessage>
-        )}
+          {/* Mobile/Tablet: Simple grid without empty cells */}
+          <MobileTabletGrid>
+            {newsletters.map((newsletter) => (
+              <NewsletterCard
+                key={newsletter.id}
+                href={`/newsletter/${newsletter.id}`}
+              >
+                <ThumbnailWrapper>
+                  <Image
+                    src={
+                      newsletter.heroImage?.resized?.w480 ||
+                      newsletter.heroImage?.resized?.original ||
+                      DEFAULT_POST_IMAGE_PATH
+                    }
+                    alt={newsletter.title || '電子報'}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                </ThumbnailWrapper>
+                <CardDate>{formatDate(newsletter.sendDate)}</CardDate>
+                <CardTitle>{newsletter.title}</CardTitle>
+              </NewsletterCard>
+            ))}
+          </MobileTabletGrid>
+
+          {newsletters.length === 0 && !loading && (
+            <EmptyMessage>本月份暫無電子報</EmptyMessage>
+          )}
+        </CalendarWrapper>
 
         <HistoricalSection>
           <SectionTitle>系列電子報回顧</SectionTitle>
@@ -635,7 +667,11 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
         <HistoricalSection>
           <SectionTitle>系列電子報回顧（已停刊）</SectionTitle>
           <YearLinks>
-            <YearLink href="#" onClick={(e) => e.preventDefault()}>
+            <YearLink
+              href="https://us12.campaign-archive.com/home/?u=988c9f400efc81e6842917795&id=b45f8dbc49"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               《自然主義》月刊
             </YearLink>
           </YearLinks>
