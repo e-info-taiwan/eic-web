@@ -1,5 +1,5 @@
-import * as tsImport from 'ts-import'
 import path from 'path'
+import * as tsImport from 'ts-import'
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -82,6 +82,14 @@ const nextConfig = {
       {
         source: '/donate',
         destination: DONATION_PAGE_URL,
+        permanent: true,
+      },
+      // Legacy static files → GCS (e.g., /2004/02/0224/040224A.htm)
+      {
+        source:
+          '/:year(\\d{4})/:month(\\d{2})/:day(\\d{4})/:file.:ext([a-zA-Z0-9]+)',
+        destination:
+          'https://storage.googleapis.com/e-info-legacy/:year/:month/:day/:file.:ext',
         permanent: true,
       },
     ]

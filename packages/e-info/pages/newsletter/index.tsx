@@ -610,20 +610,24 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
         <HistoricalSection>
           <SectionTitle>系列電子報回顧</SectionTitle>
           <YearLinks>
-            {HISTORICAL_YEARS.map((y) => (
-              <YearLink
-                key={y}
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault()
-                  setYear(y)
-                  setMonth(1)
-                  fetchNewsletters(y, 1)
-                }}
-              >
-                {y}
-              </YearLink>
-            ))}
+            {HISTORICAL_YEARS.map((y) => {
+              // 2000 年是創始年，從 4 月開始；其他年份從 1 月開始
+              const startMonth = y === 2000 ? 4 : 1
+              return (
+                <YearLink
+                  key={y}
+                  href={`/newsletter?year=${y}&month=${startMonth}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setYear(y)
+                    setMonth(startMonth)
+                    fetchNewsletters(y, startMonth)
+                  }}
+                >
+                  {y}
+                </YearLink>
+              )
+            })}
           </YearLinks>
         </HistoricalSection>
 
