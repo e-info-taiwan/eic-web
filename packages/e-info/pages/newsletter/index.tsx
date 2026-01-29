@@ -622,6 +622,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                     setYear(y)
                     setMonth(startMonth)
                     fetchNewsletters(y, startMonth)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
                 >
                   {y}

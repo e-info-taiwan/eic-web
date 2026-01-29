@@ -584,10 +584,24 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       }
     }
 
+    const newsletter = data.newsletter
+
+    // Redirect to originalUrl for newsletters before 2016/01/05
+    const cutoffDate = new Date('2016-01-05')
+    const sendDate = new Date(newsletter.sendDate)
+    if (sendDate < cutoffDate && newsletter.originalUrl) {
+      return {
+        redirect: {
+          destination: newsletter.originalUrl,
+          permanent: true,
+        },
+      }
+    }
+
     return {
       props: {
         headerData,
-        newsletter: data.newsletter,
+        newsletter,
       },
     }
   } catch (err) {
