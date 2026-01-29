@@ -34,6 +34,14 @@ const nextConfig = {
         source: '/robots.txt',
         destination: '/api/robots',
       },
+      // Legacy static files → GCS (e.g., /2004/02/0224/040224A.htm)
+      // Use rewrite instead of redirect to keep original URL visible
+      {
+        source:
+          '/:year(\\d{4})/:month(\\d{2})/:day(\\d{4})/:file.:ext([a-zA-Z0-9]+)',
+        destination:
+          'https://storage.googleapis.com/e-info-legacy/:year/:month/:day/:file.:ext',
+      },
       // 頁面轉址設定（從 constants/redirects.ts 載入）
       ...getNextRewrites(),
     ]
@@ -82,14 +90,6 @@ const nextConfig = {
       {
         source: '/donate',
         destination: DONATION_PAGE_URL,
-        permanent: true,
-      },
-      // Legacy static files → GCS (e.g., /2004/02/0224/040224A.htm)
-      {
-        source:
-          '/:year(\\d{4})/:month(\\d{2})/:day(\\d{4})/:file.:ext([a-zA-Z0-9]+)',
-        destination:
-          'https://storage.googleapis.com/e-info-legacy/:year/:month/:day/:file.:ext',
         permanent: true,
       },
     ]
