@@ -400,6 +400,11 @@
       flex-direction: column;
       gap: 8px;
     }
+    .poll-option-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
     .poll-option {
       display: flex;
       align-items: center;
@@ -450,8 +455,10 @@
       padding: 0 8px;
       white-space: nowrap;
     }
-    .poll-emoji {
-      font-size: 20px;
+    .poll-image {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
       margin-right: 4px;
       flex-shrink: 0;
     }
@@ -709,63 +716,85 @@
     <!-- ===== 08-Poll (心情互動) ===== -->
     <div class="poll-section">
       <div class="poll-title">心情互動</div>
+      <!-- {{poll.content}}  -->
       <div class="poll-subtitle">留下今天看完電子報的心情</div>
 
       <div class="poll-options">
-        <div class="poll-option">
-          <div class="poll-radio"></div>
-          <div class="poll-bar-container">
-            <div class="poll-bar" style="width: 70%;"></div>
-            <div class="poll-option-content" style="left: 70%;">
-              <span class="poll-emoji">👍</span>
-              <span class="poll-text">很棒</span>
+        <!-- href: https://e-info.org.tw/newsletter/{{id}}?vote=1&utm_source=email -->
+        <a href="https://e-info.org.tw/newsletter/123?vote=1&utm_source=email" class="poll-option-link">
+          <div class="poll-option">
+            <div class="poll-radio"></div>
+            <div class="poll-bar-container">
+              <div class="poll-bar" style="width: 15%;"></div>
+              <div class="poll-option-content" style="left: 15%;">
+                <!-- {{option1ImageUrl}} -->
+                <img src="https://placehold.co/20x20/388A48/white?text=1" alt="" class="poll-image">
+                <span class="poll-text">很棒</span>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
 
-        <div class="poll-option">
-          <div class="poll-radio"></div>
-          <div class="poll-bar-container">
-            <div class="poll-bar" style="width: 15%;"></div>
-            <div class="poll-option-content" style="left: 15%;">
-              <span class="poll-emoji">😂</span>
-              <span class="poll-text">有趣</span>
+        <!-- href: https://e-info.org.tw/newsletter/{{id}}?vote=2&utm_source=email -->
+        <a href="https://e-info.org.tw/newsletter/123?vote=2&utm_source=email" class="poll-option-link">
+          <div class="poll-option">
+            <div class="poll-radio"></div>
+            <div class="poll-bar-container">
+              <div class="poll-bar" style="width: 15%;"></div>
+              <div class="poll-option-content" style="left: 15%;">
+                <!-- {{option2ImageUrl}} -->
+                <img src="https://placehold.co/20x20/388A48/white?text=2" alt="" class="poll-image">
+                <span class="poll-text">有趣</span>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
 
-        <div class="poll-option">
-          <div class="poll-radio"></div>
-          <div class="poll-bar-container">
-            <div class="poll-bar" style="width: 45%;"></div>
-            <div class="poll-option-content" style="left: 45%;">
-              <span class="poll-emoji">🤩</span>
-              <span class="poll-text">驚訝</span>
+        <!-- href: https://e-info.org.tw/newsletter/{{id}}?vote=3&utm_source=email -->
+        <a href="https://e-info.org.tw/newsletter/123?vote=3&utm_source=email" class="poll-option-link">
+          <div class="poll-option">
+            <div class="poll-radio"></div>
+            <div class="poll-bar-container">
+              <div class="poll-bar" style="width: 15%;"></div>
+              <div class="poll-option-content" style="left: 15%;">
+                <!-- {{option3ImageUrl}} -->
+                <img src="https://placehold.co/20x20/388A48/white?text=3" alt="" class="poll-image">
+                <span class="poll-text">驚訝</span>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
 
-        <div class="poll-option">
-          <div class="poll-radio"></div>
-          <div class="poll-bar-container">
-            <div class="poll-bar" style="width: 10%;"></div>
-            <div class="poll-option-content" style="left: 10%;">
-              <span class="poll-emoji">🙂</span>
-              <span class="poll-text">還好</span>
+        <!-- href: https://e-info.org.tw/newsletter/{{id}}?vote=4&utm_source=email -->
+        <a href="https://e-info.org.tw/newsletter/123?vote=4&utm_source=email" class="poll-option-link">
+          <div class="poll-option">
+            <div class="poll-radio"></div>
+            <div class="poll-bar-container">
+              <div class="poll-bar" style="width: 15%;"></div>
+              <div class="poll-option-content" style="left: 15%;">
+                <!-- {{option4ImageUrl}} -->
+                <img src="https://placehold.co/20x20/388A48/white?text=4" alt="" class="poll-image">
+                <span class="poll-text">還好</span>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
 
-        <div class="poll-option">
-          <div class="poll-radio selected"></div>
-          <div class="poll-bar-container">
-            <div class="poll-bar" style="width: 20%;"></div>
-            <div class="poll-option-content" style="left: 20%;">
-              <span class="poll-emoji">🥺</span>
-              <span class="poll-text">擔憂</span>
+        <!-- href: https://e-info.org.tw/newsletter/{{id}}?vote=5&utm_source=email -->
+        <a href="https://e-info.org.tw/newsletter/123?vote=5&utm_source=email" class="poll-option-link">
+          <div class="poll-option">
+            <!-- 這裡有 selected 樣式，選用 -->
+            <div class="poll-radio selected"></div>
+            <div class="poll-bar-container">
+              <div class="poll-bar" style="width: 15%;"></div>
+              <div class="poll-option-content" style="left: 15%;">
+                <!-- {{option5ImageUrl}} -->
+                <img src="https://placehold.co/20x20/388A48/white?text=5" alt="" class="poll-image">
+                <span class="poll-text">擔憂</span>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
       </div>
     </div>
 
