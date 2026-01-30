@@ -66,18 +66,16 @@ const Banner = styled.div`
   position: relative;
   width: 100%;
   aspect-ratio: 1060 / 126;
-  margin-bottom: 24px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    margin-bottom: 32px;
-  }
+  margin-bottom: 12px;
 `
 
 const ReaderCount = styled.div`
   text-align: center;
-  padding: 20px 20px 10px;
-  font-size: 15px;
-  color: #333;
+  padding: 0 20px 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
 `
 
 const ReferralSection = styled.section`
@@ -699,10 +697,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
   const subscriberCountConfig = siteConfigs?.find(
     (config) => config.name === '電子報訂閱人數'
   )
-  const rawCount = subscriberCountConfig?.content
-  const subscriberCount = rawCount
-    ? Number(rawCount.replace(/,/g, '')).toLocaleString()
-    : null
+  const subscriberCount = subscriberCountConfig?.content
 
   // Get vote, utm_source, and raw from query parameters
   const { vote, utm_source, raw } = router.query
@@ -748,7 +743,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
         </Banner>
         {subscriberCount && (
           <ReaderCount>
-            你現在正與 <strong>{subscriberCount}</strong> 人一起閱讀環境新聞
+            你現在正與 {subscriberCount} 人一起閱讀環境新聞
           </ReaderCount>
         )}
         <SendDate>{formatDate(newsletter.sendDate)}</SendDate>
