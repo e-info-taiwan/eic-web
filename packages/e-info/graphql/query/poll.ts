@@ -91,12 +91,12 @@ export const createPollResultAnonymous = gql`
 `
 
 // Create a new poll result (vote) for newsletter - logged-in users
+// Note: PollResult schema doesn't have a newsletter field, so we only connect poll and member
 export const createNewsletterPollResultWithMember = gql`
-  mutation ($pollId: ID!, $newsletterId: ID!, $memberId: ID!, $result: Int!) {
+  mutation ($pollId: ID!, $memberId: ID!, $result: Int!) {
     createPollResult(
       data: {
         poll: { connect: { id: $pollId } }
-        newsletter: { connect: { id: $newsletterId } }
         member: { connect: { id: $memberId } }
         result: $result
       }
@@ -108,12 +108,12 @@ export const createNewsletterPollResultWithMember = gql`
 `
 
 // Create a new poll result (vote) for newsletter - anonymous users
+// Note: PollResult schema doesn't have a newsletter field, so we only connect poll
 export const createNewsletterPollResultAnonymous = gql`
-  mutation ($pollId: ID!, $newsletterId: ID!, $result: Int!) {
+  mutation ($pollId: ID!, $result: Int!) {
     createPollResult(
       data: {
         poll: { connect: { id: $pollId } }
-        newsletter: { connect: { id: $newsletterId } }
         result: $result
       }
     ) {

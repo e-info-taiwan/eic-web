@@ -344,12 +344,11 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
       try {
         // Submit vote to API - use appropriate mutation based on entity type and login status
         if (isNewsletter) {
-          // Newsletter voting
+          // Newsletter voting (no newsletter field in schema, only connect poll)
           if (member) {
             await submitNewsletterVoteWithMember({
               variables: {
                 pollId: poll.id,
-                newsletterId: entityId,
                 memberId: member.id,
                 result: autoVote,
               },
@@ -358,7 +357,6 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
             await submitNewsletterVoteAnonymous({
               variables: {
                 pollId: poll.id,
-                newsletterId: entityId,
                 result: autoVote,
               },
             })
@@ -485,12 +483,11 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     try {
       // Submit vote to API - use appropriate mutation based on entity type and login status
       if (isNewsletter) {
-        // Newsletter voting
+        // Newsletter voting (no newsletter field in schema, only connect poll)
         if (isLoggedIn && member) {
           await submitNewsletterVoteWithMember({
             variables: {
               pollId: poll.id,
-              newsletterId: entityId,
               memberId: member.id,
               result: optionKey,
             },
@@ -499,7 +496,6 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
           await submitNewsletterVoteAnonymous({
             variables: {
               pollId: poll.id,
-              newsletterId: entityId,
               result: optionKey,
             },
           })
