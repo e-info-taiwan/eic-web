@@ -325,7 +325,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   /* ===== 01-Content ===== */
   .section-header {
     text-align: center;
-    padding: 15px 20px;
+    padding: 15px 20px 5px;
     font-size: 18px;
     font-weight: bold;
     color: #333;
@@ -335,7 +335,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     border-bottom: 20px solid #D9D9D9;
   }
   .toc-item {
-    padding: 8px 0;
+    padding-bottom: 12px;
     font-size: 14px;
     color: #333;
   }
@@ -348,7 +348,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     font-weight: bold;
   }
   .article-section {
-    padding: 20px;
+    padding: 20px 0;
     border-bottom: 1px solid #eee;
   }
   .article-image {
@@ -368,6 +368,15 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     line-height: 1.8;
     margin-bottom: 10px;
   }
+  .article-content .read-more {
+    color: #DD8346;
+    font-weight: bold;
+    margin-left: 4px;
+    text-decoration: underline;
+  }
+  .article-content .read-more:hover {
+    color: #B55514;
+  }
   .read-more {
     text-align: right;
     font-size: 14px;
@@ -378,6 +387,9 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   }
 
   /* ===== 02-Highlight (焦點話題) ===== */
+  .highlight-list {
+    margin-bottom: 53px;
+  }
   .green-header {
     background-color: #388A48;
     color: white;
@@ -388,7 +400,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   }
   .highlight-item {
     display: flex;
-    padding: 20px;
+    padding: 20px 0;
     border-bottom: 1px solid #eee;
     align-items: stretch;
   }
@@ -416,11 +428,20 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   .highlight-content .read-more {
     text-align: right;
   }
+  .highlight-content .read-more a {
+    text-decoration: underline;
+  }
+  .highlight-content .read-more a:hover {
+    color: #B55514;
+  }
 
   /* ===== 03-Ranking (閱讀排名) ===== */
+  .ranking-list {
+    margin-bottom: 53px;
+  }
   .ranking-item {
     display: flex;
-    padding: 15px 20px;
+    padding: 15px 0;
     align-items: stretch;
   }
   .ranking-item:last-child {
@@ -452,6 +473,12 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   .ranking-content .read-more {
     text-align: right;
   }
+  .ranking-content .read-more a {
+    text-decoration: underline;
+  }
+  .ranking-content .read-more a:hover {
+    color: #B55514;
+  }
   .ranking-title {
     font-size: 14px;
     color: #333;
@@ -460,7 +487,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
 
   /* Ads Section */
   .ads-section {
-    padding: 20px;
+    padding: 20px 0;
     background-color: #fff;
     text-align: center;
   }
@@ -478,8 +505,11 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   }
 
   /* ===== 04-Events (近期活動) ===== */
+  .event-list {
+    margin-bottom: 53px;
+  }
   .event-item {
-    padding: 15px 20px;
+    padding: 15px 0;
     border-bottom: 1px solid #ddd;
   }
   .event-item:last-child {
@@ -503,8 +533,11 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   }
 
   /* ===== 05-Jobs (環境徵才) ===== */
+  .job-list {
+    margin-bottom: 53px;
+  }
   .job-item {
-    padding: 15px 20px;
+    padding: 15px 0;
     border-bottom: 1px solid #333;
   }
   .job-item:last-child {
@@ -529,20 +562,25 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
 
   /* ===== 06-Comment (推薦讀者回應) ===== */
   .comment-section {
-    padding: 30px 20px;
+    padding: 30px 0;
     background-color: #fff;
   }
   .comment-quote {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    line-height: 1.6;
+    font-size: 20px;
+    font-weight: 700;
+    color: #5B9D68;
+    line-height: 28px;
     margin-bottom: 30px;
+    text-align: center;
   }
   .comment-source {
-    font-size: 15px;
-    color: #388A48;
+    font-size: 16px;
+    font-weight: 700;
+    color: #373740;
+    line-height: 1.5;
+    text-decoration: underline;
     margin-bottom: 15px;
+    text-align: center;
   }
   .comment-link {
     text-align: center;
@@ -551,6 +589,10 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     color: #DD8346;
     font-size: 16px;
     font-weight: bold;
+    text-decoration: underline;
+  }
+  .comment-link a:hover {
+    color: #B55514;
   }
   `}
 `

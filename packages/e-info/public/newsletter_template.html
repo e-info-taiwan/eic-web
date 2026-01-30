@@ -37,6 +37,7 @@
     .container {
       max-width: 600px;
       margin: 0 auto;
+      padding: 20px;
       background-color: #ffffff;
     }
 
@@ -72,7 +73,7 @@
     /* ===== 01-Content ===== */
     .section-header {
       text-align: center;
-      padding: 15px 20px;
+      padding: 15px 20px 5px;
       font-size: 18px;
       font-weight: bold;
       color: #333;
@@ -82,7 +83,7 @@
       border-bottom: 20px solid #D9D9D9;
     }
     .toc-item {
-      padding: 8px 0;
+      padding-bottom: 12px;
       font-size: 14px;
       color: #333;
     }
@@ -95,7 +96,7 @@
       font-weight: bold;
     }
     .article-section {
-      padding: 20px;
+      padding: 20px 0;
       border-bottom: 1px solid #eee;
     }
     .article-image {
@@ -115,6 +116,15 @@
       line-height: 1.8;
       margin-bottom: 10px;
     }
+    .article-content .read-more {
+      color: #DD8346;
+      font-weight: bold;
+      margin-left: 4px;
+      text-decoration: underline;
+    }
+    .article-content .read-more:hover {
+      color: #B55514;
+    }
     .read-more {
       text-align: right;
       font-size: 14px;
@@ -125,6 +135,9 @@
     }
 
     /* ===== 02-Highlight (焦點話題) ===== */
+    .highlight-list {
+      margin-bottom: 53px;
+    }
     .green-header {
       background-color: #388A48;
       color: white;
@@ -135,7 +148,7 @@
     }
     .highlight-item {
       display: flex;
-      padding: 20px;
+      padding: 20px 0;
       border-bottom: 1px solid #eee;
       align-items: stretch;
     }
@@ -163,11 +176,20 @@
     .highlight-content .read-more {
       text-align: right;
     }
+    .highlight-content .read-more a {
+      text-decoration: underline;
+    }
+    .highlight-content .read-more a:hover {
+      color: #B55514;
+    }
 
     /* ===== 03-Ranking (閱讀排名) ===== */
+    .ranking-list {
+      margin-bottom: 53px;
+    }
     .ranking-item {
       display: flex;
-      padding: 15px 20px;
+      padding: 15px 0;
       align-items: stretch;
     }
     .ranking-item:last-child {
@@ -199,6 +221,12 @@
     .ranking-content .read-more {
       text-align: right;
     }
+    .ranking-content .read-more a {
+      text-decoration: underline;
+    }
+    .ranking-content .read-more a:hover {
+      color: #B55514;
+    }
     .ranking-title {
       font-size: 14px;
       color: #333;
@@ -207,7 +235,7 @@
 
     /* Ads Section */
     .ads-section {
-      padding: 20px;
+      padding: 20px 0;
       background-color: #fff;
       text-align: center;
     }
@@ -225,8 +253,11 @@
     }
 
     /* ===== 04-Events (近期活動) ===== */
+    .event-list {
+      margin-bottom: 53px;
+    }
     .event-item {
-      padding: 15px 20px;
+      padding: 15px 0;
       border-bottom: 1px solid #ddd;
     }
     .event-item:last-child {
@@ -250,8 +281,11 @@
     }
 
     /* ===== 05-Jobs (環境徵才) ===== */
+    .job-list {
+      margin-bottom: 53px;
+    }
     .job-item {
-      padding: 15px 20px;
+      padding: 15px 0;
       border-bottom: 1px solid #333;
     }
     .job-item:last-child {
@@ -276,20 +310,25 @@
 
     /* ===== 06-Comment (推薦讀者回應) ===== */
     .comment-section {
-      padding: 30px 20px;
+      padding: 30px 0;
       background-color: #fff;
     }
     .comment-quote {
-      font-size: 18px;
-      font-weight: bold;
-      color: #333;
-      line-height: 1.6;
+      font-size: 20px;
+      font-weight: 700;
+      color: #5B9D68;
+      line-height: 28px;
       margin-bottom: 30px;
+      text-align: center;
     }
     .comment-source {
-      font-size: 15px;
-      color: #388A48;
+      font-size: 16px;
+      font-weight: 700;
+      color: #373740;
+      line-height: 1.5;
+      text-decoration: underline;
       margin-bottom: 15px;
+      text-align: center;
     }
     .comment-link {
       text-align: center;
@@ -298,11 +337,15 @@
       color: #DD8346;
       font-size: 16px;
       font-weight: bold;
+      text-decoration: underline;
+    }
+    .comment-link a:hover {
+      color: #B55514;
     }
 
     /* ===== 07-Referral (你的推薦狀態) ===== */
     .referral-section {
-      padding: 20px;
+      padding: 20px 0;
     }
     .referral-box {
       border: 2px solid #388A48;
@@ -335,7 +378,7 @@
 
     /* ===== 08-Poll (心情互動) ===== */
     .poll-section {
-      padding: 20px;
+      padding: 20px 0;
     }
     .poll-title {
       font-size: 18px;
@@ -418,7 +461,7 @@
 
     /* ===== 09-Footer ===== */
     .footer {
-      padding: 30px 20px;
+      padding: 30px 0;
       text-align: center;
       background-color: #fff;
     }
@@ -501,78 +544,80 @@
 
     <!-- Article 1 -->
     <div class="article-section">
-      <img src="https://placehold.co/560x320/e8e8e8/666666?text=新聞圖片" alt="新聞圖片" class="article-image">
+      <img src="https://placehold.co/560x320/e8e8e8/666666?text=Image" alt="新聞圖片" class="article-image">
       <h2 class="article-title">環團經濟部前抗議 端「美花咖啡」不滿補貼褐色產業 盼「建仁綠茶」轉苦回甘</h2>
       <p class="article-content">
-        核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「届期前」都可提出申請、核電廠運轉年限最多再延長20年
+        核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「届期前」都可提出申請、核電廠運轉年限最多再延長20年<a href="#" class="read-more">閱讀更多</a>
       </p>
-      <div class="read-more"><a href="#">閱讀更多</a></div>
     </div>
 
     <!-- Article 2 -->
     <div class="article-section">
-      <img src="https://placehold.co/560x320/d5e5d5/666666?text=衛星影像" alt="衛星影像" class="article-image">
+      <img src="https://placehold.co/560x320/d5e5d5/666666?text=Image" alt="衛星影像" class="article-image">
       <h2 class="article-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</h2>
       <p class="article-content">
-        空中巴士基金會（Airbus Foundation）與連結保育基金會（Connected Conservation Foundation, CCF）近期宣布新的研究計畫獎項，鼓勵參加者利用衛星影像保育生物多樣性。 全球的物種正大量消失中家
+        空中巴士基金會（Airbus Foundation）與連結保育基金會（Connected Conservation Foundation, CCF）近期宣布新的研究計畫獎項，鼓勵參加者利用衛星影像保育生物多樣性。 全球的物種正大量消失中家<a href="#" class="read-more">閱讀更多</a>
       </p>
-      <div class="read-more"><a href="#">閱讀更多</a></div>
     </div>
 
     <!-- ===== 02-Highlight (焦點話題) ===== -->
     <div class="green-header">焦點話題</div>
-    
-    <div class="highlight-item">
-      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
-      <div class="highlight-content">
-        <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
-        <div class="read-more"><a href="#">閱讀更多</a></div>
+
+    <div class="highlight-list">
+      <div class="highlight-item">
+        <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
+        <div class="highlight-content">
+          <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+          <div class="read-more"><a href="#">閱讀更多</a></div>
+        </div>
       </div>
-    </div>
-    
-    <div class="highlight-item">
-      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
-      <div class="highlight-content">
-        <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
-        <div class="read-more"><a href="#">閱讀更多</a></div>
+
+      <div class="highlight-item">
+        <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
+        <div class="highlight-content">
+          <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+          <div class="read-more"><a href="#">閱讀更多</a></div>
+        </div>
       </div>
-    </div>
-    
-    <div class="highlight-item">
-      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
-      <div class="highlight-content">
-        <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
-        <div class="read-more"><a href="#">閱讀更多</a></div>
+
+      <div class="highlight-item">
+        <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="highlight-thumb">
+        <div class="highlight-content">
+          <div class="highlight-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+          <div class="read-more"><a href="#">閱讀更多</a></div>
+        </div>
       </div>
     </div>
 
     <!-- ===== 03-Ranking (閱讀排名) ===== -->
     <div class="green-header">閱讀排名</div>
-    
-    <div class="ranking-item">
-      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
-      <div class="ranking-number">1</div>
-      <div class="ranking-content">
-        <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
-        <div class="read-more"><a href="#">閱讀更多</a></div>
+
+    <div class="ranking-list">
+      <div class="ranking-item">
+        <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
+        <div class="ranking-number">1</div>
+        <div class="ranking-content">
+          <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+          <div class="read-more"><a href="#">閱讀更多</a></div>
+        </div>
       </div>
-    </div>
-    
-    <div class="ranking-item">
-      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
-      <div class="ranking-number">2</div>
-      <div class="ranking-content">
-        <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
-        <div class="read-more"><a href="#">閱讀更多</a></div>
+
+      <div class="ranking-item">
+        <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
+        <div class="ranking-number">2</div>
+        <div class="ranking-content">
+          <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+          <div class="read-more"><a href="#">閱讀更多</a></div>
+        </div>
       </div>
-    </div>
-    
-    <div class="ranking-item">
-      <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
-      <div class="ranking-number">3</div>
-      <div class="ranking-content">
-        <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
-        <div class="read-more"><a href="#">閱讀更多</a></div>
+
+      <div class="ranking-item">
+        <img src="https://placehold.co/120x120/d0d0d0/666666?text=Image" alt="縮圖" class="ranking-thumb">
+        <div class="ranking-number">3</div>
+        <div class="ranking-content">
+          <div class="ranking-title">從高空看生物多樣性 空巴基金會公開甄選 30公分高解析衛星影像助攻保育</div>
+          <div class="read-more"><a href="#">閱讀更多</a></div>
+        </div>
       </div>
     </div>
 
@@ -584,44 +629,48 @@
 
     <!-- ===== 04-Events (近期活動) ===== -->
     <div class="green-header">近期活動</div>
-    
-    <div class="event-item">
-      <div class="event-date">2025年06月02日</div>
-      <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
-      <div class="event-org">社團法人中華民國自然生態保育協會</div>
-    </div>
-    
-    <div class="event-item">
-      <div class="event-date">2025年06月02日</div>
-      <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
-      <div class="event-org">社團法人中華民國自然生態保育協會</div>
-    </div>
-    
-    <div class="event-item">
-      <div class="event-date">2025年06月02日</div>
-      <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
-      <div class="event-org">社團法人中華民國自然生態保育協會</div>
+
+    <div class="event-list">
+      <div class="event-item">
+        <div class="event-date">2025年06月02日</div>
+        <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
+        <div class="event-org">社團法人中華民國自然生態保育協會</div>
+      </div>
+
+      <div class="event-item">
+        <div class="event-date">2025年06月02日</div>
+        <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
+        <div class="event-org">社團法人中華民國自然生態保育協會</div>
+      </div>
+
+      <div class="event-item">
+        <div class="event-date">2025年06月02日</div>
+        <div class="event-title">025WOW全國生物多樣性教育培訓班鯨豚觀察員</div>
+        <div class="event-org">社團法人中華民國自然生態保育協會</div>
+      </div>
     </div>
 
     <!-- ===== 05-Jobs (環境徵才) ===== -->
     <div class="green-header">環境徵才</div>
-    
-    <div class="job-item">
-      <div class="job-date">2025年06月02日</div>
-      <div class="job-title">【自然環資】專案執行（環境教育）</div>
-      <div class="job-org">社團法人中華民國自然生態保育協會</div>
-    </div>
-    
-    <div class="job-item">
-      <div class="job-date">2025年06月02日</div>
-      <div class="job-title">【自然環資】專案執行（環境教育）</div>
-      <div class="job-org">社團法人中華民國自然生態保育協會</div>
-    </div>
-    
-    <div class="job-item">
-      <div class="job-date">2025年06月02日</div>
-      <div class="job-title">【自然環資】專案執行（環境教育）</div>
-      <div class="job-org">社團法人中華民國自然生態保育協會</div>
+
+    <div class="job-list">
+      <div class="job-item">
+        <div class="job-date">2025年06月02日</div>
+        <div class="job-title">【自然環資】專案執行（環境教育）</div>
+        <div class="job-org">社團法人中華民國自然生態保育協會</div>
+      </div>
+
+      <div class="job-item">
+        <div class="job-date">2025年06月02日</div>
+        <div class="job-title">【自然環資】專案執行（環境教育）</div>
+        <div class="job-org">社團法人中華民國自然生態保育協會</div>
+      </div>
+
+      <div class="job-item">
+        <div class="job-date">2025年06月02日</div>
+        <div class="job-title">【自然環資】專案執行（環境教育）</div>
+        <div class="job-org">社團法人中華民國自然生態保育協會</div>
+      </div>
     </div>
 
     <!-- ===== 06-Comment (推薦讀者回應) ===== -->
