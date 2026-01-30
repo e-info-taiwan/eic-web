@@ -8,7 +8,7 @@ import Document, {
 import Script from 'next/script'
 import { ServerStyleSheet } from 'styled-components'
 
-import AdsenseScript from '~/components/ad/google-adsense/adsense-script'
+// import AdsenseScript from '~/components/ad/google-adsense/adsense-script'
 import { GTM_ID } from '~/constants/environment-variables'
 export default class MyDocument extends Document {
   /* ref:
@@ -93,7 +93,7 @@ export default class MyDocument extends Document {
             src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.11.5/dist/umd/miso.min.js"
           />
 
-          <AdsenseScript />
+          {/* <AdsenseScript /> */}
         </Head>
         <body>
           <noscript>

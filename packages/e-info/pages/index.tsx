@@ -96,18 +96,6 @@ const HiddenAnchor = styled.div`
   margin: 0;
 `
 
-const StyledAdsense_HD = styled(Adsense)`
-  margin-bottom: 40px;
-`
-
-const StyledAdsense_FT = styled(Adsense)`
-  margin-bottom: 40px;
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-bottom: 60px;
-  }
-`
-
 const Index: NextPageWithLayout<PageProps> = ({
   supplementCategories,
   columnCategories,

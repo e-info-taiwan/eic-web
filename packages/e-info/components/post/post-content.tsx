@@ -380,7 +380,7 @@ export default function PostContent({
                 contentType={ValidPostContentType.NORMAL}
                 disabledImageLazyLoad={false}
               />
-              <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" />
+              {/* <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" /> */}
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5)}
                 contentType={ValidPostContentType.NORMAL}
@@ -394,12 +394,12 @@ export default function PostContent({
                 contentType={ValidPostContentType.NORMAL}
                 disabledImageLazyLoad={false}
               />
-              <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" />
+              {/* <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" /> */}
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5, 10)}
                 contentType={ValidPostContentType.NORMAL}
               />
-              <StyledAdsense_AT pageKey={categorySlug} adKey="AT2" />
+              {/* <StyledAdsense_AT pageKey={categorySlug} adKey="AT2" /> */}
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 10)}
                 contentType={ValidPostContentType.NORMAL}
@@ -417,7 +417,7 @@ export default function PostContent({
         </ActionList>
       )}
 
-      <StyledAdsense_E1 pageKey={categorySlug} adKey="E1" />
+      {/* <StyledAdsense_E1 pageKey={categorySlug} adKey="E1" /> */}
 
       <MobileMediaLink postId={postData?.id} />
 
