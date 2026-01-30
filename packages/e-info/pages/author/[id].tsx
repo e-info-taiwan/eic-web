@@ -192,7 +192,7 @@ const Author: NextPageWithLayout<PageProps> = ({
 
   return (
     <AuthorWrapper aria-label={sectionTitle}>
-      <StyledAdsense_HD pageKey="author" adKey="HD" />
+      {/* <StyledAdsense_HD pageKey="author" adKey="HD" /> */}
       <SectionHeading
         title={sectionTitle}
         highlightColor="#eee500"

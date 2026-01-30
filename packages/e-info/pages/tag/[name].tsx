@@ -119,7 +119,7 @@ const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts, tagName }) => {
   const sectionTitle = `${tagName || ''}`
   return (
     <TagWrapper aria-label={sectionTitle}>
-      <StyledAdsense_HD pageKey="tag" adKey="HD" />
+      {/* <StyledAdsense_HD pageKey="tag" adKey="HD" /> */}
       <SectionHeading
         title={sectionTitle}
         highlightColor="#eee500"
