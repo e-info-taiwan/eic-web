@@ -10,9 +10,11 @@ export type Event = {
       original?: string
       w480?: string
       w800?: string
+      w1200?: string
     }
   }
   organizer?: string
+  contactInfo?: string
   eventType?: string
   startDate?: string
   endDate?: string

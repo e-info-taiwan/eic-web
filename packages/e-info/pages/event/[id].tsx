@@ -1,10 +1,16 @@
 // 活動詳細頁面
+import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
+import Link from 'next/link'
 import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
+import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
+import type { Event } from '~/graphql/query/event'
+import { eventById } from '~/graphql/query/event'
 import type { NextPageWithLayout } from '~/pages/_app'
 import BookmarkIcon from '~/public/icons/bookmark.svg'
 import FacebookIcon from '~/public/icons/facebook.svg'
@@ -110,7 +116,7 @@ const MetaLabel = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: #000;
-  white-space: pre;
+  white-space: pre-line;
 
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 18px;
@@ -172,7 +178,6 @@ const ContentText = styled.div`
   font-size: 16px;
   line-height: 1.8;
   color: #000;
-  white-space: pre-wrap;
 
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 18px;
@@ -194,6 +199,11 @@ const ContentText = styled.div`
 
   strong {
     font-weight: 700;
+  }
+
+  a {
+    color: ${({ theme }) => theme.colors.primary[20]};
+    text-decoration: underline;
   }
 `
 
@@ -222,45 +232,74 @@ const ButtonWrapper = styled.div`
   margin-top: 40px;
 `
 
-type EventData = {
-  id: string
-  heroImage: string
-  title: string
-  date: string
-  location: string
-  organizer: string
-  fee: string
-  registrationLink: string
-  description: string
-  notes: string
-}
+const BackLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  text-decoration: none;
+  margin: 20px 20px 0;
 
-// Dummy event data
-const DUMMY_EVENT: EventData = {
-  id: '1',
-  heroImage:
-    'https://images.unsplash.com/photo-1534889156217-d643df14f14a?w=1600&h=900&fit=crop',
-  title: '【台灣蝴蝶保育學會】每周日免費賞蝶導覽',
-  date: '2025-00-00-00:00',
-  location: '活動地點—每週集合時間、地點詳見內文與蝶會官網～！',
-  organizer: '單位名稱單位名稱單位名稱',
-  fee: '活動費用—免費',
-  registrationLink: '#',
-  description: `本周六核三廠2號機組除將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機
+  &:hover {
+    text-decoration: underline;
+  }
 
-根據現行《核管法》（核子反應器設施管制法）修法，核電廠運轉執照最長40年，在屆期前5～15年可提出申請再延長20年。
+  &::before {
+    content: '←';
+    margin-right: 8px;
+  }
 
-若依照此期限，台電必須在核三2號機停機至少6年後才可提出申請（2031年）。若按核四實質停止建造超過20年、已屆期5年後停機的核一、核二並不符合規定（雖未除役但無法申請延役），台灣目前就無機組可申請延役（換照）。`,
-  notes: `根據現行《核管法》（核子反應器設施管制法）修法，核電廠運轉執照最長40年，在屆期前5～15年可提出申請再延長20年。
+  ${({ theme }) => theme.breakpoint.md} {
+    margin: 20px 48px 0;
+  }
 
-若依照此期限，台電必須在核三2號機停機至少6年後才可提出申請（2031年）。若按核四實質停止建造超過20年、已屆期5年後停機的核一、核二並不符合規定（雖未除役但無法申請延役），台灣目前就無機組可申請延役（換照）。
+  ${({ theme }) => theme.breakpoint.xl} {
+    margin: 20px 78px 0;
+  }
+`
 
-核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機核三將於本周六（17日）停機，立法院在野黨立委挾人數優勢，於今（13）日院會表決通過《核管法》修法，放寬核電機組申請換照規定，在「屆期前」都可提出申請、核電廠運轉年限最多再延長20年、已停機`,
-}
+const ErrorMessage = styled.div`
+  text-align: center;
+  padding: 60px 20px;
+  color: ${({ theme }) => theme.colors.grayscale[60]};
+  font-size: 16px;
+`
 
 type PageProps = {
   headerData: HeaderContextData
-  event: EventData
+  event: Event | null
+}
+
+// Format date as yyyy年mm月dd日
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}年${month}月${day}日`
+}
+
+// Format date range
+const formatDateRange = (startDate?: string, endDate?: string): string => {
+  if (!startDate) return ''
+  const start = formatDate(startDate)
+  if (!endDate) return start
+  const end = formatDate(endDate)
+  if (start === end) return start
+  return `${start} ~ ${end}`
+}
+
+// Get hero image URL with fallback
+const getHeroImageUrl = (event: Event): string => {
+  return (
+    event.heroImage?.resized?.w1200 ||
+    event.heroImage?.resized?.w800 ||
+    event.heroImage?.resized?.original ||
+    DEFAULT_POST_IMAGE_PATH
+  )
 }
 
 const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
@@ -295,33 +334,62 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
     )
   }
 
+  if (!event) {
+    return (
+      <PageWrapper>
+        <BackLink href="/event">返回活動列表</BackLink>
+        <ContentWrapper>
+          <ErrorMessage>找不到此活動</ErrorMessage>
+        </ContentWrapper>
+      </PageWrapper>
+    )
+  }
+
   return (
     <PageWrapper>
+      <BackLink href="/event">返回活動列表</BackLink>
       <HeroSection>
-        <HeroImage src={event.heroImage} alt={event.title} />
+        <HeroImage src={getHeroImageUrl(event)} alt={event.name} />
       </HeroSection>
 
       <ContentWrapper>
         <EventHeader>
-          <CategoryLabel>活動類型</CategoryLabel>
-          <EventTitle>{event.title}</EventTitle>
+          {event.eventType && <CategoryLabel>{event.eventType}</CategoryLabel>}
+          <EventTitle>{event.name}</EventTitle>
 
           <EventMetaGrid>
-            <MetaItem>
-              <MetaLabel>活動日期</MetaLabel>
-              <MetaValue>{event.date}</MetaValue>
-            </MetaItem>
-            <MetaItem>
-              <MetaLabel>主辦單位</MetaLabel>
-              <MetaValue>{event.organizer}</MetaValue>
-            </MetaItem>
-            <MetaItem>
-              <MetaLabel>
-                {event.location}
-                {`\n`}
-                {event.fee}
-              </MetaLabel>
-            </MetaItem>
+            {event.startDate && (
+              <MetaItem>
+                <MetaLabel>活動日期</MetaLabel>
+                <MetaValue>
+                  {formatDateRange(event.startDate, event.endDate)}
+                </MetaValue>
+              </MetaItem>
+            )}
+            {event.organizer && (
+              <MetaItem>
+                <MetaLabel>主辦單位</MetaLabel>
+                <MetaValue>{event.organizer}</MetaValue>
+              </MetaItem>
+            )}
+            {event.location && (
+              <MetaItem>
+                <MetaLabel>活動地點</MetaLabel>
+                <MetaValue>{event.location}</MetaValue>
+              </MetaItem>
+            )}
+            {event.fee && (
+              <MetaItem>
+                <MetaLabel>活動費用</MetaLabel>
+                <MetaValue>{event.fee}</MetaValue>
+              </MetaItem>
+            )}
+            {event.contactInfo && (
+              <MetaItem>
+                <MetaLabel>聯絡資訊</MetaLabel>
+                <MetaValue>{event.contactInfo}</MetaValue>
+              </MetaItem>
+            )}
           </EventMetaGrid>
           <ShareButtons>
             <ShareButton onClick={handleCopyLink} aria-label="複製連結">
@@ -343,17 +411,23 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
         </EventHeader>
 
         <EventContent>
-          <ContentText>{event.description}</ContentText>
+          {event.content && (
+            <ContentText
+              dangerouslySetInnerHTML={{ __html: event.content }}
+            />
+          )}
 
-          <ButtonWrapper>
-            <RegisterButton
-              href={event.registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              前往活動
-            </RegisterButton>
-          </ButtonWrapper>
+          {event.registrationUrl && (
+            <ButtonWrapper>
+              <RegisterButton
+                href={event.registrationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                前往活動
+              </RegisterButton>
+            </ButtonWrapper>
+          )}
         </EventContent>
       </ContentWrapper>
     </PageWrapper>
@@ -361,14 +435,15 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
 }
 
 EventPage.getLayout = function getLayout(page: ReactElement) {
-  const { props } = page
-  const { event } = props
+  const { event } = page.props as PageProps
+  const title = event?.name || '活動'
+  const heroImageUrl = event ? getHeroImageUrl(event) : undefined
 
   return (
     <LayoutGeneral
-      title={event.title}
-      description={event.description}
-      imageUrl={event.heroImage}
+      title={title}
+      description={event?.content?.replace(/<[^>]*>/g, '').slice(0, 150)}
+      imageUrl={heroImageUrl}
     >
       {page}
     </LayoutGeneral>
@@ -382,18 +457,68 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const id = params?.id as string
-  const headerData = await fetchHeaderData()
 
-  // TODO: Fetch real event data from API
-  // For now, return dummy data
-  return {
-    props: {
-      headerData,
-      event: {
-        ...DUMMY_EVENT,
-        id,
+  if (!id) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const client = getGqlClient()
+
+  try {
+    const [headerData, { data }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{ event: Event | null }>({
+        query: eventById,
+        variables: { id },
+      }),
+    ])
+
+    const event = data?.event
+
+    // Return 404 if event not found or not published/approved
+    if (!event || event.state !== 'published' || !event.isApproved) {
+      return {
+        notFound: true,
+      }
+    }
+
+    return {
+      props: {
+        headerData,
+        event,
       },
-    },
+    }
+  } catch (err) {
+    const annotatingError = errors.helpers.wrap(
+      err,
+      'UnhandledError',
+      'Error occurs while fetching data at Event Detail page'
+    )
+
+    console.error(
+      JSON.stringify({
+        severity: 'ERROR',
+        message: errors.helpers.printAll(annotatingError, {
+          withStack: false,
+          withPayload: true,
+        }),
+      })
+    )
+
+    return {
+      props: {
+        headerData: {
+          sections: [],
+          featuredTags: [],
+          topics: [],
+          newsBarPicks: [],
+          siteConfigs: [],
+        },
+        event: null,
+      },
+    }
   }
 }
 
