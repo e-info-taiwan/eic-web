@@ -84,3 +84,36 @@ export const createPollResultAnonymous = gql`
     }
   }
 `
+
+// Create a new poll result (vote) for newsletter - logged-in users
+export const createNewsletterPollResultWithMember = gql`
+  mutation ($pollId: ID!, $newsletterId: ID!, $memberId: ID!, $result: Int!) {
+    createPollResult(
+      data: {
+        poll: { connect: { id: $pollId } }
+        newsletter: { connect: { id: $newsletterId } }
+        member: { connect: { id: $memberId } }
+        result: $result
+      }
+    ) {
+      id
+      result
+    }
+  }
+`
+
+// Create a new poll result (vote) for newsletter - anonymous users
+export const createNewsletterPollResultAnonymous = gql`
+  mutation ($pollId: ID!, $newsletterId: ID!, $result: Int!) {
+    createPollResult(
+      data: {
+        poll: { connect: { id: $pollId } }
+        newsletter: { connect: { id: $newsletterId } }
+        result: $result
+      }
+    ) {
+      id
+      result
+    }
+  }
+`

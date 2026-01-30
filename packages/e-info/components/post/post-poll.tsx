@@ -7,6 +7,8 @@ import AuthContext from '~/contexts/auth-context'
 import {
   type PollResult,
   type PollResultCounts,
+  createNewsletterPollResultAnonymous,
+  createNewsletterPollResultWithMember,
   createPollResultAnonymous,
   createPollResultWithMember,
   pollResults,
@@ -221,15 +223,19 @@ type PollOption = {
 
 type PostPollProps = {
   poll: Poll
-  postId: string
+  postId?: string // Post ID (for post pages)
+  newsletterId?: string // Newsletter ID (for newsletter pages)
   hideBorderTop?: boolean
   autoVote?: number // Option number to auto-vote (1-5), used for email voting
 }
 
 const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
-  { poll, postId, hideBorderTop = false, autoVote },
+  { poll, postId, newsletterId, hideBorderTop = false, autoVote },
   ref
 ) {
+  // Determine if this is for a newsletter or post
+  const isNewsletter = !!newsletterId
+  const entityId = newsletterId || postId || ''
   const wrapperRef = useRef<HTMLElement>(null)
   const combinedRef = (node: HTMLElement | null) => {
     ;(wrapperRef as React.MutableRefObject<HTMLElement | null>).current = node
@@ -281,22 +287,35 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
 
   // Check anonymous user's vote from localStorage
   useEffect(() => {
-    if (!member && poll?.id && postId) {
-      const anonymousVote = hasAnonymousVoted(poll.id, postId)
+    if (!member && poll?.id && entityId) {
+      const anonymousVote = hasAnonymousVoted(poll.id, entityId)
       if (anonymousVote !== null) {
         setSelectedOption(anonymousVote)
         setHasVoted(true)
       }
     }
-  }, [member, poll?.id, postId])
+  }, [member, poll?.id, entityId])
 
-  // Mutations for logged-in and anonymous users
+  // Mutations for logged-in and anonymous users (post)
   const [submitVoteWithMember, { loading: isSubmittingWithMember }] =
     useMutation(createPollResultWithMember)
   const [submitVoteAnonymous, { loading: isSubmittingAnonymous }] = useMutation(
     createPollResultAnonymous
   )
-  const isSubmitting = isSubmittingWithMember || isSubmittingAnonymous
+  // Mutations for newsletter
+  const [
+    submitNewsletterVoteWithMember,
+    { loading: isSubmittingNewsletterWithMember },
+  ] = useMutation(createNewsletterPollResultWithMember)
+  const [
+    submitNewsletterVoteAnonymous,
+    { loading: isSubmittingNewsletterAnonymous },
+  ] = useMutation(createNewsletterPollResultAnonymous)
+  const isSubmitting =
+    isSubmittingWithMember ||
+    isSubmittingAnonymous ||
+    isSubmittingNewsletterWithMember ||
+    isSubmittingNewsletterAnonymous
 
   // Auto-vote from email link (when autoVote prop is provided)
   useEffect(() => {
@@ -323,26 +342,49 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
       setAutoVoteTriggered(true)
 
       try {
-        // Submit vote to API - use appropriate mutation based on login status
-        if (member) {
-          await submitVoteWithMember({
-            variables: {
-              pollId: poll.id,
-              postId,
-              memberId: member.id,
-              result: autoVote,
-            },
-          })
+        // Submit vote to API - use appropriate mutation based on entity type and login status
+        if (isNewsletter) {
+          // Newsletter voting
+          if (member) {
+            await submitNewsletterVoteWithMember({
+              variables: {
+                pollId: poll.id,
+                newsletterId: entityId,
+                memberId: member.id,
+                result: autoVote,
+              },
+            })
+          } else {
+            await submitNewsletterVoteAnonymous({
+              variables: {
+                pollId: poll.id,
+                newsletterId: entityId,
+                result: autoVote,
+              },
+            })
+            saveAnonymousVote(poll.id, entityId, autoVote)
+          }
         } else {
-          await submitVoteAnonymous({
-            variables: {
-              pollId: poll.id,
-              postId,
-              result: autoVote,
-            },
-          })
-          // Save anonymous vote to localStorage to prevent duplicate votes
-          saveAnonymousVote(poll.id, postId, autoVote)
+          // Post voting
+          if (member) {
+            await submitVoteWithMember({
+              variables: {
+                pollId: poll.id,
+                postId: entityId,
+                memberId: member.id,
+                result: autoVote,
+              },
+            })
+          } else {
+            await submitVoteAnonymous({
+              variables: {
+                pollId: poll.id,
+                postId: entityId,
+                result: autoVote,
+              },
+            })
+            saveAnonymousVote(poll.id, entityId, autoVote)
+          }
         }
 
         // Refetch counts after voting
@@ -368,9 +410,12 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     poll?.id,
     poll?.status,
     member,
-    postId,
+    entityId,
+    isNewsletter,
     submitVoteWithMember,
     submitVoteAnonymous,
+    submitNewsletterVoteWithMember,
+    submitNewsletterVoteAnonymous,
     refetchCounts,
   ])
 
@@ -438,26 +483,49 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     if (hasVoted || isSubmitting || isDisabled) return
 
     try {
-      // Submit vote to API - use appropriate mutation based on login status
-      if (isLoggedIn && member) {
-        await submitVoteWithMember({
-          variables: {
-            pollId: poll.id,
-            postId,
-            memberId: member.id,
-            result: optionKey,
-          },
-        })
+      // Submit vote to API - use appropriate mutation based on entity type and login status
+      if (isNewsletter) {
+        // Newsletter voting
+        if (isLoggedIn && member) {
+          await submitNewsletterVoteWithMember({
+            variables: {
+              pollId: poll.id,
+              newsletterId: entityId,
+              memberId: member.id,
+              result: optionKey,
+            },
+          })
+        } else {
+          await submitNewsletterVoteAnonymous({
+            variables: {
+              pollId: poll.id,
+              newsletterId: entityId,
+              result: optionKey,
+            },
+          })
+          saveAnonymousVote(poll.id, entityId, optionKey)
+        }
       } else {
-        await submitVoteAnonymous({
-          variables: {
-            pollId: poll.id,
-            postId,
-            result: optionKey,
-          },
-        })
-        // Save anonymous vote to localStorage to prevent duplicate votes
-        saveAnonymousVote(poll.id, postId, optionKey)
+        // Post voting
+        if (isLoggedIn && member) {
+          await submitVoteWithMember({
+            variables: {
+              pollId: poll.id,
+              postId: entityId,
+              memberId: member.id,
+              result: optionKey,
+            },
+          })
+        } else {
+          await submitVoteAnonymous({
+            variables: {
+              pollId: poll.id,
+              postId: entityId,
+              result: optionKey,
+            },
+          })
+          saveAnonymousVote(poll.id, entityId, optionKey)
+        }
       }
 
       // Refetch counts after voting

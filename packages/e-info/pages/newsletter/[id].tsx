@@ -710,7 +710,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
           <PostPoll
             ref={pollRef}
             poll={newsletter.poll}
-            postId={newsletter.id}
+            newsletterId={newsletter.id}
             hideBorderTop
             autoVote={shouldAutoVote ? voteOption : undefined}
           />
