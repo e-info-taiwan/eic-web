@@ -307,6 +307,241 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
       font-size: 16px;
     }
   }
+
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+
+  /* ===== 01-Content ===== */
+  .section-header {
+    text-align: center;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  .toc-list {
+    padding: 15px 20px;
+    border-bottom: 20px solid #D9D9D9;
+  }
+  .toc-item {
+    padding: 8px 0;
+    font-size: 14px;
+    color: #333;
+  }
+  .toc-item:last-child {
+    border-bottom: none;
+  }
+  .toc-item::before {
+    content: "·";
+    margin-right: 8px;
+    font-weight: bold;
+  }
+  .article-section {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  .article-image {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .article-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #388A48;
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .article-content {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+  .read-more {
+    text-align: right;
+    font-size: 14px;
+  }
+  .read-more a {
+    color: #DD8346;
+    font-weight: bold;
+  }
+
+  /* ===== 02-Highlight (焦點話題) ===== */
+  .green-header {
+    background-color: #388A48;
+    color: white;
+    text-align: center;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .highlight-item {
+    display: flex;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    align-items: stretch;
+  }
+  .highlight-item:last-child {
+    border-bottom: none;
+  }
+  .highlight-thumb {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-right: 15px;
+  }
+  .highlight-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .highlight-title {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+  }
+  .highlight-content .read-more {
+    text-align: right;
+  }
+
+  /* ===== 03-Ranking (閱讀排名) ===== */
+  .ranking-item {
+    display: flex;
+    padding: 15px 20px;
+    align-items: stretch;
+  }
+  .ranking-item:last-child {
+    border-bottom: none;
+  }
+  .ranking-thumb {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+  .ranking-number {
+    font-size: 42px;
+    font-weight: bold;
+    color: #388A48;
+    width: 50px;
+    flex-shrink: 0;
+    text-align: center;
+    line-height: 1;
+    margin-right: 10px;
+  }
+  .ranking-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .ranking-content .read-more {
+    text-align: right;
+  }
+  .ranking-title {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  /* Ads Section */
+  .ads-section {
+    padding: 20px;
+    background-color: #fff;
+    text-align: center;
+  }
+  .ad-link {
+    display: inline-block;
+    margin: 0 10px 15px;
+  }
+  .ad-link:last-child {
+    margin-bottom: 0;
+  }
+  .ad-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ===== 04-Events (近期活動) ===== */
+  .event-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  .event-item:last-child {
+    border-bottom: none;
+  }
+  .event-date {
+    font-size: 15px;
+    color: #388A48;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .event-title {
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  .event-org {
+    font-size: 14px;
+    color: #666;
+  }
+
+  /* ===== 05-Jobs (環境徵才) ===== */
+  .job-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #333;
+  }
+  .job-item:last-child {
+    border-bottom: none;
+  }
+  .job-date {
+    font-size: 15px;
+    color: #388A48;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .job-title {
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  .job-org {
+    font-size: 14px;
+    color: #666;
+  }
+
+  /* ===== 06-Comment (推薦讀者回應) ===== */
+  .comment-section {
+    padding: 30px 20px;
+    background-color: #fff;
+  }
+  .comment-quote {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+  .comment-source {
+    font-size: 15px;
+    color: #388A48;
+    margin-bottom: 15px;
+  }
+  .comment-link {
+    text-align: center;
+  }
+  .comment-link a {
+    color: #DD8346;
+    font-size: 16px;
+    font-weight: bold;
+  }
   `}
 `
 
