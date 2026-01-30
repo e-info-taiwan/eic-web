@@ -92,6 +92,19 @@ const nextConfig = {
           'https://storage.googleapis.com/e-info-legacy/:year/:month/:day/:file.:ext',
         permanent: true,
       },
+      // Legacy year index pages → GCS (e.g., /2004/index.htm, /2004/index.html)
+      {
+        source: '/:year(\\d{4})/index.htm',
+        destination:
+          'https://storage.googleapis.com/e-info-legacy/:year/index.htm',
+        permanent: true,
+      },
+      {
+        source: '/:year(\\d{4})/index.html',
+        destination:
+          'https://storage.googleapis.com/e-info-legacy/:year/index.html',
+        permanent: true,
+      },
     ]
   },
   output: 'standalone',

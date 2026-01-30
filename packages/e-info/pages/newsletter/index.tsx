@@ -478,8 +478,8 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
       newYear = year - 1
     }
 
-    // Minimum year is 2000
-    if (newYear >= 2000) {
+    // Minimum year is 2014 (earlier years use legacy GCS pages)
+    if (newYear >= 2014) {
       setYear(newYear)
       setMonth(newMonth)
       fetchNewsletters(newYear, newMonth)
@@ -510,8 +510,8 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
     fetchNewsletters(newYear, month)
   }
 
-  // Generate year options (minimum year is 2000)
-  const minYear = Math.max(yearRange.minYear, 2000)
+  // Generate year options (minimum year is 2014, earlier years use legacy GCS pages)
+  const minYear = Math.max(yearRange.minYear, 2014)
   const yearOptions = []
   for (let y = yearRange.maxYear; y >= minYear; y--) {
     yearOptions.push(y)
@@ -643,8 +643,16 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
           <SectionTitle>系列電子報回顧</SectionTitle>
           <YearLinks>
             {HISTORICAL_YEARS.map((y) => {
-              // 2000 年是創始年，從 4 月開始；其他年份從 1 月開始
-              const startMonth = y === 2000 ? 4 : 1
+              // 2000-2013 年連結到舊版 GCS 靜態頁面
+              if (y <= 2013) {
+                return (
+                  <YearLink key={y} href={`/${y}/index.htm`}>
+                    {y}
+                  </YearLink>
+                )
+              }
+              // 2014 年之後使用新版電子報系統
+              const startMonth = 1
               return (
                 <YearLink
                   key={y}
