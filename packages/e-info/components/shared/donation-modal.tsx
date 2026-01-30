@@ -43,10 +43,10 @@ const CloseButton = styled.button`
   right: 12px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.6);
-  padding: 4px;
+  padding: 0;
   line-height: 1;
 
   &:hover {
