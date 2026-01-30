@@ -6,11 +6,14 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { SITE_TITLE } from '~/constants/constant'
+import type { HeaderContextData } from '~/contexts/header-context'
+import { fetchHeaderData } from '~/utils/header-data'
 
 import type { NextPageWithLayout } from './_app'
 
 type ErrorPageProps = {
   statusCode?: number
+  headerData?: HeaderContextData
 }
 
 const Page = styled.div`
@@ -105,7 +108,10 @@ Error.getInitialProps = async (
   const { res, err } = context
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404
 
-  return { statusCode }
+  // Fetch header data for proper navigation display
+  const headerData = await fetchHeaderData()
+
+  return { statusCode, headerData }
 }
 
 Error.getLayout = function getLayout(page: ReactElement): ReactElement {

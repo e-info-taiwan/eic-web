@@ -5,8 +5,11 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
+import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { HeaderContextData } from '~/contexts/header-context'
+import type { Event } from '~/graphql/query/event'
+import { events as eventsQuery } from '~/graphql/query/event'
 import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
@@ -338,100 +341,6 @@ const SubmitButton = styled.a`
   }
 `
 
-type Event = {
-  id: string
-  title: string
-  date: string
-  organizer: string
-  image: string
-  href: string
-}
-
-// Dummy events data
-const DUMMY_EVENTS: Event[] = [
-  {
-    id: '1',
-    title: '【台灣蝴蝶保育學會】每周日免費賞蝶導覽',
-    date: '2025-01-01-01:01',
-    organizer: '單位名稱單位名稱單位名稱',
-    image:
-      'https://images.unsplash.com/photo-1534889156217-d643df14f14a?w=800&h=450&fit=crop',
-    href: '/event/1',
-  },
-  {
-    id: '2',
-    title: '生態攝影工作坊：捕捉自然之美',
-    date: '2025-01-15-14:00',
-    organizer: '台灣自然攝影學會',
-    image:
-      'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&h=450&fit=crop',
-    href: '/event/2',
-  },
-  {
-    id: '3',
-    title: '海洋保育講座：守護我們的藍色家園',
-    date: '2025-01-20-10:00',
-    organizer: '海洋保育協會',
-    image:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=450&fit=crop',
-    href: '/event/3',
-  },
-  {
-    id: '4',
-    title: '濕地生態觀察活動',
-    date: '2025-01-25-09:00',
-    organizer: '濕地保護聯盟',
-    image:
-      'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?w=800&h=450&fit=crop',
-    href: '/event/4',
-  },
-  {
-    id: '5',
-    title: '親子自然體驗營：探索森林奧秘',
-    date: '2025-02-01-08:30',
-    organizer: '森林教育推廣協會',
-    image:
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=450&fit=crop',
-    href: '/event/5',
-  },
-  {
-    id: '6',
-    title: '候鳥觀察季：迎接冬季訪客',
-    date: '2025-02-05-07:00',
-    organizer: '台灣野鳥協會',
-    image:
-      'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&h=450&fit=crop',
-    href: '/event/6',
-  },
-  {
-    id: '7',
-    title: '城市綠化工作坊',
-    date: '2025-02-10-13:00',
-    organizer: '都市園藝推廣中心',
-    image:
-      'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=800&h=450&fit=crop',
-    href: '/event/7',
-  },
-  {
-    id: '8',
-    title: '淨灘行動：還給海洋一片純淨',
-    date: '2025-02-15-08:00',
-    organizer: '環保志工聯盟',
-    image:
-      'https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=800&h=450&fit=crop',
-    href: '/event/8',
-  },
-  {
-    id: '9',
-    title: '永續農業實踐分享會',
-    date: '2025-02-20-14:30',
-    organizer: '有機農業推廣協會',
-    image:
-      'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&h=450&fit=crop',
-    href: '/event/9',
-  },
-]
-
 type PageProps = {
   headerData: HeaderContextData
   events: Event[]
@@ -445,25 +354,81 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9 // 9 events per page (3x3 grid)
-  const totalPages = Math.ceil(events.length / itemsPerPage)
+
+  // Generate location options from events data
+  const locationOptions = Array.from(
+    new Set(
+      events
+        .map((event) => event.location)
+        .filter((location): location is string => !!location && location.trim() !== '')
+    )
+  ).sort()
+
+  // Generate date options from events data (YYYY-MM format)
+  const dateOptions = Array.from(
+    new Set(
+      events
+        .map((event) => {
+          if (!event.startDate) return null
+          const date = new Date(event.startDate)
+          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+        })
+        .filter((date): date is string => !!date)
+    )
+  ).sort((a, b) => b.localeCompare(a)) // Sort descending (newest first)
 
   // Format date to yyyy年mm月dd日
-  const formatDate = (dateString: string) => {
-    // Handle format: 2025-00-00-00:00 or 2025-01-15-14:00
-    const parts = dateString.split('-')
-    if (parts.length >= 3) {
-      const year = parts[0]
-      const month = parts[1]
-      const day = parts[2].split('-')[0] // Remove time part if exists
-      return `${year}年${month}月${day}日`
-    }
-    return dateString
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}年${month}月${day}日`
   }
 
-  // Calculate current events to display
+  // Get image URL with fallback
+  const getImageUrl = (event: Event) => {
+    return (
+      event.heroImage?.resized?.w480 ||
+      event.heroImage?.resized?.original ||
+      'https://via.placeholder.com/800x450?text=No+Image'
+    )
+  }
+
+  // Format date option for display (YYYY-MM -> YYYY年MM月)
+  const formatDateOption = (dateString: string) => {
+    const [year, month] = dateString.split('-')
+    return `${year}年${month}月`
+  }
+
+  // Filter events based on selected filters
+  const filteredEvents = events.filter((event) => {
+    // Location filter (exact match)
+    if (selectedLocation !== 'all') {
+      if (event.location !== selectedLocation) {
+        return false
+      }
+    }
+
+    // Date filter (format: YYYY-MM)
+    if (selectedDate !== 'all') {
+      if (!event.startDate) return false
+      const eventDate = new Date(event.startDate)
+      const eventYearMonth = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}`
+      if (eventYearMonth !== selectedDate) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  // Calculate pagination based on filtered events
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentEvents = events.slice(startIndex, endIndex)
+  const currentEvents = filteredEvents.slice(startIndex, endIndex)
 
   // Handle page change
   const handlePageChange = (page: number) => {
@@ -532,13 +497,11 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
               }}
             >
               <option value="all">全部</option>
-              <option value="taipei">台北市</option>
-              <option value="new-taipei">新北市</option>
-              <option value="taoyuan">桃園市</option>
-              <option value="taichung">台中市</option>
-              <option value="tainan">台南市</option>
-              <option value="kaohsiung">高雄市</option>
-              <option value="other">其他縣市</option>
+              {locationOptions.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
             </Select>
           </FilterGroup>
 
@@ -554,12 +517,11 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
               }}
             >
               <option value="all">全部</option>
-              <option value="2025-01">2025-01</option>
-              <option value="2025-02">2025-02</option>
-              <option value="2025-03">2025-03</option>
-              <option value="2025-04">2025-04</option>
-              <option value="2025-05">2025-05</option>
-              <option value="2025-06">2025-06</option>
+              {dateOptions.map((date) => (
+                <option key={date} value={date}>
+                  {formatDateOption(date)}
+                </option>
+              ))}
             </Select>
           </FilterGroup>
 
@@ -575,15 +537,20 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
 
         <EventGrid>
           {currentEvents.map((event) => (
-            <Link key={event.id} href={event.href} passHref legacyBehavior>
+            <Link
+              key={event.id}
+              href={`/event/${event.id}`}
+              passHref
+              legacyBehavior
+            >
               <EventCard
-                onClick={() => gtag.sendEvent('events', 'click', event.title)}
+                onClick={() => gtag.sendEvent('events', 'click', event.name)}
               >
-                <EventImage $image={event.image} />
+                <EventImage $image={getImageUrl(event)} />
                 <EventContent>
-                  <EventDate>{formatDate(event.date)}</EventDate>
-                  <EventTitle>{event.title}</EventTitle>
-                  <EventOrganizer>{event.organizer}</EventOrganizer>
+                  <EventDate>{formatDate(event.startDate)}</EventDate>
+                  <EventTitle>{event.name}</EventTitle>
+                  <EventOrganizer>{event.organizer || ''}</EventOrganizer>
                 </EventContent>
               </EventCard>
             </Link>
@@ -642,12 +609,21 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 }) => {
   setCacheControl(res)
 
-  const headerData = await fetchHeaderData()
+  const client = getGqlClient()
+
+  // Fetch more events for client-side filtering
+  const [headerData, eventsResult] = await Promise.all([
+    fetchHeaderData(),
+    client.query<{ events: Event[] }>({
+      query: eventsQuery,
+      variables: { take: 100, skip: 0 },
+    }),
+  ])
 
   return {
     props: {
       headerData,
-      events: DUMMY_EVENTS,
+      events: eventsResult.data?.events || [],
     },
   }
 }

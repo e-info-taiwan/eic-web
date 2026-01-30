@@ -109,7 +109,7 @@ const SearchButton = styled(Link)`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primary[20]};
+    background-color: ${({ theme }) => theme.colors.primary[0]};
   }
 
   /* Hide on mobile devices */
