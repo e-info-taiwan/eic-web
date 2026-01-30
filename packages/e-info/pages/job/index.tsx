@@ -418,7 +418,12 @@ const JobsPage: NextPageWithLayout<PageProps> = ({ jobs }) => {
         ) : (
           <JobGrid>
             {currentJobs.map((job) => (
-              <Link key={job.id} href={`/job/${job.id}`} passHref legacyBehavior>
+              <Link
+                key={job.id}
+                href={`/job/${job.id}`}
+                passHref
+                legacyBehavior
+              >
                 <JobCard
                   onClick={() => gtag.sendEvent('jobs', 'click', job.title)}
                 >

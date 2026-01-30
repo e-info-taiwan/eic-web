@@ -67,3 +67,13 @@ export const jobById = gql`
     }
   }
 `
+
+// Mutation for creating a new job (user submission)
+export const createJob = gql`
+  mutation CreateJob($data: JobCreateInput!) {
+    createJob(data: $data) {
+      id
+      title
+    }
+  }
+`

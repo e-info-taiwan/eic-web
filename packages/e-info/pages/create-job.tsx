@@ -303,6 +303,7 @@ const CreateJobPage: NextPageWithLayout = () => {
   })
 
   const [errors, setErrors] = useState<FormErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -342,6 +343,19 @@ const CreateJobPage: NextPageWithLayout = () => {
 
     if (!formData.applyValue.trim()) {
       newErrors.applyValue = '請填寫應徵方式'
+    } else if (formData.applyMethod === 'email') {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.applyValue)) {
+        newErrors.applyValue = '請輸入有效的 email 格式'
+      }
+    } else if (formData.applyMethod === 'website') {
+      // Validate URL format
+      try {
+        new URL(formData.applyValue)
+      } catch {
+        newErrors.applyValue = '請輸入有效的網址格式（需包含 https://）'
+      }
     }
 
     if (!formData.startDate) {
@@ -350,20 +364,55 @@ const CreateJobPage: NextPageWithLayout = () => {
 
     if (!formData.endDate) {
       newErrors.endDate = '請選擇結束日期'
+    } else if (formData.startDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = '結束日期不可早於開始日期'
     }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (validateForm()) {
-      // TODO: Submit form data
-      console.log('Form submitted:', formData)
-      // Redirect to completion page
-      router.push('/submission-complete')
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+
+    try {
+      // Combine application method
+      const applicationMethod = `${formData.applyMethod}: ${formData.applyValue}`
+
+      const response = await fetch('/api/create-job', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.jobTitle,
+          company: formData.organization,
+          salary: formData.salary,
+          requirements: formData.requirements,
+          jobDescription: formData.jobContent,
+          bonus: formData.benefits,
+          applicationMethod,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        router.push('/submission-complete')
+      } else {
+        alert(result.error || '送出失敗，請重試')
+      }
+    } catch (error) {
+      console.error('Submit error:', error)
+      alert('送出失敗，請重試')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -524,22 +573,25 @@ const CreateJobPage: NextPageWithLayout = () => {
             )}
           </FormGroup>
 
-          <SubmitButton type="submit">提交</SubmitButton>
+          <SubmitButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? '送出中...' : '送出'}
+          </SubmitButton>
         </Form>
 
         <NoteSection>
           <NoteTitle>注意事項</NoteTitle>
           <NoteList>
+            <NoteItem>徵才內容建立完成，通過審核將予以發佈。</NoteItem>
             <NoteItem>
-              資訊中心保留決定公布與否之權力，若與環境相關性過低，將不予公布。
+              環境資訊中心保留決定公布與否之權力，若與環境相關性過低，將不予公布。
             </NoteItem>
             <NoteItem>
-              相關問題請來信至{' '}
+              相關問題請來信至
               <a href="mailto:info@e-info.org.tw">info@e-info.org.tw</a>
               ，我們將盡速為您解答。
             </NoteItem>
             <NoteItem>
-              若有急件，請來信{' '}
+              若有急件，請來信
               <a href="mailto:lishin_0426@e-info.org.tw">
                 lishin_0426@e-info.org.tw
               </a>{' '}
