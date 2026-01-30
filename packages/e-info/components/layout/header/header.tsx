@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
+import DonationModal from '~/components/shared/donation-modal'
 import NewsletterModal from '~/components/shared/newsletter-modal'
 import { useHeaderData } from '~/contexts/header-context'
 import type { HeaderNavSection } from '~/graphql/query/section'
@@ -681,6 +682,7 @@ const Header = () => {
   )
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false)
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0)
   const [prevNewsIndex, setPrevNewsIndex] = useState<number | null>(null)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -935,10 +937,8 @@ const Header = () => {
                     訂閱電子報
                   </ActionButton>
                   <ActionButton
-                    as="a"
-                    href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    as="button"
+                    onClick={() => setIsDonationModalOpen(true)}
                   >
                     捐款支持
                   </ActionButton>
@@ -989,10 +989,8 @@ const Header = () => {
                 訂閱電子報
               </ActionButton>
               <ActionButton
-                as="a"
-                href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
-                target="_blank"
-                rel="noopener noreferrer"
+                as="button"
+                onClick={() => setIsDonationModalOpen(true)}
               >
                 捐款支持
               </ActionButton>
@@ -1054,6 +1052,11 @@ const Header = () => {
           isOpen={isNewsletterModalOpen}
           onClose={() => setIsNewsletterModalOpen(false)}
         />
+
+        <DonationModal
+          isOpen={isDonationModalOpen}
+          onClose={() => setIsDonationModalOpen(false)}
+        />
       </HeaderContainer>
 
       {/* Mobile/Tablet menu - outside HeaderContainer to avoid transform containing block issue */}
@@ -1072,10 +1075,11 @@ const Header = () => {
           <MobileMenuContent>
             <MobileMenuSection>
               <ActionButton
-                as="a"
-                href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
-                target="_blank"
-                rel="noopener noreferrer"
+                as="button"
+                onClick={() => {
+                  setIsDonationModalOpen(true)
+                  handleMenuClose()
+                }}
               >
                 捐款支持
               </ActionButton>

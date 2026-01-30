@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
+import DonationModal from '~/components/shared/donation-modal'
 import NewsletterModal from '~/components/shared/newsletter-modal'
 import { useHeaderData } from '~/contexts/header-context'
 import LogoEIC from '~/public/eic-logo.svg'
@@ -238,6 +239,7 @@ const SocialLink = styled.a`
 
 const Footer = () => {
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false)
   const { siteConfigs } = useHeaderData()
 
   // Get donation permit number from site configs
@@ -281,12 +283,7 @@ const Footer = () => {
               <Button onClick={() => setIsNewsletterModalOpen(true)}>
                 訂閱電子報
               </Button>
-              <Button
-                as="a"
-                href="https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Button onClick={() => setIsDonationModalOpen(true)}>
                 捐款支持
               </Button>
             </ActionButtons>
@@ -378,6 +375,11 @@ const Footer = () => {
       <NewsletterModal
         isOpen={isNewsletterModalOpen}
         onClose={() => setIsNewsletterModalOpen(false)}
+      />
+
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
       />
     </FooterContainer>
   )
