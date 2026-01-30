@@ -404,9 +404,7 @@ const JobsPage: NextPageWithLayout<PageProps> = ({ jobs }) => {
             <Title>徵才</Title>
           </TitleGroup>
           <SubmitButton
-            href="https://forms.gle/your-form-id"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/job/create"
             onClick={() => gtag.sendEvent('jobs', 'click', 'submit-job')}
           >
             我要刊登

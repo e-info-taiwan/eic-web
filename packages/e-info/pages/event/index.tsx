@@ -516,9 +516,7 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
           </FilterGroup>
 
           <SubmitButton
-            href="https://forms.gle/your-form-id"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/event/create"
             onClick={() => gtag.sendEvent('events', 'click', 'submit-event')}
           >
             我要刊登
