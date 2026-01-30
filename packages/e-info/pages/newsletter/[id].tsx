@@ -692,7 +692,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
           />
         )}
 
-        <ReferralSection>
+        {/* <ReferralSection>
           <ReferralTitle>你的推薦狀態</ReferralTitle>
           <ReferralText>
             你總共有 <strong>0</strong> 個推薦。邀請 <strong>1</strong>{' '}
@@ -704,7 +704,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
           <ReferralSubLinkWrapper>
             <ReferralSubLink href="#">或查看集點狀態及獎勵。</ReferralSubLink>
           </ReferralSubLinkWrapper>
-        </ReferralSection>
+        </ReferralSection> */}
 
         {newsletter.poll && (
           <PostPoll
@@ -716,7 +716,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
           />
         )}
 
-        <NewsletterFooter>
+        {/* <NewsletterFooter>
           <SocialLinks>
             <SocialLink
               href="https://www.facebook.com/enc.teia"
@@ -768,7 +768,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
             Copyright © {new Date().getFullYear()} Taiwan Environmental
             Information Association, All rights reserved.
           </Copyright>
-        </NewsletterFooter>
+        </NewsletterFooter> */}
       </ContentWrapper>
     </PageWrapper>
   )
