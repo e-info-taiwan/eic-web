@@ -594,7 +594,7 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
 }
 
 EventsPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutGeneral>{page}</LayoutGeneral>
+  return <LayoutGeneral title="活動">{page}</LayoutGeneral>
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({

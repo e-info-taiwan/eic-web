@@ -418,12 +418,7 @@ const JobsPage: NextPageWithLayout<PageProps> = ({ jobs }) => {
         ) : (
           <JobGrid>
             {currentJobs.map((job) => (
-              <Link
-                key={job.id}
-                href={`/job/${job.id}`}
-                passHref
-                legacyBehavior
-              >
+              <Link key={job.id} href={`/job/${job.id}`} passHref legacyBehavior>
                 <JobCard
                   onClick={() => gtag.sendEvent('jobs', 'click', job.title)}
                 >
@@ -490,7 +485,7 @@ const JobsPage: NextPageWithLayout<PageProps> = ({ jobs }) => {
 }
 
 JobsPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutGeneral>{page}</LayoutGeneral>
+  return <LayoutGeneral title="徵才">{page}</LayoutGeneral>
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({
