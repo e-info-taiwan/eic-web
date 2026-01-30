@@ -356,11 +356,11 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     margin-bottom: 15px;
   }
   .article-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #388A48;
+    font-size: 20px;
+    font-weight: 700;
+    color: #232333;
     margin: 0 0 10px;
-    line-height: 1.4;
+    line-height: 28px;
   }
   .article-content {
     font-size: 14px;
@@ -421,8 +421,9 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     justify-content: space-between;
   }
   .highlight-title {
-    font-size: 15px;
-    color: #333;
+    font-size: 18px;
+    font-weight: 500;
+    color: #232333;
     line-height: 1.5;
   }
   .highlight-content .read-more {
@@ -480,8 +481,9 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     color: #B55514;
   }
   .ranking-title {
-    font-size: 14px;
-    color: #333;
+    font-size: 18px;
+    font-weight: 500;
+    color: #232333;
     line-height: 1.5;
   }
 
