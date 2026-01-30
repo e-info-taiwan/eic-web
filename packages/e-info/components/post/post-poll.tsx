@@ -430,35 +430,35 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     options.push({
       key: 1,
       text: poll.option1,
-      imageUrl: poll.option1Image?.resized?.w480 || null,
+      imageUrl: poll.option1Image?.resized?.original || null,
     })
   }
   if (poll.option2) {
     options.push({
       key: 2,
       text: poll.option2,
-      imageUrl: poll.option2Image?.resized?.w480 || null,
+      imageUrl: poll.option2Image?.resized?.original || null,
     })
   }
   if (poll.option3) {
     options.push({
       key: 3,
       text: poll.option3,
-      imageUrl: poll.option3Image?.resized?.w480 || null,
+      imageUrl: poll.option3Image?.resized?.original || null,
     })
   }
   if (poll.option4) {
     options.push({
       key: 4,
       text: poll.option4,
-      imageUrl: poll.option4Image?.resized?.w480 || null,
+      imageUrl: poll.option4Image?.resized?.original || null,
     })
   }
   if (poll.option5) {
     options.push({
       key: 5,
       text: poll.option5,
-      imageUrl: poll.option5Image?.resized?.w480 || null,
+      imageUrl: poll.option5Image?.resized?.original || null,
     })
   }
 
