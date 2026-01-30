@@ -7,6 +7,7 @@ import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Event } from '~/graphql/query/event'
 import { events as eventsQuery } from '~/graphql/query/event'
@@ -151,29 +152,29 @@ const PaginationWrapper = styled.div`
   }
 `
 
-const BackForwardButton = styled.button`
+const BackForwardButton = styled.button<{ $isDisabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 25px;
   height: 25px;
-  border: none;
   background: none;
-  cursor: pointer;
+  border: none;
+  cursor: ${({ $isDisabled }) => ($isDisabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ $isDisabled }) => ($isDisabled ? 0.3 : 1)};
   padding: 0;
 
   > svg {
     width: 25px;
     height: 25px;
-  }
 
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+    path {
+      fill: ${({ theme }) => theme.colors.secondary[80]};
+    }
   }
 
   ${({ theme }) => theme.breakpoint.md} {
-    width: 40px;
+    min-width: 40px;
     height: 40px;
 
     > svg {
@@ -183,52 +184,37 @@ const BackForwardButton = styled.button`
   }
 `
 
-const PaginationButton = styled.button<{
-  $isActive?: boolean
-  $isDisabled?: boolean
-}>`
+const PaginationButton = styled.button<{ $isActive?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 22px;
   height: 22px;
-  border: 1px solid #000;
-  border-color: ${({ $isActive, $isDisabled, theme }) =>
-    $isDisabled
-      ? theme.colors.grayscale[60]
-      : $isActive
-      ? theme.colors.grayscale[0]
-      : theme.colors.secondary[20]};
+  border: 1px solid;
+  border-color: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.grayscale[0] : theme.colors.secondary[80]};
   background: #fff;
-  color: ${({ $isActive, $isDisabled, theme }) =>
-    $isDisabled
-      ? theme.colors.grayscale[60]
-      : $isActive
-      ? theme.colors.grayscale[0]
-      : theme.colors.secondary[20]};
+  color: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.grayscale[0] : theme.colors.secondary[80]};
   font-size: 10px;
   font-weight: 500;
   line-height: 1.5;
-  cursor: ${({ $isDisabled }) => ($isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: pointer;
   transition: all 0.2s ease;
   border-radius: 11px;
 
-  &:hover:not(:disabled) {
-    background: ${({ theme }) => theme.colors.secondary[20]};
-    border-color: ${({ theme }) => theme.colors.secondary[20]};
+  &:hover {
+    background: ${({ theme }) => theme.colors.secondary[80]};
+    border-color: ${({ theme }) => theme.colors.secondary[80]};
     color: #fff;
   }
 
   ${({ theme }) => theme.breakpoint.md} {
-    width: 36px;
+    min-width: 36px;
     height: 36px;
     font-size: 16px;
     font-weight: 700;
     border-radius: 18px;
-  }
-
-  &:disabled {
-    opacity: 0.5;
   }
 `
 
@@ -238,7 +224,7 @@ const PaginationEllipsis = styled.span`
   justify-content: center;
   min-width: 40px;
   height: 40px;
-  color: ${({ theme }) => theme.colors.secondary[20]};
+  color: ${({ theme }) => theme.colors.secondary[80]};
   font-size: 14px;
 
   ${({ theme }) => theme.breakpoint.xl} {
@@ -360,7 +346,9 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     new Set(
       events
         .map((event) => event.location)
-        .filter((location): location is string => !!location && location.trim() !== '')
+        .filter(
+          (location): location is string => !!location && location.trim() !== ''
+        )
     )
   ).sort()
 
@@ -371,7 +359,10 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
         .map((event) => {
           if (!event.startDate) return null
           const date = new Date(event.startDate)
-          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+            2,
+            '0'
+          )}`
         })
         .filter((date): date is string => !!date)
     )
@@ -392,7 +383,7 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     return (
       event.heroImage?.resized?.w480 ||
       event.heroImage?.resized?.original ||
-      'https://via.placeholder.com/800x450?text=No+Image'
+      DEFAULT_POST_IMAGE_PATH
     )
   }
 
@@ -415,7 +406,9 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     if (selectedDate !== 'all') {
       if (!event.startDate) return false
       const eventDate = new Date(event.startDate)
-      const eventYearMonth = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}`
+      const eventYearMonth = `${eventDate.getFullYear()}-${String(
+        eventDate.getMonth() + 1
+      ).padStart(2, '0')}`
       if (eventYearMonth !== selectedDate) {
         return false
       }
@@ -437,44 +430,45 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     gtag.sendEvent('events', 'click', `pagination-page-${page}`)
   }
 
-  // Generate page numbers for pagination
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = []
-    const showEllipsisThreshold = 7
+  // Generate page numbers for pagination (matching category page style)
+  const generatePaginationItems = (): (number | 'ellipsis')[] => {
+    const items: (number | 'ellipsis')[] = []
 
-    if (totalPages <= showEllipsisThreshold) {
-      // Show all pages if total is small
+    if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
-        pages.push(i)
+        items.push(i)
       }
-    } else {
-      // Always show first page
-      pages.push(1)
-
-      if (currentPage > 3) {
-        pages.push('ellipsis-start')
-      }
-
-      // Show pages around current page
-      const start = Math.max(2, currentPage - 1)
-      const end = Math.min(totalPages - 1, currentPage + 1)
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i)
-      }
-
-      if (currentPage < totalPages - 2) {
-        pages.push('ellipsis-end')
-      }
-
-      // Always show last page
-      if (totalPages > 1) {
-        pages.push(totalPages)
-      }
+      return items
     }
 
-    return pages
+    // Always show first page
+    items.push(1)
+
+    if (currentPage > 3) {
+      items.push('ellipsis')
+    }
+
+    // Show pages around current page
+    const start = Math.max(2, currentPage - 1)
+    const end = Math.min(totalPages - 1, currentPage + 1)
+
+    for (let i = start; i <= end; i++) {
+      items.push(i)
+    }
+
+    if (currentPage < totalPages - 2) {
+      items.push('ellipsis')
+    }
+
+    // Always show last page
+    if (totalPages > 1) {
+      items.push(totalPages)
+    }
+
+    return items
   }
+
+  const paginationItems = generatePaginationItems()
 
   return (
     <PageWrapper>
@@ -561,35 +555,39 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
         {totalPages > 1 && (
           <PaginationWrapper>
             <BackForwardButton
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
+              $isDisabled={currentPage === 1}
+              onClick={() => {
+                if (currentPage > 1) {
+                  handlePageChange(currentPage - 1)
+                }
+              }}
             >
               <IconBack />
             </BackForwardButton>
 
-            {getPageNumbers().map((page, index) => {
-              if (typeof page === 'string') {
-                return (
-                  <PaginationEllipsis key={`ellipsis-${index}`}>
-                    ......
-                  </PaginationEllipsis>
-                )
-              }
-
-              return (
+            {paginationItems.map((item, index) =>
+              item === 'ellipsis' ? (
+                <PaginationEllipsis key={`ellipsis-${index}`}>
+                  ......
+                </PaginationEllipsis>
+              ) : (
                 <PaginationButton
-                  key={page}
-                  $isActive={currentPage === page}
-                  onClick={() => handlePageChange(page)}
+                  key={item}
+                  $isActive={item === currentPage}
+                  onClick={() => handlePageChange(item)}
                 >
-                  {String(page).padStart(2, '0')}
+                  {String(item).padStart(2, '0')}
                 </PaginationButton>
               )
-            })}
+            )}
 
             <BackForwardButton
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              $isDisabled={currentPage === totalPages}
+              onClick={() => {
+                if (currentPage < totalPages) {
+                  handlePageChange(currentPage + 1)
+                }
+              }}
             >
               <IconForward />
             </BackForwardButton>
