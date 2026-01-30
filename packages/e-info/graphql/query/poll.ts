@@ -20,7 +20,12 @@ export type PollResultCounts = {
 // Query poll results for checking member's vote
 export const pollResults = gql`
   query ($pollId: ID!, $memberId: ID!) {
-    pollResults(where: { poll: { id: { equals: $pollId } }, member: { id: { equals: $memberId } } }) {
+    pollResults(
+      where: {
+        poll: { id: { equals: $pollId } }
+        member: { id: { equals: $memberId } }
+      }
+    ) {
       id
       result
       member {

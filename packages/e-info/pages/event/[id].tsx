@@ -359,7 +359,6 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
 
   return (
     <PageWrapper>
-      <BackLink href="/event">返回活動列表</BackLink>
       <HeroSection>
         <HeroImage src={getHeroImageUrl(event)} alt={event.name} />
       </HeroSection>

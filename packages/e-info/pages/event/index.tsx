@@ -167,10 +167,6 @@ const BackForwardButton = styled.button<{ $isDisabled?: boolean }>`
   > svg {
     width: 25px;
     height: 25px;
-
-    path {
-      fill: ${({ theme }) => theme.colors.secondary[80]};
-    }
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -192,10 +188,10 @@ const PaginationButton = styled.button<{ $isActive?: boolean }>`
   height: 22px;
   border: 1px solid;
   border-color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.grayscale[0] : theme.colors.secondary[80]};
+    $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
   background: #fff;
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.grayscale[0] : theme.colors.secondary[80]};
+    $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
   font-size: 10px;
   font-weight: 500;
   line-height: 1.5;
@@ -204,8 +200,8 @@ const PaginationButton = styled.button<{ $isActive?: boolean }>`
   border-radius: 11px;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.secondary[80]};
-    border-color: ${({ theme }) => theme.colors.secondary[80]};
+    background: ${({ theme }) => theme.colors.primary[20]};
+    border-color: ${({ theme }) => theme.colors.primary[20]};
     color: #fff;
   }
 
@@ -224,7 +220,7 @@ const PaginationEllipsis = styled.span`
   justify-content: center;
   min-width: 40px;
   height: 40px;
-  color: ${({ theme }) => theme.colors.secondary[80]};
+  color: ${({ theme }) => theme.colors.primary[20]};
   font-size: 14px;
 
   ${({ theme }) => theme.breakpoint.xl} {
@@ -550,50 +546,49 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
             </Link>
           ))}
         </EventGrid>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <PaginationWrapper>
-            <BackForwardButton
-              $isDisabled={currentPage === 1}
-              onClick={() => {
-                if (currentPage > 1) {
-                  handlePageChange(currentPage - 1)
-                }
-              }}
-            >
-              <IconBack />
-            </BackForwardButton>
-
-            {paginationItems.map((item, index) =>
-              item === 'ellipsis' ? (
-                <PaginationEllipsis key={`ellipsis-${index}`}>
-                  ......
-                </PaginationEllipsis>
-              ) : (
-                <PaginationButton
-                  key={item}
-                  $isActive={item === currentPage}
-                  onClick={() => handlePageChange(item)}
-                >
-                  {String(item).padStart(2, '0')}
-                </PaginationButton>
-              )
-            )}
-
-            <BackForwardButton
-              $isDisabled={currentPage === totalPages}
-              onClick={() => {
-                if (currentPage < totalPages) {
-                  handlePageChange(currentPage + 1)
-                }
-              }}
-            >
-              <IconForward />
-            </BackForwardButton>
-          </PaginationWrapper>
-        )}
       </ContentWrapper>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <PaginationWrapper>
+          <BackForwardButton
+            $isDisabled={currentPage === 1}
+            onClick={() => {
+              if (currentPage > 1) {
+                handlePageChange(currentPage - 1)
+              }
+            }}
+          >
+            <IconBack />
+          </BackForwardButton>
+
+          {paginationItems.map((item, index) =>
+            item === 'ellipsis' ? (
+              <PaginationEllipsis key={`ellipsis-${index}`}>
+                ......
+              </PaginationEllipsis>
+            ) : (
+              <PaginationButton
+                key={item}
+                $isActive={item === currentPage}
+                onClick={() => handlePageChange(item)}
+              >
+                {String(item).padStart(2, '0')}
+              </PaginationButton>
+            )
+          )}
+
+          <BackForwardButton
+            $isDisabled={currentPage === totalPages}
+            onClick={() => {
+              if (currentPage < totalPages) {
+                handlePageChange(currentPage + 1)
+              }
+            }}
+          >
+            <IconForward />
+          </BackForwardButton>
+        </PaginationWrapper>
+      )}
     </PageWrapper>
   )
 }

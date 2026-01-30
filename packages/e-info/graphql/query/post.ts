@@ -4,8 +4,8 @@ import { POST_STYLES, REPORT_STYLES } from '~/constants/constant'
 import { Author, authorFragment } from '~/graphql/fragments/author'
 import {
   Post,
-  postCardFragment,
   PostCard,
+  postCardFragment,
   postFragment,
 } from '~/graphql/fragments/post'
 import {
