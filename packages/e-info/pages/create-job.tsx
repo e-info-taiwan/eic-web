@@ -6,8 +6,14 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
+
+type PageProps = {
+  headerData: HeaderContextData
+}
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -615,11 +621,17 @@ CreateJobPage.getLayout = function getLayout(page: ReactElement) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async ({
+  res,
+}) => {
   setCacheControl(res)
 
+  const headerData = await fetchHeaderData()
+
   return {
-    props: {},
+    props: {
+      headerData,
+    },
   }
 }
 
