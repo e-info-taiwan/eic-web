@@ -163,10 +163,15 @@ const BackForwardButton = styled.button<{ $isDisabled?: boolean }>`
   cursor: ${({ $isDisabled }) => ($isDisabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ $isDisabled }) => ($isDisabled ? 0.3 : 1)};
   padding: 0;
+  color: #fff;
 
   > svg {
     width: 25px;
     height: 25px;
+
+    path {
+      fill: currentColor;
+    }
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -188,20 +193,19 @@ const PaginationButton = styled.button<{ $isActive?: boolean }>`
   height: 22px;
   border: 1px solid;
   border-color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
-  background: #fff;
+    $isActive ? '#c4956a' : theme.colors.primary[95]};
+  background: transparent;
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
+    $isActive ? '#c4956a' : theme.colors.primary[95]};
   font-size: 10px;
   font-weight: 500;
   line-height: 1.5;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 11px;
+  border-radius: 50%;
 
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary[20]};
-    border-color: ${({ theme }) => theme.colors.primary[20]};
+  &:hover:not([disabled]) {
+    border-color: #fff;
     color: #fff;
   }
 
@@ -210,7 +214,6 @@ const PaginationButton = styled.button<{ $isActive?: boolean }>`
     height: 36px;
     font-size: 16px;
     font-weight: 700;
-    border-radius: 18px;
   }
 `
 
@@ -218,14 +221,16 @@ const PaginationEllipsis = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  color: ${({ theme }) => theme.colors.primary[20]};
-  font-size: 14px;
+  min-width: 22px;
+  height: 22px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 700;
 
-  ${({ theme }) => theme.breakpoint.xl} {
-    min-width: 48px;
-    height: 48px;
+  ${({ theme }) => theme.breakpoint.md} {
+    min-width: 36px;
+    height: 36px;
     font-size: 16px;
   }
 `
