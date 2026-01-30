@@ -15,10 +15,12 @@ import { fetchHeaderData } from '~/utils/header-data'
 
 const SearchBar = styled.form`
   display: flex;
+  justify-content: center;
   margin: 20px 0 24px;
   gap: 12px;
 
   ${({ theme }) => theme.breakpoint.xl} {
+    justify-content: flex-start;
     margin: 32px 0 40px;
   }
 `

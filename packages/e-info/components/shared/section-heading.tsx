@@ -12,11 +12,17 @@ type StyledProps = {
 
 const Container = styled.div<StyledProps>`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-end;
   border-bottom: ${({ $showBorder }) =>
     $showBorder ? '1px solid #000' : 'none'};
   padding: ${({ $showBorder }) => ($showBorder ? '0 0 36px' : '0')};
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    justify-content: space-between;
+  }
+
   > p {
     position: relative;
     font-size: 24px;
