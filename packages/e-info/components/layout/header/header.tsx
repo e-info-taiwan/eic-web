@@ -95,7 +95,7 @@ const RightSection = styled.div`
   }
 `
 
-const SearchButton = styled.button`
+const SearchButton = styled(Link)`
   width: 32px;
   height: 32px;
   background-color: ${({ theme }) => theme.colors.primary[20]};
@@ -899,7 +899,7 @@ const Header = () => {
                 </Link>
               </Logo>
               <RightSection>
-                <SearchButton>
+                <SearchButton href="/search">
                   <IconSearch />
                 </SearchButton>
                 {isLoggedIn ? (
