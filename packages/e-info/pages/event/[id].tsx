@@ -302,6 +302,18 @@ const getHeroImageUrl = (event: Event): string => {
   )
 }
 
+// Map event type to Chinese display name
+const EVENT_TYPE_MAP: Record<string, string> = {
+  physical: '實體活動',
+  online: '線上活動',
+  hybrid: '混合式活動',
+}
+
+const getEventTypeLabel = (eventType?: string): string => {
+  if (!eventType) return ''
+  return EVENT_TYPE_MAP[eventType] || eventType
+}
+
 const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href)
@@ -354,7 +366,9 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
 
       <ContentWrapper>
         <EventHeader>
-          {event.eventType && <CategoryLabel>{event.eventType}</CategoryLabel>}
+          {event.eventType && (
+            <CategoryLabel>{getEventTypeLabel(event.eventType)}</CategoryLabel>
+          )}
           <EventTitle>{event.name}</EventTitle>
 
           <EventMetaGrid>
@@ -412,9 +426,7 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
 
         <EventContent>
           {event.content && (
-            <ContentText
-              dangerouslySetInnerHTML={{ __html: event.content }}
-            />
+            <ContentText dangerouslySetInnerHTML={{ __html: event.content }} />
           )}
 
           {event.registrationUrl && (
