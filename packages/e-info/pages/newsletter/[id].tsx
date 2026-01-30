@@ -8,7 +8,10 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import PostPoll from '~/components/post/post-poll'
-import type { HeaderContextData } from '~/contexts/header-context'
+import {
+  type HeaderContextData,
+  useHeaderData,
+} from '~/contexts/header-context'
 import type { NewsletterDetail } from '~/graphql/query/newsletter'
 import { newsletterById } from '~/graphql/query/newsletter'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -68,6 +71,13 @@ const Banner = styled.div`
   ${({ theme }) => theme.breakpoint.md} {
     margin-bottom: 32px;
   }
+`
+
+const ReaderCount = styled.div`
+  text-align: center;
+  padding: 20px 20px 10px;
+  font-size: 15px;
+  color: #333;
 `
 
 const ReferralSection = styled.section`
@@ -639,6 +649,16 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
 }) => {
   const router = useRouter()
   const pollRef = useRef<HTMLElement>(null)
+  const { siteConfigs } = useHeaderData()
+
+  // Get subscriber count from site configs and format with thousand separators
+  const subscriberCountConfig = siteConfigs?.find(
+    (config) => config.name === '電子報訂閱人數'
+  )
+  const rawCount = subscriberCountConfig?.content
+  const subscriberCount = rawCount
+    ? Number(rawCount.replace(/,/g, '')).toLocaleString()
+    : null
 
   // Get vote, utm_source, and raw from query parameters
   const { vote, utm_source, raw } = router.query
@@ -682,6 +702,11 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
             priority
           />
         </Banner>
+        {subscriberCount && (
+          <ReaderCount>
+            你現在正與 <strong>{subscriberCount}</strong> 人一起閱讀環境新聞
+          </ReaderCount>
+        )}
         <SendDate>{formatDate(newsletter.sendDate)}</SendDate>
         <Title>{newsletter.title}</Title>
 
