@@ -1,10 +1,14 @@
 // 徵才詳細頁面
+import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
+import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { HeaderContextData } from '~/contexts/header-context'
+import type { Job } from '~/graphql/query/job'
+import { jobById } from '~/graphql/query/job'
 import type { NextPageWithLayout } from '~/pages/_app'
 import BookmarkIcon from '~/public/icons/bookmark.svg'
 import FacebookIcon from '~/public/icons/facebook.svg'
@@ -80,7 +84,7 @@ const JobTitle = styled.h1`
 const JobMetaGrid = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0px;
+  gap: 8px;
   margin-bottom: 20px;
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -100,6 +104,10 @@ const MetaLabel = styled.div`
   font-weight: 400;
   line-height: 1.5;
   color: #000;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    font-size: 16px;
+  }
 `
 
 const ShareButtons = styled.div`
@@ -141,11 +149,34 @@ const JobContent = styled.div`
   margin: 0 auto;
 `
 
+const ContentSection = styled.div`
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`
+
+const SectionTitle = styled.h2`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin: 0 0 16px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    font-size: 20px;
+  }
+`
+
 const ContentText = styled.div`
   font-size: 16px;
   line-height: 1.8;
   color: #000;
-  white-space: pre-wrap;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    font-size: 18px;
+  }
 
   p {
     margin: 0 0 1em;
@@ -164,70 +195,51 @@ const ContentText = styled.div`
   strong {
     font-weight: 700;
   }
+
+  a {
+    color: ${({ theme }) => theme.colors.primary[20]};
+    text-decoration: underline;
+  }
 `
 
-type JobData = {
-  id: string
-  title: string
-  date: string
-  company: string
-  location: string
-  salary: string
-  phone: string
-  description: string
-}
-
-// Dummy job data
-const DUMMY_JOB: JobData = {
-  id: '1',
-  title: '【自然環資】專案執行（環境教育）',
-  date: '時間—0000-00-00 至0000-00-00',
-  company: '報導單位—單位揭開',
-  location: '工作地點—台北',
-  salary: '薪資—99999999',
-  phone: '',
-  description: `【職務介紹】
-教育，為大自然發聲、行動，讓大自然發生。
-
-自2004年，本會將「生態工作假期」作為體驗型態保育，帶領志工實際走入清林、海洋、濕地，為自己章下根與土地連結的故事。經過數回合後論壇線上對談，我們決定透過推廣此行動，生態體驗、環教體驗、市場推廣等多元的方式，重新建立人．生物與環境間的新連結。
-
-• TNF 2024年報
-• 生態工作假期TNF專頁
-
-【職務內容】
-1. 環教活動執行：活動籌辦、內外部合作單位溝通、專案發材與與整理、活動現場支援，環境教育推廣、影像紀錄、社群媒體貼文編撰、結案資料整理等。
-2. 專案事務協助：企業合作接洽、提案簡報製作、資料檔視製作、資料彙整統計、機子廠部串聯支工關係通經理等。
-3. 行政庶務處理：CRM系統操作（報名、收費）、請款、核銷、環教/志工時數管理、機情資料彙整等。
-
-【需求與條件】
-1. 二年以上工作經驗。
-2. 具汽、機車駕照，且能實際上路駕駛（必備條件）。
-3. 具醫影、文書產體能力。
-4. 熟悉文書處理軟體及雲端軟體功式。
-5. 能接受假日體休、不定時出差。
-6. 體能好，喜愛戶外活動、樂光與野手動、植物。
-7. 因工作性質與空間受限，此職務薪酬自備筆記型電腦（本會有租用補助辦）。
-
-【加分條件】
-• 有志於拳擊組織工作，關注環境議題並具有領導能力。
-• 具環境教育人員認證（環境供應專/職般）或環境教育背景。
-• 開心自然、生態，具環境保護生物知能。
-• 基礎與專業相關之能力試證（須與相關議證）。
-• 認來自然環境與專業發商生活，喜愛發證性地紋。
-• 正向積極、樂於溝通、不良態面對人群、嚴謹目標、承擔責任。
-
-【待遇】
-• 薪資：月薪34,000元以上
-• 工作時間：週間一到五，9:00-18:00（含午休1小時），會需依專送基本延後或假日固執整理
-• 遠端工作：部分補追，每周至少需進辦公室2次
-• 過應紀錄可議（提供紀錄前出時受審讀）
-• 志工行動組提讀
-• 環境教育組經讀`,
-}
+const ErrorMessage = styled.div`
+  text-align: center;
+  padding: 60px 20px;
+  color: ${({ theme }) => theme.colors.grayscale[60]};
+  font-size: 16px;
+`
 
 type PageProps = {
   headerData: HeaderContextData
-  job: JobData
+  job: Job | null
+}
+
+// Format date as yyyy年mm月dd日
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}年${month}月${day}日`
+}
+
+// Format date range
+const formatDateRange = (startDate?: string, endDate?: string): string => {
+  if (!startDate) return ''
+  const start = formatDate(startDate)
+  if (!endDate) return start
+  const end = formatDate(endDate)
+  if (start === end) return start
+  return `${start} ~ ${end}`
+}
+
+// Get plain text excerpt from HTML
+const getPlainText = (html?: string, maxLength = 150): string => {
+  if (!html) return ''
+  const text = html.replace(/<[^>]*>/g, '').trim()
+  if (text.length <= maxLength) return text
+  return text.substring(0, maxLength) + '...'
 }
 
 const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
@@ -262,24 +274,44 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
     )
   }
 
+  if (!job) {
+    return (
+      <PageWrapper>
+        <ContentWrapper>
+          <ErrorMessage>找不到此徵才資訊</ErrorMessage>
+        </ContentWrapper>
+      </PageWrapper>
+    )
+  }
+
   return (
     <PageWrapper>
       <ContentWrapper>
         <JobHeader>
           <CategoryLabel>環境徵才</CategoryLabel>
-          <DateInfo>{job.date}</DateInfo>
+          {(job.startDate || job.endDate) && (
+            <DateInfo>
+              徵才期間：{formatDateRange(job.startDate, job.endDate)}
+            </DateInfo>
+          )}
           <JobTitle>{job.title}</JobTitle>
 
           <JobMetaGrid>
-            <MetaItem>
-              <MetaLabel>{job.company}</MetaLabel>
-            </MetaItem>
-            <MetaItem>
-              <MetaLabel>{job.location}</MetaLabel>
-            </MetaItem>
-            <MetaItem>
-              <MetaLabel>{job.salary}</MetaLabel>
-            </MetaItem>
+            {job.company && (
+              <MetaItem>
+                <MetaLabel>招募單位：{job.company}</MetaLabel>
+              </MetaItem>
+            )}
+            {job.salary && (
+              <MetaItem>
+                <MetaLabel>薪資：{job.salary}</MetaLabel>
+              </MetaItem>
+            )}
+            {job.bonus && (
+              <MetaItem>
+                <MetaLabel>福利：{job.bonus}</MetaLabel>
+              </MetaItem>
+            )}
           </JobMetaGrid>
 
           <ShareButtons>
@@ -302,7 +334,32 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
         </JobHeader>
 
         <JobContent>
-          <ContentText>{job.description}</ContentText>
+          {job.jobDescription && (
+            <ContentSection>
+              <SectionTitle>職務說明</SectionTitle>
+              <ContentText
+                dangerouslySetInnerHTML={{ __html: job.jobDescription }}
+              />
+            </ContentSection>
+          )}
+
+          {job.requirements && (
+            <ContentSection>
+              <SectionTitle>應徵條件</SectionTitle>
+              <ContentText
+                dangerouslySetInnerHTML={{ __html: job.requirements }}
+              />
+            </ContentSection>
+          )}
+
+          {job.applicationMethod && (
+            <ContentSection>
+              <SectionTitle>應徵方式</SectionTitle>
+              <ContentText
+                dangerouslySetInnerHTML={{ __html: job.applicationMethod }}
+              />
+            </ContentSection>
+          )}
         </JobContent>
       </ContentWrapper>
     </PageWrapper>
@@ -310,14 +367,12 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
 }
 
 JobPage.getLayout = function getLayout(page: ReactElement) {
-  const { props } = page
-  const { job } = props
+  const { job } = page.props as PageProps
+  const title = job?.title || '徵才'
+  const description = getPlainText(job?.jobDescription)
 
   return (
-    <LayoutGeneral
-      title={job.title}
-      description={job.description.substring(0, 150)}
-    >
+    <LayoutGeneral title={title} description={description}>
       {page}
     </LayoutGeneral>
   )
@@ -330,18 +385,68 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   setCacheControl(res)
 
   const id = params?.id as string
-  const headerData = await fetchHeaderData()
 
-  // TODO: Fetch real job data from API
-  // For now, return dummy data
-  return {
-    props: {
-      headerData,
-      job: {
-        ...DUMMY_JOB,
-        id,
+  if (!id) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const client = getGqlClient()
+
+  try {
+    const [headerData, { data }] = await Promise.all([
+      fetchHeaderData(),
+      client.query<{ job: Job | null }>({
+        query: jobById,
+        variables: { id },
+      }),
+    ])
+
+    const job = data?.job
+
+    // Return 404 if job not found or not published/approved
+    if (!job || job.state !== 'published' || !job.isApproved) {
+      return {
+        notFound: true,
+      }
+    }
+
+    return {
+      props: {
+        headerData,
+        job,
       },
-    },
+    }
+  } catch (err) {
+    const annotatingError = errors.helpers.wrap(
+      err,
+      'UnhandledError',
+      'Error occurs while fetching data at Job Detail page'
+    )
+
+    console.error(
+      JSON.stringify({
+        severity: 'ERROR',
+        message: errors.helpers.printAll(annotatingError, {
+          withStack: false,
+          withPayload: true,
+        }),
+      })
+    )
+
+    return {
+      props: {
+        headerData: {
+          sections: [],
+          featuredTags: [],
+          topics: [],
+          newsBarPicks: [],
+          siteConfigs: [],
+        },
+        job: null,
+      },
+    }
   }
 }
 
