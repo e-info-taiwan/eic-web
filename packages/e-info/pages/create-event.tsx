@@ -386,7 +386,7 @@ const CreateEventPage: NextPageWithLayout = () => {
     organizer: '',
     contactMethod: 'email',
     contactValue: '',
-    eventType: '講座/講堂/工作坊',
+    eventType: 'physical',
     startDate: '',
     endDate: '',
     locationMethod: '實體',
@@ -399,6 +399,10 @@ const CreateEventPage: NextPageWithLayout = () => {
   const [errors, setErrors] = useState<FormErrors>({})
   const [fileName, setFileName] = useState<string>('')
   const [imageError, setImageError] = useState<string>('')
+  const [photoId, setPhotoId] = useState<string>('')
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadSuccess, setUploadSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -416,6 +420,9 @@ const CreateEventPage: NextPageWithLayout = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     setImageError('')
+    // Reset upload state when selecting a new file
+    setUploadSuccess(false)
+    setPhotoId('')
 
     if (file) {
       // Check file size (4MB = 4 * 1024 * 1024 bytes)
@@ -444,7 +451,7 @@ const CreateEventPage: NextPageWithLayout = () => {
       newErrors.name = '活動名稱不可超過40字'
     }
 
-    if (!formData.image) {
+    if (!photoId) {
       newErrors.image = '請上傳封面圖片'
     }
 
@@ -454,6 +461,19 @@ const CreateEventPage: NextPageWithLayout = () => {
 
     if (!formData.contactValue.trim()) {
       newErrors.contactValue = '請填寫聯絡方式'
+    } else if (formData.contactMethod === 'email') {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.contactValue)) {
+        newErrors.contactValue = '請輸入有效的 email 格式'
+      }
+    } else if (formData.contactMethod === 'website') {
+      // Validate URL format
+      try {
+        new URL(formData.contactValue)
+      } catch {
+        newErrors.contactValue = '請輸入有效的網址格式（需包含 https://）'
+      }
     }
 
     if (!formData.startDate) {
@@ -462,6 +482,8 @@ const CreateEventPage: NextPageWithLayout = () => {
 
     if (!formData.endDate) {
       newErrors.endDate = '請選擇結束日期'
+    } else if (formData.startDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = '結束日期不可早於開始日期'
     }
 
     if (!formData.locationValue.trim()) {
@@ -474,6 +496,13 @@ const CreateEventPage: NextPageWithLayout = () => {
 
     if (!formData.registrationUrl.trim()) {
       newErrors.registrationUrl = '請填寫報名網址'
+    } else {
+      // Validate URL format
+      try {
+        new URL(formData.registrationUrl)
+      } catch {
+        newErrors.registrationUrl = '請輸入有效的網址格式（需包含 https://）'
+      }
     }
 
     if (!formData.content.trim()) {
@@ -484,14 +513,87 @@ const CreateEventPage: NextPageWithLayout = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleUpload = async () => {
+    if (!formData.image) return
+
+    setIsUploading(true)
+    setImageError('')
+    setUploadSuccess(false)
+
+    try {
+      const uploadFormData = new window.FormData()
+      uploadFormData.append('file', formData.image)
+      uploadFormData.append('name', formData.image.name)
+
+      const response = await fetch('/api/upload-photo', {
+        method: 'POST',
+        body: uploadFormData,
+      })
+
+      const result = await response.json()
+
+      if (result.success && result.photoId) {
+        setPhotoId(result.photoId)
+        setUploadSuccess(true)
+        if (errors.image) {
+          setErrors((prev) => ({ ...prev, image: undefined }))
+        }
+      } else {
+        setImageError(result.error || '上傳失敗，請重試')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      setImageError('上傳失敗，請重試')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (validateForm()) {
-      // TODO: Submit form data
-      console.log('Form submitted:', formData)
-      // Redirect to completion page
-      router.push('/submission-complete')
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+
+    try {
+      // Combine contact info
+      const contactInfo = `${formData.contactMethod}: ${formData.contactValue}`
+      // Combine location
+      const location = `${formData.locationMethod}: ${formData.locationValue}`
+
+      const response = await fetch('/api/create-event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          photoId,
+          organizer: formData.organizer,
+          contactInfo,
+          eventType: formData.eventType,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          location,
+          fee: formData.fee,
+          registrationUrl: formData.registrationUrl,
+          content: formData.content,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        router.push('/submission-complete')
+      } else {
+        alert(result.error || '送出失敗，請重試')
+      }
+    } catch (error) {
+      console.error('Submit error:', error)
+      alert('送出失敗，請重試')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -536,16 +638,14 @@ const CreateEventPage: NextPageWithLayout = () => {
                 <FileInfo>{fileName || '沒有選擇檔案'}</FileInfo>
                 <UploadButton
                   type="button"
-                  disabled={!formData.image}
-                  onClick={() => {
-                    // TODO: Implement actual upload logic
-                    if (formData.image) {
-                      console.log('Uploading file:', formData.image.name)
-                      alert('上傳功能尚未實作（測試模式）')
-                    }
-                  }}
+                  disabled={!formData.image || isUploading || uploadSuccess}
+                  onClick={handleUpload}
                 >
-                  上傳
+                  {isUploading
+                    ? '上傳中...'
+                    : uploadSuccess
+                    ? '已上傳'
+                    : '上傳'}
                 </UploadButton>
               </FileInputLeftWrapper>
             </FileInputWrapper>
@@ -614,11 +714,9 @@ const CreateEventPage: NextPageWithLayout = () => {
               value={formData.eventType}
               onChange={handleInputChange}
             >
-              <option value="講座/講堂/工作坊">講座/講堂/工作坊</option>
-              <option value="展覽">展覽</option>
-              <option value="戶外活動">戶外活動</option>
-              <option value="營隊">營隊</option>
-              <option value="其他">其他</option>
+              <option value="physical">實體活動</option>
+              <option value="online">線上活動</option>
+              <option value="hybrid">混合式活動</option>
             </EventTypeSelect>
           </FormGroup>
 
@@ -723,22 +821,25 @@ const CreateEventPage: NextPageWithLayout = () => {
             {errors.content && <ErrorMessage>{errors.content}</ErrorMessage>}
           </FormGroup>
 
-          <SubmitButton type="submit">送出</SubmitButton>
+          <SubmitButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? '送出中...' : '送出'}
+          </SubmitButton>
         </Form>
 
         <NoteSection>
           <NoteTitle>注意事項</NoteTitle>
           <NoteList>
+            <NoteItem>活動內容建立完成，通過審核將予以發佈。</NoteItem>
             <NoteItem>
-              資訊中心保留決定公布與否之權力，若與環境相關性過低，將不予公布。
+              環境資訊中心保留決定公布與否之權力，若與環境相關性過低，將不予公布。
             </NoteItem>
             <NoteItem>
-              相關問題請來信至{' '}
+              相關問題請來信至
               <a href="mailto:info@e-info.org.tw">info@e-info.org.tw</a>
               ，我們將盡速為您解答。
             </NoteItem>
             <NoteItem>
-              若有急件，請來信{' '}
+              若有急件，請來信
               <a href="mailto:lishin_0426@e-info.org.tw">
                 lishin_0426@e-info.org.tw
               </a>{' '}

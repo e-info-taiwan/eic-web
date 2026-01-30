@@ -90,4 +90,14 @@ const eventById = gql`
   ${resizeImagesFragment}
 `
 
-export { eventById, events, eventsCount }
+// Mutation for creating a new event (user submission)
+const createEvent = gql`
+  mutation CreateEvent($data: EventCreateInput!) {
+    createEvent(data: $data) {
+      id
+      name
+    }
+  }
+`
+
+export { createEvent, eventById, events, eventsCount }
