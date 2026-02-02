@@ -8,7 +8,7 @@ let GOOGLE_ADSENSE_AD_CLIENT: string
 switch (ENV) {
   case 'prod':
     SITE_URL = 'e-info.org.tw'
-    GA_TRACKING_ID = 'G-4Z12TPZTMB'
+    GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'public, max-age=300'
     GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
@@ -16,7 +16,7 @@ switch (ENV) {
 
   case 'staging':
     SITE_URL = 'staging.e-info.org.tw'
-    GA_TRACKING_ID = 'G-YDKYSDG3RL'
+    GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'public, max-age=300'
     GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
@@ -24,7 +24,7 @@ switch (ENV) {
 
   case 'dev':
     SITE_URL = 'eic-web-dev-1090198686704.asia-east1.run.app'
-    GA_TRACKING_ID = 'G-YDKYSDG3RL'
+    GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'no-store'
     GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
@@ -32,7 +32,7 @@ switch (ENV) {
 
   default:
     SITE_URL = 'localhost'
-    GA_TRACKING_ID = 'G-YDKYSDG3RL'
+    GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'no-store'
     GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
