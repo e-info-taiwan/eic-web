@@ -14,7 +14,7 @@ var LinkWrapper = _styledComponents["default"].a(_templateObject || (_templateOb
   return theme.colors.primary[40];
 }, function (_ref2) {
   var theme = _ref2.theme;
-  return theme.colors.grayscale[20];
+  return theme.colors.primary[20];
 }, function (_ref3) {
   var theme = _ref3.theme;
   return theme.colors.primary[0];
