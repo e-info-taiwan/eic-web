@@ -7,10 +7,11 @@
 import errors from '@twreporter/errors'
 import type { GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
+import DonationModal from '~/components/shared/donation-modal'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import HighlightSection from '~/components/index/highlight-section'
 import Inforgraphic from '~/components/index/inforgraphic'
@@ -20,6 +21,10 @@ import AdContent from '~/components/shared/ad-content'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { FeaturedCollaboration } from '~/graphql/query/collaboration'
+import {
+  lightboxDonationQuery,
+  type LightboxDonation,
+} from '~/graphql/query/donation'
 import type { EditorCard } from '~/graphql/query/editor-choice'
 import type { Quote } from '~/graphql/query/quote'
 import type {
@@ -86,6 +91,7 @@ type PageProps = {
   infoGraph: InfoGraph | null
   ads: Ad[]
   deepTopicAds: Ad[]
+  lightboxDonation: LightboxDonation | null
 }
 
 const HiddenAnchor = styled.div`
@@ -95,6 +101,9 @@ const HiddenAnchor = styled.div`
   padding: 0;
   margin: 0;
 `
+
+// localStorage key for tracking dismissed donation modal
+const DONATION_MODAL_DISMISSED_KEY = 'donation_modal_dismissed_id'
 
 const Index: NextPageWithLayout<PageProps> = ({
   supplementCategories,
@@ -107,10 +116,33 @@ const Index: NextPageWithLayout<PageProps> = ({
   infoGraph,
   ads,
   deepTopicAds,
+  lightboxDonation,
 }) => {
+  const [showDonationModal, setShowDonationModal] = useState(false)
+
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('homepage', 'scroll', 'scroll to end')
   )
+
+  // Check if donation modal should be shown on first visit
+  useEffect(() => {
+    if (!lightboxDonation) return
+
+    const dismissedId = localStorage.getItem(DONATION_MODAL_DISMISSED_KEY)
+
+    // Show modal if current donation ID differs from dismissed ID
+    if (dismissedId !== lightboxDonation.id) {
+      setShowDonationModal(true)
+    }
+  }, [lightboxDonation])
+
+  // Handle donation modal close
+  const handleDonationModalClose = () => {
+    if (lightboxDonation) {
+      localStorage.setItem(DONATION_MODAL_DISMISSED_KEY, lightboxDonation.id)
+    }
+    setShowDonationModal(false)
+  }
 
   return (
     <>
@@ -127,6 +159,13 @@ const Index: NextPageWithLayout<PageProps> = ({
       <GreenConsumptionSection categories={greenCategories} />
       <HotKeywordsSection />
       <HiddenAnchor ref={anchorRef} />
+
+      {/* Donation Modal - shown on first visit */}
+      <DonationModal
+        isOpen={showDonationModal}
+        onClose={handleDonationModalClose}
+        donation={lightboxDonation}
+      />
     </>
   )
 }
@@ -171,6 +210,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   let infoGraph: InfoGraph | null = null
   let ads: Ad[] = []
   let deepTopicAds: Ad[] = []
+  let lightboxDonation: LightboxDonation | null = null
 
   try {
     /**
@@ -181,10 +221,16 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
      * JSON API endpoint: /api/homepage
      * 詳細規格請參考: docs/homepage-api-spec.md
      */
-    const [headerData, homepageData] = await Promise.all([
+    const [headerData, homepageData, donationResult] = await Promise.all([
       fetchHeaderData(),
       fetchHomepageData(client),
+      client.query<{ donations: LightboxDonation[] }>({
+        query: lightboxDonationQuery,
+      }),
     ])
+
+    // Get the first (most recent) active lightbox donation
+    lightboxDonation = donationResult.data?.donations?.[0] || null
 
     // 從統一的資料結構中取出各區塊資料
     newsCategories = homepageData.newsCategories
@@ -220,6 +266,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
         infoGraph,
         ads,
         deepTopicAds,
+        lightboxDonation,
       },
       revalidate: 60, // 每 60 秒重新驗證
     }

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
-import DonationModal from '~/components/shared/donation-modal'
 import NewsletterModal from '~/components/shared/newsletter-modal'
 import { useHeaderData } from '~/contexts/header-context'
 import LogoEIC from '~/public/eic-logo.svg'
@@ -239,7 +238,6 @@ const SocialLink = styled.a`
 
 const Footer = () => {
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
-  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false)
   const { siteConfigs } = useHeaderData()
 
   // Get donation permit number from site configs
@@ -247,6 +245,12 @@ const Footer = () => {
     (config) => config.name === '公益勸募字號'
   )
   const donationPermitNumber = donationPermitConfig?.content || ''
+
+  // Get donation link from site configs
+  const donationLinkConfig = siteConfigs.find(
+    (config) => config.name === '捐款連結'
+  )
+  const donationLink = donationLinkConfig?.link || ''
 
   const navigationData = [
     [
@@ -283,7 +287,12 @@ const Footer = () => {
               <Button onClick={() => setIsNewsletterModalOpen(true)}>
                 訂閱電子報
               </Button>
-              <Button onClick={() => setIsDonationModalOpen(true)}>
+              <Button
+                as="a"
+                href={donationLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 捐款支持
               </Button>
             </ActionButtons>
@@ -375,11 +384,6 @@ const Footer = () => {
       <NewsletterModal
         isOpen={isNewsletterModalOpen}
         onClose={() => setIsNewsletterModalOpen(false)}
-      />
-
-      <DonationModal
-        isOpen={isDonationModalOpen}
-        onClose={() => setIsDonationModalOpen(false)}
       />
     </FooterContainer>
   )

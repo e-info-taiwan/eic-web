@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 
-const DONATION_URL =
-  'https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12'
+import type { LightboxDonation } from '~/graphql/query/donation'
 
 // Modal overlay
 const Overlay = styled.div`
@@ -64,7 +63,7 @@ const Title = styled.h2`
   line-height: 1.5;
 `
 
-// Description
+// Description (subtitle)
 const Description = styled.p`
   font-size: 12px;
   font-weight: 400;
@@ -122,9 +121,10 @@ const CTAButton = styled.a`
 type DonationModalProps = {
   isOpen: boolean
   onClose: () => void
+  donation?: LightboxDonation | null
 }
 
-const DonationModal = ({ isOpen, onClose }: DonationModalProps) => {
+const DonationModal = ({ isOpen, onClose, donation }: DonationModalProps) => {
   const [mounted, setMounted] = useState(false)
 
   // Ensure we only render portal on client side
@@ -138,31 +138,45 @@ const DonationModal = ({ isOpen, onClose }: DonationModalProps) => {
     }
   }
 
-  if (!isOpen || !mounted) return null
+  const handleCTAClick = () => {
+    // Close modal when CTA is clicked
+    onClose()
+  }
+
+  if (!isOpen || !mounted || !donation) return null
+
+  const imageUrl = donation.image?.resized?.w480 || donation.image?.resized?.original
 
   const modalContent = (
     <Overlay onClick={handleOverlayClick}>
       <ModalContainer>
         <CloseButton onClick={onClose}>&times;</CloseButton>
 
-        <Title>2025定期捐款支持環境資訊中心，讓我們替環境發聲</Title>
+        {donation.title && <Title>{donation.title}</Title>}
 
-        <Description>
-          我們是環境資訊中心，耕耘了二十多年的獨立媒體，我們相信生長在台灣的每一個人，都有權利知道這片土地發生的事情。
-        </Description>
+        {donation.subtitle && <Description>{donation.subtitle}</Description>}
 
-        <ChartSection>
-          <ChartTitle>捐款使用分配</ChartTitle>
-          <ChartImage src="/donation-chart.png" alt="捐款使用分配" />
-        </ChartSection>
+        {(donation.description || imageUrl) && (
+          <ChartSection>
+            {donation.description && (
+              <ChartTitle>{donation.description}</ChartTitle>
+            )}
+            {imageUrl && (
+              <ChartImage src={imageUrl} alt={donation.description || ''} />
+            )}
+          </ChartSection>
+        )}
 
-        <CTAButton
-          href={DONATION_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          前往捐款
-        </CTAButton>
+        {donation.donationUrl && (
+          <CTAButton
+            href={donation.donationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleCTAClick}
+          >
+            前往捐款
+          </CTAButton>
+        )}
       </ModalContainer>
     </Overlay>
   )

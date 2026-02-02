@@ -975,11 +975,12 @@ export const topicsForHeader = gql`
   }
 `
 
-// Types for site config (e.g., donation permit number)
+// Types for site config (e.g., donation permit number, donation link)
 export type SiteConfig = {
   id: string
   name: string
   content: string | null
+  link: string | null
   state: string | null
 }
 
@@ -990,6 +991,7 @@ export const siteConfigsForFooter = gql`
       id
       name
       content
+      link
       state
     }
   }
