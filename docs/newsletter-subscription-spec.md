@@ -1,0 +1,614 @@
+# Newsletter 電子報訂閱功能規格文件
+
+## 概述
+
+本文件定義電子報訂閱功能的完整規格，包含 Mailchimp 整合、API 設計、以及前端實作細節。
+
+> **注意**: 本文件專注於「訂閱功能」，與 [newsletter-api-spec.md](./newsletter-api-spec.md)（電子報內容 API）為不同主題。
+
+---
+
+## 電子報類型
+
+環境資訊中心提供兩種電子報：
+
+| 電子報 | 頻率 | 發送時間 | 說明 |
+|--------|------|----------|------|
+| 環境資訊電子報（每日報） | 每個工作日 | 週一至週五 | 每日環境新聞摘要 |
+| 環境資訊電子報一週回顧 | 每週一次 | 週六 | 一週環境新聞精選 |
+
+### 格式選項
+
+每種電子報都提供兩種格式：
+
+| 格式 | 代碼 | 說明 |
+|------|------|------|
+| 一般版 | `standard` | 標準文字排版 |
+| 美化版 | `beautified` | 放大重要資訊字體，更友善的閱讀體驗 |
+
+---
+
+## Mailchimp 架構
+
+### 雙 Audience 架構
+
+使用兩個獨立的 Mailchimp Audience，以頻率區分：
+
+```
+Mailchimp Account
+├── Audience: 每日報 (MAILCHIMP_LIST_ID_DAILY)
+│   ├── Tag: "美化版" - 訂閱美化版格式
+│   └── Tag: "一般版" - 訂閱一般版格式
+│
+└── Audience: 一週回顧 (MAILCHIMP_LIST_ID_WEEKLY)
+    ├── Tag: "美化版" - 訂閱美化版格式
+    └── Tag: "一般版" - 訂閱一般版格式
+```
+
+### 為何使用雙 Audience？
+
+| 優點 | 說明 |
+|------|------|
+| 發送管理更簡單 | 不同頻率的電子報可獨立管理發送排程 |
+| 統計數據分離 | 開信率、點擊率等指標分開統計 |
+| 取消訂閱獨立 | 使用者可單獨取消某一種電子報 |
+| 符合最佳實踐 | Mailchimp 建議不同發送頻率使用不同 Audience |
+
+### Tags 用途
+
+Tags 用於區分同一 Audience 內的格式偏好：
+
+| Tag 名稱 | 用途 |
+|----------|------|
+| 美化版 | 標記訂閱美化版格式的會員 |
+| 一般版 | 標記訂閱一般版格式的會員 |
+
+---
+
+## 環境變數設定
+
+### 必要環境變數
+
+```bash
+# Mailchimp API 認證
+MAILCHIMP_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-usX
+
+# Audience IDs（兩個 Audience）
+MAILCHIMP_LIST_ID_DAILY=xxxxxxxxxx      # 每日報 Audience ID
+MAILCHIMP_LIST_ID_WEEKLY=xxxxxxxxxx     # 一週回顧 Audience ID
+
+# Server Prefix（可選，會自動從 API Key 解析）
+MAILCHIMP_SERVER_PREFIX=usX
+```
+
+### 環境變數說明
+
+| 變數名稱 | 說明 | 範例 |
+|----------|------|------|
+| `MAILCHIMP_API_KEY` | Mailchimp API Key | `abc123def456...-us21` |
+| `MAILCHIMP_LIST_ID_DAILY` | 每日報 Audience ID | `a1b2c3d4e5` |
+| `MAILCHIMP_LIST_ID_WEEKLY` | 一週回顧 Audience ID | `f6g7h8i9j0` |
+| `MAILCHIMP_SERVER_PREFIX` | API Server 前綴（可選） | `us21` |
+
+### 取得 Audience ID
+
+1. 登入 [Mailchimp Dashboard](https://mailchimp.com/)
+2. 進入 **Audience** > **All contacts**
+3. 點擊 **Settings** > **Audience name and defaults**
+4. 複製 **Audience ID** 欄位的值
+
+### 向後相容
+
+為確保向後相容，若新環境變數未設定，會嘗試使用舊的 `MAILCHIMP_LIST_ID`：
+
+```typescript
+// 向後相容邏輯
+const MAILCHIMP_LIST_ID_DAILY =
+  process.env.MAILCHIMP_LIST_ID_DAILY || process.env.MAILCHIMP_LIST_ID || ''
+const MAILCHIMP_LIST_ID_WEEKLY =
+  process.env.MAILCHIMP_LIST_ID_WEEKLY || process.env.MAILCHIMP_LIST_ID || ''
+```
+
+---
+
+## API 規格
+
+### Endpoint
+
+```
+POST /api/newsletter/subscribe
+```
+
+### Request
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Body:**
+```typescript
+{
+  email: string                          // 訂閱者 Email
+  frequency: 'daily' | 'weekly'          // 電子報頻率
+  format: 'standard' | 'beautified'      // 格式偏好
+}
+```
+
+**範例:**
+```json
+{
+  "email": "user@example.com",
+  "frequency": "daily",
+  "format": "beautified"
+}
+```
+
+### Response
+
+**成功 (200):**
+```json
+{
+  "success": true,
+  "message": "訂閱成功！"
+}
+```
+
+**已存在並更新 (200):**
+```json
+{
+  "success": true,
+  "message": "訂閱偏好已更新！"
+}
+```
+
+**錯誤 (400/500):**
+```json
+{
+  "success": false,
+  "error": "錯誤訊息"
+}
+```
+
+### 錯誤代碼
+
+| HTTP Status | 錯誤訊息 | 說明 |
+|-------------|----------|------|
+| 400 | 缺少必要欄位 | email、frequency 或 format 未提供 |
+| 400 | 請輸入有效的 Email 地址 | Email 格式驗證失敗 |
+| 400 | 此 Email 已訂閱，如需更新偏好請聯繫我們 | 已存在且 Tag 更新失敗 |
+| 405 | Method not allowed | 非 POST 請求 |
+| 500 | 電子報服務暫時無法使用 | Mailchimp 設定缺失 |
+| 500 | 訂閱失敗，請稍後再試 | Mailchimp API 錯誤 |
+
+---
+
+## TypeScript 型別定義
+
+### Request/Response 型別
+
+```typescript
+// packages/e-info/types/newsletter.ts
+
+export type NewsletterFrequency = 'daily' | 'weekly'
+export type NewsletterFormat = 'standard' | 'beautified'
+
+export type SubscribeRequest = {
+  email: string
+  frequency: NewsletterFrequency
+  format: NewsletterFormat
+}
+
+export type SubscribeResponse = {
+  success: boolean
+  message?: string
+  error?: string
+}
+```
+
+### Mailchimp 相關型別
+
+```typescript
+export type MailchimpMemberStatus =
+  | 'subscribed'
+  | 'unsubscribed'
+  | 'cleaned'
+  | 'pending'
+  | 'transactional'
+
+export type MailchimpTag = {
+  name: string
+  status: 'active' | 'inactive'
+}
+
+export type MailchimpMemberData = {
+  email_address: string
+  status: MailchimpMemberStatus
+  tags?: string[]
+  merge_fields?: Record<string, string>
+}
+
+export type MailchimpErrorResponse = {
+  type: string
+  title: string
+  status: number
+  detail: string
+  instance: string
+}
+```
+
+---
+
+## 訂閱流程
+
+### 流程圖
+
+```
+使用者填寫表單
+    │
+    ▼
+POST /api/newsletter/subscribe
+    │
+    ▼
+根據 frequency 選擇 Audience ID
+    ├── daily  → MAILCHIMP_LIST_ID_DAILY
+    └── weekly → MAILCHIMP_LIST_ID_WEEKLY
+    │
+    ▼
+根據 format 設定 Tag
+    ├── beautified → ["美化版"]
+    └── standard   → ["一般版"]
+    │
+    ▼
+呼叫 Mailchimp API 新增 member
+    │
+    ├── 成功 → 回傳「訂閱成功！」
+    │
+    └── 失敗 → 檢查錯誤類型
+              │
+              ├── "Member Exists" → 更新 Tags
+              │                      │
+              │                      ├── 成功 → 回傳「訂閱偏好已更新！」
+              │                      └── 失敗 → 回傳錯誤訊息
+              │
+              └── 其他錯誤 → 回傳錯誤訊息
+```
+
+### Mailchimp API 呼叫
+
+#### 新增訂閱者
+
+```
+POST https://{server}.api.mailchimp.com/3.0/lists/{list_id}/members
+
+Headers:
+  Content-Type: application/json
+  Authorization: Basic {base64(anystring:API_KEY)}
+
+Body:
+{
+  "email_address": "user@example.com",
+  "status": "subscribed",
+  "tags": ["美化版"],
+  "merge_fields": {
+    "FORMAT": "beautified"
+  }
+}
+```
+
+#### 更新訂閱者 Tags
+
+```
+POST https://{server}.api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/tags
+
+Headers:
+  Content-Type: application/json
+  Authorization: Basic {base64(anystring:API_KEY)}
+
+Body:
+{
+  "tags": [
+    { "name": "美化版", "status": "active" }
+  ]
+}
+```
+
+**subscriber_hash**: Email 地址的 MD5 hash（小寫）
+
+```typescript
+const subscriberHash = crypto
+  .createHash('md5')
+  .update(email.toLowerCase())
+  .digest('hex')
+```
+
+---
+
+## CMS Member 同步
+
+### 同步機制
+
+當使用者已登入時，訂閱成功後會同步更新 CMS member 資料：
+
+```typescript
+// newsletter-modal.tsx
+if (member) {
+  await updateMemberById(member.id, {
+    newsletterSubscription: format,           // 'standard' | 'beautified'
+    newsletterFrequency: frequency === 'daily'
+      ? 'weekday'
+      : 'saturday'
+  })
+}
+```
+
+### 欄位對應
+
+| 前端 API 值 | CMS Member 欄位 | CMS 儲存值 |
+|-------------|-----------------|------------|
+| `frequency: 'daily'` | `newsletterFrequency` | `'weekday'` |
+| `frequency: 'weekly'` | `newsletterFrequency` | `'saturday'` |
+| `format: 'standard'` | `newsletterSubscription` | `'standard'` |
+| `format: 'beautified'` | `newsletterSubscription` | `'beautified'` |
+
+---
+
+## 前端元件
+
+### NewsletterModal 元件
+
+**檔案位置:** `packages/e-info/components/shared/newsletter-modal.tsx`
+
+**Props:**
+```typescript
+type NewsletterModalProps = {
+  isOpen: boolean
+  onClose: () => void
+}
+```
+
+### UI 流程
+
+1. **選擇電子報頻率**（單選，必選一個）
+   - ☐ 訂閱《環境資訊電子報》每日報
+   - ☐ 訂閱《環境資訊電子報一週回顧》
+
+2. **選擇格式**（當頻率已選時顯示）
+   - ☐ 訂閱美化版
+   - 「什麼是美化版」說明連結
+
+3. **輸入 Email**
+   - Email 輸入框
+   - Email 確認輸入框
+
+4. **送出訂閱**
+
+### 狀態管理
+
+```typescript
+type SubscriptionState = 'idle' | 'loading' | 'success' | 'error'
+
+// 元件狀態
+const [dailyChecked, setDailyChecked] = useState(false)
+const [weeklyChecked, setWeeklyChecked] = useState(false)
+const [beautifiedChecked, setBeautifiedChecked] = useState(false)
+const [email, setEmail] = useState('')
+const [confirmEmail, setConfirmEmail] = useState('')
+const [subscriptionState, setSubscriptionState] = useState<SubscriptionState>('idle')
+const [errorMessage, setErrorMessage] = useState('')
+```
+
+### 表單驗證
+
+送出按鈕啟用條件：
+```typescript
+!email ||
+!confirmEmail ||
+email !== confirmEmail ||
+(!dailyChecked && !weeklyChecked) ||
+subscriptionState === 'loading'
+```
+
+---
+
+## 實作檔案列表
+
+| 檔案 | 用途 |
+|------|------|
+| `packages/e-info/pages/api/newsletter/subscribe.ts` | API endpoint |
+| `packages/e-info/components/shared/newsletter-modal.tsx` | 訂閱表單 UI |
+| `packages/e-info/types/newsletter.ts` | TypeScript 型別 |
+| `packages/e-info/constants/config.ts` | 環境變數設定 |
+| `packages/e-info/lib/graphql/member.ts` | CMS Member 同步 |
+
+---
+
+## 實作變更計畫
+
+### 現況 vs 目標
+
+| 項目 | 現況 | 目標 |
+|------|------|------|
+| Audience 數量 | 單一 `MAILCHIMP_LIST_ID` | 雙 Audience |
+| 頻率區分方式 | Tag: "每日報" / "一週回顧" | 不同 Audience ID |
+| 格式區分方式 | Tag: "美化版" / "一般版" | 維持用 Tag |
+
+### Phase 1: 環境變數調整
+
+**檔案:** `packages/e-info/constants/config.ts`
+
+```typescript
+// 現有
+const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID ?? ''
+
+// 變更為
+const MAILCHIMP_LIST_ID_DAILY =
+  process.env.MAILCHIMP_LIST_ID_DAILY || process.env.MAILCHIMP_LIST_ID || ''
+const MAILCHIMP_LIST_ID_WEEKLY =
+  process.env.MAILCHIMP_LIST_ID_WEEKLY || process.env.MAILCHIMP_LIST_ID || ''
+```
+
+### Phase 2: API 邏輯調整
+
+**檔案:** `packages/e-info/pages/api/newsletter/subscribe.ts`
+
+```typescript
+// 新增：根據 frequency 選擇 Audience ID
+function getListId(frequency: NewsletterFrequency): string {
+  return frequency === 'daily'
+    ? MAILCHIMP_LIST_ID_DAILY
+    : MAILCHIMP_LIST_ID_WEEKLY
+}
+
+// 修改：Tags 只需要格式（頻率已由 Audience 區分）
+function getFormatTags(format: NewsletterFormat): string[] {
+  return format === 'beautified' ? ['美化版'] : ['一般版']
+}
+
+// 修改：updateMemberTags 需要接收 listId 參數
+async function updateMemberTags(
+  email: string,
+  tags: string[],
+  listId: string  // 新增參數
+): Promise<{ success: boolean }>
+```
+
+### Phase 3: 移除頻率 Tag
+
+由於頻率已由 Audience 區分，不再需要 "每日報" / "一週回顧" Tags：
+
+```typescript
+// 現有 Tags（移除頻率 Tag）
+// ['每日報', '美化版'] → ['美化版']
+// ['一週回顧', '一般版'] → ['一般版']
+```
+
+---
+
+## 測試檢查清單
+
+### 新訂閱測試
+
+- [ ] 訂閱每日報 + 一般版 → 加入 DAILY Audience，Tag: 一般版
+- [ ] 訂閱每日報 + 美化版 → 加入 DAILY Audience，Tag: 美化版
+- [ ] 訂閱一週回顧 + 一般版 → 加入 WEEKLY Audience，Tag: 一般版
+- [ ] 訂閱一週回顧 + 美化版 → 加入 WEEKLY Audience，Tag: 美化版
+
+### 更新偏好測試
+
+- [ ] 已訂閱每日報一般版 → 更新為美化版
+- [ ] 已訂閱一週回顧一般版 → 更新為美化版
+
+### 跨 Audience 測試
+
+- [ ] 同一 Email 可分別訂閱每日報和一週回顧
+- [ ] 修改每日報格式不影響一週回顧設定
+
+### 錯誤處理測試
+
+- [ ] 無效 Email 格式 → 顯示錯誤訊息
+- [ ] 缺少必要欄位 → 顯示錯誤訊息
+- [ ] Mailchimp API 錯誤 → 顯示通用錯誤訊息
+
+### CMS 同步測試
+
+- [ ] 已登入使用者訂閱後，CMS member 資料更新
+- [ ] 未登入使用者訂閱（不應同步 CMS）
+- [ ] CMS 同步失敗不影響 Mailchimp 訂閱結果
+
+### 向後相容測試
+
+- [ ] 只設定 `MAILCHIMP_LIST_ID`（舊設定）仍可運作
+- [ ] 設定新變數後覆蓋舊設定
+
+---
+
+## 監控與日誌
+
+### 日誌格式
+
+```typescript
+// 成功訂閱
+console.log('[Newsletter] Successfully subscribed:', {
+  email: '***@***.com', // 遮蔽部分
+  frequency,
+  format,
+  listId
+})
+
+// 更新 Tags
+console.log('[Newsletter] Updated member tags:', {
+  email: '***@***.com',
+  tags,
+  listId
+})
+
+// Mailchimp 錯誤
+console.error('[Newsletter] Mailchimp error:', {
+  error: data.title,
+  email: '***@***.com',
+  listId
+})
+
+// CMS 同步成功
+console.log('[Newsletter] Member subscription synced:', { memberId })
+
+// CMS 同步失敗
+console.error('[Newsletter] Member sync error:', { error, memberId })
+```
+
+### 建議監控指標
+
+| 指標 | 計算方式 | 警示閾值 |
+|------|----------|----------|
+| 訂閱成功率 | 成功數 / 總請求數 | < 95% |
+| 更新成功率 | Tag 更新成功數 / "Member Exists" 數 | < 90% |
+| API 錯誤率 | Mailchimp 錯誤數 / 總請求數 | > 5% |
+| CMS 同步成功率 | 同步成功數 / 已登入訂閱數 | < 90% |
+
+---
+
+## 安全性考量
+
+### API Key 保護
+
+- `MAILCHIMP_API_KEY` 只在伺服器端使用
+- 不應暴露至前端或日誌
+
+### Email 驗證
+
+```typescript
+// 基本格式驗證
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+if (!emailRegex.test(email)) {
+  return res.status(400).json({
+    success: false,
+    error: '請輸入有效的 Email 地址',
+  })
+}
+```
+
+### Rate Limiting
+
+目前未實作 rate limiting，建議未來加入：
+- 同一 IP 每分鐘最多 10 次請求
+- 同一 Email 每小時最多 3 次請求
+
+---
+
+## 相關文件
+
+- [Newsletter 內容 API 規格](./newsletter-api-spec.md) - 電子報內容 GraphQL API
+- [Homepage API 規格](./homepage-api-spec.md) - 首頁 JSON API 規格
+- [Header/Footer API 規格](./header-footer-api-spec.md) - Header/Footer JSON API 規格
+
+---
+
+## 變更記錄
+
+### 2026-02-02
+- 初版文件建立
+- 記錄現有單一 Audience 實作
+- 規劃雙 Audience 架構變更
+- 定義環境變數與 API 調整計畫
+- 新增測試檢查清單
