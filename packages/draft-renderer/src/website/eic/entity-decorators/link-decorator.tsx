@@ -6,7 +6,7 @@ const LinkWrapper = styled.a`
   border-bottom: 2px solid ${({ theme }) => theme.colors.primary[40]};
   letter-spacing: 0.01em;
   text-align: justify;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
+  color: ${({ theme }) => theme.colors.primary[20]};
   padding-bottom: 2px;
 
   &:hover {
