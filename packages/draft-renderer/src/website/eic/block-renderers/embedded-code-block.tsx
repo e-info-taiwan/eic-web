@@ -16,8 +16,8 @@ export const Block = styled.div`
   }
 
   /* YouTube iframe responsive */
-  iframe[src*="youtube.com"],
-  iframe[src*="youtu.be"] {
+  iframe[src*='youtube.com'],
+  iframe[src*='youtu.be'] {
     width: 100%;
     aspect-ratio: 16 / 9;
     max-width: 100%;

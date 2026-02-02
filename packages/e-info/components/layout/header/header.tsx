@@ -1148,10 +1148,7 @@ const Header = () => {
                   >
                     <IconInstagram />
                   </a>
-                  <a
-                    href="mailto:service@tnf.org.tw"
-                    aria-label="聯絡我們"
-                  >
+                  <a href="mailto:service@tnf.org.tw" aria-label="聯絡我們">
                     <IconMail className="mail" />
                   </a>
                 </SocialIcons>

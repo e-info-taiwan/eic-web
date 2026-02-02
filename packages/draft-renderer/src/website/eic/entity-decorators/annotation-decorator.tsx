@@ -106,7 +106,10 @@ const ArrowIcon = ({ showContent }: { showContent: boolean }) => (
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M5.19617 9L1.60456e-05 -9.78799e-07L10.3923 -7.02746e-08L5.19617 9Z" fill="#388A48" />
+      <path
+        d="M5.19617 9L1.60456e-05 -9.78799e-07L10.3923 -7.02746e-08L5.19617 9Z"
+        fill="#388A48"
+      />
     </svg>
   </ArrowIconWrapper>
 )

@@ -36,12 +36,20 @@ export function ImageBlock(props: ImageBlockProps) {
   const entityKey = block.getEntityAt(0)
 
   const entity = contentState.getEntity(entityKey)
-  const { desc, name, resized = {}, resizedWebp = {}, url, src } = entity.getData()
+  const {
+    desc,
+    name,
+    resized = {},
+    resizedWebp = {},
+    url,
+    src,
+  } = entity.getData()
 
   // Check if resized images exist, otherwise fallback to src
   const hasResizedImages = resized && Object.keys(resized).length > 0
-  const imagesToUse = hasResizedImages ? resized : (src ? { original: src } : {})
-  const webpImagesToUse = resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {}
+  const imagesToUse = hasResizedImages ? resized : src ? { original: src } : {}
+  const webpImagesToUse =
+    resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {}
 
   let imgBlock = (
     <Figure>
