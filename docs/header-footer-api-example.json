@@ -1,0 +1,475 @@
+{
+  "sections": [
+    {
+      "id": "3",
+      "slug": "latestnews",
+      "name": "時事新聞",
+      "categories": [
+        {
+          "id": "7",
+          "slug": "taiwannews",
+          "name": "台灣新聞"
+        },
+        {
+          "id": "9",
+          "slug": "intnews",
+          "name": "國際新聞"
+        },
+        {
+          "id": "10",
+          "slug": "editor",
+          "name": "編輯直送"
+        },
+        {
+          "id": "11",
+          "slug": "series",
+          "name": "系列報導"
+        },
+        {
+          "id": "12",
+          "slug": "lazy",
+          "name": "新聞懶人包"
+        },
+        {
+          "id": "13",
+          "slug": "submit",
+          "name": "你來報報"
+        },
+        {
+          "id": "16",
+          "slug": "fact",
+          "name": "事實查核"
+        },
+        {
+          "id": "17",
+          "slug": "annual",
+          "name": "年度回顧"
+        },
+        {
+          "id": "18",
+          "slug": "taiwannewsen",
+          "name": "Taiwan News"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "slug": "critic",
+      "name": "評論",
+      "categories": [
+        {
+          "id": "84",
+          "slug": "forum",
+          "name": "公共論壇"
+        },
+        {
+          "id": "85",
+          "slug": "social",
+          "name": "社論"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "slug": "column",
+      "name": "專欄",
+      "categories": [
+        {
+          "id": "14",
+          "slug": "island",
+          "name": "我們的島"
+        },
+        {
+          "id": "91",
+          "slug": "seagodproject",
+          "name": "海神計畫"
+        },
+        {
+          "id": "92",
+          "slug": "nucleartruth",
+          "name": "你不可不知的核電真相"
+        },
+        {
+          "id": "19",
+          "slug": "wild",
+          "name": "與野共生"
+        },
+        {
+          "id": "20",
+          "slug": "chinalens",
+          "name": "透視中國環境"
+        },
+        {
+          "id": "21",
+          "slug": "diversity",
+          "name": "生物多樣性"
+        },
+        {
+          "id": "22",
+          "slug": "kuroshio",
+          "name": "黑潮海嶼鯨"
+        },
+        {
+          "id": "23",
+          "slug": "lowcarbon",
+          "name": "減碳新生活"
+        },
+        {
+          "id": "24",
+          "slug": "lawyer",
+          "name": "律師來開講"
+        },
+        {
+          "id": "25",
+          "slug": "greenlife",
+          "name": "看守綠生活"
+        },
+        {
+          "id": "26",
+          "slug": "rethink",
+          "name": "RE-THINK新日常"
+        },
+        {
+          "id": "27",
+          "slug": "greenfilm",
+          "name": "綠色影展"
+        },
+        {
+          "id": "28",
+          "slug": "woods",
+          "name": "林里之間"
+        },
+        {
+          "id": "29",
+          "slug": "river",
+          "name": "從河說起"
+        },
+        {
+          "id": "30",
+          "slug": "citizen",
+          "name": "地球公民通訊"
+        },
+        {
+          "id": "31",
+          "slug": "days",
+          "name": "環境節日"
+        },
+        {
+          "id": "32",
+          "slug": "stars",
+          "name": "暗空之眼"
+        },
+        {
+          "id": "33",
+          "slug": "wetland",
+          "name": "濕地故事"
+        },
+        {
+          "id": "34",
+          "slug": "figure",
+          "name": "綠色人物"
+        },
+        {
+          "id": "35",
+          "slug": "seafood",
+          "name": "永續海鱻食堂"
+        },
+        {
+          "id": "36",
+          "slug": "trustfund",
+          "name": "環境信託"
+        },
+        {
+          "id": "37",
+          "slug": "ourisland",
+          "name": "我們的島"
+        },
+        {
+          "id": "38",
+          "slug": "bio",
+          "name": "生物簡介"
+        },
+        {
+          "id": "39",
+          "slug": "nat",
+          "name": "選讀國家地理"
+        },
+        {
+          "id": "40",
+          "slug": "seadetective",
+          "name": "海洋事務偵探社"
+        },
+        {
+          "id": "41",
+          "slug": "ecoholiday",
+          "name": "生態工作假期"
+        },
+        {
+          "id": "42",
+          "slug": "360",
+          "name": "環球360°"
+        },
+        {
+          "id": "43",
+          "slug": "telegram",
+          "name": "綠色電報"
+        },
+        {
+          "id": "44",
+          "slug": "secretread",
+          "name": "秘讀自然"
+        },
+        {
+          "id": "45",
+          "slug": "foodwoman",
+          "name": "糧家賦女"
+        },
+        {
+          "id": "46",
+          "slug": "greenecon",
+          "name": "綠經濟"
+        },
+        {
+          "id": "47",
+          "slug": "greencraft",
+          "name": "綠色職人誌"
+        },
+        {
+          "id": "48",
+          "slug": "laweco",
+          "name": "法律人談環保"
+        },
+        {
+          "id": "49",
+          "slug": "savesilence",
+          "name": "搶救寂靜"
+        },
+        {
+          "id": "50",
+          "slug": "earthsound",
+          "name": "大地之音"
+        },
+        {
+          "id": "51",
+          "slug": "columnist",
+          "name": "專欄作家"
+        },
+        {
+          "id": "52",
+          "slug": "islandtales",
+          "name": "離島圓夢曲"
+        },
+        {
+          "id": "53",
+          "slug": "heritagetour",
+          "name": "世界遺產巡禮"
+        },
+        {
+          "id": "54",
+          "slug": "islandsail",
+          "name": "島嶼航行"
+        },
+        {
+          "id": "55",
+          "slug": "trails",
+          "name": "步道旅情"
+        },
+        {
+          "id": "56",
+          "slug": "rural",
+          "name": "農村草根行"
+        },
+        {
+          "id": "57",
+          "slug": "tradeclimate",
+          "name": "貿易與氣候變遷"
+        },
+        {
+          "id": "58",
+          "slug": "ecohealth",
+          "name": "漫談環境與健康"
+        },
+        {
+          "id": "59",
+          "slug": "handforest",
+          "name": "牽手護雨林"
+        },
+        {
+          "id": "60",
+          "slug": "ecoeng",
+          "name": "生態工程"
+        },
+        {
+          "id": "61",
+          "slug": "ecoecon",
+          "name": "生態與經濟"
+        },
+        {
+          "id": "62",
+          "slug": "greeneyes",
+          "name": "綠眼睛看地球"
+        },
+        {
+          "id": "63",
+          "slug": "nomadgreen",
+          "name": "遊牧綠人間"
+        },
+        {
+          "id": "64",
+          "slug": "taiwanbear",
+          "name": "台灣黑熊‧猛獸的迷思"
+        },
+        {
+          "id": "65",
+          "slug": "walkmount",
+          "name": "走山的人"
+        },
+        {
+          "id": "66",
+          "slug": "smartgreen",
+          "name": "聰明綠生活"
+        },
+        {
+          "id": "67",
+          "slug": "pisirian",
+          "name": "比西里岸故事"
+        },
+        {
+          "id": "68",
+          "slug": "shiftchina",
+          "name": "環保撬動中國"
+        },
+        {
+          "id": "69",
+          "slug": "scienceteen",
+          "name": "科學少年"
+        },
+        {
+          "id": "70",
+          "slug": "guahara",
+          "name": "綠能瓜哈拉"
+        },
+        {
+          "id": "71",
+          "slug": "meiliwan",
+          "name": "解構美麗灣"
+        },
+        {
+          "id": "86",
+          "slug": "fukushima",
+          "name": "追蹤福島核災"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "slug": "green",
+      "name": "綠色消費",
+      "categories": [
+        {
+          "id": "87",
+          "slug": "greenpay1",
+          "name": "綠消中分類1"
+        },
+        {
+          "id": "88",
+          "slug": "greenpay2",
+          "name": "綠消中分類2"
+        },
+        {
+          "id": "89",
+          "slug": "greenpay3",
+          "name": "綠消中分類3"
+        }
+      ]
+    }
+  ],
+  "featuredTags": [
+    {
+      "id": "4339",
+      "name": "氣候能源"
+    },
+    {
+      "id": "4340",
+      "name": "土地永續"
+    },
+    {
+      "id": "6247",
+      "name": "循環經濟"
+    },
+    {
+      "id": "223",
+      "name": "生態保育"
+    }
+  ],
+  "topics": [
+    {
+      "id": "2",
+      "title": "測試用專題"
+    },
+    {
+      "id": "3",
+      "title": "直擊阿聯氣候新時代"
+    },
+    {
+      "id": "4",
+      "title": "擱淺118—打開海龜急診室"
+    },
+    {
+      "id": "5",
+      "title": "當草鴞飛過"
+    }
+  ],
+  "newsBarPicks": [
+    {
+      "id": "2",
+      "customUrl": "",
+      "customTitle": "",
+      "posts": {
+        "id": "115",
+        "title": "歐盟與中國氣候政策同軌化"
+      }
+    },
+    {
+      "id": "7",
+      "customUrl": "",
+      "customTitle": "",
+      "posts": {
+        "id": "273",
+        "title": "陽明山開發案環評過關 環團串聯盼翻案"
+      }
+    },
+    {
+      "id": "8",
+      "customUrl": "",
+      "customTitle": "",
+      "posts": {
+        "id": "474",
+        "title": "羅馬尼亞發現感染禽流感鴨子 歐盟進入警戒狀態"
+      }
+    }
+  ],
+  "siteConfigs": [
+    {
+      "id": "1",
+      "name": "公益勸募字號",
+      "content": "衛部救字第1141364365號",
+      "link": "",
+      "state": "active"
+    },
+    {
+      "id": "2",
+      "name": "電子報訂閱人數",
+      "content": "123284934",
+      "link": "",
+      "state": "active"
+    },
+    {
+      "id": "3",
+      "name": "捐款連結",
+      "content": "",
+      "link": "https://tnf.neticrm.tw/civicrm/contribute/transact?reset=1&id=12",
+      "state": "active"
+    }
+  ]
+}

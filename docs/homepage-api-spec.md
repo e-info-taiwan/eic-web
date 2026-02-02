@@ -910,13 +910,13 @@ HTTP Status Codes:
 - **[homepage-api-example.json](./homepage-api-example.json)** - 從 dev 環境 GraphQL API 實際查詢產生的完整 response
 
 此檔案包含：
-- 4 個 sections（共 86 個 categories，每個 category 最多 8 篇文章）- **使用 Card 尺寸圖片**
+- 4 個 sections（每個 section 包含多個 categories，每個 category 最多 8 篇文章）- **使用 Card 尺寸圖片**
 - 3 個 highlightPicks - **使用 Card 尺寸圖片**
 - 3 個 carouselPicks - **使用完整尺寸圖片**
-- 4 個 topics（每個 topic 4 篇文章）- **使用 Card 尺寸圖片**
+- 23 個 topics（每個 topic 4 篇文章）- **使用 Card 尺寸圖片**
 - 1 個 infoGraph - **使用 Card 尺寸圖片**
 - 2 個 ads（showOnHomepage）- **使用 Card 尺寸圖片**
-- 1 個 deepTopicAds（showOnHomepageDeepTopic）- **使用 Card 尺寸圖片**
+- 2 個 deepTopicAds（showOnHomepageDeepTopic）- **使用 Card 尺寸圖片**
 
 ---
 
@@ -928,8 +928,28 @@ HTTP Status Codes:
 2. 若失敗（網路錯誤、500 錯誤等），自動 fallback 到原本的 7 個 GraphQL 查詢
 3. Fallback 機制確保服務可用性
 
+### In-Memory 快取機制
+
+前端實作了 in-memory 快取以減少 SSR 時的 API 請求次數：
+
+```typescript
+// 快取設定
+const CACHE_TTL_MS = 60 * 1000  // 60 秒
+```
+
+**快取邏輯**：
+1. 若快取存在且未過期 (< 60 秒)，直接回傳快取資料
+2. 若快取過期或不存在，從 API 獲取新資料
+3. 若 API 請求失敗但有過期快取，回傳過期快取（stale cache fallback，避免服務中斷）
+4. 成功獲取後更新快取與時間戳記
+
+**快取策略優點**：
+- 減少同一 Node.js process 內的重複 API 請求
+- 提供 stale cache fallback 確保服務可用性
+- 60 秒 TTL 確保資料新鮮度與 ISR revalidate 時間一致
+
 相關程式碼位於：
-- `packages/e-info/utils/homepage-api.ts` - API 呼叫與 fallback 邏輯
+- `packages/e-info/utils/homepage-api.ts` - API 呼叫、fallback 邏輯、in-memory 快取
 - `packages/e-info/pages/index.tsx` - 首頁資料獲取
 - `packages/e-info/graphql/fragments/resized-images.ts` - Card 與完整尺寸 fragments
 - `packages/e-info/graphql/fragments/post.ts` - PostFieldsCard 與 PostFields fragments
@@ -937,6 +957,14 @@ HTTP Status Codes:
 ---
 
 ## 變更記錄
+
+### 2026-02-02
+- **新增 In-Memory 快取機制文件**
+  - 記錄前端 60 秒 TTL 快取機制
+  - 說明 stale cache fallback 策略
+- **更新 homepage-api-example.json**
+  - 從 dev 環境 GraphQL API 重新產生完整範例
+  - 更新資料統計：23 個 topics、2 個 deepTopicAds
 
 ### 2026-01-16
 - **新增精選文章欄位 (`featuredPostsInInputOrder`)**
