@@ -289,8 +289,23 @@ type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>
 const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
   const router = useRouter()
   const { email: queryEmail, provider } = router.query
-  const { firebaseUser, signUpWithEmail, error, clearError, refreshMember } =
-    useAuth()
+  const {
+    firebaseUser,
+    member,
+    loading: authLoading,
+    signUpWithEmail,
+    error,
+    clearError,
+    refreshMember,
+  } = useAuth()
+
+  // Redirect if user is already logged in and has a member record
+  useEffect(() => {
+    if (!authLoading && firebaseUser && member && !provider) {
+      // User is already fully registered, redirect to home
+      router.replace('/')
+    }
+  }, [authLoading, firebaseUser, member, provider, router])
 
   const [formData, setFormData] = useState<RegisterFormData>({
     name: '',
@@ -439,7 +454,7 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
       if (!formData.confirmPassword) {
         newErrors.confirmPassword = '請確認密碼'
       } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = '密碼不一致'
+        newErrors.confirmPassword = '密碼輸入不一致，請確認'
       }
     }
 

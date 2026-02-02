@@ -288,6 +288,13 @@ const ErrorText = styled.p`
   margin: 0 0 16px;
 `
 
+const ValidationError = styled.p`
+  font-size: 12px;
+  color: #d32f2f;
+  text-align: center;
+  margin: 4px 0 0;
+`
+
 const CloseButtonLarge = styled.button`
   width: 100%;
   max-width: 200px;
@@ -313,6 +320,12 @@ type NewsletterModalProps = {
 
 type SubscriptionState = 'idle' | 'loading' | 'success' | 'error'
 
+// Email validation helper
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
 const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
   const { member } = useContext(AuthContext)
   const [dailyChecked, setDailyChecked] = useState(false)
@@ -326,6 +339,11 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
   const [subscriptionState, setSubscriptionState] =
     useState<SubscriptionState>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+
+  // Validation states
+  const emailFormatError = email.length > 0 && !isValidEmail(email)
+  const emailMismatchError =
+    email.length > 0 && confirmEmail.length > 0 && email !== confirmEmail
 
   // Ensure we only render portal on client side
   useEffect(() => {
@@ -498,6 +516,11 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {emailFormatError && (
+                <ValidationError>
+                  您輸入的 email 無效，請重新輸入
+                </ValidationError>
+              )}
               <InputLabel>請再輸入一次</InputLabel>
               <Input
                 type="email"
@@ -505,6 +528,9 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
               />
+              {emailMismatchError && (
+                <ValidationError>您輸入的 email 不一致，請確認</ValidationError>
+              )}
             </FormSection>
 
             {subscriptionState === 'error' && errorMessage && (
@@ -516,6 +542,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
               disabled={
                 !email ||
                 !confirmEmail ||
+                !isValidEmail(email) ||
                 email !== confirmEmail ||
                 (!dailyChecked && !weeklyChecked) ||
                 subscriptionState === 'loading'

@@ -67,7 +67,7 @@ export const VALIDATION_RULES = {
   },
   confirmPassword: {
     message: '密碼驗證正確',
-    errorMessage: '密碼驗證錯誤',
+    errorMessage: '密碼輸入不一致，請確認',
   },
 }
 

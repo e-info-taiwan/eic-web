@@ -155,6 +155,9 @@ const ErrorMessage = styled.div`
 const LoginPage: NextPageWithLayout = () => {
   const router = useRouter()
   const {
+    firebaseUser,
+    member,
+    loading: authLoading,
     signInWithGoogle,
     signInWithFacebook,
     signInWithApple,
@@ -168,6 +171,14 @@ const LoginPage: NextPageWithLayout = () => {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [currentProvider, setCurrentProvider] = useState<string | null>(null)
+
+  // Redirect if user is already logged in and has a member record
+  useEffect(() => {
+    if (!authLoading && firebaseUser && member) {
+      // User is already fully logged in, redirect to home
+      router.replace('/')
+    }
+  }, [authLoading, firebaseUser, member, router])
 
   // Redirect to registration when needsRegistration becomes true
   useEffect(() => {
