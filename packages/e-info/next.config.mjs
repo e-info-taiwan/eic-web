@@ -5,9 +5,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const { ENV, DONATION_PAGE_URL } = await tsImport.load(
-  './constants/environment-variables.ts'
-)
+const { ENV } = await tsImport.load('./constants/environment-variables.ts')
 
 const { getNextRewrites } = await tsImport.load('./constants/redirects.ts')
 
@@ -79,11 +77,6 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: '/donate',
-        destination: DONATION_PAGE_URL,
-        permanent: true,
-      },
       // Legacy static files → GCS (e.g., /2004/02/0224/040224A.htm)
       {
         source:
