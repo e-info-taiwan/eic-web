@@ -11,19 +11,19 @@ import { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
-import DonationModal from '~/components/shared/donation-modal'
 import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import HighlightSection from '~/components/index/highlight-section'
 import Inforgraphic from '~/components/index/inforgraphic'
 import MainCarousel from '~/components/index/main-carousel'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
+import DonationModal from '~/components/shared/donation-modal'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { FeaturedCollaboration } from '~/graphql/query/collaboration'
 import {
-  lightboxDonationQuery,
   type LightboxDonation,
+  lightboxDonationQuery,
 } from '~/graphql/query/donation'
 import type { EditorCard } from '~/graphql/query/editor-choice'
 import type { Quote } from '~/graphql/query/quote'

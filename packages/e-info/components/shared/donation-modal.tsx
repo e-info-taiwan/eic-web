@@ -145,7 +145,8 @@ const DonationModal = ({ isOpen, onClose, donation }: DonationModalProps) => {
 
   if (!isOpen || !mounted || !donation) return null
 
-  const imageUrl = donation.image?.resized?.w480 || donation.image?.resized?.original
+  const imageUrl =
+    donation.image?.resized?.w480 || donation.image?.resized?.original
 
   const modalContent = (
     <Overlay onClick={handleOverlayClick}>
