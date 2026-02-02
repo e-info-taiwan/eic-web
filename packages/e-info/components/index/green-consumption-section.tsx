@@ -73,6 +73,7 @@ const TitleLink = styled(Link)`
   text-decoration: none;
 
   &:hover {
+    color: #f7c34c;
     text-decoration: underline;
   }
 

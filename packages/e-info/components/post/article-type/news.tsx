@@ -134,11 +134,21 @@ export default function News({ postData }: PostProps): JSX.Element {
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
 
-  const shouldShowHeroImage = Boolean(postData?.heroImage?.resized)
+  // If style is "editor" (編輯直送), always use default news image regardless of heroImage
+  const isEditorStyle = postData?.style === ValidPostStyle.EDITOR
+  const shouldShowHeroImage =
+    isEditorStyle || Boolean(postData?.heroImage?.resized)
   const isEditorCategory = postData?.category?.slug === 'editor'
-  const defaultImage = isEditorCategory
-    ? DEFAULT_NEWS_IMAGE_PATH
-    : DEFAULT_POST_IMAGE_PATH
+  // Use news default image for editor style or editor category
+  const defaultImage =
+    isEditorStyle || isEditorCategory
+      ? DEFAULT_NEWS_IMAGE_PATH
+      : DEFAULT_POST_IMAGE_PATH
+  // For editor style, use default image; otherwise use actual hero image
+  const heroImageToUse = isEditorStyle ? null : postData?.heroImage?.resized
+  const heroImageWebpToUse = isEditorStyle
+    ? null
+    : postData?.heroImage?.resizedWebp
 
   //for Draft Style: side-index-block
   const [currentSideIndex, setCurrentSideIndex] = useState('')
@@ -151,13 +161,15 @@ export default function News({ postData }: PostProps): JSX.Element {
           {shouldShowHeroImage && (
             <HeroImage>
               <SharedImage
-                images={postData?.heroImage?.resized}
-                imagesWebP={postData?.heroImage?.resizedWebp}
+                images={heroImageToUse}
+                imagesWebP={heroImageWebpToUse}
                 defaultImage={defaultImage}
                 alt={postData?.title}
                 priority={true}
               />
-              <figcaption>{postData?.heroCaption}</figcaption>
+              {!isEditorStyle && (
+                <figcaption>{postData?.heroCaption}</figcaption>
+              )}
             </HeroImage>
           )}
 

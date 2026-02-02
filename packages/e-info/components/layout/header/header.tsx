@@ -1132,9 +1132,28 @@ const Header = () => {
               {/* Social icons - below featured tags */}
               <MobileMenuFooter>
                 <SocialIcons>
-                  <IconFacebook />
-                  <IconInstagram />
-                  <IconMail className="mail" />
+                  <a
+                    href="https://www.facebook.com/enc.teia"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Facebook"
+                  >
+                    <IconFacebook />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/enc.teia/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                  >
+                    <IconInstagram />
+                  </a>
+                  <a
+                    href="mailto:service@tnf.org.tw"
+                    aria-label="聯絡我們"
+                  >
+                    <IconMail className="mail" />
+                  </a>
                 </SocialIcons>
               </MobileMenuFooter>
             </MobileMenuSection>

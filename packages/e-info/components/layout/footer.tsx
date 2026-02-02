@@ -269,7 +269,7 @@ const Footer = () => {
       { label: '網站導覽', href: '/sitemap' },
       {
         label: '意見回饋',
-        href: 'https://docs.google.com/forms/d/e/1FAIpQLSf17d9VPzybQZxnhU6HRhPU-3FEflWzUbNtEafgYVLsVl7rpQ/viewform',
+        href: 'https://forms.gle/5e4hQsSJcSxtyJkF7',
       },
     ],
   ]

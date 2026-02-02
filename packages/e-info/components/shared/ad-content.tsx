@@ -12,16 +12,18 @@ const Container = styled.div`
   gap: 24px;
   padding: 0;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     flex-direction: row;
-    padding: 0 40px;
+    padding: 0 18px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 76px 156px 0 156px;
+    padding: 66px 52px 0;
   }
 `
 
