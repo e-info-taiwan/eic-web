@@ -69,6 +69,7 @@ export type TopicPost = {
   title: string
   publishTime: string
   brief: string | Record<string, unknown> | null
+  contentApiData: ContentApiDataBlock[] | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
@@ -262,6 +263,7 @@ export const topicById = gql`
         title
         publishTime
         brief
+        contentApiData
         heroImage {
           resized {
             ...ResizedImagesCardField

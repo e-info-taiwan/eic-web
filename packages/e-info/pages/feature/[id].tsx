@@ -222,7 +222,7 @@ const ArticleImage = styled.img`
 const ArticleContent = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 `
 
 const ArticleTitle = styled.h3`
@@ -546,7 +546,7 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
                 <ArticleContent>
                   <ArticleTitle>{post.title}</ArticleTitle>
                   <ArticleExcerpt>
-                    {getBriefText(post.brief, null, 150)}
+                    {getBriefText(post.brief, post.contentApiData, 150)}
                   </ArticleExcerpt>
                 </ArticleContent>
               </ArticleCard>
