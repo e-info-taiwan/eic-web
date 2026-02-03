@@ -6,41 +6,29 @@ const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.primary[95]};
   border-radius: 4px;
   padding: 40px 34px;
-  margin-bottom: 48px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    margin-bottom: 60px;
-  }
 `
 
 const Title = styled.h3`
   font-size: 20px;
+  line-height: 28px;
   font-weight: 700;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.secondary[20]};
+  color: ${({ theme }) => theme.colors.primary[20]};
   text-align: center;
   margin: 0 0 12px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 24px;
-  }
 `
 
 const Subtitle = styled.p`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.8;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
   text-align: center;
-  margin: 0 0 24px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 16px;
-  }
+  margin: 0 0 16px;
 `
 
 const ImageWrapper = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 
   img {
     width: 100%;
@@ -52,21 +40,17 @@ const ImageWrapper = styled.div`
 const Description = styled.p`
   font-size: 12px;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.25;
   color: ${({ theme }) => theme.colors.grayscale[40]};
   text-align: center;
   margin: 0 0 16px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 14px;
-  }
 `
 
 const DonateButton = styled.a`
   display: block;
   width: fit-content;
   margin: 0 auto;
-  padding: 8px 48px;
+  padding: 4px 58px;
   background-color: ${({ theme }) => theme.colors.secondary[20]};
   color: white;
   font-size: 16px;
@@ -74,7 +58,7 @@ const DonateButton = styled.a`
   line-height: 1.5;
   text-align: center;
   text-decoration: none;
-  border-radius: 40px;
+  border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 

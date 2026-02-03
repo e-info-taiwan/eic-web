@@ -9,8 +9,6 @@ import { getHref } from '~/utils/post'
 const Wrapper = styled.div`
   width: 100%;
   max-width: 568px;
-  margin: 48px auto 0;
-  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[40]};
   padding-top: 36px;
 
   ${({ theme }) => theme.breakpoint.md} {

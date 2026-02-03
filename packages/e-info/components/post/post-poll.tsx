@@ -55,17 +55,13 @@ type PollWrapperProps = {
 }
 
 const PollWrapper = styled.section<PollWrapperProps>`
-  margin-bottom: 48px;
+  margin-bottom: 52px;
   border-top: ${({ $hideBorderTop, theme }) =>
     $hideBorderTop ? 'none' : `1px solid ${theme.colors.grayscale[40]}`};
   padding-top: ${({ $hideBorderTop }) => ($hideBorderTop ? '0' : '36px')};
 
   ${({ theme }) => theme.breakpoint.md} {
     padding-top: ${({ $hideBorderTop }) => ($hideBorderTop ? '0' : '52px')};
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-bottom: 60px;
   }
 `
 

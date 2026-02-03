@@ -13,7 +13,7 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
-import type { LightboxDonation } from '~/graphql/query/donation'
+import type { Donation } from '~/graphql/query/donation'
 import type { PostDetail } from '~/graphql/query/post'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
@@ -127,9 +127,27 @@ const RightColumn = styled.div`
   padding-bottom: 100px;
 `
 
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[40]};
+  margin: 0 20px 52px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    margin: 0 0 52px;
+  }
+`
+
+const DonationWrapper = styled.div`
+  padding: 0 20px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 0;
+  }
+`
+
 type PostProps = {
   postData: PostDetail
-  donation?: LightboxDonation | null
+  donation?: Donation | null
 }
 
 export default function News({ postData, donation }: PostProps): JSX.Element {
@@ -198,7 +216,10 @@ export default function News({ postData, donation }: PostProps): JSX.Element {
                   currentSideIndex={currentSideIndex}
                   setCurrentSideIndex={setCurrentSideIndex}
                 />
-                <PostDonation donation={donation} />
+                <Divider />
+                <DonationWrapper>
+                  <PostDonation donation={donation} />
+                </DonationWrapper>
                 <RelatedPosts relatedPosts={postData?.relatedPosts} />
               </RightColumn>
             </TwoColumnSection>
