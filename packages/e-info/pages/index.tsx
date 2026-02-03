@@ -21,10 +21,7 @@ import DonationModal from '~/components/shared/donation-modal'
 import { DEFAULT_CATEGORY } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { FeaturedCollaboration } from '~/graphql/query/collaboration'
-import {
-  type LightboxDonation,
-  lightboxDonationQuery,
-} from '~/graphql/query/donation'
+import { type Donation, donationQuery } from '~/graphql/query/donation'
 import type { EditorCard } from '~/graphql/query/editor-choice'
 import type { Quote } from '~/graphql/query/quote'
 import type {
@@ -91,7 +88,7 @@ type PageProps = {
   infoGraph: InfoGraph | null
   ads: Ad[]
   deepTopicAds: Ad[]
-  lightboxDonation: LightboxDonation | null
+  donation: Donation | null
 }
 
 const HiddenAnchor = styled.div`
@@ -116,7 +113,7 @@ const Index: NextPageWithLayout<PageProps> = ({
   infoGraph,
   ads,
   deepTopicAds,
-  lightboxDonation,
+  donation,
 }) => {
   const [showDonationModal, setShowDonationModal] = useState(false)
 
@@ -126,20 +123,20 @@ const Index: NextPageWithLayout<PageProps> = ({
 
   // Check if donation modal should be shown on first visit
   useEffect(() => {
-    if (!lightboxDonation) return
+    if (!donation) return
 
     const dismissedId = localStorage.getItem(DONATION_MODAL_DISMISSED_KEY)
 
     // Show modal if current donation ID differs from dismissed ID
-    if (dismissedId !== lightboxDonation.id) {
+    if (dismissedId !== donation.id) {
       setShowDonationModal(true)
     }
-  }, [lightboxDonation])
+  }, [donation])
 
   // Handle donation modal close
   const handleDonationModalClose = () => {
-    if (lightboxDonation) {
-      localStorage.setItem(DONATION_MODAL_DISMISSED_KEY, lightboxDonation.id)
+    if (donation) {
+      localStorage.setItem(DONATION_MODAL_DISMISSED_KEY, donation.id)
     }
     setShowDonationModal(false)
   }
@@ -164,7 +161,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       <DonationModal
         isOpen={showDonationModal}
         onClose={handleDonationModalClose}
-        donation={lightboxDonation}
+        donation={donation}
       />
     </>
   )
@@ -210,7 +207,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   let infoGraph: InfoGraph | null = null
   let ads: Ad[] = []
   let deepTopicAds: Ad[] = []
-  let lightboxDonation: LightboxDonation | null = null
+  let donation: Donation | null = null
 
   try {
     /**
@@ -224,13 +221,13 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     const [headerData, homepageData, donationResult] = await Promise.all([
       fetchHeaderData(),
       fetchHomepageData(client),
-      client.query<{ donations: LightboxDonation[] }>({
-        query: lightboxDonationQuery,
+      client.query<{ donations: Donation[] }>({
+        query: donationQuery,
       }),
     ])
 
-    // Get the first (most recent) active lightbox donation
-    lightboxDonation = donationResult.data?.donations?.[0] || null
+    // Get the first (most recent) active donation
+    donation = donationResult.data?.donations?.[0] || null
 
     // 從統一的資料結構中取出各區塊資料
     newsCategories = homepageData.newsCategories
@@ -266,7 +263,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
         infoGraph,
         ads,
         deepTopicAds,
-        lightboxDonation,
+        donation,
       },
       revalidate: 60, // 每 60 秒重新驗證
     }

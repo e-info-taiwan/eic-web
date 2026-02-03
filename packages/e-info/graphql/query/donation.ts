@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
-// Type for lightbox donation data
-export type LightboxDonation = {
+// Type for donation data
+export type Donation = {
   id: string
   title: string | null
   subtitle: string | null
@@ -16,10 +16,13 @@ export type LightboxDonation = {
   } | null
 }
 
-// Query to fetch the most recent active lightbox donation
+// Backwards compatibility alias
+export type LightboxDonation = Donation
+
+// Query to fetch the most recent active donation
 // Ordered by createdAt descending, take 1
-export const lightboxDonationQuery = gql`
-  query GetLightboxDonation {
+export const donationQuery = gql`
+  query GetDonation {
     donations(
       where: {
         donationType: { equals: "lightbox" }
@@ -43,3 +46,6 @@ export const lightboxDonationQuery = gql`
     }
   }
 `
+
+// Backwards compatibility alias
+export const lightboxDonationQuery = donationQuery

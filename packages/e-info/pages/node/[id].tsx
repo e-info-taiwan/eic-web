@@ -11,6 +11,7 @@ import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
+import { type Donation, donationQuery } from '~/graphql/query/donation'
 import { newsletterByOriginalUrl } from '~/graphql/query/newsletter'
 import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
@@ -22,9 +23,10 @@ import { fetchHeaderData } from '~/utils/header-data'
 type PageProps = {
   headerData: HeaderContextData
   postData: PostDetail
+  donation: Donation | null
 }
 
-const Post: NextPageWithLayout<PageProps> = ({ postData }) => {
+const Post: NextPageWithLayout<PageProps> = ({ postData, donation }) => {
   // Track reading history for logged-in members
   useReadingTracker(postData?.id)
 
@@ -37,7 +39,7 @@ const Post: NextPageWithLayout<PageProps> = ({ postData }) => {
     // Legacy styles
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
-      articleType = <News postData={postData} />
+      articleType = <News postData={postData} donation={donation} />
       break
     case ValidPostStyle.SCROLLABLE_VIDEO:
       articleType = <ScrollableVideo postData={postData} />
@@ -49,7 +51,7 @@ const Post: NextPageWithLayout<PageProps> = ({ postData }) => {
       articleType = <Frame postData={postData} />
       break
     default:
-      articleType = <News postData={postData} />
+      articleType = <News postData={postData} donation={donation} />
       break
   }
 
@@ -125,16 +127,23 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   const postId = params?.id
 
   try {
-    // fetch header data and post data in parallel
-    const [headerData, { data, error: gqlError }] = await Promise.all([
-      fetchHeaderData(),
-      client.query<{
-        posts: PostDetail[]
-      }>({
-        query: postQuery,
-        variables: { id: postId },
-      }),
-    ])
+    // fetch header data, post data, and donation data in parallel
+    const [headerData, { data, error: gqlError }, donationResult] =
+      await Promise.all([
+        fetchHeaderData(),
+        client.query<{
+          posts: PostDetail[]
+        }>({
+          query: postQuery,
+          variables: { id: postId },
+        }),
+        client.query<{ donations: Donation[] }>({
+          query: donationQuery,
+        }),
+      ])
+
+    // Get the first (most recent) active donation
+    const donation = donationResult.data?.donations?.[0] || null
 
     if (gqlError) {
       const annotatingError = errors.helpers.wrap(
@@ -198,6 +207,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
       props: {
         headerData,
         postData,
+        donation,
       },
       // ISR: 每 5 分鐘重新驗證一次
       // 可根據需求調整：60（1分鐘）、300（5分鐘）、3600（1小時）

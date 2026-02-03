@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 
-import type { LightboxDonation } from '~/graphql/query/donation'
+import type { Donation } from '~/graphql/query/donation'
 
 // Modal overlay
 const Overlay = styled.div`
@@ -121,7 +121,7 @@ const CTAButton = styled.a`
 type DonationModalProps = {
   isOpen: boolean
   onClose: () => void
-  donation?: LightboxDonation | null
+  donation?: Donation | null
 }
 
 const DonationModal = ({ isOpen, onClose, donation }: DonationModalProps) => {

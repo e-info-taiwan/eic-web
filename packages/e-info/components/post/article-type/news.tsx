@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import Header from '~/components/layout/header/header'
 import PostContent from '~/components/post/post-content'
 import PostCredit from '~/components/post/post-credit'
+import PostDonation from '~/components/post/post-donation'
 import PostTitle from '~/components/post/post-title'
 import RelatedPosts from '~/components/post/related-post'
 import SideIndex from '~/components/post/side-index'
@@ -12,6 +13,7 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
+import type { LightboxDonation } from '~/graphql/query/donation'
 import type { PostDetail } from '~/graphql/query/post'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
@@ -127,9 +129,10 @@ const RightColumn = styled.div`
 
 type PostProps = {
   postData: PostDetail
+  donation?: LightboxDonation | null
 }
 
-export default function News({ postData }: PostProps): JSX.Element {
+export default function News({ postData, donation }: PostProps): JSX.Element {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
@@ -195,6 +198,7 @@ export default function News({ postData }: PostProps): JSX.Element {
                   currentSideIndex={currentSideIndex}
                   setCurrentSideIndex={setCurrentSideIndex}
                 />
+                <PostDonation donation={donation} />
                 <RelatedPosts relatedPosts={postData?.relatedPosts} />
               </RightColumn>
             </TwoColumnSection>
