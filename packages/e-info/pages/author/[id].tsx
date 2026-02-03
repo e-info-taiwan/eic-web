@@ -54,8 +54,10 @@ const StyledAdsense_HD = styled(Adsense)`
 `
 
 // 作者資訊區塊（頭像 + 自介）
+// 手機：垂直排列，平板/桌面：水平排列
 const AuthorInfoSection = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 20px;
   margin-top: 24px;
   margin-bottom: 32px;
@@ -63,6 +65,7 @@ const AuthorInfoSection = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[0]};
 
   ${({ theme }) => theme.breakpoint.md} {
+    flex-direction: row;
     gap: 32px;
     margin-bottom: 48px;
     padding-bottom: 48px;
@@ -71,8 +74,7 @@ const AuthorInfoSection = styled.div`
 
 const AuthorAvatar = styled.div`
   flex-shrink: 0;
-  width: 120px;
-  height: 120px;
+  width: 160px;
   overflow: hidden;
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -82,19 +84,23 @@ const AuthorAvatar = styled.div`
 
   img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
+
+    ${({ theme }) => theme.breakpoint.md} {
+      height: 100%;
+    }
   }
 `
 
 const AuthorBio = styled.div`
-  flex: 1;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.8;
   color: ${({ theme }) => theme.colors.grayscale[20]};
 
   ${({ theme }) => theme.breakpoint.md} {
+    flex: 1;
     font-size: 18px;
   }
 `
