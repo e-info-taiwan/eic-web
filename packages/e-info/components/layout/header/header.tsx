@@ -730,6 +730,15 @@ const Header = () => {
     return () => clearInterval(interval)
   }, [newsItems.length, currentNewsIndex])
 
+  // Open newsletter modal if query param is present
+  useEffect(() => {
+    if (router.query.subscribe === 'newsletter') {
+      setIsNewsletterModalOpen(true)
+      // Remove query param from URL without page reload
+      router.replace(router.pathname, undefined, { shallow: true })
+    }
+  }, [router.query.subscribe, router])
+
   // Check if user is logged in (has firebase user and member)
   const isLoggedIn = !authLoading && firebaseUser && member
 
