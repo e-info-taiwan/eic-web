@@ -69,7 +69,7 @@ const Description = styled.p`
   line-height: 1.8;
   color: ${({ theme }) => theme.colors.grayscale[40]};
   text-align: center;
-  margin: 0 0 24px;
+  margin-top: 12px;
 `
 
 // Checkbox group
@@ -182,6 +182,22 @@ const InfoLink = styled.a`
   color: ${({ theme }) => theme.colors.secondary[20]};
   text-decoration: underline;
   cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.secondary[0]};
+  }
+`
+
+const NewsletterLink = styled.a`
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.secondary[20]};
+  text-decoration: underline;
+  text-align: center;
+  cursor: pointer;
+  margin: 12px 0;
 
   &:hover {
     color: ${({ theme }) => theme.colors.secondary[0]};
@@ -444,6 +460,8 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
             <Description>
               我們是環境資訊中心，耕耘了二十多年的獨立媒體，我們相信生長在台灣的每一個人，都有權利知道這片土地發生的事情。
             </Description>
+
+            <NewsletterLink href="/newsletter">查看所有電子報</NewsletterLink>
 
             <CheckboxGroup>
               {/* Daily newsletter option */}
