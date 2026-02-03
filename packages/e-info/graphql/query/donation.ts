@@ -49,3 +49,28 @@ export const donationQuery = gql`
 
 // Backwards compatibility alias
 export const lightboxDonationQuery = donationQuery
+
+// Query to fetch the most recent active footer donation (for article pages)
+// Ordered by createdAt descending, take 1
+export const footerDonationQuery = gql`
+  query GetFooterDonation {
+    donations(
+      where: { donationType: { equals: "footer" }, state: { equals: "active" } }
+      orderBy: { createdAt: desc }
+      take: 1
+    ) {
+      id
+      title
+      subtitle
+      description
+      donationUrl
+      image {
+        resized {
+          original
+          w480
+          w800
+        }
+      }
+    }
+  }
+`

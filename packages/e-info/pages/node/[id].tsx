@@ -11,7 +11,7 @@ import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
-import { type Donation, donationQuery } from '~/graphql/query/donation'
+import { type Donation, footerDonationQuery } from '~/graphql/query/donation'
 import { newsletterByOriginalUrl } from '~/graphql/query/newsletter'
 import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
@@ -138,11 +138,11 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
           variables: { id: postId },
         }),
         client.query<{ donations: Donation[] }>({
-          query: donationQuery,
+          query: footerDonationQuery,
         }),
       ])
 
-    // Get the first (most recent) active donation
+    // Get the first (most recent) active footer donation for article page
     const donation = donationResult.data?.donations?.[0] || null
 
     if (gqlError) {
