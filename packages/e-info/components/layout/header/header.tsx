@@ -679,6 +679,7 @@ const Header = () => {
   const [currentSubMenu, setCurrentSubMenu] = useState<HeaderNavSection | null>(
     null
   )
+  const [isTopicSubMenuOpen, setIsTopicSubMenuOpen] = useState(false)
   const [isHeaderHidden, setIsHeaderHidden] = useState(false)
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0)
@@ -842,11 +843,13 @@ const Header = () => {
 
   const handleBackToMainMenu = () => {
     setCurrentSubMenu(null)
+    setIsTopicSubMenuOpen(false)
   }
 
   const handleMenuClose = () => {
     setIsMenuOpen(false)
     setCurrentSubMenu(null)
+    setIsTopicSubMenuOpen(false)
   }
 
   // Handle scroll direction for header hide/show
@@ -1082,7 +1085,7 @@ const Header = () => {
           </MobileMenuLogo>
         </MobileMenuHeader>
 
-        {!currentSubMenu ? (
+        {!currentSubMenu && !isTopicSubMenuOpen ? (
           <MobileMenuContent>
             <MobileMenuSection>
               <ActionButton
@@ -1116,14 +1119,23 @@ const Header = () => {
                     if (item.categories && item.categories.length > 0) {
                       e.preventDefault()
                       handleMobileMenuItemClick(item)
+                    } else {
+                      handleMenuClose()
                     }
                   }}
                 >
                   {item.name}
                 </NavItem>
               ))}
-              {/* 深度專題 - fixed link with featured style */}
-              <NavItem href="/feature" className="featured">
+              {/* 深度專題 - opens topic submenu */}
+              <NavItem
+                href="#"
+                className="featured"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setIsTopicSubMenuOpen(true)
+                }}
+              >
                 深度專題
               </NavItem>
               {/* Divider between 深度專題 and Featured tags */}
@@ -1134,6 +1146,7 @@ const Header = () => {
                   key={tag.id}
                   href={`/tag/${tag.name}`}
                   className="featured-tag"
+                  onClick={handleMenuClose}
                 >
                   {tag.name}
                 </NavItem>
@@ -1164,7 +1177,7 @@ const Header = () => {
               </MobileMenuFooter>
             </MobileMenuSection>
           </MobileMenuContent>
-        ) : (
+        ) : currentSubMenu ? (
           <SubMenuView>
             <SubMenuHeader>
               <BackButton onClick={handleBackToMainMenu}>
@@ -1177,8 +1190,29 @@ const Header = () => {
                 <SubMenuItem
                   key={category.id}
                   href={`/category/${category.id}`}
+                  onClick={handleMenuClose}
                 >
                   {category.name}
+                </SubMenuItem>
+              ))}
+            </SubMenuList>
+          </SubMenuView>
+        ) : (
+          <SubMenuView>
+            <SubMenuHeader>
+              <BackButton onClick={handleBackToMainMenu}>
+                <IconLeftArrow />
+              </BackButton>
+            </SubMenuHeader>
+
+            <SubMenuList>
+              {headerTopics.map((topic) => (
+                <SubMenuItem
+                  key={topic.id}
+                  href={`/feature/${topic.id}`}
+                  onClick={handleMenuClose}
+                >
+                  {topic.title}
                 </SubMenuItem>
               ))}
             </SubMenuList>
