@@ -87,7 +87,7 @@ export default function CustomHead(props: HeadProps): JSX.Element {
     title: props.title ?? SITE_TITLE,
     description:
       props.description ??
-      '「環境資訊中心」由社團法人台灣環境資訊協會成立。我們相信，任何改變行動都源自於「知道身邊發生什麼事」開始，因著打動人心的那篇文字所乘載的資訊和情感而產生共鳴、轉化。唯有資訊公開、普及，並透過社會大眾參與，方能促進人與自然和諧，臻至永續發展。',
+      '「環境資訊中心」由自然保育與環境資訊基金會（前身為社團法人台灣環境資訊協會）所經營。我們相信，任何改變行動都源自於「知道身邊發生什麼事」開始，唯有資訊公開、普及，並透過社會大眾參與，方能促進人與自然和諧，臻至永續發展。',
     site_name: SITE_TITLE,
     url: SITE_URL,
     type: 'website',

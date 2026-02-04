@@ -63,9 +63,11 @@ const FigCaption = styled.figcaption`
   opacity: 0.5;
   ${({ theme }) => theme.fontSize.xs};
   padding: 8px 20px 20px 20px;
+  text-align: center;
 
   ${({ theme }) => theme.breakpoint.md} {
     ${({ theme }) => theme.fontSize.sm};
+    text-align: left;
   }
 
   ${({ theme }) => theme.breakpoint.xl} {

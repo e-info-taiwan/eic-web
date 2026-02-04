@@ -88,16 +88,12 @@ const LogoRightWrapper = styled.div`
 const RightSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.5px;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    gap: 0.75rem;
-  }
+  gap: 12px;
 `
 
 const SearchButton = styled(Link)`
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   background-color: ${({ theme }) => theme.colors.primary[20]};
   border: none;
   border-radius: 50%;
@@ -112,9 +108,15 @@ const SearchButton = styled(Link)`
     background-color: ${({ theme }) => theme.colors.primary[0]};
   }
 
-  /* Hide on mobile devices */
-  @media (max-width: ${({ theme }) => theme.mediaSize.md - 1}px) {
-    display: none;
+  /* Larger on tablet and desktop */
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    width: 32px;
+    height: 32px;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
   }
 `
 
@@ -176,7 +178,7 @@ const UserInfo = styled(Link)`
   cursor: pointer;
 
   svg {
-    width: 28px;
+    width: 20px;
     height: 23px;
 
     > path {
@@ -198,6 +200,7 @@ const UserInfo = styled(Link)`
     font-weight: 500;
 
     svg {
+      width: 28px;
       height: 32px;
     }
   }
@@ -208,6 +211,11 @@ const UserName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  /* Hide on mobile devices */
+  @media (max-width: ${({ theme }) => theme.mediaSize.md - 1}px) {
+    display: none;
+  }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     max-width: 150px;

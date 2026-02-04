@@ -207,7 +207,7 @@ const ArticleTitle = styled.h3`
   transition: color 0.3s ease;
 
   ${ArticleCard}:hover & {
-    color: ${({ theme }) => theme.colors.secondary[20]};
+    color: #F7C34C;
   }
 
   // Desktop

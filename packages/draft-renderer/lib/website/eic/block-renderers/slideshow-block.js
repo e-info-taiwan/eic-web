@@ -42,7 +42,7 @@ var SlideShowImage = _styledComponents["default"].figure(_templateObject2 || (_t
   var theme = _ref3.theme;
   return theme.breakpoint.xl;
 }, SpacingBetweenSlideImages * 2, SpacingBetweenSlideImages * 2);
-var FigCaption = _styledComponents["default"].figcaption(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  font-weight: 400;\n  line-height: 23px;\n  color: #000928;\n  opacity: 0.5;\n  ", ";\n  padding: 8px 20px 20px 20px;\n\n  ", " {\n    ", ";\n  }\n\n  ", " {\n    display: none;\n  }\n"])), function (_ref4) {
+var FigCaption = _styledComponents["default"].figcaption(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  font-weight: 400;\n  line-height: 23px;\n  color: #000928;\n  opacity: 0.5;\n  ", ";\n  padding: 8px 20px 20px 20px;\n  text-align: center;\n\n  ", " {\n    ", ";\n    text-align: left;\n  }\n\n  ", " {\n    display: none;\n  }\n"])), function (_ref4) {
   var theme = _ref4.theme;
   return theme.fontSize.xs;
 }, function (_ref5) {
