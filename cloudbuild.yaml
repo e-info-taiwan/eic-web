@@ -51,13 +51,31 @@ steps:
 
         echo "Deploying with secrets suffix: $$SUFFIX"
 
-        # Build secrets string
-        SECRETS="FIREBASE_ADMIN_PROJECT_ID=FIREBASE_ADMIN_PROJECT_ID$$SUFFIX:latest"
-        SECRETS="$$SECRETS,FIREBASE_ADMIN_CLIENT_EMAIL=FIREBASE_ADMIN_CLIENT_EMAIL$$SUFFIX:latest"
-        SECRETS="$$SECRETS,FIREBASE_ADMIN_PRIVATE_KEY=FIREBASE_ADMIN_PRIVATE_KEY$$SUFFIX:latest"
-        SECRETS="$$SECRETS,TURNSTILE_SECRET_KEY=TURNSTILE_SECRET_KEY$$SUFFIX:latest"
-        SECRETS="$$SECRETS,MAILCHIMP_API_KEY=MAILCHIMP_API_KEY$$SUFFIX:latest"
-        SECRETS="$$SECRETS,MAILCHIMP_LIST_ID=MAILCHIMP_LIST_ID$$SUFFIX:latest"
+        # Build secrets string - only add secrets that exist
+        SECRETS=""
+
+        add_secret() {
+          local env_var="$$1"
+          local secret_name="$$2"
+          # Check if secret exists AND has at least one version
+          if gcloud secrets versions list "$$secret_name" --project=$PROJECT_ID --limit=1 --format="value(name)" 2>/dev/null | grep -q .; then
+            if [ -z "$$SECRETS" ]; then
+              SECRETS="$$env_var=$$secret_name:latest"
+            else
+              SECRETS="$$SECRETS,$$env_var=$$secret_name:latest"
+            fi
+            echo "  ✓ Adding secret: $$secret_name"
+          else
+            echo "  ⚠ Skipping missing/empty secret: $$secret_name"
+          fi
+        }
+
+        add_secret "FIREBASE_ADMIN_PROJECT_ID" "FIREBASE_ADMIN_PROJECT_ID$$SUFFIX"
+        add_secret "FIREBASE_ADMIN_CLIENT_EMAIL" "FIREBASE_ADMIN_CLIENT_EMAIL$$SUFFIX"
+        add_secret "FIREBASE_ADMIN_PRIVATE_KEY" "FIREBASE_ADMIN_PRIVATE_KEY$$SUFFIX"
+        add_secret "TURNSTILE_SECRET_KEY" "TURNSTILE_SECRET_KEY$$SUFFIX"
+        add_secret "MAILCHIMP_API_KEY" "MAILCHIMP_API_KEY$$SUFFIX"
+        add_secret "MAILCHIMP_LIST_ID" "MAILCHIMP_LIST_ID$$SUFFIX"
 
         echo "Secrets config: $$SECRETS"
 
@@ -68,10 +86,17 @@ steps:
         do
           echo "Deploying to Cloud Run service: $$cr"
 
-          gcloud run deploy "$$cr" \
-            --image gcr.io/$PROJECT_ID/$_IMAGE_NAME:${BRANCH_NAME}_${SHORT_SHA} \
-            --region asia-east1 \
-            --update-secrets="$$SECRETS"
+          if [ -n "$$SECRETS" ]; then
+            gcloud run deploy "$$cr" \
+              --image gcr.io/$PROJECT_ID/$_IMAGE_NAME:${BRANCH_NAME}_${SHORT_SHA} \
+              --region asia-east1 \
+              --update-secrets="$$SECRETS"
+          else
+            echo "  ⚠ No secrets found, deploying without secrets"
+            gcloud run deploy "$$cr" \
+              --image gcr.io/$PROJECT_ID/$_IMAGE_NAME:${BRANCH_NAME}_${SHORT_SHA} \
+              --region asia-east1
+          fi
 
         done
 
