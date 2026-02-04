@@ -67,10 +67,11 @@ function containsSensitiveQuery(body: unknown): {
 
   const normalizedQuery = query.replace(/\s+/g, ' ').trim().toLowerCase()
 
-  // Block: members query with firebaseId filter (use /api/member/get instead)
+  // Block: members query (exposes sensitive member data)
+  // Allow: membersCount (only returns count, no sensitive data)
   if (
     normalizedQuery.includes('members') &&
-    normalizedQuery.includes('firebaseid')
+    !normalizedQuery.includes('memberscount')
   ) {
     return {
       isSensitive: true,

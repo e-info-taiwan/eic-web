@@ -21,20 +21,6 @@ const GET_ALL_SECTIONS = gql`
   }
 `
 
-// Query to check if a post is favorited by a member
-const CHECK_FAVORITE = gql`
-  query CheckFavorite($memberId: ID!, $postId: ID!) {
-    favorites(
-      where: {
-        member: { id: { equals: $memberId } }
-        post: { id: { equals: $postId } }
-      }
-      take: 1
-    ) {
-      id
-    }
-  }
-`
 
 // Query to count member's favorites
 const COUNT_MEMBER_FAVORITES = gql`
@@ -365,26 +351,45 @@ export const getMemberAvatarUrl = (member: Member | null): string | null => {
 
 /**
  * Check if a post is favorited by the member
+ * Uses API route with Firebase token verification
  */
 export const checkPostFavorited = async (
   memberId: string,
-  postId: string
+  postId: string,
+  firebaseId: string
 ): Promise<string | null> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.query<{ favorites: { id: string }[] }>({
-    query: CHECK_FAVORITE,
-    variables: { memberId, postId },
-    fetchPolicy: 'network-only',
-  })
+  try {
+    const response = await fetch('/api/favorites/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        memberId,
+        firebaseId,
+        postId,
+      }),
+    })
 
-  if (result.error) {
-    console.error('checkPostFavorited error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      favoriteId?: string | null
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('checkPostFavorited error:', result.error)
+      return null
+    }
+
+    return result.favoriteId || null
+  } catch (error) {
+    console.error('checkPostFavorited error:', error)
     return null
   }
-
-  const favorites = result.data?.favorites
-  return favorites && favorites.length > 0 ? favorites[0].id : null
 }
 
 /**

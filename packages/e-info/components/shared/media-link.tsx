@@ -73,8 +73,12 @@ export default function MediaLinkList({
   // Check if post is already favorited when member and postId are available
   useEffect(() => {
     const checkFavorite = async () => {
-      if (member?.id && postId) {
-        const existingFavoriteId = await checkPostFavorited(member.id, postId)
+      if (member?.id && postId && firebaseUser?.uid) {
+        const existingFavoriteId = await checkPostFavorited(
+          member.id,
+          postId,
+          firebaseUser.uid
+        )
         if (existingFavoriteId) {
           setIsFavorited(true)
           setFavoriteId(existingFavoriteId)
@@ -88,7 +92,7 @@ export default function MediaLinkList({
       }
     }
     checkFavorite()
-  }, [member?.id, postId])
+  }, [member?.id, postId, firebaseUser?.uid])
 
   const externalLinks: ExternalLinkItem[] = [
     {
