@@ -1,7 +1,7 @@
 // Newsletter subscription API types
 
 export type NewsletterFrequency = 'daily' | 'weekly'
-export type NewsletterFormat = 'standard' | 'beautified'
+export type NewsletterFormat = 'standard' | 'styled'
 
 export type SubscribeRequest = {
   email: string

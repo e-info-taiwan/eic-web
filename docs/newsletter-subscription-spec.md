@@ -24,7 +24,7 @@
 | 格式 | 代碼 | 說明 |
 |------|------|------|
 | 一般版 | `standard` | 標準文字排版 |
-| 美化版 | `beautified` | 放大重要資訊字體，更友善的閱讀體驗 |
+| 美化版 | `styled` | 放大重要資訊字體，更友善的閱讀體驗 |
 
 ---
 
@@ -131,7 +131,7 @@ Content-Type: application/json
 {
   email: string                          // 訂閱者 Email
   frequency: 'daily' | 'weekly'          // 電子報頻率
-  format: 'standard' | 'beautified'      // 格式偏好
+  format: 'standard' | 'styled'          // 格式偏好
 }
 ```
 
@@ -140,7 +140,7 @@ Content-Type: application/json
 {
   "email": "user@example.com",
   "frequency": "daily",
-  "format": "beautified"
+  "format": "styled"
 }
 ```
 
@@ -191,7 +191,7 @@ Content-Type: application/json
 // packages/e-info/types/newsletter.ts
 
 export type NewsletterFrequency = 'daily' | 'weekly'
-export type NewsletterFormat = 'standard' | 'beautified'
+export type NewsletterFormat = 'standard' | 'styled'
 
 export type SubscribeRequest = {
   email: string
@@ -256,8 +256,8 @@ POST /api/newsletter/subscribe
     │
     ▼
 根據 format 設定 Tag
-    ├── beautified → ["美化版"]
-    └── standard   → ["一般版"]
+    ├── styled   → ["美化版"]
+    └── standard → ["一般版"]
     │
     ▼
 呼叫 Mailchimp API 新增 member
@@ -291,7 +291,7 @@ Body:
   "status": "subscribed",
   "tags": ["美化版"],
   "merge_fields": {
-    "FORMAT": "beautified"
+    "FORMAT": "styled"
   }
 }
 ```
@@ -326,30 +326,63 @@ const subscriberHash = crypto
 
 ## CMS Member 同步
 
+### MemberSubscription 結構
+
+CMS 使用 `MemberSubscription` 關聯結構來儲存訂閱資料：
+
+```typescript
+// lib/graphql/member.ts
+export type NewsletterName = 'daily' | 'weekly'
+export type NewsletterType = 'standard' | 'styled'
+
+export type MemberSubscription = {
+  id: string
+  newsletterName: string   // 'daily' | 'weekly'
+  newsletterType: string   // 'standard' | 'styled'
+}
+
+export type SubscriptionInput = {
+  daily?: NewsletterType | null   // null = 取消訂閱
+  weekly?: NewsletterType | null  // null = 取消訂閱
+}
+```
+
 ### 同步機制
 
-當使用者已登入時，訂閱成功後會同步更新 CMS member 資料：
+當使用者已登入時，訂閱成功後會透過 `updateMemberSubscriptions` API 同步更新 CMS 訂閱資料：
 
 ```typescript
 // newsletter-modal.tsx
 if (member) {
-  await updateMemberById(member.id, {
-    newsletterSubscription: format,           // 'standard' | 'beautified'
-    newsletterFrequency: frequency === 'daily'
-      ? 'weekday'
-      : 'saturday'
-  })
+  const format: NewsletterType = styledChecked ? 'styled' : 'standard'
+  const subscriptionInput: SubscriptionInput = {}
+
+  if (dailyChecked) {
+    subscriptionInput.daily = format
+  }
+  if (weeklyChecked) {
+    subscriptionInput.weekly = format
+  }
+
+  await updateMemberSubscriptions(member.id, firebaseUser.uid, subscriptionInput)
 }
 ```
 
 ### 欄位對應
 
-| 前端 API 值 | CMS Member 欄位 | CMS 儲存值 |
-|-------------|-----------------|------------|
-| `frequency: 'daily'` | `newsletterFrequency` | `'weekday'` |
-| `frequency: 'weekly'` | `newsletterFrequency` | `'saturday'` |
-| `format: 'standard'` | `newsletterSubscription` | `'standard'` |
-| `format: 'beautified'` | `newsletterSubscription` | `'beautified'` |
+| 前端選項 | MemberSubscription.newsletterName | MemberSubscription.newsletterType |
+|----------|-----------------------------------|-----------------------------------|
+| 每日報 + 一般版 | `'daily'` | `'standard'` |
+| 每日報 + 美化版 | `'daily'` | `'styled'` |
+| 一週回顧 + 一般版 | `'weekly'` | `'standard'` |
+| 一週回顧 + 美化版 | `'weekly'` | `'styled'` |
+
+### 群組互斥邏輯
+
+在會員中心電子報管理頁面，同一頻率的格式選項互斥：
+- `dailyStandard` 與 `dailyStyled` 互斥
+- `weeklyStandard` 與 `weeklyStyled` 互斥
+- 但 daily 和 weekly 可同時訂閱
 
 ---
 
@@ -391,7 +424,7 @@ type SubscriptionState = 'idle' | 'loading' | 'success' | 'error'
 // 元件狀態
 const [dailyChecked, setDailyChecked] = useState(false)
 const [weeklyChecked, setWeeklyChecked] = useState(false)
-const [beautifiedChecked, setBeautifiedChecked] = useState(false)
+const [styledChecked, setStyledChecked] = useState(false)     // 美化版選項
 const [email, setEmail] = useState('')
 const [confirmEmail, setConfirmEmail] = useState('')
 const [subscriptionState, setSubscriptionState] = useState<SubscriptionState>('idle')
@@ -415,11 +448,13 @@ subscriptionState === 'loading'
 
 | 檔案 | 用途 |
 |------|------|
-| `packages/e-info/pages/api/newsletter/subscribe.ts` | API endpoint |
+| `packages/e-info/pages/api/newsletter/subscribe.ts` | Mailchimp 訂閱 API endpoint |
+| `packages/e-info/pages/api/member/subscriptions.ts` | CMS MemberSubscription 管理 API |
 | `packages/e-info/components/shared/newsletter-modal.tsx` | 訂閱表單 UI |
+| `packages/e-info/pages/member/newsletter.tsx` | 會員中心電子報管理頁面 |
 | `packages/e-info/types/newsletter.ts` | TypeScript 型別 |
 | `packages/e-info/constants/config.ts` | 環境變數設定 |
-| `packages/e-info/lib/graphql/member.ts` | CMS Member 同步 |
+| `packages/e-info/lib/graphql/member.ts` | CMS Member GraphQL 操作 |
 
 ---
 
@@ -462,7 +497,7 @@ function getListId(frequency: NewsletterFrequency): string {
 
 // 修改：Tags 只需要格式（頻率已由 Audience 區分）
 function getFormatTags(format: NewsletterFormat): string[] {
-  return format === 'beautified' ? ['美化版'] : ['一般版']
+  return format === 'styled' ? ['美化版'] : ['一般版']
 }
 
 // 修改：updateMemberTags 需要接收 listId 參數
@@ -605,6 +640,12 @@ if (!emailRegex.test(email)) {
 ---
 
 ## 變更記錄
+
+### 2026-02-05
+- 更新格式代碼：`'beautified'` → `'styled'`
+- 更新 CMS Member 同步機制：使用 `MemberSubscription` 關聯結構
+- 新增 `updateMemberSubscriptions` API 文件
+- 新增群組互斥邏輯說明
 
 ### 2026-02-02
 - 初版文件建立

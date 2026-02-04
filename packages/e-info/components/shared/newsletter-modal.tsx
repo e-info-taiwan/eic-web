@@ -407,7 +407,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
         body: JSON.stringify({
           email,
           frequency,
-          format: beautifiedChecked ? 'beautified' : 'standard', // Keep old API format
+          format: beautifiedChecked ? 'styled' : 'standard',
         }),
       })
 

@@ -9,7 +9,6 @@ import ValidationIndicator from '~/components/auth/validation-indicator'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { LOCATION_OPTIONS, VALIDATION_RULES } from '~/constants/auth'
 import { useAuth } from '~/hooks/useAuth'
-import type { NewsletterType } from '~/lib/graphql/member'
 import {
   type NotificationSection,
   createMember,
@@ -320,7 +319,7 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
     interestedSectionIds: [],
     dailyNewsletter: false,
     weeklyNewsletter: false,
-    newsletterFormat: 'general',
+    newsletterFormat: 'standard',
   })
 
   const [validation, setValidation] = useState<RegisterFormValidation>({
@@ -504,13 +503,9 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
     const hasWeekly = formData.weeklyNewsletter
 
     if (hasDaily || hasWeekly) {
-      // Determine format: beautified -> styled, general -> standard
-      const format: NewsletterType =
-        formData.newsletterFormat === 'beautified' ? 'styled' : 'standard'
-
       await updateMemberSubscriptions(member.id, uid, {
-        daily: hasDaily ? format : null,
-        weekly: hasWeekly ? format : null,
+        daily: hasDaily ? formData.newsletterFormat : null,
+        weekly: hasWeekly ? formData.newsletterFormat : null,
       })
     }
 

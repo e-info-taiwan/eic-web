@@ -42,7 +42,7 @@ export type RegisterFormData = {
   interestedSectionIds: string[] // 感興趣的分類（Section IDs）
   dailyNewsletter: boolean
   weeklyNewsletter: boolean
-  newsletterFormat: 'general' | 'beautified'
+  newsletterFormat: 'standard' | 'styled'
 }
 
 // 註冊表單驗證狀態

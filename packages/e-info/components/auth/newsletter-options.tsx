@@ -142,10 +142,10 @@ const InfoText = styled.p`
 type NewsletterOptionsProps = {
   dailyNewsletter: boolean
   weeklyNewsletter: boolean
-  newsletterFormat: 'general' | 'beautified'
+  newsletterFormat: 'standard' | 'styled'
   onDailyChange: (_checked: boolean) => void
   onWeeklyChange: (_checked: boolean) => void
-  onFormatChange: (_format: 'general' | 'beautified') => void
+  onFormatChange: (_format: 'standard' | 'styled') => void
 }
 
 const NewsletterOptions = ({
@@ -188,14 +188,12 @@ const NewsletterOptions = ({
             <FormatItem>
               <HiddenCheckbox
                 type="checkbox"
-                checked={newsletterFormat === 'beautified'}
+                checked={newsletterFormat === 'styled'}
                 onChange={(e) =>
-                  onFormatChange(e.target.checked ? 'beautified' : 'general')
+                  onFormatChange(e.target.checked ? 'styled' : 'standard')
                 }
               />
-              <SecondaryCheckboxIcon
-                $checked={newsletterFormat === 'beautified'}
-              />
+              <SecondaryCheckboxIcon $checked={newsletterFormat === 'styled'} />
               訂閱美化版
             </FormatItem>
             <BeautifiedLink

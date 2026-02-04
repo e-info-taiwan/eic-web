@@ -90,7 +90,7 @@ export default async function handler(
     } else {
       tags.push('一週回顧')
     }
-    if (format === 'beautified') {
+    if (format === 'styled') {
       tags.push('美化版')
     } else {
       tags.push('一般版')
