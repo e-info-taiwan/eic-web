@@ -1,4 +1,4 @@
-import type { InterestedCategory, LocationOption } from '~/types/auth'
+import type { LocationOption } from '~/types/auth'
 
 // 地區選項列表 - 台灣所有縣市
 export const LOCATION_OPTIONS: { value: LocationOption; label: string }[] = [
@@ -29,29 +29,6 @@ export const LOCATION_OPTIONS: { value: LocationOption; label: string }[] = [
   // 其他
   { value: '其他', label: '其他' },
 ]
-
-// 感興趣的分類選項
-export const INTERESTED_CATEGORIES: {
-  value: InterestedCategory
-  label: string
-}[] = [
-  { value: '台灣新聞', label: '台灣新聞' },
-  { value: '生物多樣性', label: '生物多樣性' },
-  { value: '編輯直送', label: '編輯直送' },
-  { value: '國際新聞', label: '國際新聞' },
-]
-
-// 電子報選項
-export const NEWSLETTER_OPTIONS = [
-  { value: 'daily', label: '《環境資訊電子報》每日報' },
-  { value: 'weekly', label: '《環境資訊電子報一週回顧》' },
-] as const
-
-// 電子報版本選項
-export const NEWSLETTER_FORMAT_OPTIONS = [
-  { value: 'general', label: '一般版' },
-  { value: 'beautified', label: '美化版' },
-] as const
 
 // 密碼驗證規則
 export const VALIDATION_RULES = {

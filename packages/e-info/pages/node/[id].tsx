@@ -1,6 +1,8 @@
 import errors from '@twreporter/errors'
 import type { RawDraftContentBlock } from 'draft-js'
 import type { GetStaticPaths, GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 import { getGqlClient } from '~/apollo-client'
 import CustomHead from '~/components/layout/custom-head'
@@ -18,6 +20,7 @@ import { post as postQuery } from '~/graphql/query/post'
 import { useReadingTracker } from '~/hooks/useReadingTracker'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { ResizedImages, ValidPostStyle } from '~/types/common'
+import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
 
 type PageProps = {
@@ -27,8 +30,29 @@ type PageProps = {
 }
 
 const Post: NextPageWithLayout<PageProps> = ({ postData, donation }) => {
+  const router = useRouter()
+
   // Track reading history for logged-in members
   useReadingTracker(postData?.id)
+
+  // Track article pageview with category/section dimensions
+  // Only track once per article load (when id or path changes)
+  useEffect(() => {
+    if (postData?.id) {
+      const tags = [...(postData.tags || []).map((tag) => tag.name)].filter(
+        Boolean
+      )
+
+      gtag.sendArticlePageview(router.asPath, {
+        articleId: postData.id,
+        articleTitle: postData.title,
+        articleCategory: postData.category?.name,
+        articleSection: postData.section?.name,
+        articleTags: tags,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postData?.id, router.asPath])
 
   let articleType: JSX.Element
 

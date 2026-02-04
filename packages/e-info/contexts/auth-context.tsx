@@ -2,6 +2,7 @@ import type { User } from 'firebase/auth'
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { getFirebaseErrorMessage } from '~/constants/auth'
+import * as gtag from '~/utils/gtag'
 import {
   checkEmailExists as checkEmailExistsApi,
   onAuthChange,
@@ -258,6 +259,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       await signOutApi()
       setMember(null)
       setNeedsRegistration(false)
+      // Track logout event
+      gtag.sendMemberEvent('logout')
     } catch (err: unknown) {
       console.error('[AuthContext] Sign-out error:', err)
       const errorCode =

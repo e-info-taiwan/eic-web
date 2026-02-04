@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 import AuthContext from '~/contexts/auth-context'
 import { updateMemberById } from '~/lib/graphql/member'
+import * as gtag from '~/utils/gtag'
 
 // Modal overlay
 const Overlay = styled.div`
@@ -413,6 +414,9 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
       if (data.success) {
         setSubscriptionState('success')
         setIsSubmitted(true)
+
+        // Track conversion in GA4
+        gtag.sendConversion('newsletter_subscribe', frequency)
 
         // Sync to member system if user is logged in
         if (member) {

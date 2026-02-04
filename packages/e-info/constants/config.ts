@@ -14,19 +14,7 @@ const MAILCHIMP_SERVER_PREFIX =
   process.env.MAILCHIMP_SERVER_PREFIX ??
   (MAILCHIMP_API_KEY.split('-').pop() || '')
 
-// Google OAuth Client
-const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID ?? ''
-const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET ?? ''
-const OAUTH_REDIRECT_URIS = (process.env.OAUTH_REDIRECT_URIS ?? '').split(',')
-let OAUTH_REFRESH_TOKEN: Record<string, unknown>
-try {
-  OAUTH_REFRESH_TOKEN = JSON.parse(process.env.OAUTH_REFRESH_TOKEN ?? '{}')
-} catch (err) {
-  console.error(err)
-}
-
 let API_ENDPOINT = ''
-let EDITOOLS_API_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
   authDomain: '',
@@ -40,8 +28,6 @@ switch (ENV) {
   case 'prod':
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
-    EDITOOLS_API_ENDPOINT =
-      'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     FIREBASE_CONFIG = {
       apiKey: '',
       authDomain: '',
@@ -54,8 +40,6 @@ switch (ENV) {
   case 'staging':
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
-    EDITOOLS_API_ENDPOINT =
-      'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     FIREBASE_CONFIG = {
       apiKey: '',
       authDomain: '',
@@ -69,8 +53,6 @@ switch (ENV) {
   default:
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
-    EDITOOLS_API_ENDPOINT =
-      'https://editools-gql-prod-4g6paft7cq-de.a.run.app/api/graphql'
     FIREBASE_CONFIG = {
       // e-info-dev
       apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
@@ -109,15 +91,9 @@ if (process.env.NEXT_PUBLIC_FIREBASE_APP_ID) {
 
 export {
   API_ENDPOINT,
-  EDITOOLS_API_ENDPOINT,
   FIREBASE_CONFIG,
   MAILCHIMP_API_KEY,
   MAILCHIMP_LIST_ID,
   MAILCHIMP_SERVER_PREFIX,
-  // MISO_API_KEY,
   MOCK_API_SERVER_PORT,
-  OAUTH_CLIENT_ID,
-  OAUTH_CLIENT_SECRET,
-  OAUTH_REDIRECT_URIS,
-  OAUTH_REFRESH_TOKEN,
 }

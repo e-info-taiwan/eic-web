@@ -12,21 +12,6 @@ const DEFAULT_CATEGORY: NavigationCategory = {
   slug: 'all',
 }
 
-const CATEGORY_SLUGS = {
-  breakingnews: 'breakingnews',
-  education: 'education',
-  politics: 'politics',
-  humanrights: 'humanrights',
-  environment: 'environment',
-  omt: 'omt',
-  data: 'data',
-  note: 'note',
-  covid19: 'covid19',
-  culture: 'culture',
-  international: 'international',
-  traffic: 'traffic',
-}
-
 const POST_STYLES: string[] = [
   // New API styles
   ValidPostStyle.DEFAULT,
@@ -113,7 +98,6 @@ const DEFAULT_HEADER_CATEGORY_LIST = [
 ]
 
 export {
-  CATEGORY_SLUGS,
   DEFAULT_CATEGORY,
   DEFAULT_HEADER_CATEGORY_LIST,
   DEFAULT_NEWS_IMAGE_PATH,

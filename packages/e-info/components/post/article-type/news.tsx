@@ -15,6 +15,7 @@ import {
 } from '~/constants/constant'
 import type { Donation } from '~/graphql/query/donation'
 import type { PostDetail } from '~/graphql/query/post'
+import useReadingProgress from '~/hooks/useReadingProgress'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
 import { ValidPostStyle } from '~/types/common'
 import * as gtag from '~/utils/gtag'
@@ -155,6 +156,13 @@ export default function News({ postData, donation }: PostProps): JSX.Element {
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
 
+  // Track reading progress at 25%, 50%, 75%, 100%
+  const readingProgressRef = useReadingProgress({
+    articleId: postData?.id,
+    articleCategory: postData?.category?.name,
+    enabled: Boolean(postData?.id),
+  })
+
   // If style is "editor" (編輯直送), always use default news image regardless of heroImage
   const isEditorStyle = postData?.style === ValidPostStyle.EDITOR
   const shouldShowHeroImage =
@@ -178,7 +186,7 @@ export default function News({ postData, donation }: PostProps): JSX.Element {
     <>
       <Header />
       <NewsContainer>
-        <article id="post">
+        <article id="post" ref={readingProgressRef}>
           {shouldShowHeroImage && (
             <HeroImage>
               <SharedImage

@@ -10,6 +10,7 @@ import PostFootnotes, {
 import PostPoll from '~/components/post/post-poll'
 import MediaLinkList from '~/components/shared/media-link'
 import { PostDetail } from '~/graphql/query/post'
+import useOutboundLinkTracking from '~/hooks/useOutboundLinkTracking'
 import { ValidPostContentType, ValidPostStyle } from '~/types/common'
 import { copyAndSliceDraftBlock, getBlocksCount } from '~/utils/post'
 
@@ -290,6 +291,9 @@ export default function PostContent({
         getFirstBlockEntityType(contentToRender) !== 'EMBEDDEDCODE'))
 
   const articleRef = useRef<HTMLElement>(null)
+
+  // Track clicks on external links within article content
+  useOutboundLinkTracking(articleRef)
 
   //Draft Style: add IntersectionObserver to detect side-index titles.
   //`BLANK` type: hide side-index-block

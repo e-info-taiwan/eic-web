@@ -69,10 +69,7 @@ export default class MyDocument extends Document {
           <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <link rel="manifest" href="/site.webmanifest" />
           <meta name="theme-color" content="#0b2163" key="theme-color" />
-          <meta
-            name="google-site-verification"
-            content=""
-          />
+          <meta name="google-site-verification" content="" />
 
           {GTM_ID ? (
             <Script

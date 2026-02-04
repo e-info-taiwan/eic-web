@@ -1,12 +1,14 @@
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 
 import AuthResultCard from '~/components/auth/auth-result-card'
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
@@ -25,6 +27,13 @@ const RegisterResultPage: NextPageWithLayout = () => {
   const isSuccess = success === 'true'
   const errorMessage =
     typeof error === 'string' ? decodeURIComponent(error) : undefined
+
+  // Track register result
+  useEffect(() => {
+    if (router.isReady && isSuccess) {
+      gtag.sendMemberEvent('register')
+    }
+  }, [router.isReady, isSuccess])
 
   const handleRetry = () => {
     router.push('/auth/register')
