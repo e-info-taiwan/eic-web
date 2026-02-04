@@ -68,11 +68,15 @@
 
 ### Mailchimp (電子報訂閱)
 
-| 變數名稱                | 資料型態 | 初始值 | 變數說明                                       |
-| ----------------------- | -------- | ------ | ---------------------------------------------- |
-| MAILCHIMP_API_KEY       | 字串     | ''     | Mailchimp API Key（格式：`<key>-<dc>`）        |
-| MAILCHIMP_LIST_ID       | 字串     | ''     | Mailchimp Audience List ID                     |
-| MAILCHIMP_SERVER_PREFIX | 字串     | ''     | Mailchimp Server Prefix（從 API Key 自動取得） |
+| 變數名稱                 | 資料型態 | 初始值 | 變數說明                                       |
+| ------------------------ | -------- | ------ | ---------------------------------------------- |
+| MAILCHIMP_API_KEY        | 字串     | ''     | Mailchimp API Key（格式：`<key>-<dc>`）        |
+| MAILCHIMP_LIST_ID_DAILY  | 字串     | ''     | 每日報 Audience ID                             |
+| MAILCHIMP_LIST_ID_WEEKLY | 字串     | ''     | 一週回顧 Audience ID                           |
+| MAILCHIMP_SERVER_PREFIX  | 字串     | ''     | Mailchimp Server Prefix（從 API Key 自動取得） |
+
+> **說明**：採用雙 Audience 架構，每日報和一週回顧使用獨立的 Mailchimp Audience。
+> 格式偏好（一般版/美化版）透過 Merge Field `FORMAT` 儲存。
 
 ### Cloudflare Turnstile (Bot 保護)
 
