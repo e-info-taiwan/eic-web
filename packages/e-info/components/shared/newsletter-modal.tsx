@@ -34,7 +34,7 @@ const ModalContainer = styled.div`
   position: relative;
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 29px 14px;
+    padding: 30px 6px;
   }
 `
 
@@ -190,19 +190,44 @@ const InfoLink = styled.a`
   }
 `
 
+const LinkContainer = styled.div`
+  text-align: center;
+  margin: 12px 0;
+`
+
 const NewsletterLink = styled.a`
-  display: block;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.secondary[20]};
   text-decoration: underline;
-  text-align: center;
   cursor: pointer;
-  margin: 12px 0;
 
   &:hover {
     color: ${({ theme }) => theme.colors.secondary[0]};
+  }
+`
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  margin: 12px 0;
+`
+
+const RecentNewsletterLinkContainer = styled.div`
+  text-align: center;
+`
+
+const RecentNewsletterLink = styled.a`
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.grayscale[20]};
   }
 `
 
@@ -228,7 +253,7 @@ const FormSection = styled.div`
   flex-direction: column;
   gap: 8px;
   margin-top: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 `
 
 const Input = styled.input`
@@ -253,7 +278,9 @@ const Input = styled.input`
 `
 
 const InputLabel = styled.span`
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
   color: ${({ theme }) => theme.colors.grayscale[40]};
   text-align: center;
 `
@@ -477,8 +504,20 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
             <Description>
               我們是環境資訊中心，耕耘了二十多年的獨立媒體，我們相信生長在台灣的每一個人，都有權利知道這片土地發生的事情。
             </Description>
-
-            <NewsletterLink href="/newsletter">查看所有電子報</NewsletterLink>
+            <Divider />
+            <LinkContainer>
+              <NewsletterLink href="/newsletter">查看所有電子報</NewsletterLink>
+            </LinkContainer>
+            <RecentNewsletterLinkContainer>
+              <RecentNewsletterLink
+                href="https://us12.campaign-archive.com/home/?u=988c9f400efc81e6842917795&id=f99f939cdc"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                點此瀏覽近期電子報
+              </RecentNewsletterLink>
+            </RecentNewsletterLinkContainer>
+            <Divider />
 
             <CheckboxGroup>
               {/* Daily newsletter option */}

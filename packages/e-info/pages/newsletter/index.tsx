@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
@@ -167,15 +167,33 @@ const YearSelect = styled.select`
   }
 `
 
-const MonthText = styled.span`
+const MonthSelect = styled.select`
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[0]};
-  background-color: ${({ theme }) => theme.colors.grayscale[99]};
-  padding: 6px 10px;
+  color: #fff;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
+  border: none;
   border-radius: 4px;
-  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.05) inset;
+  cursor: pointer;
+  padding: 6px 10px;
+
+  &:focus {
+    outline: none;
+  }
+`
+
+const RecentNewsletterLink = styled.a`
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  text-decoration: none;
+  margin-top: 12px;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 // Desktop calendar grid (hidden on mobile/tablet)
@@ -321,18 +339,27 @@ const YearLink = styled.a`
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[60]};
+  color: ${({ theme }) => theme.colors.primary[40]};
   text-decoration: none;
-  border: 1px solid ${({ theme }) => theme.colors.primary[60]};
+  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
   border-radius: 4px;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.3s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.grayscale[40]};
-    border-color: ${({ theme }) => theme.colors.grayscale[40]};
+    background-color: ${({ theme }) => theme.colors.primary[40]};
+    color: white;
   }
 `
+
+const HistoricalNote = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary[40]};
+  margin-top: 16px;
+  line-height: 1.6;
+`
+
+const SCROLL_POSITION_KEY = 'newsletter-scroll-position'
 
 const EmptyMessage = styled.div`
   text-align: center;
@@ -398,6 +425,24 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   const [newsletters, setNewsletters] =
     useState<Newsletter[]>(initialNewsletters)
   const [loading, setLoading] = useState(false)
+
+  // Restore scroll position when returning from newsletter detail page
+  useEffect(() => {
+    const savedPosition = sessionStorage.getItem(SCROLL_POSITION_KEY)
+    if (savedPosition) {
+      const position = parseInt(savedPosition, 10)
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        window.scrollTo(0, position)
+      })
+      sessionStorage.removeItem(SCROLL_POSITION_KEY)
+    }
+  }, [])
+
+  // Save scroll position before navigating to newsletter detail
+  const handleNewsletterClick = () => {
+    sessionStorage.setItem(SCROLL_POSITION_KEY, String(window.scrollY))
+  }
 
   // Create a map of newsletters by date
   const newsletterMap: NewsletterMap = {}
@@ -510,6 +555,13 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
     fetchNewsletters(newYear, month)
   }
 
+  // Handle month change
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newMonth = parseInt(e.target.value, 10)
+    setMonth(newMonth)
+    fetchNewsletters(year, newMonth)
+  }
+
   // Generate year options (minimum year is 2014, earlier years use legacy GCS pages)
   const minYear = Math.max(yearRange.minYear, 2014)
   const yearOptions = []
@@ -558,15 +610,30 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                 </option>
               ))}
             </YearSelect>
-            <MonthText>
-              {year}-{String(month).padStart(2, '0')}
-            </MonthText>
+            <MonthSelect
+              value={month}
+              onChange={handleMonthChange}
+              disabled={loading}
+            >
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                <option key={m} value={m}>
+                  {m}月
+                </option>
+              ))}
+            </MonthSelect>
           </MonthDisplay>
 
           <NavButton onClick={goToNextMonth} disabled={!canGoNext || loading}>
             下一個月
           </NavButton>
         </NavigationWrapper>
+        <RecentNewsletterLink
+          href="https://us12.campaign-archive.com/home/?u=988c9f400efc81e6842917795&id=f99f939cdc"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          點此瀏覽近期電子報
+        </RecentNewsletterLink>
 
         <CalendarWrapper>
           {loading && (
@@ -588,7 +655,10 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
             {calendarCells.map((cell, index) => (
               <CalendarCell key={index}>
                 {cell.newsletter && (
-                  <NewsletterCard href={`/newsletter/${cell.newsletter.id}`}>
+                  <NewsletterCard
+                    href={`/newsletter/${cell.newsletter.id}`}
+                    onClick={handleNewsletterClick}
+                  >
                     <ThumbnailWrapper>
                       <Image
                         src={
@@ -615,6 +685,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
               <NewsletterCard
                 key={newsletter.id}
                 href={`/newsletter/${newsletter.id}`}
+                onClick={handleNewsletterClick}
               >
                 <ThumbnailWrapper>
                   <Image
@@ -640,7 +711,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
         </CalendarWrapper>
 
         <HistoricalSection>
-          <SectionTitle>系列電子報回顧</SectionTitle>
+          <SectionTitle>歷年環境資訊電子報回顧</SectionTitle>
           <YearLinks>
             {HISTORICAL_YEARS.map((y) => {
               // 2000-2013 年連結到舊版 GCS 靜態頁面
@@ -670,10 +741,13 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
               )
             })}
           </YearLinks>
+          <HistoricalNote>
+            早期電子報的文章連結若無法讀取，請使用站內搜尋功能，即可找到該篇報導。
+          </HistoricalNote>
         </HistoricalSection>
 
         <HistoricalSection>
-          <SectionTitle>系列電子報回顧（已停刊）</SectionTitle>
+          <SectionTitle>歷年環境資訊電子報回顧（已停刊）</SectionTitle>
           <YearLinks>
             <YearLink
               href="https://us12.campaign-archive.com/home/?u=988c9f400efc81e6842917795&id=b45f8dbc49"
