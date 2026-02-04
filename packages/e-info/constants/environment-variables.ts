@@ -14,22 +14,22 @@ switch (ENV) {
 
   case 'staging':
     SITE_URL = 'staging.e-info.org.tw'
-    GA_TRACKING_ID = 'G-3G2CB5BM24'
-    GTM_ID = 'GTM-5K476LW'
+    GA_TRACKING_ID = 'G-9FMKSK8LLR'
+    GTM_ID = ''
     GLOBAL_CACHE_SETTING = 'public, max-age=300'
     break
 
   case 'dev':
     SITE_URL = 'eic-web-dev-1090198686704.asia-east1.run.app'
-    GA_TRACKING_ID = 'G-3G2CB5BM24'
-    GTM_ID = 'GTM-5K476LW'
+    GA_TRACKING_ID = 'G-9FMKSK8LLR'
+    GTM_ID = ''
     GLOBAL_CACHE_SETTING = 'no-store'
     break
 
   default:
     SITE_URL = 'localhost'
-    GA_TRACKING_ID = 'G-3G2CB5BM24'
-    GTM_ID = 'GTM-5K476LW'
+    GA_TRACKING_ID = 'G-9FMKSK8LLR'
+    GTM_ID = ''
     GLOBAL_CACHE_SETTING = 'no-store'
     break
 }
