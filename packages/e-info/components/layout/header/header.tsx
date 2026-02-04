@@ -684,6 +684,8 @@ const Header = () => {
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0)
   const [prevNewsIndex, setPrevNewsIndex] = useState<number | null>(null)
+  // Prevent hydration mismatch by only rendering auth UI after mount
+  const [mounted, setMounted] = useState(false)
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const featureHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastScrollY = useRef(0)
@@ -739,6 +741,11 @@ const Header = () => {
       router.replace(router.pathname, undefined, { shallow: true })
     }
   }, [router.query.subscribe, router])
+
+  // Set mounted to true after hydration to prevent mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Check if user is logged in (has firebase user and member)
   const isLoggedIn = !authLoading && firebaseUser && member
@@ -921,29 +928,39 @@ const Header = () => {
                 <SearchButton href="/search">
                   <IconSearch />
                 </SearchButton>
-                {isLoggedIn ? (
-                  <>
-                    <UserInfo href="/member">
-                      <UserName>
-                        {member ? getMemberDisplayName(member) : '會員'}
-                      </UserName>
-                      <IconMember />
-                    </UserInfo>
-                    <LogoutButton onClick={handleAuthButtonClick}>
-                      登出
-                    </LogoutButton>
-                  </>
+                {mounted ? (
+                  isLoggedIn ? (
+                    <>
+                      <UserInfo href="/member">
+                        <UserName>
+                          {member ? getMemberDisplayName(member) : '會員'}
+                        </UserName>
+                        <IconMember />
+                      </UserInfo>
+                      <LogoutButton onClick={handleAuthButtonClick}>
+                        登出
+                      </LogoutButton>
+                    </>
+                  ) : (
+                    <LoginButton onClick={handleAuthButtonClick}>
+                      {authLoading ? (
+                        <Lottie
+                          animationData={loadingAnimation}
+                          loop
+                          style={{
+                            width: 24,
+                            height: 24,
+                            transform: 'scale(2)',
+                          }}
+                        />
+                      ) : (
+                        '登入'
+                      )}
+                    </LoginButton>
+                  )
                 ) : (
                   <LoginButton onClick={handleAuthButtonClick}>
-                    {authLoading ? (
-                      <Lottie
-                        animationData={loadingAnimation}
-                        loop
-                        style={{ width: 24, height: 24, transform: 'scale(2)' }}
-                      />
-                    ) : (
-                      '登入'
-                    )}
+                    登入
                   </LoginButton>
                 )}
                 <TabletActionButtons>
