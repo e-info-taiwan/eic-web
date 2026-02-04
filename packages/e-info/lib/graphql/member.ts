@@ -21,7 +21,6 @@ const GET_ALL_SECTIONS = gql`
   }
 `
 
-
 // Query to count member's favorites
 const COUNT_MEMBER_FAVORITES = gql`
   query CountMemberFavorites($memberId: ID!) {

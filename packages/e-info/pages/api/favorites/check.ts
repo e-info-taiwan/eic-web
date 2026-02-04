@@ -105,7 +105,8 @@ export default async function handler(
     }
 
     const favorites = result.data?.favorites
-    const favoriteId = favorites && favorites.length > 0 ? favorites[0].id : null
+    const favoriteId =
+      favorites && favorites.length > 0 ? favorites[0].id : null
 
     return res.status(200).json({
       success: true,
