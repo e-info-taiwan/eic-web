@@ -10,6 +10,7 @@
 
 import httpProxy from 'http-proxy'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { Readable } from 'stream'
 
 import { API_ENDPOINT } from '~/constants/config'
 
@@ -162,8 +163,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   proxy.web(req, res, {
     changeOrigin: true,
     target: API_ENDPOINT,
-    // Since we parsed the body, we need to handle it manually
-    buffer: Buffer.from(bodyData) as unknown as NodeJS.ReadableStream,
+    // Since we parsed the body, we need to pass it as a stream
+    buffer: Readable.from(bodyData),
   })
 
   proxy.on('error', (err) => {
