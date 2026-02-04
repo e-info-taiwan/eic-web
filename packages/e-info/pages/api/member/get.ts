@@ -11,6 +11,12 @@ type RequestBody = {
   firebaseId: string
 }
 
+type MemberSubscription = {
+  id: string
+  newsletterName: string
+  newsletterType: string
+}
+
 type Member = {
   id: string
   firebaseId: string
@@ -20,8 +26,7 @@ type Member = {
   city: string | null
   birthDate: string | null
   state: string | null
-  newsletterSubscription: string | null
-  newsletterFrequency: string | null
+  subscriptions: MemberSubscription[]
   avatar: {
     id: string
     imageFile: { url: string } | null
@@ -44,8 +49,11 @@ const GET_MEMBER_BY_FIREBASE_ID = `
       city
       birthDate
       state
-      newsletterSubscription
-      newsletterFrequency
+      subscriptions {
+        id
+        newsletterName
+        newsletterType
+      }
       avatar {
         id
         imageFile {

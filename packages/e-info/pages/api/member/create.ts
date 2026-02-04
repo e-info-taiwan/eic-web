@@ -13,8 +13,6 @@ type CreateMemberInput = {
   lastName?: string
   city?: string
   birthDate?: string
-  newsletterSubscription?: string
-  newsletterFrequency?: string
   interestedSections?: { connect: { id: string }[] }
 }
 
@@ -42,8 +40,11 @@ const CREATE_MEMBER_MUTATION = `
       city
       birthDate
       state
-      newsletterSubscription
-      newsletterFrequency
+      subscriptions {
+        id
+        newsletterName
+        newsletterType
+      }
       avatar {
         id
         imageFile {

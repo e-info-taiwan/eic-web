@@ -7,7 +7,12 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
-import { updateMemberById } from '~/lib/graphql/member'
+import type {
+  Member,
+  NewsletterType,
+  SubscriptionInput,
+} from '~/lib/graphql/member'
+import { updateMemberSubscriptions } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
@@ -274,16 +279,16 @@ const sidebarItems = [
 // Newsletter toggle options
 type NewsletterToggles = {
   dailyStandard: boolean
-  dailyBeautified: boolean
+  dailyStyled: boolean
   weeklyStandard: boolean
-  weeklyBeautified: boolean
+  weeklyStyled: boolean
 }
 
 const defaultToggles: NewsletterToggles = {
   dailyStandard: false,
-  dailyBeautified: false,
+  dailyStyled: false,
   weeklyStandard: false,
-  weeklyBeautified: false,
+  weeklyStyled: false,
 }
 
 const newsletterOptions = [
@@ -292,7 +297,7 @@ const newsletterOptions = [
     label: '《環境資訊電子報》每日報（一般版）',
   },
   {
-    key: 'dailyBeautified' as const,
+    key: 'dailyStyled' as const,
     label: '《環境資訊電子報》每日報（美化版）',
   },
   {
@@ -300,7 +305,7 @@ const newsletterOptions = [
     label: '《環境資訊電子報一週回顧》（一般版）',
   },
   {
-    key: 'weeklyBeautified' as const,
+    key: 'weeklyStyled' as const,
     label: '《環境資訊電子報一週回顧》（美化版）',
   },
 ]
@@ -308,67 +313,55 @@ const newsletterOptions = [
 /**
  * 電子報訂閱邏輯
  *
- * 後端 Member schema 有兩個欄位：
- * - newsletterSubscription: 'none' | 'standard' | 'beautified'
- * - newsletterFrequency: 'weekday' | 'saturday'
+ * 後端使用 MemberSubscription 結構：
+ * - newsletterName: 'daily' | 'weekly'
+ * - newsletterType: 'standard' | 'styled'
  *
- * 四個選項互斥，只能選擇一個：
- * - dailyStandard: weekday + standard
- * - dailyBeautified: weekday + beautified
- * - weeklyStandard: saturday + standard
- * - weeklyBeautified: saturday + beautified
+ * 群組互斥邏輯：
+ * - daily 的兩個選項互斥（standard vs styled）
+ * - weekly 的兩個選項互斥（standard vs styled）
+ * - 但 daily 和 weekly 可以同時訂閱
  */
 
-// Convert from backend schema (subscription + frequency) to toggles
-const convertToToggles = (
-  subscription: string | null,
-  frequency: string | null
-): NewsletterToggles => {
-  const isStandard = subscription === 'standard'
-  const isBeautified = subscription === 'beautified'
-  const isWeekday = frequency === 'weekday'
-  const isSaturday = frequency === 'saturday'
+// Convert from member subscriptions to toggles
+const convertToToggles = (member: Member | null): NewsletterToggles => {
+  if (!member?.subscriptions) {
+    return defaultToggles
+  }
+
+  const dailySub = member.subscriptions.find(
+    (s) => s.newsletterName === 'daily'
+  )
+  const weeklySub = member.subscriptions.find(
+    (s) => s.newsletterName === 'weekly'
+  )
 
   return {
-    dailyStandard: isStandard && isWeekday,
-    dailyBeautified: isBeautified && isWeekday,
-    weeklyStandard: isStandard && isSaturday,
-    weeklyBeautified: isBeautified && isSaturday,
+    dailyStandard: dailySub?.newsletterType === 'standard',
+    dailyStyled: dailySub?.newsletterType === 'styled',
+    weeklyStandard: weeklySub?.newsletterType === 'standard',
+    weeklyStyled: weeklySub?.newsletterType === 'styled',
   }
 }
 
-// Convert from toggles to backend schema
-const convertFromToggles = (
-  toggles: NewsletterToggles
-): { newsletterSubscription: string; newsletterFrequency: string } => {
-  // Since toggles are mutually exclusive, only one can be true
+// Convert from toggles to subscription input
+const convertFromToggles = (toggles: NewsletterToggles): SubscriptionInput => {
+  let daily: NewsletterType | null = null
+  let weekly: NewsletterType | null = null
+
   if (toggles.dailyStandard) {
-    return {
-      newsletterSubscription: 'standard',
-      newsletterFrequency: 'weekday',
-    }
-  }
-  if (toggles.dailyBeautified) {
-    return {
-      newsletterSubscription: 'beautified',
-      newsletterFrequency: 'weekday',
-    }
-  }
-  if (toggles.weeklyStandard) {
-    return {
-      newsletterSubscription: 'standard',
-      newsletterFrequency: 'saturday',
-    }
-  }
-  if (toggles.weeklyBeautified) {
-    return {
-      newsletterSubscription: 'beautified',
-      newsletterFrequency: 'saturday',
-    }
+    daily = 'standard'
+  } else if (toggles.dailyStyled) {
+    daily = 'styled'
   }
 
-  // None selected
-  return { newsletterSubscription: 'none', newsletterFrequency: 'weekday' }
+  if (toggles.weeklyStandard) {
+    weekly = 'standard'
+  } else if (toggles.weeklyStyled) {
+    weekly = 'styled'
+  }
+
+  return { daily, weekly }
 }
 
 const MemberNewsletterPage: NextPageWithLayout = () => {
@@ -380,19 +373,16 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize from member profile (convert from backend schema)
+  // Initialize from member profile (convert from subscriptions)
   useEffect(() => {
     if (member) {
-      setToggles(
-        convertToToggles(
-          member.newsletterSubscription,
-          member.newsletterFrequency
-        )
-      )
+      setToggles(convertToToggles(member))
     }
   }, [member])
 
-  // Handle toggle with mutual exclusivity - only one option can be selected
+  // Handle toggle with group-based mutual exclusivity
+  // Daily options are exclusive to each other, weekly options are exclusive to each other
+  // But daily and weekly can both be selected
   const handleToggle = (key: keyof NewsletterToggles) => {
     setToggles((prev) => {
       const isCurrentlyOn = prev[key]
@@ -400,13 +390,22 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
         // Turning off - just turn off this one
         return { ...prev, [key]: false }
       } else {
-        // Turning on - turn off all others, turn on this one
-        return {
-          dailyStandard: false,
-          dailyBeautified: false,
-          weeklyStandard: false,
-          weeklyBeautified: false,
-          [key]: true,
+        // Turning on - turn off the other option in the same group
+        const isDailyOption = key === 'dailyStandard' || key === 'dailyStyled'
+        if (isDailyOption) {
+          // Turn off other daily option, keep weekly options unchanged
+          return {
+            ...prev,
+            dailyStandard: key === 'dailyStandard',
+            dailyStyled: key === 'dailyStyled',
+          }
+        } else {
+          // Turn off other weekly option, keep daily options unchanged
+          return {
+            ...prev,
+            weeklyStandard: key === 'weeklyStandard',
+            weeklyStyled: key === 'weeklyStyled',
+          }
         }
       }
     })
@@ -427,9 +426,13 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
     setSuccess(false)
 
     try {
-      // Convert toggles back to backend schema
-      const backendData = convertFromToggles(toggles)
-      await updateMemberById(member.id, backendData, firebaseUser.uid)
+      // Convert toggles to subscription input
+      const subscriptionInput = convertFromToggles(toggles)
+      await updateMemberSubscriptions(
+        member.id,
+        firebaseUser.uid,
+        subscriptionInput
+      )
       await refreshMember()
       setSuccess(true)
     } catch {

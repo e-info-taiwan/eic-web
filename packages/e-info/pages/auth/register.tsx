@@ -9,10 +9,12 @@ import ValidationIndicator from '~/components/auth/validation-indicator'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { LOCATION_OPTIONS, VALIDATION_RULES } from '~/constants/auth'
 import { useAuth } from '~/hooks/useAuth'
+import type { NewsletterType } from '~/lib/graphql/member'
 import {
   type NotificationSection,
   createMember,
   getAllSections,
+  updateMemberSubscriptions,
 } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type {
@@ -486,25 +488,8 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
         ? { connect: formData.interestedSectionIds.map((id) => ({ id })) }
         : undefined
 
-    // Convert newsletter options to backend schema
-    // Backend uses: newsletterSubscription ('none'|'standard'|'beautified')
-    //               newsletterFrequency ('weekday'|'saturday')
-    // Note: daily and weekly are mutually exclusive (no 'both' option)
-    const hasDaily = formData.dailyNewsletter
-    const hasWeekly = formData.weeklyNewsletter
-    const isBeautified = formData.newsletterFormat === 'beautified'
-
-    let newsletterSubscription: string | undefined = undefined
-    let newsletterFrequency: string | undefined = undefined
-
-    if (hasDaily || hasWeekly) {
-      // Determine subscription type (general maps to standard)
-      newsletterSubscription = isBeautified ? 'beautified' : 'standard'
-      // Determine frequency (daily = weekday, weekly = saturday)
-      newsletterFrequency = hasWeekly ? 'saturday' : 'weekday'
-    }
-
-    await createMember({
+    // Create member first (without newsletter - that's handled separately)
+    const member = await createMember({
       firebaseId: uid,
       email: formData.email,
       firstName,
@@ -512,9 +497,24 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
       city,
       birthDate: birthDateISO,
       interestedSections,
-      newsletterSubscription,
-      newsletterFrequency,
     })
+
+    // Set up newsletter subscriptions if any are selected
+    const hasDaily = formData.dailyNewsletter
+    const hasWeekly = formData.weeklyNewsletter
+
+    if (hasDaily || hasWeekly) {
+      // Determine format: beautified -> styled, general -> standard
+      const format: NewsletterType =
+        formData.newsletterFormat === 'beautified' ? 'styled' : 'standard'
+
+      await updateMemberSubscriptions(member.id, uid, {
+        daily: hasDaily ? format : null,
+        weekly: hasWeekly ? format : null,
+      })
+    }
+
+    return member
   }
 
   // Handle form submit
@@ -727,19 +727,17 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
               weeklyNewsletter={formData.weeklyNewsletter}
               newsletterFormat={formData.newsletterFormat}
               onDailyChange={(checked) =>
-                // Daily and weekly are mutually exclusive
+                // Daily and weekly can be selected independently
                 setFormData((prev) => ({
                   ...prev,
                   dailyNewsletter: checked,
-                  weeklyNewsletter: checked ? false : prev.weeklyNewsletter,
                 }))
               }
               onWeeklyChange={(checked) =>
-                // Daily and weekly are mutually exclusive
+                // Daily and weekly can be selected independently
                 setFormData((prev) => ({
                   ...prev,
                   weeklyNewsletter: checked,
-                  dailyNewsletter: checked ? false : prev.dailyNewsletter,
                 }))
               }
               onFormatChange={(format) =>

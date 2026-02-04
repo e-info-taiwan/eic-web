@@ -12,8 +12,6 @@ type UpdateMemberInput = {
   city?: string
   birthDate?: string
   email?: string
-  newsletterSubscription?: string
-  newsletterFrequency?: string
   avatar?: { connect: { id: string } } | { disconnect: true }
   interestedSections?:
     | { connect: { id: string }[] }
@@ -50,8 +48,11 @@ const UPDATE_MEMBER_MUTATION = `
       city
       birthDate
       state
-      newsletterSubscription
-      newsletterFrequency
+      subscriptions {
+        id
+        newsletterName
+        newsletterType
+      }
       avatar {
         id
         imageFile {

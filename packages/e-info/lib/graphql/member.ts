@@ -55,6 +55,21 @@ export type MemberFavorite = {
   }
 }
 
+// Newsletter subscription types
+export type NewsletterName = 'daily' | 'weekly'
+export type NewsletterType = 'standard' | 'styled'
+
+export type MemberSubscription = {
+  id: string
+  newsletterName: string
+  newsletterType: string
+}
+
+export type SubscriptionInput = {
+  daily?: NewsletterType | null
+  weekly?: NewsletterType | null
+}
+
 // Full favorite with complete post data for bookmarks page
 export type FavoriteWithPost = {
   id: string
@@ -92,8 +107,7 @@ export type Member = {
   city: string | null
   birthDate: string | null
   state: string | null
-  newsletterSubscription: string | null
-  newsletterFrequency: string | null
+  subscriptions: MemberSubscription[]
   avatar: MemberAvatar | null
   interestedSections: MemberSection[]
   favorites: MemberFavorite[]
@@ -108,8 +122,6 @@ export type CreateMemberInput = {
   lastName?: string
   city?: string
   birthDate?: string
-  newsletterSubscription?: string
-  newsletterFrequency?: string
   interestedSections?: { connect: { id: string }[] }
 }
 
@@ -119,8 +131,6 @@ export type UpdateMemberInput = {
   city?: string
   birthDate?: string
   email?: string
-  newsletterSubscription?: string
-  newsletterFrequency?: string
   avatar?: { connect: { id: string } } | { disconnect: true }
   interestedSections?:
     | { connect: { id: string }[] }
@@ -565,4 +575,72 @@ export const getAllSections = async (): Promise<NotificationSection[]> => {
   }
 
   return result.data?.sections || []
+}
+
+/**
+ * Update member subscriptions
+ * Uses API route with Firebase token verification
+ */
+export const updateMemberSubscriptions = async (
+  memberId: string,
+  firebaseId: string,
+  subscriptions: SubscriptionInput
+): Promise<MemberSubscription[]> => {
+  const idToken = await getIdToken()
+
+  try {
+    const response = await fetch('/api/member/subscriptions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        memberId,
+        firebaseId,
+        subscriptions,
+      }),
+    })
+
+    const result = (await response.json()) as {
+      success?: boolean
+      subscriptions?: MemberSubscription[]
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('updateMemberSubscriptions error:', result.error)
+      throw new Error(result.error || 'Failed to update subscriptions')
+    }
+
+    return result.subscriptions || []
+  } catch (error) {
+    console.error('updateMemberSubscriptions error:', error)
+    throw error
+  }
+}
+
+/**
+ * Helper to check if member has a specific newsletter subscription
+ */
+export const hasSubscription = (
+  member: Member | null,
+  newsletterName: NewsletterName
+): boolean => {
+  if (!member?.subscriptions) return false
+  return member.subscriptions.some((s) => s.newsletterName === newsletterName)
+}
+
+/**
+ * Helper to get subscription type for a specific newsletter
+ */
+export const getSubscriptionType = (
+  member: Member | null,
+  newsletterName: NewsletterName
+): NewsletterType | null => {
+  if (!member?.subscriptions) return null
+  const sub = member.subscriptions.find(
+    (s) => s.newsletterName === newsletterName
+  )
+  return (sub?.newsletterType as NewsletterType) || null
 }

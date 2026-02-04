@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 
 import AuthContext from '~/contexts/auth-context'
-import { updateMemberById } from '~/lib/graphql/member'
+import type { NewsletterType } from '~/lib/graphql/member'
+import { updateMemberSubscriptions } from '~/lib/graphql/member'
 import * as gtag from '~/utils/gtag'
 
 // Modal overlay
@@ -392,9 +393,10 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     setErrorMessage('')
     setSubscriptionState('loading')
 
-    // Determine frequency and format from checkboxes
+    // Determine format from checkbox (styled = beautified)
+    const format = beautifiedChecked ? 'styled' : 'standard'
+    // For the external newsletter API, use 'daily' if daily is checked, otherwise 'weekly'
     const frequency = dailyChecked ? 'daily' : 'weekly'
-    const format = beautifiedChecked ? 'beautified' : 'standard'
 
     try {
       const response = await fetch('/api/newsletter/subscribe', {
@@ -405,7 +407,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
         body: JSON.stringify({
           email,
           frequency,
-          format,
+          format: beautifiedChecked ? 'beautified' : 'standard', // Keep old API format
         }),
       })
 
@@ -416,19 +418,26 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
         setIsSubmitted(true)
 
         // Track conversion in GA4
-        gtag.sendConversion('newsletter_subscribe', frequency)
+        const subscriptionType =
+          dailyChecked && weeklyChecked ? 'both' : frequency
+        gtag.sendConversion('newsletter_subscribe', subscriptionType)
 
         // Sync to member system if user is logged in
         if (member && firebaseUser) {
           try {
-            await updateMemberById(
+            // Build subscription input based on checked options
+            const subscriptionInput: {
+              daily?: NewsletterType | null
+              weekly?: NewsletterType | null
+            } = {
+              daily: dailyChecked ? format : null,
+              weekly: weeklyChecked ? format : null,
+            }
+
+            await updateMemberSubscriptions(
               member.id,
-              {
-                newsletterSubscription: format,
-                newsletterFrequency:
-                  frequency === 'daily' ? 'weekday' : 'saturday',
-              },
-              firebaseUser.uid
+              firebaseUser.uid,
+              subscriptionInput
             )
             console.log('[Newsletter] Member subscription synced')
           } catch (syncError) {
@@ -477,11 +486,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                 <HiddenCheckbox
                   type="checkbox"
                   checked={dailyChecked}
-                  onChange={(e) => {
-                    const checked = e.target.checked
-                    setDailyChecked(checked)
-                    if (checked) setWeeklyChecked(false)
-                  }}
+                  onChange={(e) => setDailyChecked(e.target.checked)}
                 />
                 <CheckboxIcon $checked={dailyChecked} />
                 訂閱《環境資訊電子報》每日報
@@ -492,11 +497,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                 <HiddenCheckbox
                   type="checkbox"
                   checked={weeklyChecked}
-                  onChange={(e) => {
-                    const checked = e.target.checked
-                    setWeeklyChecked(checked)
-                    if (checked) setDailyChecked(false)
-                  }}
+                  onChange={(e) => setWeeklyChecked(e.target.checked)}
                 />
                 <CheckboxIcon $checked={weeklyChecked} />
                 訂閱《環境資訊電子報一週回顧》
