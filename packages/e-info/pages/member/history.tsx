@@ -303,12 +303,12 @@ const MemberHistoryPage: NextPageWithLayout = () => {
 
   // Fetch reading history when member is available
   const fetchHistory = useCallback(async () => {
-    if (!member?.id) return
+    if (!member?.id || !firebaseUser?.uid) return
 
     setInitialLoading(true)
     try {
       const [data, count] = await Promise.all([
-        getReadingHistory(member.id, ITEMS_PER_PAGE, 0),
+        getReadingHistory(member.id, firebaseUser.uid, ITEMS_PER_PAGE, 0),
         getReadingHistoryCount(member.id),
       ])
       // Filter out histories with null posts (deleted posts)
@@ -321,7 +321,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     } finally {
       setInitialLoading(false)
     }
-  }, [member?.id])
+  }, [member?.id, firebaseUser?.uid])
 
   useEffect(() => {
     if (member?.id) {
@@ -337,12 +337,13 @@ const MemberHistoryPage: NextPageWithLayout = () => {
   }, [loading, firebaseUser, router])
 
   const handleLoadMore = async () => {
-    if (!member?.id || isLoadingMore) return
+    if (!member?.id || !firebaseUser?.uid || isLoadingMore) return
 
     setIsLoadingMore(true)
     try {
       const moreHistories = await getReadingHistory(
         member.id,
+        firebaseUser.uid,
         ITEMS_PER_PAGE,
         histories.length
       )

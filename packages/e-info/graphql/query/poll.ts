@@ -17,24 +17,6 @@ export type PollResultCounts = {
   option5: number
 }
 
-// Query poll results for checking member's vote
-export const pollResults = gql`
-  query ($pollId: ID!, $memberId: ID!) {
-    pollResults(
-      where: {
-        poll: { id: { equals: $pollId } }
-        member: { id: { equals: $memberId } }
-      }
-    ) {
-      id
-      result
-      member {
-        id
-      }
-    }
-  }
-`
-
 // Query poll results count for each option
 export const pollResultsCounts = gql`
   query ($pollId: ID!) {
@@ -54,71 +36,5 @@ export const pollResultsCounts = gql`
     option5: pollResultsCount(
       where: { poll: { id: { equals: $pollId } }, result: { equals: 5 } }
     )
-  }
-`
-
-// Create a new poll result (vote) for logged-in users
-export const createPollResultWithMember = gql`
-  mutation ($pollId: ID!, $postId: ID!, $memberId: ID!, $result: Int!) {
-    createPollResult(
-      data: {
-        poll: { connect: { id: $pollId } }
-        post: { connect: { id: $postId } }
-        member: { connect: { id: $memberId } }
-        result: $result
-      }
-    ) {
-      id
-      result
-    }
-  }
-`
-
-// Create a new poll result (vote) for anonymous users
-export const createPollResultAnonymous = gql`
-  mutation ($pollId: ID!, $postId: ID!, $result: Int!) {
-    createPollResult(
-      data: {
-        poll: { connect: { id: $pollId } }
-        post: { connect: { id: $postId } }
-        result: $result
-      }
-    ) {
-      id
-      result
-    }
-  }
-`
-
-// Create a new poll result (vote) for newsletter - logged-in users
-// Note: PollResult schema doesn't have a newsletter field, so we only connect poll and member
-export const createNewsletterPollResultWithMember = gql`
-  mutation ($pollId: ID!, $memberId: ID!, $result: Int!) {
-    createPollResult(
-      data: {
-        poll: { connect: { id: $pollId } }
-        member: { connect: { id: $memberId } }
-        result: $result
-      }
-    ) {
-      id
-      result
-    }
-  }
-`
-
-// Create a new poll result (vote) for newsletter - anonymous users
-// Note: PollResult schema doesn't have a newsletter field, so we only connect poll
-export const createNewsletterPollResultAnonymous = gql`
-  mutation ($pollId: ID!, $result: Int!) {
-    createPollResult(
-      data: {
-        poll: { connect: { id: $pollId } }
-        result: $result
-      }
-    ) {
-      id
-      result
-    }
   }
 `

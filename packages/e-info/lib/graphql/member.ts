@@ -3,57 +3,6 @@ import { gql } from '@apollo/client'
 import { getGqlClient } from '~/apollo-client'
 import { getIdToken } from '~/lib/firebase/get-id-token'
 
-// Fragment for member fields
-const MEMBER_FIELDS = gql`
-  fragment MemberFields on Member {
-    id
-    firebaseId
-    firstName
-    lastName
-    email
-    city
-    birthDate
-    state
-    newsletterSubscription
-    newsletterFrequency
-    avatar {
-      id
-      imageFile {
-        url
-      }
-      resized {
-        original
-        w480
-        w800
-      }
-    }
-    interestedSections {
-      id
-      slug
-      name
-    }
-    favorites {
-      id
-      post {
-        id
-        title
-      }
-    }
-    createdAt
-    updatedAt
-  }
-`
-
-// Query to get member by Firebase ID
-const GET_MEMBER_BY_FIREBASE_ID = gql`
-  ${MEMBER_FIELDS}
-  query GetMemberByFirebaseId($firebaseId: String!) {
-    members(where: { firebaseId: { equals: $firebaseId } }, take: 1) {
-      ...MemberFields
-    }
-  }
-`
-
 // Query to check if member exists
 const CHECK_MEMBER_EXISTS = gql`
   query CheckMemberExists($firebaseId: String!) {
@@ -83,43 +32,6 @@ const CHECK_FAVORITE = gql`
       take: 1
     ) {
       id
-    }
-  }
-`
-
-// Query to get member's favorites with full post data
-const GET_MEMBER_FAVORITES = gql`
-  query GetMemberFavorites($memberId: ID!, $take: Int, $skip: Int) {
-    favorites(
-      where: { member: { id: { equals: $memberId } } }
-      orderBy: { createdAt: desc }
-      take: $take
-      skip: $skip
-    ) {
-      id
-      createdAt
-      post {
-        id
-        title
-        publishTime
-        brief
-        heroImage {
-          resized {
-            original
-            w480
-            w800
-          }
-          resizedWebp {
-            original
-            w480
-            w800
-          }
-        }
-        tags {
-          id
-          name
-        }
-      }
     }
   }
 `
@@ -233,25 +145,41 @@ export type UpdateMemberInput = {
 
 /**
  * Get member by Firebase UID
+ * Uses API route with Firebase token verification
  */
 export const getMemberByFirebaseId = async (
   firebaseId: string
 ): Promise<Member | null> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.query<{ members: Member[] }>({
-    query: GET_MEMBER_BY_FIREBASE_ID,
-    variables: { firebaseId },
-    fetchPolicy: 'network-only',
-  })
+  try {
+    const response = await fetch('/api/member/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        firebaseId,
+      }),
+    })
 
-  if (result.error) {
-    console.error('getMemberByFirebaseId error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      member?: Member | null
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('getMemberByFirebaseId error:', result.error)
+      return null
+    }
+
+    return result.member || null
+  } catch (error) {
+    console.error('getMemberByFirebaseId error:', error)
     return null
   }
-
-  const members = result.data?.members
-  return members && members.length > 0 ? members[0] : null
 }
 
 /**
@@ -544,26 +472,48 @@ export const removeFavorite = async (
 
 /**
  * Get member's favorites with full post data
+ * Uses API route with Firebase token verification
  */
 export const getMemberFavorites = async (
   memberId: string,
+  firebaseId: string,
   take?: number,
   skip?: number
 ): Promise<FavoriteWithPost[]> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.query<{ favorites: FavoriteWithPost[] }>({
-    query: GET_MEMBER_FAVORITES,
-    variables: { memberId, take, skip },
-    fetchPolicy: 'network-only',
-  })
+  try {
+    const response = await fetch('/api/favorites/list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        memberId,
+        firebaseId,
+        take,
+        skip,
+      }),
+    })
 
-  if (result.error) {
-    console.error('getMemberFavorites error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      favorites?: FavoriteWithPost[]
+      total?: number
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('getMemberFavorites error:', result.error)
+      return []
+    }
+
+    return result.favorites || []
+  } catch (error) {
+    console.error('getMemberFavorites error:', error)
     return []
   }
-
-  return result.data?.favorites || []
 }
 
 /**

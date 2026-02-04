@@ -4,7 +4,9 @@ import { API_ENDPOINT } from '~/constants/config'
 import { isServer } from '~/utils/common'
 
 export const getGqlClient = () => {
-  // make apollo client support for both client-side and server-side
+  // Server-side: use API endpoint directly
+  // Client-side: use /api/graphql proxy to avoid CORS issues
+  // Note: All mutations are handled by dedicated API routes with proper protection
   const uri = isServer()
     ? API_ENDPOINT
     : `${window.location.origin}/api/graphql`

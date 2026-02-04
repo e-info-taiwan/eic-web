@@ -1,20 +1,17 @@
-import { useMutation, useQuery } from '@apollo/client/react'
+import { useQuery } from '@apollo/client/react'
 import Lottie from 'lottie-react'
 import { forwardRef, useContext, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
+import TurnstileWidget from '~/components/shared/turnstile-widget'
 import AuthContext from '~/contexts/auth-context'
 import {
   type PollResult,
   type PollResultCounts,
-  createNewsletterPollResultAnonymous,
-  createNewsletterPollResultWithMember,
-  createPollResultAnonymous,
-  createPollResultWithMember,
-  pollResults,
   pollResultsCounts,
 } from '~/graphql/query/poll'
 import type { Poll } from '~/graphql/query/post'
+import { getIdToken } from '~/lib/firebase/get-id-token'
 import loadingAnimation from '~/public/lottie/loading.json'
 
 // Local storage key for tracking anonymous votes
@@ -211,6 +208,10 @@ const LottieWrapper = styled.div`
   justify-content: center;
 `
 
+const TurnstileContainer = styled.div`
+  margin-top: 16px;
+`
+
 type PollOption = {
   key: number
   text: string
@@ -223,6 +224,98 @@ type PostPollProps = {
   newsletterId?: string // Newsletter ID (for newsletter pages)
   hideBorderTop?: boolean
   autoVote?: number // Option number to auto-vote (1-5), used for email voting
+}
+
+// API call helper for post voting
+async function submitPostVote(params: {
+  pollId: string
+  postId: string
+  result: number
+  memberId?: string
+  firebaseId?: string
+  idToken?: string | null
+  turnstileToken?: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch('/api/poll/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+    const data = (await response.json()) as {
+      success?: boolean
+      error?: string
+    }
+    if (!response.ok || !data.success) {
+      return { success: false, error: data.error || 'Vote failed' }
+    }
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Vote failed',
+    }
+  }
+}
+
+// API call helper to fetch member's existing vote (protected)
+async function fetchMemberVote(params: {
+  pollId: string
+  memberId: string
+  firebaseId: string
+  idToken: string | null
+}): Promise<{ pollResults: PollResult[] }> {
+  try {
+    const response = await fetch('/api/poll/member-vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+    const data = (await response.json()) as {
+      success?: boolean
+      pollResults?: PollResult[]
+      error?: string
+    }
+    if (!response.ok || !data.success) {
+      console.error('Failed to fetch member vote:', data.error)
+      return { pollResults: [] }
+    }
+    return { pollResults: data.pollResults || [] }
+  } catch (error) {
+    console.error('Failed to fetch member vote:', error)
+    return { pollResults: [] }
+  }
+}
+
+// API call helper for newsletter voting
+async function submitNewsletterVote(params: {
+  pollId: string
+  result: number
+  memberId?: string
+  firebaseId?: string
+  idToken?: string | null
+  turnstileToken?: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch('/api/poll/newsletter-vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+    const data = (await response.json()) as {
+      success?: boolean
+      error?: string
+    }
+    if (!response.ok || !data.success) {
+      return { success: false, error: data.error || 'Vote failed' }
+    }
+    return { success: true }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Vote failed',
+    }
+  }
 }
 
 const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
@@ -241,11 +334,13 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
       ref.current = node
     }
   }
-  const { member, loading: authLoading } = useContext(AuthContext)
+  const { member, firebaseUser, loading: authLoading } = useContext(AuthContext)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [hasVoted, setHasVoted] = useState(false)
   const [voteCounts, setVoteCounts] = useState<PollResultCounts | null>(null)
   const [autoVoteTriggered, setAutoVoteTriggered] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string>('')
 
   // Query poll results counts
   const { data: countsData, refetch: refetchCounts } =
@@ -255,16 +350,6 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
       fetchPolicy: 'network-only',
     })
 
-  // Query member's vote (only for logged-in users)
-  const { data: memberVoteData } = useQuery<{ pollResults: PollResult[] }>(
-    pollResults,
-    {
-      variables: { pollId: poll?.id, memberId: member?.id },
-      skip: !poll?.id || !member?.id,
-      fetchPolicy: 'network-only',
-    }
-  )
-
   // Update vote counts when data changes
   useEffect(() => {
     if (countsData) {
@@ -272,14 +357,28 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     }
   }, [countsData])
 
-  // Check if current member has already voted (logged-in user)
+  // Fetch member's vote via protected API (only for logged-in users)
   useEffect(() => {
-    if (member && memberVoteData?.pollResults?.length) {
-      const memberVote = memberVoteData.pollResults[0]
-      setSelectedOption(memberVote.result)
-      setHasVoted(true)
+    const fetchVote = async () => {
+      if (!poll?.id || !member?.id || !firebaseUser?.uid) return
+
+      const idToken = await getIdToken()
+      const result = await fetchMemberVote({
+        pollId: poll.id,
+        memberId: member.id,
+        firebaseId: firebaseUser.uid,
+        idToken,
+      })
+
+      if (result.pollResults?.length) {
+        const memberVote = result.pollResults[0]
+        setSelectedOption(memberVote.result)
+        setHasVoted(true)
+      }
     }
-  }, [memberVoteData, member])
+
+    fetchVote()
+  }, [poll?.id, member?.id, firebaseUser?.uid])
 
   // Check anonymous user's vote from localStorage
   useEffect(() => {
@@ -291,27 +390,6 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
       }
     }
   }, [member, poll?.id, entityId])
-
-  // Mutations for logged-in and anonymous users (post)
-  const [submitVoteWithMember, { loading: isSubmittingWithMember }] =
-    useMutation(createPollResultWithMember)
-  const [submitVoteAnonymous, { loading: isSubmittingAnonymous }] = useMutation(
-    createPollResultAnonymous
-  )
-  // Mutations for newsletter
-  const [
-    submitNewsletterVoteWithMember,
-    { loading: isSubmittingNewsletterWithMember },
-  ] = useMutation(createNewsletterPollResultWithMember)
-  const [
-    submitNewsletterVoteAnonymous,
-    { loading: isSubmittingNewsletterAnonymous },
-  ] = useMutation(createNewsletterPollResultAnonymous)
-  const isSubmitting =
-    isSubmittingWithMember ||
-    isSubmittingAnonymous ||
-    isSubmittingNewsletterWithMember ||
-    isSubmittingNewsletterAnonymous
 
   // Auto-vote from email link (when autoVote prop is provided)
   useEffect(() => {
@@ -335,63 +413,75 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
         return
       }
 
+      // For anonymous auto-vote, we need Turnstile token
+      if (!member && !turnstileToken) {
+        return
+      }
+
       setAutoVoteTriggered(true)
+      setIsSubmitting(true)
 
       try {
-        // Submit vote to API - use appropriate mutation based on entity type and login status
+        let result: { success: boolean; error?: string }
+
         if (isNewsletter) {
-          // Newsletter voting (no newsletter field in schema, only connect poll)
-          if (member) {
-            await submitNewsletterVoteWithMember({
-              variables: {
-                pollId: poll.id,
-                memberId: member.id,
-                result: autoVote,
-              },
+          if (member && firebaseUser) {
+            const idToken = await getIdToken()
+            result = await submitNewsletterVote({
+              pollId: poll.id,
+              memberId: member.id,
+              firebaseId: firebaseUser.uid,
+              idToken,
+              result: autoVote,
             })
           } else {
-            await submitNewsletterVoteAnonymous({
-              variables: {
-                pollId: poll.id,
-                result: autoVote,
-              },
+            result = await submitNewsletterVote({
+              pollId: poll.id,
+              turnstileToken,
+              result: autoVote,
             })
-            saveAnonymousVote(poll.id, entityId, autoVote)
+            if (result.success) {
+              saveAnonymousVote(poll.id, entityId, autoVote)
+            }
           }
         } else {
-          // Post voting
-          if (member) {
-            await submitVoteWithMember({
-              variables: {
-                pollId: poll.id,
-                postId: entityId,
-                memberId: member.id,
-                result: autoVote,
-              },
+          if (member && firebaseUser) {
+            const idToken = await getIdToken()
+            result = await submitPostVote({
+              pollId: poll.id,
+              postId: entityId,
+              memberId: member.id,
+              firebaseId: firebaseUser.uid,
+              idToken,
+              result: autoVote,
             })
           } else {
-            await submitVoteAnonymous({
-              variables: {
-                pollId: poll.id,
-                postId: entityId,
-                result: autoVote,
-              },
+            result = await submitPostVote({
+              pollId: poll.id,
+              postId: entityId,
+              turnstileToken,
+              result: autoVote,
             })
-            saveAnonymousVote(poll.id, entityId, autoVote)
+            if (result.success) {
+              saveAnonymousVote(poll.id, entityId, autoVote)
+            }
           }
         }
 
-        // Refetch counts after voting
-        const { data } = await refetchCounts()
-
-        if (data) {
-          setVoteCounts(data)
+        if (result.success) {
+          const { data } = await refetchCounts()
+          if (data) {
+            setVoteCounts(data)
+          }
+          setSelectedOption(autoVote)
+          setHasVoted(true)
+        } else {
+          console.error('Failed to auto-vote:', result.error)
         }
-
-        setSelectedOption(autoVote)
-        setHasVoted(true)
       } catch (error) {
         console.error('Failed to auto-vote:', error)
+      } finally {
+        setIsSubmitting(false)
       }
     }
 
@@ -404,12 +494,10 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     poll?.id,
     poll?.status,
     member,
+    firebaseUser,
     entityId,
     isNewsletter,
-    submitVoteWithMember,
-    submitVoteAnonymous,
-    submitNewsletterVoteWithMember,
-    submitNewsletterVoteAnonymous,
+    turnstileToken,
     refetchCounts,
   ])
 
@@ -462,7 +550,9 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
 
   const isLoggedIn = !!member
   // Allow voting during auth loading (will use anonymous if not logged in)
-  const isDisabled = authLoading
+  // For anonymous users, require Turnstile token
+  const isDisabled =
+    authLoading || (!isLoggedIn && !turnstileToken && !hasVoted)
 
   // Calculate percentage for each option based on vote counts
   const getPercentage = (optionKey: number): number => {
@@ -476,62 +566,74 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
   const handleOptionClick = async (optionKey: number) => {
     if (hasVoted || isSubmitting || isDisabled) return
 
+    setIsSubmitting(true)
+
     try {
-      // Submit vote to API - use appropriate mutation based on entity type and login status
+      let result: { success: boolean; error?: string }
+
       if (isNewsletter) {
-        // Newsletter voting (no newsletter field in schema, only connect poll)
-        if (isLoggedIn && member) {
-          await submitNewsletterVoteWithMember({
-            variables: {
-              pollId: poll.id,
-              memberId: member.id,
-              result: optionKey,
-            },
+        if (isLoggedIn && member && firebaseUser) {
+          const idToken = await getIdToken()
+          result = await submitNewsletterVote({
+            pollId: poll.id,
+            memberId: member.id,
+            firebaseId: firebaseUser.uid,
+            idToken,
+            result: optionKey,
           })
         } else {
-          await submitNewsletterVoteAnonymous({
-            variables: {
-              pollId: poll.id,
-              result: optionKey,
-            },
+          result = await submitNewsletterVote({
+            pollId: poll.id,
+            turnstileToken,
+            result: optionKey,
           })
-          saveAnonymousVote(poll.id, entityId, optionKey)
+          if (result.success) {
+            saveAnonymousVote(poll.id, entityId, optionKey)
+          }
         }
       } else {
-        // Post voting
-        if (isLoggedIn && member) {
-          await submitVoteWithMember({
-            variables: {
-              pollId: poll.id,
-              postId: entityId,
-              memberId: member.id,
-              result: optionKey,
-            },
+        if (isLoggedIn && member && firebaseUser) {
+          const idToken = await getIdToken()
+          result = await submitPostVote({
+            pollId: poll.id,
+            postId: entityId,
+            memberId: member.id,
+            firebaseId: firebaseUser.uid,
+            idToken,
+            result: optionKey,
           })
         } else {
-          await submitVoteAnonymous({
-            variables: {
-              pollId: poll.id,
-              postId: entityId,
-              result: optionKey,
-            },
+          result = await submitPostVote({
+            pollId: poll.id,
+            postId: entityId,
+            turnstileToken,
+            result: optionKey,
           })
-          saveAnonymousVote(poll.id, entityId, optionKey)
+          if (result.success) {
+            saveAnonymousVote(poll.id, entityId, optionKey)
+          }
         }
       }
 
-      // Refetch counts after voting
-      const { data } = await refetchCounts()
-
-      if (data) {
-        setVoteCounts(data)
+      if (result.success) {
+        const { data } = await refetchCounts()
+        if (data) {
+          setVoteCounts(data)
+        }
+        setSelectedOption(optionKey)
+        setHasVoted(true)
+      } else {
+        console.error('Failed to submit vote:', result.error)
       }
-
-      setSelectedOption(optionKey)
-      setHasVoted(true)
     } catch (error) {
       console.error('Failed to submit vote:', error)
+    } finally {
+      setIsSubmitting(false)
     }
+  }
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token)
   }
 
   return (
@@ -572,6 +674,12 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
           ))}
         </OptionList>
       </PollContainer>
+      {/* Show Turnstile widget for anonymous users who haven't voted */}
+      {!isLoggedIn && !hasVoted && (
+        <TurnstileContainer>
+          <TurnstileWidget onVerify={handleTurnstileVerify} />
+        </TurnstileContainer>
+      )}
     </PollWrapper>
   )
 })

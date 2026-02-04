@@ -34,43 +34,6 @@ export type ReadingHistoryWithPost = {
   post: ReadingHistoryPost | null
 }
 
-// Query to get member's reading history with full post data
-const GET_READING_HISTORY = gql`
-  query GetReadingHistory($memberId: ID!, $take: Int, $skip: Int!) {
-    readingHistories(
-      where: { member: { id: { equals: $memberId } } }
-      orderBy: [{ createdAt: desc }]
-      take: $take
-      skip: $skip
-    ) {
-      id
-      createdAt
-      post {
-        id
-        title
-        publishTime
-        brief
-        heroImage {
-          resized {
-            original
-            w480
-            w800
-          }
-          resizedWebp {
-            original
-            w480
-            w800
-          }
-        }
-        tags {
-          id
-          name
-        }
-      }
-    }
-  }
-`
-
 // Query to count member's reading history
 const COUNT_READING_HISTORY = gql`
   query CountReadingHistory($memberId: ID!) {
@@ -96,28 +59,48 @@ const CHECK_READING_HISTORY = gql`
 
 /**
  * Get member's reading history with full post data
+ * Uses API route with Firebase token verification
  */
 export const getReadingHistory = async (
   memberId: string,
+  firebaseId: string,
   take?: number,
   skip: number = 0
 ): Promise<ReadingHistoryWithPost[]> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.query<{
-    readingHistories: ReadingHistoryWithPost[]
-  }>({
-    query: GET_READING_HISTORY,
-    variables: { memberId, take, skip },
-    fetchPolicy: 'network-only',
-  })
+  try {
+    const response = await fetch('/api/reading-history/list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        memberId,
+        firebaseId,
+        take,
+        skip,
+      }),
+    })
 
-  if (result.error) {
-    console.error('getReadingHistory error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      readingHistories?: ReadingHistoryWithPost[]
+      total?: number
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('getReadingHistory error:', result.error)
+      return []
+    }
+
+    return result.readingHistories || []
+  } catch (error) {
+    console.error('getReadingHistory error:', error)
     return []
   }
-
-  return result.data?.readingHistories || []
 }
 
 /**

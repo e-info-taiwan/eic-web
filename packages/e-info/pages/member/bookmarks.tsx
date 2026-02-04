@@ -298,12 +298,12 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
 
   // Fetch favorites when member is available
   const fetchFavorites = useCallback(async () => {
-    if (!member?.id) return
+    if (!member?.id || !firebaseUser?.uid) return
 
     setInitialLoading(true)
     try {
       const [data, count] = await Promise.all([
-        getMemberFavorites(member.id, ITEMS_PER_PAGE, 0),
+        getMemberFavorites(member.id, firebaseUser.uid, ITEMS_PER_PAGE, 0),
         getMemberFavoritesCount(member.id),
       ])
       setFavorites(data)
@@ -314,7 +314,7 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
     } finally {
       setInitialLoading(false)
     }
-  }, [member?.id])
+  }, [member?.id, firebaseUser?.uid])
 
   useEffect(() => {
     if (member?.id) {
@@ -330,12 +330,13 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
   }, [loading, firebaseUser, router])
 
   const handleLoadMore = async () => {
-    if (!member?.id || isLoadingMore) return
+    if (!member?.id || !firebaseUser?.uid || isLoadingMore) return
 
     setIsLoadingMore(true)
     try {
       const moreFavorites = await getMemberFavorites(
         member.id,
+        firebaseUser.uid,
         ITEMS_PER_PAGE,
         favorites.length
       )
