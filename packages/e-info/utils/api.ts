@@ -47,5 +47,5 @@ function getApiErrorName(scope?: string) {
 }
 
 export function getErrorName(scope = '') {
-  return `[${scope || 'READr'} error]`
+  return `[${scope || 'E-Info'} error]`
 }

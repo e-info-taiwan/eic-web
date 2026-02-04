@@ -1,4 +1,4 @@
-const PREFIX = 'readr3'
+const PREFIX = 'einfo2026'
 
 function getKey(key: string): string {
   return `${PREFIX}.${key}`

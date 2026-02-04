@@ -8,6 +8,7 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import SectionHeading from '~/components/shared/section-heading'
+import { GOOGLE_CSE_ID } from '~/constants/environment-variables'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
@@ -170,7 +171,7 @@ const Search: NextPageWithLayout<PageProps> = () => {
         </SearchBar>
       </SearchWrapper>
       <Script
-        src="https://cse.google.com/cse.js?cx=010563281531815181145:bi9tiipcfsu"
+        src={`https://cse.google.com/cse.js?cx=${GOOGLE_CSE_ID}`}
         strategy="afterInteractive"
         onReady={handleCseReady}
       />

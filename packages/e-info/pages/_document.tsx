@@ -71,7 +71,7 @@ export default class MyDocument extends Document {
           <meta name="theme-color" content="#0b2163" key="theme-color" />
           <meta
             name="google-site-verification"
-            content="-MwBO0YdSWdyXLTCRzvcfKr-xpY1nBddINN0pGnc7SI"
+            content=""
           />
 
           {GTM_ID ? (
@@ -107,11 +107,11 @@ export default class MyDocument extends Document {
               />
             </>
           )}
-          <Script
+          {/* <Script
             async
             strategy="beforeInteractive"
             src="https://cdn.jsdelivr.net/npm/@miso.ai/client-sdk@1.11.5/dist/umd/miso.min.js"
-          />
+          /> */}
         </Head>
         <body>
           {GTM_ID && (

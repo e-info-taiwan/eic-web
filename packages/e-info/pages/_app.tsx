@@ -10,7 +10,7 @@ import ComScoreScript from '~/components/comscore-script'
 import Footer from '~/components/layout/footer'
 import GDPRControl from '~/components/layout/gdpr-control'
 import { NormalizeStyles } from '~/components/layout/normalize-styles'
-import { ReadrStyles } from '~/components/layout/readr-styles'
+import { GlobalStyles } from '~/components/layout/global-styles'
 import { AuthProvider } from '~/contexts/auth-context'
 import type { HeaderContextData } from '~/contexts/header-context'
 import { HeaderProvider } from '~/contexts/header-context'
@@ -47,7 +47,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
   return (
     <>
       <NormalizeStyles />
-      <ReadrStyles />
+      <GlobalStyles />
       <ApolloProvider client={client}>
         <ThemeProvider theme={theme}>
           <AuthProvider>

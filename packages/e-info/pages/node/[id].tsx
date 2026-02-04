@@ -8,7 +8,7 @@ import Blank from '~/components/post/article-type/blank'
 import Frame from '~/components/post/article-type/frame'
 import News from '~/components/post/article-type/news'
 import ScrollableVideo from '~/components/post/article-type/scrollable-video'
-import MisoPageView from '~/components/shared/miso-pageview'
+// import MisoPageView from '~/components/shared/miso-pageview'
 import { SITE_TITLE } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import { type Donation, footerDonationQuery } from '~/graphql/query/donation'
@@ -107,7 +107,7 @@ const Post: NextPageWithLayout<PageProps> = ({ postData, donation }) => {
         description={ogDescription}
         imageUrl={ogImageUrl}
       />
-      <MisoPageView productIds={postData.id} />
+      {/* <MisoPageView productIds={postData.id} /> */}
       {articleType}
     </>
   )

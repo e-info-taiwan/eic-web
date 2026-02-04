@@ -3,7 +3,7 @@ import { createGlobalStyle } from 'styled-components'
 /**
  * 應放入客製化的全局基底樣式
  */
-export const ReadrStyles = createGlobalStyle`
+export const GlobalStyles = createGlobalStyle`
 html {
   font-family: 'Noto Sans TC', sans-serif;
 }

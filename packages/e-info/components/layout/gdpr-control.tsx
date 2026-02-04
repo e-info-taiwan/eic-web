@@ -87,9 +87,9 @@ export default function GDPRControl(): JSX.Element {
     return (
       <Container>
         <Message>
-          本網站使用 cookie
+          本網站使用 Cookie
           以及相關技術分析來改善使用者體驗。點選「我知道了」，視窗會關閉。
-          <NextLink href="/privacy-rule" target="_blank" rel="noreferrer">
+          <NextLink href="/privacy" target="_blank" rel="noreferrer">
             了解更多
           </NextLink>
         </Message>
