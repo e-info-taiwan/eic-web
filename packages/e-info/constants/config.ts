@@ -17,6 +17,19 @@ const MAILCHIMP_SERVER_PREFIX =
 // If not set, Turnstile verification is skipped (graceful degradation)
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY ?? ''
 
+// Firebase Admin SDK Configuration (server-side token verification)
+// If not set, Firebase verification is skipped (graceful degradation)
+// Can be set via service account JSON file path or individual credentials
+const FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH =
+  process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH ?? ''
+const FIREBASE_ADMIN_PROJECT_ID = process.env.FIREBASE_ADMIN_PROJECT_ID ?? ''
+const FIREBASE_ADMIN_CLIENT_EMAIL =
+  process.env.FIREBASE_ADMIN_CLIENT_EMAIL ?? ''
+// Private key needs newline handling (may come as \n literal string)
+const FIREBASE_ADMIN_PRIVATE_KEY = (
+  process.env.FIREBASE_ADMIN_PRIVATE_KEY ?? ''
+).replace(/\\n/g, '\n')
+
 let API_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
@@ -94,6 +107,10 @@ if (process.env.NEXT_PUBLIC_FIREBASE_APP_ID) {
 
 export {
   API_ENDPOINT,
+  FIREBASE_ADMIN_CLIENT_EMAIL,
+  FIREBASE_ADMIN_PRIVATE_KEY,
+  FIREBASE_ADMIN_PROJECT_ID,
+  FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH,
   FIREBASE_CONFIG,
   MAILCHIMP_API_KEY,
   MAILCHIMP_LIST_ID,

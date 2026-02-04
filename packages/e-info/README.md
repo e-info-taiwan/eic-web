@@ -84,6 +84,28 @@
 > **說明**：Turnstile 用於保護公開表單（活動建立、徵才建立）免受機器人攻擊。
 > 若未設定 key，系統會自動跳過驗證（graceful degradation）。
 
+### Firebase Admin SDK (後端驗證)
+
+| 變數名稱                            | 資料型態 | 初始值 | 變數說明                                        |
+| ----------------------------------- | -------- | ------ | ----------------------------------------------- |
+| FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH | 字串     | ''     | Service Account JSON 檔案路徑（二選一）         |
+| FIREBASE_ADMIN_PROJECT_ID           | 字串     | ''     | Firebase Project ID（個別設定方式，三者需同時） |
+| FIREBASE_ADMIN_CLIENT_EMAIL         | 字串     | ''     | Service Account Client Email                    |
+| FIREBASE_ADMIN_PRIVATE_KEY          | 字串     | ''     | Service Account Private Key                     |
+
+> **說明**：Firebase Admin SDK 用於後端驗證會員身份，保護會員相關的 API 操作（收藏、閱讀紀錄等）。
+> 若未設定，系統會自動跳過驗證（graceful degradation），適用於本地開發環境。
+>
+> **設定方式**（二選一）：
+>
+> 1. **Service Account 檔案**：設定 `FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH` 為 JSON 檔案路徑
+> 2. **個別環境變數**：同時設定 `FIREBASE_ADMIN_PROJECT_ID`、`FIREBASE_ADMIN_CLIENT_EMAIL`、`FIREBASE_ADMIN_PRIVATE_KEY`
+>
+> **取得 Service Account**：
+>
+> 1. 前往 [Firebase Console](https://console.firebase.google.com/) → 專案設定 → 服務帳戶
+> 2. 點擊「產生新的私密金鑰」下載 JSON 檔案
+
 ## Feature Toggle (功能開關，暫時性)
 
 | 變數名稱 | 資料型態 | 初始值 | 變數說明 |

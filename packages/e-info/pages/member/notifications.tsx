@@ -310,11 +310,15 @@ const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
 
     try {
       // Update member's interestedSections using set operation
-      await updateMemberById(member.id, {
-        interestedSections: {
-          set: selectedSectionIds.map((id) => ({ id })),
+      await updateMemberById(
+        member.id,
+        {
+          interestedSections: {
+            set: selectedSectionIds.map((id) => ({ id })),
+          },
         },
-      })
+        firebaseUser.uid
+      )
       await refreshMember()
       setSuccess(true)
     } catch {

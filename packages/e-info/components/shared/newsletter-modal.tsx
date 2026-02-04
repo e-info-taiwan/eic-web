@@ -344,7 +344,7 @@ const isValidEmail = (email: string): boolean => {
 }
 
 const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
-  const { member } = useContext(AuthContext)
+  const { member, firebaseUser } = useContext(AuthContext)
   const [dailyChecked, setDailyChecked] = useState(false)
   const [weeklyChecked, setWeeklyChecked] = useState(false)
   const [beautifiedChecked, setBeautifiedChecked] = useState(false)
@@ -419,13 +419,17 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
         gtag.sendConversion('newsletter_subscribe', frequency)
 
         // Sync to member system if user is logged in
-        if (member) {
+        if (member && firebaseUser) {
           try {
-            await updateMemberById(member.id, {
-              newsletterSubscription: format,
-              newsletterFrequency:
-                frequency === 'daily' ? 'weekday' : 'saturday',
-            })
+            await updateMemberById(
+              member.id,
+              {
+                newsletterSubscription: format,
+                newsletterFrequency:
+                  frequency === 'daily' ? 'weekday' : 'saturday',
+              },
+              firebaseUser.uid
+            )
             console.log('[Newsletter] Member subscription synced')
           } catch (syncError) {
             // Don't fail the overall subscription if member sync fails

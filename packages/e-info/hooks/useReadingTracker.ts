@@ -16,7 +16,7 @@ import { recordReadingHistory } from '~/lib/graphql/reading-history'
  * @param postId - The ID of the post being viewed
  */
 export function useReadingTracker(postId: string | undefined): void {
-  const { member } = useAuth()
+  const { member, firebaseUser } = useAuth()
   const hasRecorded = useRef(false)
 
   useEffect(() => {
@@ -25,8 +25,8 @@ export function useReadingTracker(postId: string | undefined): void {
   }, [postId])
 
   useEffect(() => {
-    // Don't track if no member or no postId
-    if (!member?.id || !postId) {
+    // Don't track if no member, no firebaseUser, or no postId
+    if (!member?.id || !firebaseUser?.uid || !postId) {
       return
     }
 
@@ -38,7 +38,7 @@ export function useReadingTracker(postId: string | undefined): void {
     // Wait 3 seconds before recording to ensure user is actually reading
     const timer = setTimeout(async () => {
       try {
-        await recordReadingHistory(member.id, postId)
+        await recordReadingHistory(member.id, postId, firebaseUser.uid)
         hasRecorded.current = true
       } catch (err) {
         // Silently fail - reading history is not critical
@@ -49,5 +49,5 @@ export function useReadingTracker(postId: string | undefined): void {
     return () => {
       clearTimeout(timer)
     }
-  }, [member?.id, postId])
+  }, [member?.id, firebaseUser?.uid, postId])
 }

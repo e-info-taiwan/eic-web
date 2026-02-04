@@ -64,7 +64,7 @@ export default function MediaLinkList({
   const [isFavorited, setIsFavorited] = useState(false)
   const [favoriteId, setFavoriteId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const { member } = useAuth()
+  const { member, firebaseUser } = useAuth()
 
   useEffect(() => {
     setHref(() => window.location.href)
@@ -135,14 +135,18 @@ export default function MediaLinkList({
     try {
       if (isFavorited && favoriteId) {
         // Remove from favorites
-        const success = await removeFavorite(favoriteId)
+        const success = await removeFavorite(favoriteId, firebaseUser!.uid)
         if (success) {
           setIsFavorited(false)
           setFavoriteId(null)
         }
       } else {
         // Add to favorites
-        const newFavoriteId = await addFavorite(member.id, postId)
+        const newFavoriteId = await addFavorite(
+          member.id,
+          postId,
+          firebaseUser!.uid
+        )
         if (newFavoriteId) {
           setIsFavorited(true)
           setFavoriteId(newFavoriteId)
@@ -153,7 +157,7 @@ export default function MediaLinkList({
     } finally {
       setIsLoading(false)
     }
-  }, [member, postId, isFavorited, favoriteId, isLoading])
+  }, [member, firebaseUser, postId, isFavorited, favoriteId, isLoading])
 
   return (
     <MediaLinkWrapper className={className}>

@@ -482,16 +482,20 @@ const MemberEditPage: NextPageWithLayout = () => {
 
     try {
       // Update profile name if member exists
-      if (member) {
+      if (member && firebaseUser) {
         // Parse displayName into firstName and lastName
         const nameParts = formData.displayName.trim().split(/\s+/)
         const lastName = nameParts[0] || ''
         const firstName = nameParts.slice(1).join(' ') || ''
 
-        await updateMemberById(member.id, {
-          lastName,
-          firstName,
-        })
+        await updateMemberById(
+          member.id,
+          {
+            lastName,
+            firstName,
+          },
+          firebaseUser.uid
+        )
       }
 
       // Update password if provided

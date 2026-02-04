@@ -429,7 +429,7 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
     try {
       // Convert toggles back to backend schema
       const backendData = convertFromToggles(toggles)
-      await updateMemberById(member.id, backendData)
+      await updateMemberById(member.id, backendData, firebaseUser.uid)
       await refreshMember()
       setSuccess(true)
     } catch {

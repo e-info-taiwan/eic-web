@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 
 import { getGqlClient } from '~/apollo-client'
+import { getIdToken } from '~/lib/firebase/get-id-token'
 
 // Fragment for member fields
 const MEMBER_FIELDS = gql`
@@ -67,54 +68,6 @@ const GET_ALL_SECTIONS = gql`
       id
       slug
       name
-    }
-  }
-`
-
-// Mutation to create a new member
-const CREATE_MEMBER = gql`
-  ${MEMBER_FIELDS}
-  mutation CreateMember($data: MemberCreateInput!) {
-    createMember(data: $data) {
-      ...MemberFields
-    }
-  }
-`
-
-// Mutation to update a member
-const UPDATE_MEMBER = gql`
-  ${MEMBER_FIELDS}
-  mutation UpdateMember(
-    $where: MemberWhereUniqueInput!
-    $data: MemberUpdateInput!
-  ) {
-    updateMember(where: $where, data: $data) {
-      ...MemberFields
-    }
-  }
-`
-
-// Mutation to create a favorite
-const CREATE_FAVORITE = gql`
-  mutation CreateFavorite($data: FavoriteCreateInput!) {
-    createFavorite(data: $data) {
-      id
-      member {
-        id
-      }
-      post {
-        id
-        title
-      }
-    }
-  }
-`
-
-// Mutation to delete a favorite
-const DELETE_FAVORITE = gql`
-  mutation DeleteFavorite($where: FavoriteWhereUniqueInput!) {
-    deleteFavorite(where: $where) {
-      id
     }
   }
 `
@@ -325,54 +278,80 @@ export const checkMemberExists = async (
 
 /**
  * Create a new member
+ * Uses API route with Firebase token verification
  */
 export const createMember = async (
   data: CreateMemberInput
 ): Promise<Member> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.mutate<{ createMember: Member }>({
-    mutation: CREATE_MEMBER,
-    variables: { data },
+  const response = await fetch('/api/member/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      idToken,
+      data,
+    }),
   })
 
-  if (result.error) {
-    throw new Error(result.error.message)
+  const result = (await response.json()) as {
+    success?: boolean
+    member?: Member
+    error?: string
   }
 
-  if (!result.data?.createMember) {
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || 'Failed to create member')
+  }
+
+  if (!result.member) {
     throw new Error('Failed to create member')
   }
 
-  return result.data.createMember
+  return result.member
 }
 
 /**
  * Update a member by ID
+ * Uses API route with Firebase token verification
  */
 export const updateMemberById = async (
   memberId: string,
-  data: UpdateMemberInput
+  data: UpdateMemberInput,
+  firebaseId: string
 ): Promise<Member> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.mutate<{ updateMember: Member }>({
-    mutation: UPDATE_MEMBER,
-    variables: {
-      where: { id: memberId },
-      data,
+  const response = await fetch('/api/member/update', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      idToken,
+      memberId,
+      firebaseId,
+      data,
+    }),
   })
 
-  if (result.error) {
-    throw new Error(result.error.message)
+  const result = (await response.json()) as {
+    success?: boolean
+    member?: Member
+    error?: string
   }
 
-  if (!result.data?.updateMember) {
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || 'Failed to update member')
+  }
+
+  if (!result.member) {
     throw new Error('Failed to update member')
   }
 
-  return result.data.updateMember
+  return result.member
 }
 
 /**
@@ -416,9 +395,13 @@ export const updateMemberAvatar = async (
   }
 
   // Then, connect the photo to the member
-  return updateMemberById(memberId, {
-    avatar: { connect: { id: result.photoId } },
-  })
+  return updateMemberById(
+    memberId,
+    {
+      avatar: { connect: { id: result.photoId } },
+    },
+    userId
+  )
 }
 
 /**
@@ -478,50 +461,85 @@ export const checkPostFavorited = async (
 
 /**
  * Add a post to member's favorites
+ * Uses API route with Firebase token verification
  */
 export const addFavorite = async (
   memberId: string,
-  postId: string
+  postId: string,
+  firebaseId: string
 ): Promise<string | null> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.mutate<{ createFavorite: { id: string } }>({
-    mutation: CREATE_FAVORITE,
-    variables: {
-      data: {
-        member: { connect: { id: memberId } },
-        post: { connect: { id: postId } },
+  try {
+    const response = await fetch('/api/favorites/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    },
-  })
+      body: JSON.stringify({
+        idToken,
+        memberId,
+        firebaseId,
+        postId,
+      }),
+    })
 
-  if (result.error) {
-    console.error('addFavorite error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      favoriteId?: string
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('addFavorite error:', result.error)
+      return null
+    }
+
+    return result.favoriteId || null
+  } catch (error) {
+    console.error('addFavorite error:', error)
     return null
   }
-
-  return result.data?.createFavorite?.id || null
 }
 
 /**
  * Remove a post from member's favorites
+ * Uses API route with Firebase token verification
  */
-export const removeFavorite = async (favoriteId: string): Promise<boolean> => {
-  const client = getGqlClient()
+export const removeFavorite = async (
+  favoriteId: string,
+  firebaseId: string
+): Promise<boolean> => {
+  const idToken = await getIdToken()
 
-  const result = await client.mutate<{ deleteFavorite: { id: string } }>({
-    mutation: DELETE_FAVORITE,
-    variables: {
-      where: { id: favoriteId },
-    },
-  })
+  try {
+    const response = await fetch('/api/favorites/remove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        favoriteId,
+        firebaseId,
+      }),
+    })
 
-  if (result.error) {
-    console.error('removeFavorite error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('removeFavorite error:', result.error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('removeFavorite error:', error)
     return false
   }
-
-  return !!result.data?.deleteFavorite
 }
 
 /**

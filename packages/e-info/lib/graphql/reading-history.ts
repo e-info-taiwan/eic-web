@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 
 import { getGqlClient } from '~/apollo-client'
+import { getIdToken } from '~/lib/firebase/get-id-token'
 
 // Type for reading history post data
 export type ReadingHistoryPost = {
@@ -93,48 +94,6 @@ const CHECK_READING_HISTORY = gql`
   }
 `
 
-// Mutation to create a new reading history
-const CREATE_READING_HISTORY = gql`
-  mutation CreateReadingHistory($data: ReadingHistoryCreateInput!) {
-    createReadingHistory(data: $data) {
-      id
-      createdAt
-    }
-  }
-`
-
-// Mutation to update reading history (update timestamp)
-const UPDATE_READING_HISTORY = gql`
-  mutation UpdateReadingHistory(
-    $where: ReadingHistoryWhereUniqueInput!
-    $data: ReadingHistoryUpdateInput!
-  ) {
-    updateReadingHistory(where: $where, data: $data) {
-      id
-      createdAt
-      updatedAt
-    }
-  }
-`
-
-// Mutation to delete a reading history
-const DELETE_READING_HISTORY = gql`
-  mutation DeleteReadingHistory($where: ReadingHistoryWhereUniqueInput!) {
-    deleteReadingHistory(where: $where) {
-      id
-    }
-  }
-`
-
-// Mutation to delete multiple reading histories
-const DELETE_READING_HISTORIES = gql`
-  mutation DeleteReadingHistories($where: [ReadingHistoryWhereUniqueInput!]!) {
-    deleteReadingHistories(where: $where) {
-      id
-    }
-  }
-`
-
 /**
  * Get member's reading history with full post data
  */
@@ -214,109 +173,125 @@ export const checkReadingHistoryExists = async (
  * Record a reading history for a member viewing a post
  * If a record already exists, updates the timestamp
  * Returns the reading history ID
+ * Uses API route with Firebase token verification
  */
 export const recordReadingHistory = async (
   memberId: string,
-  postId: string
+  postId: string,
+  firebaseId: string
 ): Promise<string | null> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  // Check if record already exists
-  const existing = await checkReadingHistoryExists(memberId, postId)
-
-  if (existing) {
-    // Update existing record's timestamp
-    const result = await client.mutate<{
-      updateReadingHistory: { id: string }
-    }>({
-      mutation: UPDATE_READING_HISTORY,
-      variables: {
-        where: { id: existing.id },
-        data: {
-          // Just trigger an update to refresh updatedAt
-          // We use the current time as a marker
-          updatedAt: new Date().toISOString(),
-        },
+  try {
+    const response = await fetch('/api/reading-history/record', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        idToken,
+        memberId,
+        firebaseId,
+        postId,
+      }),
     })
 
-    if (result.error) {
-      console.error('updateReadingHistory error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      historyId?: string
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('recordReadingHistory error:', result.error)
       return null
     }
 
-    return existing.id
-  }
-
-  // Create new record
-  const result = await client.mutate<{
-    createReadingHistory: { id: string }
-  }>({
-    mutation: CREATE_READING_HISTORY,
-    variables: {
-      data: {
-        member: { connect: { id: memberId } },
-        post: { connect: { id: postId } },
-      },
-    },
-  })
-
-  if (result.error) {
-    console.error('createReadingHistory error:', result.error)
+    return result.historyId || null
+  } catch (error) {
+    console.error('recordReadingHistory error:', error)
     return null
   }
-
-  return result.data?.createReadingHistory?.id || null
 }
 
 /**
  * Delete a reading history record
+ * Uses API route with Firebase token verification
  */
 export const deleteReadingHistory = async (
-  historyId: string
+  historyId: string,
+  firebaseId: string
 ): Promise<boolean> => {
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.mutate<{
-    deleteReadingHistory: { id: string }
-  }>({
-    mutation: DELETE_READING_HISTORY,
-    variables: {
-      where: { id: historyId },
-    },
-  })
+  try {
+    const response = await fetch('/api/reading-history/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        historyId,
+        firebaseId,
+      }),
+    })
 
-  if (result.error) {
-    console.error('deleteReadingHistory error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('deleteReadingHistory error:', result.error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('deleteReadingHistory error:', error)
     return false
   }
-
-  return !!result.data?.deleteReadingHistory
 }
 
 /**
  * Delete multiple reading history records
+ * Uses API route with Firebase token verification
  */
 export const deleteReadingHistories = async (
-  historyIds: string[]
+  historyIds: string[],
+  firebaseId: string
 ): Promise<boolean> => {
   if (historyIds.length === 0) return true
 
-  const client = getGqlClient()
+  const idToken = await getIdToken()
 
-  const result = await client.mutate<{
-    deleteReadingHistories: { id: string }[]
-  }>({
-    mutation: DELETE_READING_HISTORIES,
-    variables: {
-      where: historyIds.map((id) => ({ id })),
-    },
-  })
+  try {
+    const response = await fetch('/api/reading-history/delete-multiple', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idToken,
+        historyIds,
+        firebaseId,
+      }),
+    })
 
-  if (result.error) {
-    console.error('deleteReadingHistories error:', result.error)
+    const result = (await response.json()) as {
+      success?: boolean
+      error?: string
+    }
+
+    if (!response.ok || !result.success) {
+      console.error('deleteReadingHistories error:', result.error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('deleteReadingHistories error:', error)
     return false
   }
-
-  return !!result.data?.deleteReadingHistories
 }
