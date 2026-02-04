@@ -94,18 +94,6 @@ MAILCHIMP_SERVER_PREFIX=usX
 3. 點擊 **Settings** > **Audience name and defaults**
 4. 複製 **Audience ID** 欄位的值
 
-### 向後相容
-
-為確保向後相容，若新環境變數未設定，會嘗試使用舊的 `MAILCHIMP_LIST_ID`：
-
-```typescript
-// 向後相容邏輯
-const MAILCHIMP_LIST_ID_DAILY =
-  process.env.MAILCHIMP_LIST_ID_DAILY || process.env.MAILCHIMP_LIST_ID || ''
-const MAILCHIMP_LIST_ID_WEEKLY =
-  process.env.MAILCHIMP_LIST_ID_WEEKLY || process.env.MAILCHIMP_LIST_ID || ''
-```
-
 ---
 
 ## API 規格
@@ -173,7 +161,7 @@ Content-Type: application/json
 |-------------|----------|------|
 | 400 | 缺少必要欄位 | email、frequency 或 format 未提供 |
 | 400 | 請輸入有效的 Email 地址 | Email 格式驗證失敗 |
-| 400 | 此 Email 已訂閱，如需更新偏好請聯繫我們 | 已存在且 Tag 更新失敗 |
+| 400 | 此 Email 已訂閱，如需更新偏好請聯繫我們 | 已存在且 Merge Fields 更新失敗 |
 | 405 | Method not allowed | 非 POST 請求 |
 | 500 | 電子報服務暫時無法使用 | Mailchimp 設定缺失 |
 | 500 | 訂閱失敗，請稍後再試 | Mailchimp API 錯誤 |
@@ -213,16 +201,10 @@ export type MailchimpMemberStatus =
   | 'pending'
   | 'transactional'
 
-export type MailchimpTag = {
-  name: string
-  status: 'active' | 'inactive'
-}
-
 export type MailchimpMemberData = {
   email_address: string
   status: MailchimpMemberStatus
-  tags?: string[]
-  merge_fields?: Record<string, string>
+  merge_fields?: Record<string, string>  // 使用 FORMAT 欄位儲存格式偏好
 }
 
 export type MailchimpErrorResponse = {
@@ -469,11 +451,9 @@ subscriptionState === 'loading'
 **檔案:** `packages/e-info/constants/config.ts`
 
 ```typescript
-// 雙 Audience 架構，向後相容舊的 MAILCHIMP_LIST_ID
-const MAILCHIMP_LIST_ID_DAILY =
-  process.env.MAILCHIMP_LIST_ID_DAILY || process.env.MAILCHIMP_LIST_ID || ''
-const MAILCHIMP_LIST_ID_WEEKLY =
-  process.env.MAILCHIMP_LIST_ID_WEEKLY || process.env.MAILCHIMP_LIST_ID || ''
+// 雙 Audience 架構
+const MAILCHIMP_LIST_ID_DAILY = process.env.MAILCHIMP_LIST_ID_DAILY ?? ''
+const MAILCHIMP_LIST_ID_WEEKLY = process.env.MAILCHIMP_LIST_ID_WEEKLY ?? ''
 ```
 
 **檔案:** `packages/e-info/pages/api/newsletter/subscribe.ts`
@@ -507,10 +487,10 @@ async function updateMemberMergeFields(
 
 ### 新訂閱測試
 
-- [ ] 訂閱每日報 + 一般版 → 加入 DAILY Audience，Tag: 一般版
-- [ ] 訂閱每日報 + 美化版 → 加入 DAILY Audience，Tag: 美化版
-- [ ] 訂閱一週回顧 + 一般版 → 加入 WEEKLY Audience，Tag: 一般版
-- [ ] 訂閱一週回顧 + 美化版 → 加入 WEEKLY Audience，Tag: 美化版
+- [ ] 訂閱每日報 + 一般版 → 加入 DAILY Audience，FORMAT: standard
+- [ ] 訂閱每日報 + 美化版 → 加入 DAILY Audience，FORMAT: styled
+- [ ] 訂閱一週回顧 + 一般版 → 加入 WEEKLY Audience，FORMAT: standard
+- [ ] 訂閱一週回顧 + 美化版 → 加入 WEEKLY Audience，FORMAT: styled
 
 ### 更新偏好測試
 
@@ -534,11 +514,6 @@ async function updateMemberMergeFields(
 - [ ] 未登入使用者訂閱（不應同步 CMS）
 - [ ] CMS 同步失敗不影響 Mailchimp 訂閱結果
 
-### 向後相容測試
-
-- [ ] 只設定 `MAILCHIMP_LIST_ID`（舊設定）仍可運作
-- [ ] 設定新變數後覆蓋舊設定
-
 ---
 
 ## 監控與日誌
@@ -554,10 +529,10 @@ console.log('[Newsletter] Successfully subscribed:', {
   listId
 })
 
-// 更新 Tags
-console.log('[Newsletter] Updated member tags:', {
+// 更新 Merge Fields
+console.log('[Newsletter] Updated member merge fields:', {
   email: '***@***.com',
-  tags,
+  format,
   listId
 })
 
@@ -580,7 +555,7 @@ console.error('[Newsletter] Member sync error:', { error, memberId })
 | 指標 | 計算方式 | 警示閾值 |
 |------|----------|----------|
 | 訂閱成功率 | 成功數 / 總請求數 | < 95% |
-| 更新成功率 | Tag 更新成功數 / "Member Exists" 數 | < 90% |
+| 更新成功率 | Merge Fields 更新成功數 / "Member Exists" 數 | < 90% |
 | API 錯誤率 | Mailchimp 錯誤數 / 總請求數 | > 5% |
 | CMS 同步成功率 | 同步成功數 / 已登入訂閱數 | < 90% |
 

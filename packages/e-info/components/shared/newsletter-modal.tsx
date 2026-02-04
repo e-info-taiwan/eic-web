@@ -130,7 +130,7 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   }
 `
 
-// Sub-option container (for beautified version)
+// Sub-option container (for styled version)
 const FormatContainer = styled.div`
   display: flex;
   align-items: center;
@@ -138,7 +138,7 @@ const FormatContainer = styled.div`
   justify-content: center;
 `
 
-// Secondary checkbox for beautified version
+// Secondary checkbox for styled version
 const SecondaryCheckboxIcon = styled.span<{ $checked: boolean }>`
   display: flex;
   align-items: center;
@@ -206,7 +206,7 @@ const NewsletterLink = styled.a`
   }
 `
 
-// Info box for beautified version explanation
+// Info box for styled version explanation
 const InfoBox = styled.div`
   font-size: 14px;
   font-weight: 400;
@@ -348,8 +348,8 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
   const { member, firebaseUser } = useContext(AuthContext)
   const [dailyChecked, setDailyChecked] = useState(false)
   const [weeklyChecked, setWeeklyChecked] = useState(false)
-  const [beautifiedChecked, setBeautifiedChecked] = useState(false)
-  const [showBeautifiedInfo, setShowBeautifiedInfo] = useState(false)
+  const [styledChecked, setStyledChecked] = useState(false)
+  const [showStyledInfo, setShowStyledInfo] = useState(false)
   const [email, setEmail] = useState('')
   const [confirmEmail, setConfirmEmail] = useState('')
   const [mounted, setMounted] = useState(false)
@@ -373,8 +373,8 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     setIsSubmitted(false)
     setDailyChecked(false)
     setWeeklyChecked(false)
-    setBeautifiedChecked(false)
-    setShowBeautifiedInfo(false)
+    setStyledChecked(false)
+    setShowStyledInfo(false)
     setEmail('')
     setConfirmEmail('')
     setSubscriptionState('idle')
@@ -393,8 +393,8 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     setErrorMessage('')
     setSubscriptionState('loading')
 
-    // Determine format from checkbox (styled = beautified)
-    const format = beautifiedChecked ? 'styled' : 'standard'
+    // Determine format from styled checkbox
+    const format = styledChecked ? 'styled' : 'standard'
     // For the external newsletter API, use 'daily' if daily is checked, otherwise 'weekly'
     const frequency = dailyChecked ? 'daily' : 'weekly'
 
@@ -407,7 +407,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
         body: JSON.stringify({
           email,
           frequency,
-          format: beautifiedChecked ? 'styled' : 'standard',
+          format: styledChecked ? 'styled' : 'standard',
         }),
       })
 
@@ -504,31 +504,31 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
               </CheckboxItem>
             </CheckboxGroup>
 
-            {/* Beautified version sub-option (shown when any newsletter is checked) */}
+            {/* Styled version sub-option (shown when any newsletter is checked) */}
             {(dailyChecked || weeklyChecked) && (
               <>
                 <FormatContainer>
                   <FormatItem>
                     <HiddenCheckbox
                       type="checkbox"
-                      checked={beautifiedChecked}
-                      onChange={(e) => setBeautifiedChecked(e.target.checked)}
+                      checked={styledChecked}
+                      onChange={(e) => setStyledChecked(e.target.checked)}
                     />
-                    <SecondaryCheckboxIcon $checked={beautifiedChecked} />
+                    <SecondaryCheckboxIcon $checked={styledChecked} />
                     訂閱美化版
                   </FormatItem>
                   <InfoLink
                     href="#"
                     onClick={(e) => {
                       e.preventDefault()
-                      setShowBeautifiedInfo(!showBeautifiedInfo)
+                      setShowStyledInfo(!showStyledInfo)
                     }}
                   >
                     （什麼是美化版）
                   </InfoLink>
                 </FormatContainer>
 
-                {showBeautifiedInfo && (
+                {showStyledInfo && (
                   <InfoBox>
                     美化版可放大重要資訊字體，帶來更友善的閱讀體驗
                   </InfoBox>
