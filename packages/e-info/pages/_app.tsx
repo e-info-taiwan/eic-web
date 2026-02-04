@@ -6,7 +6,6 @@ import { useEffect } from 'react'
 import { ThemeProvider } from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
-import ComScoreScript from '~/components/comscore-script'
 import Footer from '~/components/layout/footer'
 import GDPRControl from '~/components/layout/gdpr-control'
 import { GlobalStyles } from '~/components/layout/global-styles'
@@ -59,8 +58,6 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
           </AuthProvider>
         </ThemeProvider>
       </ApolloProvider>
-      {/* use react script rather than next/Script to let the script show on the source of the html (view-source:) */}
-      <ComScoreScript />
     </>
   )
 }
