@@ -73,9 +73,7 @@ Environment variable `NEXT_PUBLIC_ENV` controls which environment to use (local/
 
 ### Apollo Client Configuration
 
-Apollo Client is initialized in two files:
-- `packages/e-info/apollo-client.ts` - Main CMS API
-- `packages/e-info/editools-apollo-client.ts` - Editools API
+Apollo Client is initialized in `packages/e-info/apollo-client.ts` for the Main CMS API.
 
 **Important**: Migrated from `uri` parameter to `HttpLink` to avoid Apollo Client v4 deprecation warning.
 
@@ -338,6 +336,53 @@ Theme is defined in `packages/e-info/styles/theme/`, including:
 - Color system
 - Typography
 
+### GA4 Analytics Tracking
+
+GA4 tracking utilities are defined in `packages/e-info/utils/gtag.ts`:
+
+```typescript
+// Basic event tracking
+sendEvent(category, action, label?)
+
+// Event with custom dimensions (uses gtag directly)
+sendEventWithDimensions(category, action, label?, dimensions?)
+
+// Article pageview with category/section dimensions
+sendArticlePageview(path, { articleId, articleTitle, articleCategory, articleSection, articleTags })
+
+// Conversion tracking
+sendConversion('newsletter_subscribe' | 'donation_complete' | 'share_complete' | 'external_link_click', value?)
+
+// Member events
+sendMemberEvent('login' | 'register' | 'logout' | 'bookmark' | 'unbookmark', label?)
+
+// Reading progress (25%, 50%, 75%, 100%)
+sendReadingProgress(progress, articleId?, articleCategory?)
+
+// Outbound link clicks
+sendOutboundClick(url, linkText?)
+```
+
+**Custom Hooks for Tracking**:
+- `useReadingProgress` - Tracks scroll depth milestones (25/50/75/100%) on article pages
+- `useOutboundLinkTracking` - Tracks clicks on external links within a container
+
+**Usage in Article Page** (`pages/node/[id].tsx`):
+```typescript
+// Article pageview with dimensions
+useEffect(() => {
+  if (postData?.id) {
+    gtag.sendArticlePageview(router.asPath, {
+      articleId: postData.id,
+      articleTitle: postData.title,
+      articleCategory: postData.category?.name,
+      articleSection: postData.section?.name,
+      articleTags: tags,
+    })
+  }
+}, [postData?.id, router.asPath])
+```
+
 ## Recent Important Changes (2025-10-13)
 
 ### 1. Post Layout Refactoring
@@ -435,6 +480,48 @@ h3 {
 **Changes**:
 - Fixed prettier formatting errors (removed extra blank lines)
 - Fixed import sorting (simple-import-sort rules)
+
+## Recent Important Changes (2026-02-04)
+
+### 7. GA4 Analytics Enhancements
+
+**Commit**: `6495f6d` - feat: add GA4 tracking enhancements and cleanup dead code
+
+**Changes**:
+- Added article category/section dimension tracking for pageviews
+- Added conversion tracking for newsletter subscription and donation
+- Added member event tracking (login, register, logout)
+- Added reading progress tracking (25/50/75/100%)
+- Added outbound link click tracking
+- New hooks: `useReadingProgress`, `useOutboundLinkTracking`
+
+**Files**:
+- `packages/e-info/utils/gtag.ts` - Extended with new tracking functions
+- `packages/e-info/hooks/useReadingProgress.ts` - New hook
+- `packages/e-info/hooks/useOutboundLinkTracking.ts` - New hook
+- `packages/e-info/pages/node/[id].tsx` - Article pageview tracking
+- `packages/e-info/components/shared/newsletter-modal.tsx` - Newsletter subscription conversion
+- `packages/e-info/components/shared/donation-modal.tsx` - Donation conversion
+- `packages/e-info/pages/auth/login-result.tsx` - Login tracking
+- `packages/e-info/pages/auth/register-result.tsx` - Register tracking
+- `packages/e-info/contexts/auth-context.tsx` - Logout tracking
+
+### 8. Dead Code Cleanup
+
+**Commits**: `6495f6d`, `b5eefec`
+
+**Removed Files**:
+- `packages/e-info/editools-apollo-client.ts` - Unused Editools API client
+- `packages/e-info/pages/api/google-sheets/` - Unused Google Sheets API routes
+- `packages/e-info/utils/google-api-auth.ts` - Unused Google API auth utility
+- `packages/e-info/components/index/collaboration-section.tsx` - Unused homepage component
+- `packages/e-info/components/shared/miso-pageview.tsx` - Unused MISO SDK component
+
+**Removed Constants**:
+- `EDITOOLS_API_ENDPOINT` from config.ts
+- `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, `OAUTH_REDIRECT_URIS`, `OAUTH_REFRESH_TOKEN` from constant.ts
+- `MISO_API_KEY` from config.ts
+- `INTERESTED_CATEGORIES`, `NEWSLETTER_OPTIONS`, `NEWSLETTER_FORMAT_OPTIONS` from auth.ts
 
 ## Development Workflow
 
@@ -634,6 +721,8 @@ Includes simple-import-sort rules to ensure consistent import ordering.
 - ✅ Citations styling update
 - ✅ Image rendering fallback
 - ✅ Related Posts responsive design
+- ✅ GA4 analytics enhancements (article dimensions, conversions, member events)
+- ✅ Dead code cleanup (editools, google-sheets API, MISO SDK, unused constants)
 
 ### Known Warnings (Not Errors)
 - Console statements in development (pages/post, pages/category, etc.)
@@ -656,4 +745,4 @@ Includes simple-import-sort rules to ensure consistent import ordering.
 
 ---
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-02-04
