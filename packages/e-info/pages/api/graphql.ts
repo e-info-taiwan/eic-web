@@ -113,6 +113,18 @@ function containsSensitiveQuery(body: unknown): {
     }
   }
 
+  // Block: users query (CMS admin accounts - sensitive)
+  // Allow: usersCount (only returns count)
+  if (
+    normalizedQuery.includes('users') &&
+    !normalizedQuery.includes('userscount')
+  ) {
+    return {
+      isSensitive: true,
+      reason: 'CMS admin data is not accessible',
+    }
+  }
+
   return { isSensitive: false }
 }
 
