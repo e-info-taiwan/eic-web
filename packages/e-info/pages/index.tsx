@@ -11,7 +11,6 @@ import { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
-import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import HighlightSection from '~/components/index/highlight-section'
 import Inforgraphic from '~/components/index/inforgraphic'
 import MainCarousel from '~/components/index/main-carousel'

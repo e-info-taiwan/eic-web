@@ -2,7 +2,6 @@ import { Eic } from '@eic-web/draft-renderer'
 import { useEffect, useMemo, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
-import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import PostAdContent from '~/components/post/post-ad'
 import PostAttachments from '~/components/post/post-attachments'
 import PostFootnotes, {
@@ -245,25 +244,6 @@ const Citation = styled.article`
   }
 `
 
-const StyledAdsense_E1 = styled(Adsense)`
-  margin-bottom: 48px;
-
-  ${({ theme }) => theme.breakpoint.sm} {
-    margin-bottom: 60px;
-  }
-  ${({ theme }) => theme.breakpoint.xl} {
-    transform: translateX(-20px);
-  }
-`
-
-const StyledAdsense_AT = styled(Adsense)`
-  margin: 30px auto;
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    transform: translateX(-20px);
-  }
-`
-
 type PostProps = {
   postData: PostDetail
   articleType: string
@@ -348,8 +328,6 @@ export default function PostContent({
     }
   }, [articleRef, articleType, setCurrentSideIndex])
 
-  // Note: New API uses category (singular) instead of categories (plural)
-  const categorySlug = 'breakingnews' // Default since new API structure changed
   const blocksLength = getBlocksCount(contentToRender)
 
   return (
@@ -373,33 +351,30 @@ export default function PostContent({
               disabledImageLazyLoad={false}
             />
           ) : blocksLength <= 10 ? (
-            // Medium content: split at block 5 with one ad
+            // Medium content: split at block 5
             <>
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 0, 5)}
                 contentType={ValidPostContentType.NORMAL}
                 disabledImageLazyLoad={false}
               />
-              {/* <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" /> */}
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5)}
                 contentType={ValidPostContentType.NORMAL}
               />
             </>
           ) : (
-            // Long content: split at blocks 5 and 10 with two ads
+            // Long content: split at blocks 5 and 10
             <>
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 0, 5)}
                 contentType={ValidPostContentType.NORMAL}
                 disabledImageLazyLoad={false}
               />
-              {/* <StyledAdsense_AT pageKey={categorySlug} adKey="AT1" /> */}
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5, 10)}
                 contentType={ValidPostContentType.NORMAL}
               />
-              {/* <StyledAdsense_AT pageKey={categorySlug} adKey="AT2" /> */}
               <DraftRenderer
                 rawContentBlock={copyAndSliceDraftBlock(contentToRender, 10)}
                 contentType={ValidPostContentType.NORMAL}
@@ -416,8 +391,6 @@ export default function PostContent({
           {/* actionList content removed */}
         </ActionList>
       )}
-
-      {/* <StyledAdsense_E1 pageKey={categorySlug} adKey="E1" /> */}
 
       <MobileMediaLink postId={postData?.id} />
 

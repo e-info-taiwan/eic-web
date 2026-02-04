@@ -1,6 +1,5 @@
 import styled, { css, useTheme } from 'styled-components'
 
-import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import ArticleListCard from '~/components/shared/article-list-card'
 import type { ArticleCard } from '~/types/component'
 import * as gtag from '~/utils/gtag'
@@ -35,27 +34,18 @@ const ItemList = styled.div`
   margin-top: 20px;
 `
 
-const StyledAsense_FT = styled(Adsense)`
-  margin-top: 18px;
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-top: 0px;
-  }
-`
-
 type ArticleListsProps = {
   posts?: ArticleCard[]
-  AdPageKey: string
+  AdPageKey?: string
   defaultImage?: string
 }
 
 export default function ArticleLists({
   posts,
-  AdPageKey,
   defaultImage,
 }: ArticleListsProps): JSX.Element {
   const theme = useTheme()
-  const itemsBeforeAd = posts?.slice(0, 12).map((article) => {
+  const items = posts?.map((article) => {
     return (
       <Item key={article.id}>
         <ArticleListCard
@@ -81,39 +71,5 @@ export default function ArticleLists({
     )
   })
 
-  const itemsAfterAd = posts?.slice(12).map((article) => {
-    return (
-      <Item key={article.id}>
-        <ArticleListCard
-          {...article}
-          isReport={false}
-          shouldHighlightReport={false}
-          shouldReverseInMobile={true}
-          rwd={{
-            mobile: '30vw',
-            tablet: '50vw',
-            default: '256px',
-          }}
-          breakpoint={{
-            mobile: `${theme.mediaSize.sm - 1}px`,
-            tablet: `${theme.mediaSize.xl - 1}px`,
-          }}
-          onClick={() =>
-            gtag.sendEvent('listing', 'click', `listing-${article.title}`)
-          }
-          defaultImage={defaultImage}
-        />
-      </Item>
-    )
-  })
-
-  const shouldShowAd = Boolean(posts && posts?.length > 12)
-
-  return (
-    <>
-      <ItemList>{itemsBeforeAd}</ItemList>
-      {shouldShowAd && <StyledAsense_FT pageKey={AdPageKey} adKey="FT" />}
-      <ItemList>{itemsAfterAd}</ItemList>
-    </>
-  )
+  return <ItemList>{items}</ItemList>
 }

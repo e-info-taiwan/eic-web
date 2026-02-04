@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
-import Adsense from '~/components/ad/google-adsense/adsense-ad'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
 import SectionHeading from '~/components/shared/section-heading'
@@ -42,14 +41,6 @@ const AuthorWrapper = styled.div`
 
   ${({ theme }) => theme.breakpoint.xl} {
     padding: 40px 72px 60px;
-  }
-`
-
-const StyledAdsense_HD = styled(Adsense)`
-  margin-bottom: 20px;
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-bottom: 60px;
   }
 `
 
@@ -198,7 +189,6 @@ const Author: NextPageWithLayout<PageProps> = ({
 
   return (
     <AuthorWrapper aria-label={sectionTitle}>
-      {/* <StyledAdsense_HD pageKey="author" adKey="HD" /> */}
       <SectionHeading
         title={sectionTitle}
         highlightColor="#eee500"
@@ -311,7 +301,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
 Author.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const { props } = page
-  const ogTitle = `搜尋：${props.authorName}`
+  const ogTitle = `${props.authorName}`
 
   return <LayoutGeneral title={ogTitle}>{page}</LayoutGeneral>
 }

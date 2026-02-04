@@ -4,14 +4,12 @@ let SITE_URL: string
 let GA_TRACKING_ID: string
 let GTM_ID: string
 let GLOBAL_CACHE_SETTING: string
-let GOOGLE_ADSENSE_AD_CLIENT: string
 switch (ENV) {
   case 'prod':
     SITE_URL = 'e-info.org.tw'
     GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'public, max-age=300'
-    GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
     break
 
   case 'staging':
@@ -19,7 +17,6 @@ switch (ENV) {
     GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'public, max-age=300'
-    GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
     break
 
   case 'dev':
@@ -27,7 +24,6 @@ switch (ENV) {
     GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'no-store'
-    GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
     break
 
   default:
@@ -35,15 +31,7 @@ switch (ENV) {
     GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
     GLOBAL_CACHE_SETTING = 'no-store'
-    GOOGLE_ADSENSE_AD_CLIENT = 'ca-pub-9990785780499264'
     break
 }
 
-export {
-  ENV,
-  GA_TRACKING_ID,
-  GLOBAL_CACHE_SETTING,
-  GOOGLE_ADSENSE_AD_CLIENT,
-  GTM_ID,
-  SITE_URL,
-}
+export { ENV, GA_TRACKING_ID, GLOBAL_CACHE_SETTING, GTM_ID, SITE_URL }
