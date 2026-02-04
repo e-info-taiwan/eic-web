@@ -7,7 +7,13 @@ const MOCK_API_SERVER_PORT = Number(process.env.MOCK_API_SERVER_PORT ?? 4000)
 // Mailchimp Configuration
 // API Key format: <key>-<dc> where dc is the data center (e.g., us21)
 const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY ?? ''
+// Dual Audience architecture: separate audiences for daily and weekly newsletters
+// Falls back to legacy single MAILCHIMP_LIST_ID for backwards compatibility
 const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID ?? ''
+const MAILCHIMP_LIST_ID_DAILY =
+  process.env.MAILCHIMP_LIST_ID_DAILY || MAILCHIMP_LIST_ID
+const MAILCHIMP_LIST_ID_WEEKLY =
+  process.env.MAILCHIMP_LIST_ID_WEEKLY || MAILCHIMP_LIST_ID
 // Server prefix is derived from API key (last part after hyphen) or set explicitly
 const MAILCHIMP_SERVER_PREFIX =
   process.env.MAILCHIMP_SERVER_PREFIX ??
@@ -114,6 +120,8 @@ export {
   FIREBASE_CONFIG,
   MAILCHIMP_API_KEY,
   MAILCHIMP_LIST_ID,
+  MAILCHIMP_LIST_ID_DAILY,
+  MAILCHIMP_LIST_ID_WEEKLY,
   MAILCHIMP_SERVER_PREFIX,
   MOCK_API_SERVER_PORT,
   TURNSTILE_SECRET_KEY,

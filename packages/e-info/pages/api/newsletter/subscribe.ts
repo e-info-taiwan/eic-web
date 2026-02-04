@@ -3,15 +3,29 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import {
   MAILCHIMP_API_KEY,
-  MAILCHIMP_LIST_ID,
+  MAILCHIMP_LIST_ID_DAILY,
+  MAILCHIMP_LIST_ID_WEEKLY,
   MAILCHIMP_SERVER_PREFIX,
 } from '~/constants/config'
-import type { SubscribeRequest, SubscribeResponse } from '~/types/newsletter'
+import type {
+  NewsletterFormat,
+  NewsletterFrequency,
+  SubscribeRequest,
+  SubscribeResponse,
+} from '~/types/newsletter'
 
-// Helper function to update existing member's tags
-async function updateMemberTags(
+// Get the appropriate list ID based on frequency (dual Audience architecture)
+function getListId(frequency: NewsletterFrequency): string {
+  return frequency === 'daily'
+    ? MAILCHIMP_LIST_ID_DAILY
+    : MAILCHIMP_LIST_ID_WEEKLY
+}
+
+// Helper function to update existing member's merge fields
+async function updateMemberMergeFields(
   email: string,
-  tags: string[]
+  listId: string,
+  format: NewsletterFormat
 ): Promise<{ success: boolean }> {
   try {
     const subscriberHash = crypto
@@ -19,21 +33,21 @@ async function updateMemberTags(
       .update(email.toLowerCase())
       .digest('hex')
 
-    const url = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${subscriberHash}/tags`
-
-    const tagsData = {
-      tags: tags.map((tag) => ({ name: tag, status: 'active' })),
-    }
+    const url = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${listId}/members/${subscriberHash}`
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Basic ${Buffer.from(
           `anystring:${MAILCHIMP_API_KEY}`
         ).toString('base64')}`,
       },
-      body: JSON.stringify(tagsData),
+      body: JSON.stringify({
+        merge_fields: {
+          FORMAT: format,
+        },
+      }),
     })
 
     return { success: response.ok }
@@ -70,8 +84,11 @@ export default async function handler(
     })
   }
 
+  // Get the appropriate list ID based on frequency
+  const listId = getListId(frequency)
+
   // Check if Mailchimp is configured
-  if (!MAILCHIMP_API_KEY || !MAILCHIMP_LIST_ID || !MAILCHIMP_SERVER_PREFIX) {
+  if (!MAILCHIMP_API_KEY || !listId || !MAILCHIMP_SERVER_PREFIX) {
     console.error('[Newsletter API] Mailchimp not configured')
     return res.status(500).json({
       success: false,
@@ -80,28 +97,16 @@ export default async function handler(
   }
 
   try {
-    // Mailchimp API endpoint
-    const url = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members`
+    // Mailchimp API endpoint - use the appropriate audience based on frequency
+    const url = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${listId}/members`
 
-    // Build tags based on preferences
-    const tags: string[] = []
-    if (frequency === 'daily') {
-      tags.push('每日報')
-    } else {
-      tags.push('一週回顧')
-    }
-    if (format === 'styled') {
-      tags.push('美化版')
-    } else {
-      tags.push('一般版')
-    }
-
+    // In dual Audience architecture:
+    // - Frequency is determined by which Audience (list) the member is added to
+    // - Format is stored in merge fields
     const mailchimpData = {
       email_address: email,
       status: 'subscribed', // Single opt-in
-      tags: tags,
       merge_fields: {
-        FREQUENCY: frequency === 'daily' ? 'weekday' : 'saturday',
         FORMAT: format,
       },
     }
@@ -128,8 +133,8 @@ export default async function handler(
 
     // Handle Mailchimp error responses
     if (data.title === 'Member Exists') {
-      // Try to update existing member's tags
-      const updateResult = await updateMemberTags(email, tags)
+      // Try to update existing member's merge fields
+      const updateResult = await updateMemberMergeFields(email, listId, format)
       if (updateResult.success) {
         return res.status(200).json({
           success: true,

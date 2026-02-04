@@ -37,12 +37,10 @@
 ```
 Mailchimp Account
 ├── Audience: 每日報 (MAILCHIMP_LIST_ID_DAILY)
-│   ├── Tag: "美化版" - 訂閱美化版格式
-│   └── Tag: "一般版" - 訂閱一般版格式
+│   └── Merge Field: FORMAT = 'standard' | 'styled'
 │
 └── Audience: 一週回顧 (MAILCHIMP_LIST_ID_WEEKLY)
-    ├── Tag: "美化版" - 訂閱美化版格式
-    └── Tag: "一般版" - 訂閱一般版格式
+    └── Merge Field: FORMAT = 'standard' | 'styled'
 ```
 
 ### 為何使用雙 Audience？
@@ -54,14 +52,13 @@ Mailchimp Account
 | 取消訂閱獨立 | 使用者可單獨取消某一種電子報 |
 | 符合最佳實踐 | Mailchimp 建議不同發送頻率使用不同 Audience |
 
-### Tags 用途
+### Merge Fields 用途
 
-Tags 用於區分同一 Audience 內的格式偏好：
+使用 Merge Fields 儲存格式偏好：
 
-| Tag 名稱 | 用途 |
-|----------|------|
-| 美化版 | 標記訂閱美化版格式的會員 |
-| 一般版 | 標記訂閱一般版格式的會員 |
+| Merge Field | 說明 | 可能值 |
+|-------------|------|--------|
+| `FORMAT` | 格式偏好 | `'standard'` (一般版) 或 `'styled'` (美化版) |
 
 ---
 
@@ -255,9 +252,9 @@ POST /api/newsletter/subscribe
     └── weekly → MAILCHIMP_LIST_ID_WEEKLY
     │
     ▼
-根據 format 設定 Tag
-    ├── styled   → ["美化版"]
-    └── standard → ["一般版"]
+設定 Merge Field FORMAT
+    ├── styled   → FORMAT: 'styled'
+    └── standard → FORMAT: 'standard'
     │
     ▼
 呼叫 Mailchimp API 新增 member
@@ -266,7 +263,7 @@ POST /api/newsletter/subscribe
     │
     └── 失敗 → 檢查錯誤類型
               │
-              ├── "Member Exists" → 更新 Tags
+              ├── "Member Exists" → 更新 Merge Fields
               │                      │
               │                      ├── 成功 → 回傳「訂閱偏好已更新！」
               │                      └── 失敗 → 回傳錯誤訊息
@@ -289,17 +286,16 @@ Body:
 {
   "email_address": "user@example.com",
   "status": "subscribed",
-  "tags": ["美化版"],
   "merge_fields": {
     "FORMAT": "styled"
   }
 }
 ```
 
-#### 更新訂閱者 Tags
+#### 更新訂閱者 Merge Fields
 
 ```
-POST https://{server}.api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}/tags
+PATCH https://{server}.api.mailchimp.com/3.0/lists/{list_id}/members/{subscriber_hash}
 
 Headers:
   Content-Type: application/json
@@ -307,9 +303,9 @@ Headers:
 
 Body:
 {
-  "tags": [
-    { "name": "美化版", "status": "active" }
-  ]
+  "merge_fields": {
+    "FORMAT": "styled"
+  }
 }
 ```
 
@@ -458,64 +454,51 @@ subscriptionState === 'loading'
 
 ---
 
-## 實作變更計畫
+## 實作摘要
 
-### 現況 vs 目標
+### 架構設計
 
-| 項目 | 現況 | 目標 |
-|------|------|------|
-| Audience 數量 | 單一 `MAILCHIMP_LIST_ID` | 雙 Audience |
-| 頻率區分方式 | Tag: "每日報" / "一週回顧" | 不同 Audience ID |
-| 格式區分方式 | Tag: "美化版" / "一般版" | 維持用 Tag |
+| 項目 | 實作方式 |
+|------|----------|
+| Audience 數量 | 雙 Audience (`MAILCHIMP_LIST_ID_DAILY`, `MAILCHIMP_LIST_ID_WEEKLY`) |
+| 頻率區分方式 | 由 Audience ID 區分 |
+| 格式區分方式 | Merge Field `FORMAT` |
 
-### Phase 1: 環境變數調整
+### 核心程式碼
 
 **檔案:** `packages/e-info/constants/config.ts`
 
 ```typescript
-// 現有
-const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID ?? ''
-
-// 變更為
+// 雙 Audience 架構，向後相容舊的 MAILCHIMP_LIST_ID
 const MAILCHIMP_LIST_ID_DAILY =
   process.env.MAILCHIMP_LIST_ID_DAILY || process.env.MAILCHIMP_LIST_ID || ''
 const MAILCHIMP_LIST_ID_WEEKLY =
   process.env.MAILCHIMP_LIST_ID_WEEKLY || process.env.MAILCHIMP_LIST_ID || ''
 ```
 
-### Phase 2: API 邏輯調整
-
 **檔案:** `packages/e-info/pages/api/newsletter/subscribe.ts`
 
 ```typescript
-// 新增：根據 frequency 選擇 Audience ID
+// 根據 frequency 選擇 Audience ID
 function getListId(frequency: NewsletterFrequency): string {
-  return frequency === 'daily'
-    ? MAILCHIMP_LIST_ID_DAILY
-    : MAILCHIMP_LIST_ID_WEEKLY
+  return frequency === 'daily' ? MAILCHIMP_LIST_ID_DAILY : MAILCHIMP_LIST_ID_WEEKLY
 }
 
-// 修改：Tags 只需要格式（頻率已由 Audience 區分）
-function getFormatTags(format: NewsletterFormat): string[] {
-  return format === 'styled' ? ['美化版'] : ['一般版']
+// 使用 merge fields 儲存格式偏好
+const mailchimpData = {
+  email_address: email,
+  status: 'subscribed',
+  merge_fields: {
+    FORMAT: format,  // 'standard' | 'styled'
+  },
 }
 
-// 修改：updateMemberTags 需要接收 listId 參數
-async function updateMemberTags(
+// 更新現有訂閱者的格式偏好
+async function updateMemberMergeFields(
   email: string,
-  tags: string[],
-  listId: string  // 新增參數
+  listId: string,
+  format: NewsletterFormat
 ): Promise<{ success: boolean }>
-```
-
-### Phase 3: 移除頻率 Tag
-
-由於頻率已由 Audience 區分，不再需要 "每日報" / "一週回顧" Tags：
-
-```typescript
-// 現有 Tags（移除頻率 Tag）
-// ['每日報', '美化版'] → ['美化版']
-// ['一週回顧', '一般版'] → ['一般版']
 ```
 
 ---
@@ -640,6 +623,11 @@ if (!emailRegex.test(email)) {
 ---
 
 ## 變更記錄
+
+### 2026-02-05 (v2)
+- **實作雙 Audience 架構**：`MAILCHIMP_LIST_ID_DAILY` / `MAILCHIMP_LIST_ID_WEEKLY`
+- **格式改用 Merge Fields**：移除 Tags，改用 `merge_fields.FORMAT` 儲存格式偏好
+- 更新文件反映實際實作
 
 ### 2026-02-05
 - 更新格式代碼：`'beautified'` → `'styled'`
