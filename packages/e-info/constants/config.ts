@@ -28,12 +28,12 @@ switch (ENV) {
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     FIREBASE_CONFIG = {
-      apiKey: '',
-      authDomain: '',
-      projectId: '',
-      storageBucket: '',
-      messagingSenderId: '',
-      appId: '',
+      apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
+      authDomain: 'e-info-prod.firebaseapp.com',
+      projectId: 'e-info-prod',
+      storageBucket: 'e-info-prod.firebasestorage.app',
+      messagingSenderId: '1077023789574',
+      appId: '1:1077023789574:web:e3c98327e4e3e5250d6987',
     }
     break
   case 'staging':
