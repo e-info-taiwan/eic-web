@@ -13,7 +13,6 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import HighlightSection from '~/components/index/highlight-section'
 import Inforgraphic from '~/components/index/inforgraphic'
-import MainCarousel from '~/components/index/main-carousel'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
 import DonationModal from '~/components/shared/donation-modal'
@@ -40,6 +39,11 @@ import { fetchHeaderData } from '~/utils/header-data'
 import { fetchHomepageData } from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
+
+// MainCarousel 使用 react-slick，需要關閉 SSR 避免 hydration 錯誤
+const MainCarousel = dynamic(() => import('~/components/index/main-carousel'), {
+  ssr: false,
+})
 
 // Below-the-fold 區塊使用動態載入以減少初始 bundle 大小
 const NewsSection = dynamic(() => import('~/components/index/news-section'), {
