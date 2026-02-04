@@ -41,22 +41,6 @@ const COUNT_READING_HISTORY = gql`
   }
 `
 
-// Query to check if a reading history exists for a specific member and post
-const CHECK_READING_HISTORY = gql`
-  query CheckReadingHistory($memberId: ID!, $postId: ID!) {
-    readingHistories(
-      where: {
-        member: { id: { equals: $memberId } }
-        post: { id: { equals: $postId } }
-      }
-      take: 1
-    ) {
-      id
-      createdAt
-    }
-  }
-`
-
 /**
  * Get member's reading history with full post data
  * Uses API route with Firebase token verification
@@ -123,33 +107,6 @@ export const getReadingHistoryCount = async (
   }
 
   return result.data?.readingHistoriesCount ?? 0
-}
-
-/**
- * Check if a reading history exists for a member and post
- * Returns the reading history ID if exists, null otherwise
- */
-export const checkReadingHistoryExists = async (
-  memberId: string,
-  postId: string
-): Promise<{ id: string; createdAt: string } | null> => {
-  const client = getGqlClient()
-
-  const result = await client.query<{
-    readingHistories: { id: string; createdAt: string }[]
-  }>({
-    query: CHECK_READING_HISTORY,
-    variables: { memberId, postId },
-    fetchPolicy: 'network-only',
-  })
-
-  if (result.error) {
-    console.error('checkReadingHistoryExists error:', result.error)
-    return null
-  }
-
-  const histories = result.data?.readingHistories
-  return histories && histories.length > 0 ? histories[0] : null
 }
 
 /**
