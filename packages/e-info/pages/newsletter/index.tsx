@@ -110,11 +110,10 @@ const NavigationWrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 
   ${({ theme }) => theme.breakpoint.md} {
     gap: 28px;
-    margin-bottom: 40px;
   }
 `
 
@@ -183,16 +182,20 @@ const MonthSelect = styled.select`
   }
 `
 
-const RecentNewsletterLink = styled.a`
-  display: block;
+const RecentNewsletterLinkContainer = styled.div`
   text-align: center;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
-  text-decoration: none;
   margin-top: 12px;
+`
+
+const RecentNewsletterLink = styled.a`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
+  text-decoration: underline;
 
   &:hover {
-    text-decoration: underline;
+    color: ${({ theme }) => theme.colors.grayscale[0]};
   }
 `
 
@@ -312,6 +315,10 @@ const HistoricalSection = styled.div`
   &:first-of-type {
     border-top: 1px solid ${({ theme }) => theme.colors.grayscale[95]};
   }
+
+  & + & {
+    margin-top: 72px;
+  }
 `
 
 const SectionTitle = styled.h2`
@@ -331,13 +338,15 @@ const YearLinks = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px 8px;
+  max-width: 672px;
+  margin: 0 auto;
 `
 
 const YearLink = styled.a`
   display: inline-block;
   padding: 2px 12px;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[40]};
   text-decoration: none;
@@ -353,24 +362,25 @@ const YearLink = styled.a`
 `
 
 const HistoricalNote = styled.p`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.primary[40]};
-  margin-top: 16px;
-  line-height: 1.6;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000;
+  margin-top: 20px;
+  line-height: 1.25;
+  text-align: center;
 `
 
 const SCROLL_POSITION_KEY = 'newsletter-scroll-position'
 
 const EmptyMessage = styled.div`
   text-align: center;
-  padding: 60px 20px;
+  padding: 20px;
   color: ${({ theme }) => theme.colors.grayscale[60]};
   font-size: 16px;
 `
 
 const CalendarWrapper = styled.div`
   position: relative;
-  min-height: 300px;
 `
 
 const LoadingOverlay = styled.div`
@@ -533,6 +543,10 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
   // Navigate to next month
   const goToNextMonth = () => {
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth() + 1
+
     let newYear = year
     let newMonth = month + 1
 
@@ -541,7 +555,11 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
       newYear = year + 1
     }
 
-    if (newYear <= yearRange.maxYear) {
+    // Prevent navigating to future months
+    if (
+      newYear < currentYear ||
+      (newYear === currentYear && newMonth <= currentMonth)
+    ) {
       setYear(newYear)
       setMonth(newMonth)
       fetchNewsletters(newYear, newMonth)
@@ -550,9 +568,17 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
   // Handle year change
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth() + 1
+
     const newYear = parseInt(e.target.value, 10)
+    // Cap month if switching to current year and month is in future
+    const newMonth =
+      newYear === currentYear && month > currentMonth ? currentMonth : month
     setYear(newYear)
-    fetchNewsletters(newYear, month)
+    setMonth(newMonth)
+    fetchNewsletters(newYear, newMonth)
   }
 
   // Handle month change
@@ -569,10 +595,15 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
     yearOptions.push(y)
   }
 
+  // Get current date to prevent navigating to future months
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth() + 1
+
   // Check if we can navigate
   const canGoPrev = year > minYear || (year === minYear && month > 1)
   const canGoNext =
-    year < yearRange.maxYear || (year === yearRange.maxYear && month < 12)
+    year < currentYear || (year === currentYear && month < currentMonth)
 
   return (
     <PageWrapper>
@@ -615,11 +646,13 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
               onChange={handleMonthChange}
               disabled={loading}
             >
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                <option key={m} value={m}>
-                  {m}月
-                </option>
-              ))}
+              {Array.from({ length: 12 }, (_, i) => i + 1)
+                .filter((m) => year < currentYear || m <= currentMonth)
+                .map((m) => (
+                  <option key={m} value={m}>
+                    {m}月
+                  </option>
+                ))}
             </MonthSelect>
           </MonthDisplay>
 
@@ -627,13 +660,15 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
             下一個月
           </NavButton>
         </NavigationWrapper>
-        <RecentNewsletterLink
-          href="https://us12.campaign-archive.com/home/?u=988c9f400efc81e6842917795&id=f99f939cdc"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          點此瀏覽近期電子報
-        </RecentNewsletterLink>
+        <RecentNewsletterLinkContainer>
+          <RecentNewsletterLink
+            href="https://us12.campaign-archive.com/home/?u=988c9f400efc81e6842917795&id=f99f939cdc"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            點此瀏覽近期電子報
+          </RecentNewsletterLink>
+        </RecentNewsletterLinkContainer>
 
         <CalendarWrapper>
           {loading && (
@@ -647,37 +682,41 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
           )}
 
           {/* Desktop: Calendar grid with weekday headers */}
-          <DesktopCalendarGrid>
-            {WEEKDAYS.map((day) => (
-              <WeekdayHeader key={day}>週{day}</WeekdayHeader>
-            ))}
+          {newsletters.length > 0 && (
+            <DesktopCalendarGrid>
+              {WEEKDAYS.map((day) => (
+                <WeekdayHeader key={day}>週{day}</WeekdayHeader>
+              ))}
 
-            {calendarCells.map((cell, index) => (
-              <CalendarCell key={index}>
-                {cell.newsletter && (
-                  <NewsletterCard
-                    href={`/newsletter/${cell.newsletter.id}`}
-                    onClick={handleNewsletterClick}
-                  >
-                    <ThumbnailWrapper>
-                      <Image
-                        src={
-                          cell.newsletter.heroImage?.resized?.w480 ||
-                          cell.newsletter.heroImage?.resized?.original ||
-                          DEFAULT_POST_IMAGE_PATH
-                        }
-                        alt={cell.newsletter.title || '電子報'}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                      />
-                    </ThumbnailWrapper>
-                    <CardDate>{formatDate(cell.newsletter.sendDate)}</CardDate>
-                    <CardTitle>{cell.newsletter.title}</CardTitle>
-                  </NewsletterCard>
-                )}
-              </CalendarCell>
-            ))}
-          </DesktopCalendarGrid>
+              {calendarCells.map((cell, index) => (
+                <CalendarCell key={index}>
+                  {cell.newsletter && (
+                    <NewsletterCard
+                      href={`/newsletter/${cell.newsletter.id}`}
+                      onClick={handleNewsletterClick}
+                    >
+                      <ThumbnailWrapper>
+                        <Image
+                          src={
+                            cell.newsletter.heroImage?.resized?.w480 ||
+                            cell.newsletter.heroImage?.resized?.original ||
+                            DEFAULT_POST_IMAGE_PATH
+                          }
+                          alt={cell.newsletter.title || '電子報'}
+                          fill
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </ThumbnailWrapper>
+                      <CardDate>
+                        {formatDate(cell.newsletter.sendDate)}
+                      </CardDate>
+                      <CardTitle>{cell.newsletter.title}</CardTitle>
+                    </NewsletterCard>
+                  )}
+                </CalendarCell>
+              ))}
+            </DesktopCalendarGrid>
+          )}
 
           {/* Mobile/Tablet: Simple grid without empty cells */}
           <MobileTabletGrid>
@@ -741,9 +780,6 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
               )
             })}
           </YearLinks>
-          <HistoricalNote>
-            早期電子報的文章連結若無法讀取，請使用站內搜尋功能，即可找到該篇報導。
-          </HistoricalNote>
         </HistoricalSection>
 
         <HistoricalSection>
@@ -758,6 +794,9 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
             </YearLink>
           </YearLinks>
         </HistoricalSection>
+        <HistoricalNote>
+          早期電子報的文章連結若無法讀取，請使用站內搜尋功能，即可找到該篇報導。
+        </HistoricalNote>
       </ContentWrapper>
     </PageWrapper>
   )
