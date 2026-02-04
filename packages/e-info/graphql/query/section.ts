@@ -93,6 +93,7 @@ export type Topic = {
   postsCount: number
   posts: TopicPost[]
   tags?: TopicTag[]
+  authorInfo?: string | null
   isPinned: boolean
   sortOrder: number | null
   updatedAt?: string
@@ -277,6 +278,7 @@ export const topicById = gql`
         id
         name
       }
+      authorInfo
       isPinned
       updatedAt
     }

@@ -94,30 +94,32 @@ const TopicSummary = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 1.8;
-  color: #333;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   margin: 0 0 16px;
   text-align: center;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 18px;
-  }
 `
 
 const UpdateTime = styled.div`
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
-  color: #000;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   margin-bottom: 20px;
   text-align: center;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 16px;
-  }
 
   span {
     color: ${({ theme }) => theme.colors.secondary[20]};
   }
+`
+
+const AuthorInfo = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.secondary[20]};
+  text-align: center;
+  white-space: pre-line;
+  margin-bottom: 20px;
 `
 
 const TagSection = styled.div`
@@ -504,6 +506,9 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
               最新更新時間 <span>{formatDate(topic.updatedAt)}</span>
             </UpdateTime>
           )}
+
+          {/* Author Info */}
+          {topic.authorInfo && <AuthorInfo>{topic.authorInfo}</AuthorInfo>}
 
           {/* Tags */}
           {tagNames.length > 0 && (
