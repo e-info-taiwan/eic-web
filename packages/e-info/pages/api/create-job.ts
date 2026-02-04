@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { getGqlClient } from '~/apollo-client'
 import { createJob } from '~/graphql/query/job'
+import { getClientIp, verifyTurnstileToken } from '~/utils/verify-turnstile'
 
 type RequestBody = {
   title: string
@@ -13,6 +14,7 @@ type RequestBody = {
   applicationMethod: string
   startDate: string
   endDate: string
+  turnstileToken?: string
 }
 
 type ResponseData = {
@@ -31,6 +33,22 @@ export default async function handler(
 
   try {
     const body = req.body as RequestBody
+
+    // Verify Turnstile token (bot protection)
+    const clientIp = getClientIp(
+      req.headers as Record<string, string | string[] | undefined>,
+      req.socket.remoteAddress
+    )
+    const turnstileResult = await verifyTurnstileToken(
+      body.turnstileToken || '',
+      clientIp
+    )
+    if (!turnstileResult.success) {
+      return res.status(403).json({
+        success: false,
+        error: turnstileResult.error || 'Bot verification failed',
+      })
+    }
 
     // Validate required fields
     if (

@@ -2,10 +2,11 @@
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import TurnstileWidget from '~/components/shared/turnstile-widget'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
@@ -409,6 +410,11 @@ const CreateEventPage: NextPageWithLayout = () => {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token)
+  }, [])
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -530,6 +536,9 @@ const CreateEventPage: NextPageWithLayout = () => {
       const uploadFormData = new window.FormData()
       uploadFormData.append('file', formData.image)
       uploadFormData.append('name', formData.image.name)
+      if (turnstileToken) {
+        uploadFormData.append('turnstileToken', turnstileToken)
+      }
 
       const response = await fetch('/api/upload-photo', {
         method: 'POST',
@@ -585,6 +594,7 @@ const CreateEventPage: NextPageWithLayout = () => {
           fee: formData.fee,
           registrationUrl: formData.registrationUrl,
           content: formData.content,
+          turnstileToken,
         }),
       })
 
@@ -826,6 +836,8 @@ const CreateEventPage: NextPageWithLayout = () => {
             />
             {errors.content && <ErrorMessage>{errors.content}</ErrorMessage>}
           </FormGroup>
+
+          <TurnstileWidget onVerify={handleTurnstileVerify} />
 
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? '送出中...' : '送出'}

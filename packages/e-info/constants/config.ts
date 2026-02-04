@@ -13,6 +13,10 @@ const MAILCHIMP_SERVER_PREFIX =
   process.env.MAILCHIMP_SERVER_PREFIX ??
   (MAILCHIMP_API_KEY.split('-').pop() || '')
 
+// Cloudflare Turnstile Configuration (server-side secret key)
+// If not set, Turnstile verification is skipped (graceful degradation)
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY ?? ''
+
 let API_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
@@ -95,4 +99,5 @@ export {
   MAILCHIMP_LIST_ID,
   MAILCHIMP_SERVER_PREFIX,
   MOCK_API_SERVER_PORT,
+  TURNSTILE_SECRET_KEY,
 }

@@ -39,6 +39,10 @@ switch (ENV) {
     break
 }
 
+// Cloudflare Turnstile (public site key for frontend widget)
+// If not set, Turnstile protection is disabled (graceful degradation)
+const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || ''
+
 export {
   ENV,
   GA_TRACKING_ID,
@@ -46,4 +50,5 @@ export {
   GOOGLE_CSE_ID,
   GTM_ID,
   SITE_URL,
+  TURNSTILE_SITE_KEY,
 }

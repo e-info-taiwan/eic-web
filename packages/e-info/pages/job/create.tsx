@@ -2,10 +2,11 @@
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import TurnstileWidget from '~/components/shared/turnstile-widget'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
@@ -310,6 +311,11 @@ const CreateJobPage: NextPageWithLayout = () => {
 
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token)
+  }, [])
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -404,6 +410,7 @@ const CreateJobPage: NextPageWithLayout = () => {
           applicationMethod,
           startDate: formData.startDate,
           endDate: formData.endDate,
+          turnstileToken,
         }),
       })
 
@@ -578,6 +585,8 @@ const CreateJobPage: NextPageWithLayout = () => {
               <ErrorMessage>{errors.startDate || errors.endDate}</ErrorMessage>
             )}
           </FormGroup>
+
+          <TurnstileWidget onVerify={handleTurnstileVerify} />
 
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? '送出中...' : '送出'}

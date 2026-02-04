@@ -42,32 +42,47 @@
 
 ## Environment Variables (環境變數)
 
-| 變數名稱             | 資料型態  | 初始值      | 變數說明                                         |
-| -------------------- | --------- | ----------- | ------------------------------------------------ |
-| NEXT_PUBLIC_ENV      | 字串      | 'localhost' | 環境設定                                         |
-| USE_MOCK_SERVER      | 字串      | 'false'     | 使用 mock server 來拿取 GraphQL 資料             |
-| MOCK_API_SERVER_PORT | 整數      | '4000'      | mock GraphQL API server 所使用的 port            |
-| OAUTH_CLIENT_ID      | 字串      | ''          | Google OAuth Client ID                           |
-| OAUTH_CLIENT_SECRET  | 字串      | ''          | Google OAuth Client secret                       |
-| OAUTH_REDIRECT_URIS  | 字串      | ''          | Google OAuth redirect URIs, 每個 URI 用 `,` 分隔 |
-| OAUTH_REFRESH_TOKEN  | JSON 字串 | '{}'        | Google OAuth Refresh Token                       |
+| 變數名稱             | 資料型態 | 初始值      | 變數說明                              |
+| -------------------- | -------- | ----------- | ------------------------------------- |
+| NEXT_PUBLIC_ENV      | 字串     | 'localhost' | 環境設定                              |
+| USE_MOCK_SERVER      | 字串     | 'false'     | 使用 mock server 來拿取 GraphQL 資料  |
+| MOCK_API_SERVER_PORT | 整數     | '4000'      | mock GraphQL API server 所使用的 port |
 
 ### Firebase Authentication (會員登入功能)
 
-| 變數名稱                              | 資料型態 | 初始值 | 變數說明                          |
-| ------------------------------------- | -------- | ------ | --------------------------------- |
-| NEXT_PUBLIC_FIREBASE_API_KEY          | 字串     | ''     | Firebase API Key                  |
-| NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN      | 字串     | ''     | Firebase Auth Domain              |
-| NEXT_PUBLIC_FIREBASE_PROJECT_ID       | 字串     | ''     | Firebase Project ID               |
-| NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET   | 字串     | ''     | Firebase Storage Bucket           |
-| NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID | 字串  | ''     | Firebase Messaging Sender ID      |
-| NEXT_PUBLIC_FIREBASE_APP_ID           | 字串     | ''     | Firebase App ID                   |
+| 變數名稱                                 | 資料型態 | 初始值 | 變數說明                     |
+| ---------------------------------------- | -------- | ------ | ---------------------------- |
+| NEXT_PUBLIC_FIREBASE_API_KEY             | 字串     | ''     | Firebase API Key             |
+| NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN         | 字串     | ''     | Firebase Auth Domain         |
+| NEXT_PUBLIC_FIREBASE_PROJECT_ID          | 字串     | ''     | Firebase Project ID          |
+| NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET      | 字串     | ''     | Firebase Storage Bucket      |
+| NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID | 字串     | ''     | Firebase Messaging Sender ID |
+| NEXT_PUBLIC_FIREBASE_APP_ID              | 字串     | ''     | Firebase App ID              |
 
 > **設定步驟**：
+>
 > 1. 前往 [Firebase Console](https://console.firebase.google.com/) 建立專案
 > 2. 在專案設定中取得上述設定值
 > 3. 啟用 Authentication 並開啟所需的登入方式（Email/Password、Google、Facebook、Apple）
 > 4. 設定 Firestore Database 並配置安全規則
+
+### Mailchimp (電子報訂閱)
+
+| 變數名稱                | 資料型態 | 初始值 | 變數說明                                       |
+| ----------------------- | -------- | ------ | ---------------------------------------------- |
+| MAILCHIMP_API_KEY       | 字串     | ''     | Mailchimp API Key（格式：`<key>-<dc>`）        |
+| MAILCHIMP_LIST_ID       | 字串     | ''     | Mailchimp Audience List ID                     |
+| MAILCHIMP_SERVER_PREFIX | 字串     | ''     | Mailchimp Server Prefix（從 API Key 自動取得） |
+
+### Cloudflare Turnstile (Bot 保護)
+
+| 變數名稱              | 資料型態 | 初始值 | 變數說明                             |
+| --------------------- | -------- | ------ | ------------------------------------ |
+| TURNSTILE_SITE_KEY    | 字串     | ''     | Turnstile Site Key（前端 widget 用） |
+| TURNSTILE_SECRET_KEY  | 字串     | ''     | Turnstile Secret Key（後端驗證用）   |
+
+> **說明**：Turnstile 用於保護公開表單（活動建立、徵才建立）免受機器人攻擊。
+> 若未設定 key，系統會自動跳過驗證（graceful degradation）。
 
 ## Feature Toggle (功能開關，暫時性)
 
