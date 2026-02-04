@@ -4,5 +4,6 @@ import type { GenericAuthor } from '../../types/common'
 
 export const Author: () => Partial<GenericAuthor> = () => ({
   id: faker.datatype.uuid(),
-  name: faker.name.firstName(),
+  name: faker.name.fullName(),
+  bio: faker.lorem.paragraph(),
 })

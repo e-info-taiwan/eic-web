@@ -8,56 +8,85 @@ export const resolvers: (store: IMockStore) => Partial<IResolvers> = (
 ) => ({
   // resolver for queries
   Query: {
-    categories(_, { skip, take }) {
+    posts(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'posts') as Ref[]
       if (take) {
-        const list = store.get('Query', 'ROOT', 'categories') as Ref[]
         return list.slice(skip, skip + take)
       }
-      return store.get('Query', 'ROOT', 'categories')
+      return list
     },
-    editorChoices(_, { skip, take }) {
+    categories(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'categories') as Ref[]
       if (take) {
-        const list = store.get('Query', 'ROOT', 'editorChoices') as Ref[]
         return list.slice(skip, skip + take)
       }
-      return store.get('Query', 'ROOT', 'editorChoices')
+      return list
     },
+    sections(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'sections') as Ref[]
+      if (take) {
+        return list.slice(skip, skip + take)
+      }
+      return list
+    },
+    topics(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'topics') as Ref[]
+      if (take) {
+        return list.slice(skip, skip + take)
+      }
+      return list
+    },
+    tags(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'tags') as Ref[]
+      if (take) {
+        return list.slice(skip, skip + take)
+      }
+      return list
+    },
+    homepagePicks(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'homepagePicks') as Ref[]
+      if (take) {
+        return list.slice(skip, skip + take)
+      }
+      return list
+    },
+    authors(_, { skip = 0, take }) {
+      const list = store.get('Query', 'ROOT', 'authors') as Ref[]
+      if (take) {
+        return list.slice(skip, skip + take)
+      }
+      return list
+    },
+  },
+  // resolver for nested queries
+  Category: {
     posts(_, { take }) {
       if (take) {
-        const list = store.get('Query', 'ROOT', 'posts') as Ref[]
-        return faker.helpers.arrayElements(list, take)
-      }
-      return store.get('Query', 'ROOT', 'posts')
-    },
-    dataSets(_, { skip, take }) {
-      if (take) {
-        const list = store.get('Query', 'ROOT', 'dataSets') as Ref[]
-        return list.slice(skip, skip + take)
-      }
-      return store.get('Query', 'ROOT', 'dataSets')
-    },
-  },
-  // resolver for nested queries, ref: https://www.linkedin.com/pulse/resolving-nested-queries-graphql-using-apollo-server-saransh-kataria/
-  Category: {
-    relatedPost(_, { take }) {
-      if (take) {
-        const list = store.get('Category', 'ROOT', 'relatedPost') as Ref[]
+        const list = store.get('Category', 'ROOT', 'posts') as Ref[]
         const length = Math.floor(faker.datatype.number({ min: 0, max: take }))
-
         return faker.helpers.arrayElements(list, length)
       }
-      return store.get('Category', 'ROOT', 'relatedPost')
+      return store.get('Category', 'ROOT', 'posts')
     },
   },
-  DataSet: {
-    gallery(_, { take }) {
+  Section: {
+    categories(_, { take }) {
       if (take) {
-        const list = store.get('DataSet', 'ROOT', 'gallery') as Ref[]
+        const list = store.get('Section', 'ROOT', 'categories') as Ref[]
         const length = Math.floor(faker.datatype.number({ min: 0, max: take }))
-
         return faker.helpers.arrayElements(list, length)
       }
-      return store.get('DataSet', 'ROOT', 'gallery')
+      return store.get('Section', 'ROOT', 'categories')
+    },
+  },
+  Topic: {
+    posts(_, { take }) {
+      if (take) {
+        const list = store.get('Topic', 'ROOT', 'posts') as Ref[]
+        const length = Math.floor(faker.datatype.number({ min: 0, max: take }))
+        return faker.helpers.arrayElements(list, length)
+      }
+      return store.get('Topic', 'ROOT', 'posts')
     },
   },
 })

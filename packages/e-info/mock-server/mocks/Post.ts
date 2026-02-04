@@ -5,8 +5,12 @@ import { ValidPostStyle } from '../../types/common'
 
 export const Post: () => Partial<GenericPost> = () => ({
   id: faker.datatype.uuid(),
-  slug: faker.lorem.slug(),
-  style: faker.helpers.arrayElement(Object.values(ValidPostStyle)),
-  name: faker.lorem.sentence(),
+  title: faker.lorem.sentence(),
   subtitle: faker.lorem.sentence(),
+  style: faker.helpers.arrayElement(Object.values(ValidPostStyle)),
+  state: 'published',
+  publishTime: faker.date.past().toISOString(),
+  heroCaption: faker.lorem.sentence(),
+  citations: faker.lorem.paragraph(),
+  otherByline: faker.name.fullName(),
 })

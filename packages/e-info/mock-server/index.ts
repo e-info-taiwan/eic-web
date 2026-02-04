@@ -9,7 +9,7 @@ import { mocks } from './mocks'
 import { resolvers } from './resolver'
 
 const GQL_SCHEMA_URL =
-  'https://raw.githubusercontent.com/mirror-media/Lilith/main/packages/readr/schema.graphql'
+  'https://raw.githubusercontent.com/e-info-taiwan/CMS/main/packages/eic/schema.graphql'
 
 const startServer = async () => {
   const schema = await loadSchema(GQL_SCHEMA_URL, {
