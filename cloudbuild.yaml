@@ -33,13 +33,24 @@ steps:
       - '-c'
       - |
         # Determine secret suffix based on branch
-        case "${BRANCH_NAME}" in
-          main|master|prod) SECRET_SUFFIX="_PROD" ;;
-          staging)          SECRET_SUFFIX="_STAGING" ;;
-          *)                SECRET_SUFFIX="_DEV" ;;
+        BRANCH="${BRANCH_NAME}"
+        case "$BRANCH" in
+          main|master|prod) SUFFIX="_PROD" ;;
+          staging)          SUFFIX="_STAGING" ;;
+          *)                SUFFIX="_DEV" ;;
         esac
 
-        echo "Deploying with secrets suffix: $SECRET_SUFFIX"
+        echo "Deploying with secrets suffix: $SUFFIX"
+
+        # Build secrets string
+        SECRETS="FIREBASE_ADMIN_PROJECT_ID=FIREBASE_ADMIN_PROJECT_ID$SUFFIX:latest"
+        SECRETS="$SECRETS,FIREBASE_ADMIN_CLIENT_EMAIL=FIREBASE_ADMIN_CLIENT_EMAIL$SUFFIX:latest"
+        SECRETS="$SECRETS,FIREBASE_ADMIN_PRIVATE_KEY=FIREBASE_ADMIN_PRIVATE_KEY$SUFFIX:latest"
+        SECRETS="$SECRETS,TURNSTILE_SECRET_KEY=TURNSTILE_SECRET_KEY$SUFFIX:latest"
+        SECRETS="$SECRETS,MAILCHIMP_API_KEY=MAILCHIMP_API_KEY$SUFFIX:latest"
+        SECRETS="$SECRETS,MAILCHIMP_LIST_ID=MAILCHIMP_LIST_ID$SUFFIX:latest"
+
+        echo "Secrets config: $SECRETS"
 
         # Read cloud run service names from substitution variable
         IFS=',' read -r -a cloud_runs <<< "$_CLOUD_RUN_SERVICE_NAMES"
@@ -51,7 +62,7 @@ steps:
           gcloud run deploy "$cr" \
             --image gcr.io/$PROJECT_ID/$_IMAGE_NAME:${BRANCH_NAME}_${SHORT_SHA} \
             --region asia-east1 \
-            --update-secrets="FIREBASE_ADMIN_PROJECT_ID=FIREBASE_ADMIN_PROJECT_ID${SECRET_SUFFIX}:latest,FIREBASE_ADMIN_CLIENT_EMAIL=FIREBASE_ADMIN_CLIENT_EMAIL${SECRET_SUFFIX}:latest,FIREBASE_ADMIN_PRIVATE_KEY=FIREBASE_ADMIN_PRIVATE_KEY${SECRET_SUFFIX}:latest,TURNSTILE_SECRET_KEY=TURNSTILE_SECRET_KEY${SECRET_SUFFIX}:latest,MAILCHIMP_API_KEY=MAILCHIMP_API_KEY${SECRET_SUFFIX}:latest,MAILCHIMP_LIST_ID=MAILCHIMP_LIST_ID${SECRET_SUFFIX}:latest"
+            --update-secrets="$SECRETS"
 
         done
 
