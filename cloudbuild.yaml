@@ -34,12 +34,20 @@ steps:
     args:
       - '-c'
       - |
-        # Determine secret suffix based on branch
-        case "$$BRANCH_NAME" in
-          main|master|prod) SUFFIX="_PROD" ;;
-          staging)          SUFFIX="_STAGING" ;;
-          *)                SUFFIX="_DEV" ;;
-        esac
+        # Determine secret suffix based on _ENVIRONMENT variable (if set) or branch
+        if [ -n "$_ENVIRONMENT" ]; then
+          case "$_ENVIRONMENT" in
+            prod|production) SUFFIX="_PROD" ;;
+            staging)         SUFFIX="_STAGING" ;;
+            *)               SUFFIX="_DEV" ;;
+          esac
+        else
+          case "$$BRANCH_NAME" in
+            main|master|prod) SUFFIX="_PROD" ;;
+            staging)          SUFFIX="_STAGING" ;;
+            *)                SUFFIX="_DEV" ;;
+          esac
+        fi
 
         echo "Deploying with secrets suffix: $$SUFFIX"
 
@@ -78,3 +86,4 @@ substitutions:
   _TARGET_PACKAGE: ''
   _IMAGE_NAME: ''
   _CLOUD_RUN_SERVICE_NAMES: ''
+  _ENVIRONMENT: ''  # Optional: 'dev', 'staging', 'prod' - overrides branch-based detection
