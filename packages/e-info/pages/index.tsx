@@ -11,8 +11,6 @@ import { ReactElement, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
-import HighlightSection from '~/components/index/highlight-section'
-import Inforgraphic from '~/components/index/inforgraphic'
 import LayoutGeneral from '~/components/layout/layout-general'
 import AdContent from '~/components/shared/ad-content'
 import DonationModal from '~/components/shared/donation-modal'
@@ -40,34 +38,41 @@ import { fetchHomepageData } from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
 
-// MainCarousel 使用 react-slick，需要關閉 SSR 避免 hydration 錯誤
+// 關閉 SSR 避免 hydration 錯誤（react-slick 和 @readr-media/react-image）
 const MainCarousel = dynamic(() => import('~/components/index/main-carousel'), {
   ssr: false,
 })
+const HighlightSection = dynamic(
+  () => import('~/components/index/highlight-section'),
+  { ssr: false }
+)
+const Inforgraphic = dynamic(() => import('~/components/index/inforgraphic'), {
+  ssr: false,
+})
 
-// Below-the-fold 區塊使用動態載入以減少初始 bundle 大小
+// Below-the-fold 區塊使用動態載入（關閉 SSR 避免 hydration 錯誤）
 const NewsSection = dynamic(() => import('~/components/index/news-section'), {
-  ssr: true,
+  ssr: false,
 })
 const SpecialColumnSection = dynamic(
   () => import('~/components/index/special-column-section'),
-  { ssr: true }
+  { ssr: false }
 )
 const SupplementSection = dynamic(
   () => import('~/components/index/supplement-section'),
-  { ssr: true }
+  { ssr: false }
 )
 const FeaturedTopicsSection = dynamic(
   () => import('~/components/index/featured-topics-section'),
-  { ssr: true }
+  { ssr: false }
 )
 const GreenConsumptionSection = dynamic(
   () => import('~/components/index/green-consumption-section'),
-  { ssr: true }
+  { ssr: false }
 )
 const HotKeywordsSection = dynamic(
   () => import('~/components/index/hot-keywords-section'),
-  { ssr: true }
+  { ssr: false }
 )
 
 type PageProps = {
