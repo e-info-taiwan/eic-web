@@ -115,7 +115,7 @@ export type PostDetail = Override<
     citations: string | null
     attachments: Attachment[]
     poll: Poll | null
-    ad1: PostAd | null
+    ad: PostAd | null
     isNewsletter: boolean | null
   }
 >
@@ -240,7 +240,7 @@ const post = gql`
         status
       }
 
-      ad1 {
+      ad {
         id
         name
         state

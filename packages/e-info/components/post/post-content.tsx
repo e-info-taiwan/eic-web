@@ -409,7 +409,7 @@ export default function PostContent({
         </Citation>
       )}
 
-      <PostAdContent ad={postData?.ad1} />
+      <PostAdContent ad={postData?.ad} />
 
       <PostAttachments attachments={postData?.attachments || []} />
 
