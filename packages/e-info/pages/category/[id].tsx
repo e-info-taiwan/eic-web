@@ -748,6 +748,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     }
 
     const categoryInfo = categoryData.categories[0]
+
+    // Hidden categories - used only for homepage picks, not for direct browsing
+    const HIDDEN_CATEGORY_SLUGS = ['homepagegraph', 'breakingnews', 'hottopic']
+    if (HIDDEN_CATEGORY_SLUGS.includes(categoryInfo.slug)) {
+      return { notFound: true }
+    }
+
     const section = categoryInfo.section
 
     if (!section) {
