@@ -694,9 +694,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
   const { siteConfigs } = useHeaderData()
 
   // Get subscriber count from site configs (id: 2) 電子報訂閱人數
-  const subscriberCountConfig = siteConfigs?.find(
-    (config) => config.id === '2'
-  )
+  const subscriberCountConfig = siteConfigs?.find((config) => config.id === '2')
   const subscriberCount = subscriberCountConfig?.content
 
   // Get vote, utm_source, and raw from query parameters
