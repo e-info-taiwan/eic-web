@@ -481,11 +481,11 @@ export type NewsBarPick = {
 }
 
 // Query for NewsBar marquee - lightweight version with only title and URL
-// Fetches only "快訊" (flashnews) category picks
+// Fetches only "熱門話題" (hottopic) category picks
 export const homepagePicksForNewsBar = gql`
   query {
     homepagePicks(
-      where: { category: { slug: { equals: "flashnews" } } }
+      where: { category: { slug: { equals: "hottopic" } } }
       orderBy: { sortOrder: asc }
     ) {
       id
@@ -500,12 +500,12 @@ export const homepagePicksForNewsBar = gql`
 `
 
 // Query for homepage carousel picks
-// Filter by category slug "homepepicks" (首頁輪播文章)
+// Filter by category slug "homepagegraph" (首頁輪播文章)
 // Note: Carousel uses full image sizes for large hero display on desktop
 export const homepagePicksForCarousel = gql`
   query {
     homepagePicks(
-      where: { category: { slug: { equals: "homepepicks" } } }
+      where: { category: { slug: { equals: "homepagegraph" } } }
       orderBy: { sortOrder: asc }
     ) {
       id

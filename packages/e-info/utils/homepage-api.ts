@@ -145,7 +145,7 @@ async function fetchFromGraphQL(
     }),
     client.query<{ homepagePicks: HomepagePick[] }>({
       query: homepagePicksByCategory,
-      variables: { categorySlug: 'hottopic' },
+      variables: { categorySlug: 'breakingnews' },
     }),
     client.query<{ topics: Topic[] }>({
       query: topicsWithPosts,

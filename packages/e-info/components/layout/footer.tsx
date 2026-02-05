@@ -166,7 +166,7 @@ const CopyrightSection = styled.div`
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     flex-direction: row;
     align-items: flex-start;
-    gap: 30px;
+    gap: 20px;
   }
 `
 
@@ -240,17 +240,13 @@ const Footer = () => {
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false)
   const { siteConfigs } = useHeaderData()
 
-  // Get donation permit number from site configs
-  const donationPermitConfig = siteConfigs.find(
-    (config) => config.name === '公益勸募字號'
-  )
+  // Get donation permit number from site configs (id: 1) 公益勸募字號
+  const donationPermitConfig = siteConfigs.find((config) => config.id === '1')
   const donationPermitNumber = donationPermitConfig?.content || ''
 
-  // Get donation link from site configs
-  const donationLinkConfig = siteConfigs.find(
-    (config) => config.name === '捐款連結'
-  )
-  const donationLink = donationLinkConfig?.link || ''
+  // Get donation link from site configs (id: 3) 捐款連結
+  const donationLinkConfig = siteConfigs.find((config) => config.id === '3')
+  const donationLink = donationLinkConfig?.content || ''
 
   const navigationData = [
     [

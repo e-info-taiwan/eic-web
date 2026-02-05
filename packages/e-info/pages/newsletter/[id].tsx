@@ -693,9 +693,9 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
   const pollRef = useRef<HTMLElement>(null)
   const { siteConfigs } = useHeaderData()
 
-  // Get subscriber count from site configs and format with thousand separators
+  // Get subscriber count from site configs (id: 2) 電子報訂閱人數
   const subscriberCountConfig = siteConfigs?.find(
-    (config) => config.name === '電子報訂閱人數'
+    (config) => config.id === '2'
   )
   const subscriberCount = subscriberCountConfig?.content
 
