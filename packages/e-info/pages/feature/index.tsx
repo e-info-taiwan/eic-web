@@ -350,10 +350,10 @@ type PageProps = {
 }
 
 const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
-  // Show first topic as featured, rest as regular articles
+  // Display all topics as featured articles
+  // Only the first topic shows its related posts (up to 3) in the grid below
   // (isPinned is only used for homepage display, not for this listing page)
-  const featuredTopics = topics.slice(0, 1)
-  const regularTopics = topics.slice(1)
+  const firstTopicPosts = topics[0]?.posts || []
 
   const renderFeaturedArticle = (topic: Topic, index: number) => {
     const topicHref = `/feature/${topic.id}`
@@ -405,39 +405,35 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
           </FeaturedContent>
         </FeaturedArticle>
 
-        {/* Show article grid after first featured topic (max 3) */}
-        {index === 0 && regularTopics.length > 0 && (
+        {/* Show article grid with first topic's posts (max 3) */}
+        {index === 0 && firstTopicPosts.length > 0 && (
           <ArticleGrid>
-            {regularTopics.slice(0, 3).map((regularTopic) => {
-              const regularHref = `/feature/${regularTopic.id}`
-              const regularImage = getTopicImageUrl(regularTopic)
-              const regularDate = formatDate(regularTopic.updatedAt)
+            {firstTopicPosts.map((post) => {
+              const postHref = `/node/${post.id}`
+              const postImage =
+                post.heroImage?.resizedWebp?.w480 ||
+                post.heroImage?.resized?.w480 ||
+                post.heroImage?.resized?.original ||
+                DEFAULT_POST_IMAGE_PATH
+              const postDate = formatDate(post.publishTime)
 
               return (
-                <Link
-                  key={regularTopic.id}
-                  href={regularHref}
-                  passHref
-                  legacyBehavior
-                >
+                <Link key={post.id} href={postHref} passHref legacyBehavior>
                   <ArticleCard
                     onClick={() =>
                       gtag.sendEvent(
                         'featured-topics',
                         'click',
-                        `article-${regularTopic.title}`
+                        `article-${post.title}`
                       )
                     }
                   >
                     <ArticleImageWrapper>
-                      <ArticleImage
-                        src={regularImage}
-                        alt={regularTopic.title || ''}
-                      />
+                      <ArticleImage src={postImage} alt={post.title || ''} />
                     </ArticleImageWrapper>
                     <ArticleContent>
-                      <ArticleDate>{regularDate}</ArticleDate>
-                      <ArticleTitle>{regularTopic.title}</ArticleTitle>
+                      <ArticleDate>{postDate}</ArticleDate>
+                      <ArticleTitle>{post.title}</ArticleTitle>
                     </ArticleContent>
                   </ArticleCard>
                 </Link>
@@ -466,9 +462,7 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
         <Title>深度專題</Title>
       </SectionTitle>
 
-      {featuredTopics.map((topic, index) =>
-        renderFeaturedArticle(topic, index)
-      )}
+      {topics.map((topic, index) => renderFeaturedArticle(topic, index))}
     </PageWrapper>
   )
 }

@@ -225,6 +225,7 @@ export const topicsWithPosts = gql`
 /**
  * Query for all published topics (for /feature listing page)
  * Returns all topics with basic info and updatedAt for sorting
+ * First topic's posts (up to 3) are used for the article grid
  */
 export const allTopics = gql`
   query {
@@ -245,6 +246,19 @@ export const allTopics = gql`
         }
       }
       postsCount
+      posts(take: 3, orderBy: { publishTime: desc }) {
+        id
+        title
+        publishTime
+        heroImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+      }
       isPinned
       updatedAt
     }
