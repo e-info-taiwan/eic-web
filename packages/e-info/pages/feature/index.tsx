@@ -350,9 +350,10 @@ type PageProps = {
 }
 
 const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
-  // Split topics into featured (isPinned) and regular
-  const featuredTopics = topics.filter((topic) => topic.isPinned)
-  const regularTopics = topics.filter((topic) => !topic.isPinned)
+  // Show first topic as featured, rest as regular articles
+  // (isPinned is only used for homepage display, not for this listing page)
+  const featuredTopics = topics.slice(0, 1)
+  const regularTopics = topics.slice(1)
 
   const renderFeaturedArticle = (topic: Topic, index: number) => {
     const topicHref = `/feature/${topic.id}`
