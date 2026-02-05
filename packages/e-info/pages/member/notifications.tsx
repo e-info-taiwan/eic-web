@@ -192,25 +192,22 @@ const CategoryLabel = styled.span`
   color: ${({ theme }) => theme.colors.grayscale[0]};
 `
 
-const SaveButton = styled.button`
+const SaveButton = styled.button<{ $hasChanges: boolean }>`
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[100]};
-  background-color: ${({ theme }) => theme.colors.primary[40]};
+  background-color: ${({ theme, $hasChanges }) =>
+    $hasChanges ? theme.colors.primary[20] : theme.colors.grayscale[80]};
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${({ $hasChanges }) => ($hasChanges ? 'pointer' : 'not-allowed')};
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.primary[20]};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    background-color: ${({ theme, $hasChanges }) =>
+      $hasChanges ? theme.colors.primary[0] : theme.colors.grayscale[80]};
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -270,15 +267,22 @@ const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
   const { firebaseUser, member, loading, refreshMember } = useAuth()
 
   const [selectedSectionIds, setSelectedSectionIds] = useState<string[]>([])
+  const [initialSectionIds, setInitialSectionIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Check if there are unsaved changes
+  const hasChanges =
+    selectedSectionIds.length !== initialSectionIds.length ||
+    selectedSectionIds.some((id) => !initialSectionIds.includes(id))
 
   // Initialize selected sections from member's interested sections
   useEffect(() => {
     if (member?.interestedSections) {
       const sectionIds = member.interestedSections.map((section) => section.id)
       setSelectedSectionIds(sectionIds)
+      setInitialSectionIds(sectionIds)
     }
   }, [member])
 
@@ -320,6 +324,7 @@ const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
         firebaseUser.uid
       )
       await refreshMember()
+      setInitialSectionIds(selectedSectionIds)
       setSuccess(true)
     } catch {
       setError('儲存失敗，請稍後再試')
@@ -398,7 +403,11 @@ const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
             ))}
           </CategoryList>
 
-          <SaveButton onClick={handleSave} disabled={saving}>
+          <SaveButton
+            onClick={handleSave}
+            disabled={saving || !hasChanges}
+            $hasChanges={hasChanges}
+          >
             {saving ? '儲存中...' : '確認'}
           </SaveButton>
         </MainContent>

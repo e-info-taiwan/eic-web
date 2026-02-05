@@ -207,25 +207,22 @@ const ToggleSlider = styled.span`
   }
 `
 
-const SaveButton = styled.button`
+const SaveButton = styled.button<{ $hasChanges: boolean }>`
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[100]};
-  background-color: ${({ theme }) => theme.colors.grayscale[80]};
+  background-color: ${({ theme, $hasChanges }) =>
+    $hasChanges ? theme.colors.primary[20] : theme.colors.grayscale[80]};
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${({ $hasChanges }) => ($hasChanges ? 'pointer' : 'not-allowed')};
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.grayscale[60]};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    background-color: ${({ theme, $hasChanges }) =>
+      $hasChanges ? theme.colors.primary[0] : theme.colors.grayscale[80]};
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -369,14 +366,25 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
   const { firebaseUser, member, loading, refreshMember } = useAuth()
 
   const [toggles, setToggles] = useState<NewsletterToggles>(defaultToggles)
+  const [initialToggles, setInitialToggles] =
+    useState<NewsletterToggles>(defaultToggles)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Check if there are unsaved changes
+  const hasChanges =
+    toggles.dailyStandard !== initialToggles.dailyStandard ||
+    toggles.dailyStyled !== initialToggles.dailyStyled ||
+    toggles.weeklyStandard !== initialToggles.weeklyStandard ||
+    toggles.weeklyStyled !== initialToggles.weeklyStyled
+
   // Initialize from member profile (convert from subscriptions)
   useEffect(() => {
     if (member) {
-      setToggles(convertToToggles(member))
+      const memberToggles = convertToToggles(member)
+      setToggles(memberToggles)
+      setInitialToggles(memberToggles)
     }
   }, [member])
 
@@ -434,6 +442,7 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
         subscriptionInput
       )
       await refreshMember()
+      setInitialToggles(toggles)
       setSuccess(true)
     } catch {
       setError('儲存失敗，請稍後再試')
@@ -511,7 +520,11 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
             </ToggleGroup>
           </FormSection>
 
-          <SaveButton onClick={handleSave} disabled={saving}>
+          <SaveButton
+            onClick={handleSave}
+            disabled={saving || !hasChanges}
+            $hasChanges={hasChanges}
+          >
             {saving ? '儲存中...' : '儲存'}
           </SaveButton>
         </MainContent>

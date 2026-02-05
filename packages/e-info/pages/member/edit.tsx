@@ -292,26 +292,23 @@ const ToggleButton = styled.button`
   }
 `
 
-const SubmitButton = styled.button`
+const SubmitButton = styled.button<{ $hasChanges: boolean }>`
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[100]};
-  background-color: ${({ theme }) => theme.colors.primary[40]};
+  background-color: ${({ theme, $hasChanges }) =>
+    $hasChanges ? theme.colors.primary[20] : theme.colors.grayscale[80]};
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${({ $hasChanges }) => ($hasChanges ? 'pointer' : 'not-allowed')};
   transition: background-color 0.2s ease;
   margin-top: 16px;
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.primary[20]};
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    background-color: ${({ theme, $hasChanges }) =>
+      $hasChanges ? theme.colors.primary[0] : theme.colors.grayscale[80]};
   }
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -409,6 +406,7 @@ const MemberEditPage: NextPageWithLayout = () => {
     newPassword: '',
     confirmPassword: '',
   })
+  const [initialDisplayName, setInitialDisplayName] = useState('')
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -418,13 +416,22 @@ const MemberEditPage: NextPageWithLayout = () => {
   const [success, setSuccess] = useState(false)
   const [avatarCacheBuster, setAvatarCacheBuster] = useState<number>(Date.now())
 
+  // Check if there are unsaved changes
+  const hasChanges =
+    formData.displayName !== initialDisplayName ||
+    formData.currentPassword !== '' ||
+    formData.newPassword !== '' ||
+    formData.confirmPassword !== ''
+
   // Initialize form data from member profile
   useEffect(() => {
     if (member) {
+      const displayName = getMemberDisplayName(member)
       setFormData((prev) => ({
         ...prev,
-        displayName: getMemberDisplayName(member),
+        displayName,
       }))
+      setInitialDisplayName(displayName)
     }
   }, [member])
 
@@ -508,6 +515,7 @@ const MemberEditPage: NextPageWithLayout = () => {
       }
 
       await refreshMember()
+      setInitialDisplayName(formData.displayName)
       setSuccess(true)
 
       // Clear password fields
@@ -768,7 +776,11 @@ const MemberEditPage: NextPageWithLayout = () => {
             {error && <ErrorMessage>{error}</ErrorMessage>}
             {success && <SuccessMessage>個人資料已更新</SuccessMessage>}
 
-            <SubmitButton type="submit" disabled={saving}>
+            <SubmitButton
+              type="submit"
+              disabled={saving || !hasChanges}
+              $hasChanges={hasChanges}
+            >
               {saving ? '更新中...' : '更新'}
             </SubmitButton>
           </Form>
