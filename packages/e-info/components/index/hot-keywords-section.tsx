@@ -73,11 +73,13 @@ const TagItem = styled.li`
   border-radius: 4px;
   border: 1px solid ${({ theme }) => theme.colors.primary[20]};
   color: ${({ theme }) => theme.colors.primary[20]};
-  transition: all 0.2s ease;
+  background: transparent;
+  transition: all 0.3s ease;
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.primary[40]};
-    color: ${({ theme }) => theme.colors.primary[40]};
+    background-color: ${({ theme }) => theme.colors.primary[20]};
+    border-color: ${({ theme }) => theme.colors.primary[20]};
+    color: white;
   }
 
   a {
