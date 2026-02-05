@@ -179,12 +179,18 @@ async function fetchFromGraphQL(
 /**
  * 排序 Topics 並取前 N 筆
  * 排序邏輯：
- *   1. isPinned = true 的 topics 優先，依 sortOrder 升冪排序
- *   2. isPinned = false 的 topics，依 sortOrder 升冪排序
- *   3. 取前 maxTopics 筆
+ *   1. 先過濾有關聯文章的 topics (posts.length > 0)
+ *   2. isPinned = true 的 topics 優先，依 sortOrder 升冪排序
+ *   3. isPinned = false 的 topics，依 sortOrder 升冪排序
+ *   4. 取前 maxTopics 筆
  */
 function sortAndLimitTopics(topics: Topic[], maxTopics: number = 4): Topic[] {
-  const sorted = [...topics].sort((a, b) => {
+  // Filter topics that have posts first
+  const topicsWithPosts = topics.filter(
+    (topic) => topic.posts && topic.posts.length > 0
+  )
+
+  const sorted = [...topicsWithPosts].sort((a, b) => {
     // isPinned = true 優先
     if (a.isPinned && !b.isPinned) return -1
     if (!a.isPinned && b.isPinned) return 1
