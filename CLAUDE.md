@@ -306,12 +306,12 @@ query {
 **Dev Environment Sections**:
 | ID | Slug | Name | Categories |
 |---|---|---|---|
-| 2 | testsection | 測試大分類 | 1 |
-| 3 | latestnews | 時事新聞 | 9 |
-| 4 | column | 專欄 | 55 |
-| 5 | sub | 副刊 | 12 |
-| 6 | green | 綠色消費 | 3 |
-| 7 | critic | 評論 | 3 |
+| 1 | news | 時事新聞 | 9 |
+| 2 | column | 專欄 | 54 |
+| 3 | supplement | 副刊 | 16 |
+| 4 | opinion | 評論 | 3 |
+| 5 | greenconsumption | 綠色消費 | 0 |
+| 6 | event | 活動 | 0 |
 
 #### ResizedImages Field Names
 

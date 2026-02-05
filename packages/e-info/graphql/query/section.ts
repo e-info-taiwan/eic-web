@@ -352,12 +352,12 @@ export const sectionWithCategoriesAndPosts = gql`
  * 用於首頁一次獲取多個大分類的資料，減少 API 請求次數
  *
  * Section IDs 對應:
- * - 3: 時事新聞 (latestnews) - 用於 NewsSection
- * - 4: 專欄 (column) - 用於 ColumnSection
- * - 5: 副刊 (sub) - 用於 SupplementSection
- * - 6: 綠色消費 (green) - 用於 GreenSection
+ * - 1: 時事新聞 (news) - 用於 NewsSection
+ * - 2: 專欄 (column) - 用於 ColumnSection
+ * - 3: 副刊 (supplement) - 用於 SupplementSection
+ * - 5: 綠色消費 (greenconsumption) - 用於 GreenSection
  *
- * @param sectionIds - Section ID 陣列，例如 ['3', '4', '5', '6']
+ * @param sectionIds - Section ID 陣列，例如 ['1', '2', '3', '5']
  * @param postsPerCategory - 每個分類要獲取的文章數量，預設 3 篇
  */
 export const multipleSectionsWithCategoriesAndPosts = gql`

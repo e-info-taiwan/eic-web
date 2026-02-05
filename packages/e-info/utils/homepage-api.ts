@@ -127,7 +127,7 @@ async function fetchFromGraphQL(
     client.query<{ sections: Section[] }>({
       query: multipleSectionsWithCategoriesAndPosts,
       variables: {
-        sectionIds: ['3', '4', '5', '6'],
+        sectionIds: ['1', '2', '3', '5'],
         postsPerCategory: 8,
       },
     }),
@@ -198,16 +198,16 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
   // 根據 section id 分配資料
   for (const section of response.sections) {
     switch (section.id) {
-      case '3': // 時事新聞 (latestnews)
+      case '1': // 時事新聞 (news)
         newsCategories = section.categories
         break
-      case '4': // 專欄 (column)
+      case '2': // 專欄 (column)
         columnCategories = section.categories
         break
-      case '5': // 副刊 (sub)
+      case '3': // 副刊 (supplement)
         supplementCategories = section.categories
         break
-      case '6': // 綠色消費 (green)
+      case '5': // 綠色消費 (greenconsumption)
         greenCategories = section.categories
         break
     }

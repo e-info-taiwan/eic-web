@@ -191,16 +191,20 @@ type SpecialColumnSectionProps = {
   categories?: SectionCategory[]
 }
 
+const MAX_CATEGORY_TABS = 4
+
 const SpecialColumnSection = ({
   categories = [],
 }: SpecialColumnSectionProps) => {
-  // Filter categories that have posts (either featured or regular)
-  const categoriesWithPosts = categories.filter(
-    (cat) =>
-      (cat.featuredPostsInInputOrder &&
-        cat.featuredPostsInInputOrder.length > 0) ||
-      (cat.posts && cat.posts.length > 0)
-  )
+  // Filter categories that have posts (either featured or regular), limit to 4
+  const categoriesWithPosts = categories
+    .filter(
+      (cat) =>
+        (cat.featuredPostsInInputOrder &&
+          cat.featuredPostsInInputOrder.length > 0) ||
+        (cat.posts && cat.posts.length > 0)
+    )
+    .slice(0, MAX_CATEGORY_TABS)
 
   const [activeCategory, setActiveCategory] = useState<string>(
     categoriesWithPosts[0]?.id || ''
