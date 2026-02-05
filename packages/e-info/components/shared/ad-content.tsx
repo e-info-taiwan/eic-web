@@ -4,8 +4,6 @@ import styled from 'styled-components'
 
 import type { Ad } from '~/graphql/query/section'
 
-import Placeholder from './placeholder'
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -25,11 +23,6 @@ const Container = styled.div`
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     padding: 66px 52px 0;
   }
-`
-
-const StyledPlaceholder = styled(Placeholder)`
-  flex: 1;
-  min-width: 0;
 `
 
 const AdLink = styled.a`
@@ -56,14 +49,9 @@ type AdContentProps = {
 }
 
 const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
-  // If no ads, show placeholder
+  // If no ads, hide the section completely
   if (ads.length === 0) {
-    return (
-      <Container>
-        <StyledPlaceholder height={200} />
-        <StyledPlaceholder height={200} />
-      </Container>
-    )
+    return null
   }
 
   // Show up to 2 ads
@@ -102,8 +90,6 @@ const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
           </AdLink>
         )
       })}
-      {/* If only 1 ad, show placeholder for second slot */}
-      {displayAds.length === 1 && <StyledPlaceholder height={200} />}
     </Container>
   )
 }
