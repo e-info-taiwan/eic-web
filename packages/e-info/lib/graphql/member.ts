@@ -580,11 +580,22 @@ export const getAllSections = async (): Promise<NotificationSection[]> => {
 /**
  * Update member subscriptions
  * Uses API route with Firebase token verification
+ *
+ * @param memberId - CMS Member ID
+ * @param firebaseId - Firebase UID
+ * @param subscriptions - Subscription input (daily/weekly)
+ * @param options - Optional settings
+ * @param options.syncToMailchimp - Whether to sync to Mailchimp (default: false)
+ * @param options.email - Member email (required if syncToMailchimp is true)
  */
 export const updateMemberSubscriptions = async (
   memberId: string,
   firebaseId: string,
-  subscriptions: SubscriptionInput
+  subscriptions: SubscriptionInput,
+  options?: {
+    syncToMailchimp?: boolean
+    email?: string
+  }
 ): Promise<MemberSubscription[]> => {
   const idToken = await getIdToken()
 
@@ -599,6 +610,8 @@ export const updateMemberSubscriptions = async (
         memberId,
         firebaseId,
         subscriptions,
+        syncToMailchimp: options?.syncToMailchimp,
+        email: options?.email,
       }),
     })
 

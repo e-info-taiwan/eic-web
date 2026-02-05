@@ -503,10 +503,18 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
     const hasWeekly = formData.weeklyNewsletter
 
     if (hasDaily || hasWeekly) {
-      await updateMemberSubscriptions(member.id, uid, {
-        daily: hasDaily ? formData.newsletterFormat : null,
-        weekly: hasWeekly ? formData.newsletterFormat : null,
-      })
+      await updateMemberSubscriptions(
+        member.id,
+        uid,
+        {
+          daily: hasDaily ? formData.newsletterFormat : null,
+          weekly: hasWeekly ? formData.newsletterFormat : null,
+        },
+        {
+          syncToMailchimp: true,
+          email: formData.email,
+        }
+      )
     }
 
     return member

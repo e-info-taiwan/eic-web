@@ -439,7 +439,11 @@ const MemberNewsletterPage: NextPageWithLayout = () => {
       await updateMemberSubscriptions(
         member.id,
         firebaseUser.uid,
-        subscriptionInput
+        subscriptionInput,
+        {
+          syncToMailchimp: true,
+          email: member.email ?? undefined,
+        }
       )
       await refreshMember()
       setInitialToggles(toggles)
