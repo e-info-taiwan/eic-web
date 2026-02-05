@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
-import type { SectionCategory } from '~/graphql/query/section'
+import type { SectionInfo } from '~/utils/homepage-api'
 import { mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
@@ -188,14 +188,16 @@ const EmptyMessage = styled.p`
 `
 
 type SpecialColumnSectionProps = {
-  categories?: SectionCategory[]
+  section?: SectionInfo
 }
 
 const MAX_CATEGORY_TABS = 4
 
-const SpecialColumnSection = ({
-  categories = [],
-}: SpecialColumnSectionProps) => {
+const SpecialColumnSection = ({ section }: SpecialColumnSectionProps) => {
+  const categories = section?.categories || []
+  const sectionSlug = section?.slug || 'column'
+  const sectionName = section?.name || '專欄'
+
   // Filter categories that have posts (either featured or regular), limit to 4
   const categoriesWithPosts = categories
     .filter(
@@ -235,7 +237,7 @@ const SpecialColumnSection = ({
       {/* Header */}
       <Header>
         <AccentBar />
-        <TitleLink href="/section/column">專欄</TitleLink>
+        <TitleLink href={`/section/${sectionSlug}`}>{sectionName}</TitleLink>
         <CategoryTabs>
           {categoriesWithPosts.map((category) => (
             <CategoryTab

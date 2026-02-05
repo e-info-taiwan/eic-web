@@ -742,7 +742,7 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
   const smallPosts = posts.slice(1, 3)
 
   // Use different default image for "編輯直送" category
-  const isEditorCategory = category.slug === 'editor'
+  const isEditorCategory = category.slug === 'editorpick'
   const defaultImage = isEditorCategory
     ? DEFAULT_NEWS_IMAGE_PATH
     : DEFAULT_POST_IMAGE_PATH

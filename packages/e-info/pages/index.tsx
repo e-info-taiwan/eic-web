@@ -26,7 +26,6 @@ import type {
   HomepagePickCarousel,
   InfoGraph,
   PopularSearchKeyword,
-  SectionCategory,
   Topic,
 } from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
@@ -36,6 +35,7 @@ import type { CollaborationItem } from '~/types/component'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
 import {
+  type SectionInfo,
   fetchHomepageData,
   fetchPopularSearchKeywords,
 } from '~/utils/homepage-api'
@@ -90,10 +90,10 @@ type PageProps = {
   featuredCollaboration: FeaturedCollaboration
   dataSetItems: DataSetItem[]
   dataSetCount: number
-  supplementCategories: SectionCategory[]
-  columnCategories: SectionCategory[]
-  newsCategories: SectionCategory[]
-  greenCategories: SectionCategory[]
+  newsSection: SectionInfo
+  columnSection: SectionInfo
+  supplementSection: SectionInfo
+  greenSection: SectionInfo
   topics: Topic[]
   carouselPicks: HomepagePickCarousel[]
   highlightPicks: HomepagePick[]
@@ -116,10 +116,10 @@ const HiddenAnchor = styled.div`
 const DONATION_MODAL_DISMISSED_KEY = 'donation_modal_dismissed_id'
 
 const Index: NextPageWithLayout<PageProps> = ({
-  supplementCategories,
-  columnCategories,
-  newsCategories,
-  greenCategories,
+  newsSection,
+  columnSection,
+  supplementSection,
+  greenSection,
   topics,
   carouselPicks,
   highlightPicks,
@@ -161,13 +161,13 @@ const Index: NextPageWithLayout<PageProps> = ({
       <MainCarousel picks={carouselPicks} />
       <HighlightSection picks={highlightPicks} />
       <Inforgraphic infoGraph={infoGraph} />
-      <NewsSection categories={newsCategories} />
+      <NewsSection section={newsSection} />
       <AdContent ads={ads} />
-      <SpecialColumnSection categories={columnCategories} />
-      <SupplementSection categories={supplementCategories} />
+      <SpecialColumnSection section={columnSection} />
+      <SupplementSection section={supplementSection} />
       <FeaturedTopicsSection topics={topics} />
       <AdContent ads={deepTopicAds} />
-      <GreenConsumptionSection categories={greenCategories} />
+      <GreenConsumptionSection section={greenSection} />
       <HotKeywordsSection keywords={popularSearchKeywords} />
       <HiddenAnchor ref={anchorRef} />
 
@@ -211,10 +211,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
   }
   let dataSetItems: DataSetItem[] = []
   let dataSetCount: number = 0
-  let supplementCategories: SectionCategory[] = []
-  let columnCategories: SectionCategory[] = []
-  let newsCategories: SectionCategory[] = []
-  let greenCategories: SectionCategory[] = []
   let topics: Topic[] = []
   let carouselPicks: HomepagePickCarousel[] = []
   let highlightPicks: HomepagePick[] = []
@@ -246,10 +242,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
     donation = donationResult.data?.donations?.[0] || null
 
     // 從統一的資料結構中取出各區塊資料
-    newsCategories = homepageData.newsCategories
-    columnCategories = homepageData.columnCategories
-    supplementCategories = homepageData.supplementCategories
-    greenCategories = homepageData.greenCategories
     highlightPicks = homepageData.highlightPicks
     carouselPicks = homepageData.carouselPicks
     topics = homepageData.topics
@@ -269,10 +261,10 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
         featuredCollaboration,
         dataSetItems,
         dataSetCount,
-        supplementCategories,
-        columnCategories,
-        newsCategories,
-        greenCategories,
+        newsSection: homepageData.newsSection,
+        columnSection: homepageData.columnSection,
+        supplementSection: homepageData.supplementSection,
+        greenSection: homepageData.greenSection,
         topics,
         carouselPicks,
         highlightPicks,

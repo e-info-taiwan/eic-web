@@ -63,13 +63,23 @@ export interface HomepageApiResponse {
 }
 
 /**
+ * Section 資訊型別（包含 slug 用於動態 URL）
+ */
+export interface SectionInfo {
+  id: string
+  slug: string
+  name: string
+  categories: SectionCategory[]
+}
+
+/**
  * 處理後的首頁資料型別
  */
 export interface HomepageData {
-  newsCategories: SectionCategory[]
-  columnCategories: SectionCategory[]
-  supplementCategories: SectionCategory[]
-  greenCategories: SectionCategory[]
+  newsSection: SectionInfo
+  columnSection: SectionInfo
+  supplementSection: SectionInfo
+  greenSection: SectionInfo
   highlightPicks: HomepagePick[]
   carouselPicks: HomepagePickCarousel[]
   topics: Topic[]
@@ -192,25 +202,66 @@ function sortAndLimitTopics(topics: Topic[], maxTopics: number = 4): Topic[] {
  * 將 API Response 轉換為前端使用的資料格式
  */
 function transformApiResponse(response: HomepageApiResponse): HomepageData {
-  let newsCategories: SectionCategory[] = []
-  let columnCategories: SectionCategory[] = []
-  let supplementCategories: SectionCategory[] = []
-  let greenCategories: SectionCategory[] = []
+  // 預設的 section 資訊
+  let newsSection: SectionInfo = {
+    id: '1',
+    slug: 'news',
+    name: '時事新聞',
+    categories: [],
+  }
+  let columnSection: SectionInfo = {
+    id: '2',
+    slug: 'column',
+    name: '專欄',
+    categories: [],
+  }
+  let supplementSection: SectionInfo = {
+    id: '3',
+    slug: 'supplement',
+    name: '副刊',
+    categories: [],
+  }
+  let greenSection: SectionInfo = {
+    id: '5',
+    slug: 'greenconsumption',
+    name: '綠色消費',
+    categories: [],
+  }
 
-  // 根據 section id 分配資料
+  // 根據 section id 分配資料，並提取 slug
   for (const section of response.sections) {
     switch (section.id) {
       case '1': // 時事新聞 (news)
-        newsCategories = section.categories
+        newsSection = {
+          id: section.id,
+          slug: section.slug || 'news',
+          name: section.name || '時事新聞',
+          categories: section.categories,
+        }
         break
       case '2': // 專欄 (column)
-        columnCategories = section.categories
+        columnSection = {
+          id: section.id,
+          slug: section.slug || 'column',
+          name: section.name || '專欄',
+          categories: section.categories,
+        }
         break
       case '3': // 副刊 (supplement)
-        supplementCategories = section.categories
+        supplementSection = {
+          id: section.id,
+          slug: section.slug || 'supplement',
+          name: section.name || '副刊',
+          categories: section.categories,
+        }
         break
       case '5': // 綠色消費 (greenconsumption)
-        greenCategories = section.categories
+        greenSection = {
+          id: section.id,
+          slug: section.slug || 'greenconsumption',
+          name: section.name || '綠色消費',
+          categories: section.categories,
+        }
         break
     }
   }
@@ -219,10 +270,10 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
   const sortedTopics = sortAndLimitTopics(response.topics, 4)
 
   return {
-    newsCategories,
-    columnCategories,
-    supplementCategories,
-    greenCategories,
+    newsSection,
+    columnSection,
+    supplementSection,
+    greenSection,
     highlightPicks: response.highlightPicks,
     carouselPicks: response.carouselPicks,
     topics: sortedTopics,

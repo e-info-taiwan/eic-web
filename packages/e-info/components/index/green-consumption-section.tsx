@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
-import type { SectionCategory } from '~/graphql/query/section'
+import type { SectionInfo } from '~/utils/homepage-api'
 import { mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
@@ -224,14 +224,16 @@ const EmptyMessage = styled.p`
 `
 
 type GreenConsumptionSectionProps = {
-  categories?: SectionCategory[]
+  section?: SectionInfo
 }
 
 const MAX_CATEGORY_TABS = 4
 
-const GreenConsumptionSection = ({
-  categories = [],
-}: GreenConsumptionSectionProps) => {
+const GreenConsumptionSection = ({ section }: GreenConsumptionSectionProps) => {
+  const categories = section?.categories || []
+  const sectionSlug = section?.slug || 'greenconsumption'
+  const sectionName = section?.name || '綠色消費'
+
   // Filter categories that have posts (either featured or regular), limit to 4
   const categoriesWithPosts = categories
     .filter(
@@ -272,7 +274,7 @@ const GreenConsumptionSection = ({
         {/* Header */}
         <Header>
           <AccentBar />
-          <TitleLink href="/section/green">綠色消費</TitleLink>
+          <TitleLink href={`/section/${sectionSlug}`}>{sectionName}</TitleLink>
           <CategoryTabs>
             {categoriesWithPosts.map((category) => (
               <CategoryTab

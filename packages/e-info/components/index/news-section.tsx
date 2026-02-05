@@ -7,7 +7,7 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
-import type { SectionCategory } from '~/graphql/query/section'
+import type { SectionInfo } from '~/utils/homepage-api'
 import { getBriefText, mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
@@ -414,12 +414,16 @@ const formatDate = (dateString: string): string => {
 }
 
 type NewsSectionProps = {
-  categories?: SectionCategory[]
+  section?: SectionInfo
 }
 
 const MAX_CATEGORY_TABS = 4
 
-const NewsSection = ({ categories = [] }: NewsSectionProps) => {
+const NewsSection = ({ section }: NewsSectionProps) => {
+  const categories = section?.categories || []
+  const sectionSlug = section?.slug || 'news'
+  const sectionName = section?.name || '時事新聞'
+
   // Filter categories that have posts (either featured or regular), limit to 4
   const categoriesWithPosts = categories
     .filter(
@@ -460,7 +464,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
   const sidebarPosts = currentPosts.slice(3, 8)
 
   // Use different default image for "編輯直送" category
-  const isEditorCategory = currentCategory?.slug === 'editor'
+  const isEditorCategory = currentCategory?.slug === 'editorpick'
   const defaultImage = isEditorCategory
     ? DEFAULT_NEWS_IMAGE_PATH
     : DEFAULT_POST_IMAGE_PATH
@@ -470,7 +474,7 @@ const NewsSection = ({ categories = [] }: NewsSectionProps) => {
       {/* Header */}
       <Header>
         <AccentBar />
-        <TitleLink href="/section/latestnews">時事新聞</TitleLink>
+        <TitleLink href={`/section/${sectionSlug}`}>{sectionName}</TitleLink>
         <CategoryTabs>
           {categoriesWithPosts.map((category) => (
             <CategoryTab

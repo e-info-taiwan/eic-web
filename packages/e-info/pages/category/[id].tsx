@@ -577,7 +577,7 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
               posts={posts}
               AdPageKey={category.slug}
               defaultImage={
-                category.slug === 'editor'
+                category.slug === 'editorpick'
                   ? DEFAULT_NEWS_IMAGE_PATH
                   : DEFAULT_POST_IMAGE_PATH
               }
@@ -658,7 +658,7 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
             posts={posts}
             AdPageKey={category.slug}
             defaultImage={
-              category.slug === 'editor'
+              category.slug === 'editorpick'
                 ? DEFAULT_NEWS_IMAGE_PATH
                 : DEFAULT_POST_IMAGE_PATH
             }

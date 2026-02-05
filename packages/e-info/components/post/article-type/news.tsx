@@ -167,7 +167,7 @@ export default function News({ postData, donation }: PostProps): JSX.Element {
   const isEditorStyle = postData?.style === ValidPostStyle.EDITOR
   const shouldShowHeroImage =
     isEditorStyle || Boolean(postData?.heroImage?.resized)
-  const isEditorCategory = postData?.category?.slug === 'editor'
+  const isEditorCategory = postData?.category?.slug === 'editorpick'
   // Use news default image for editor style or editor category
   const defaultImage =
     isEditorStyle || isEditorCategory
