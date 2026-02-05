@@ -480,7 +480,6 @@ const SecondaryMenuBar = styled.div<{ $isVisible: boolean }>`
   width: 100%;
   background: ${({ theme }) => theme.colors.primary[95]};
   display: ${({ $isVisible }) => ($isVisible ? 'block' : 'none')};
-  margin-left: 25px;
 `
 
 const SecondaryMenuContainer = styled.div`
