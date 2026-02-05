@@ -2,6 +2,8 @@ import NextLink from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
 
+import type { PopularSearchKeyword } from '~/graphql/query/section'
+
 const SectionContainer = styled.section`
   background-color: ${({ theme }) => theme.colors.grayscale[100]};
   padding: 20px 20px;
@@ -96,24 +98,12 @@ const TagItem = styled.li`
   }
 `
 
-// TODO: Replace with actual data source when available
-const MOCK_HOT_KEYWORDS = [
-  { id: '1', name: '熱門搜尋123456' },
-  { id: '2', name: '熱門搜尋123456' },
-  { id: '3', name: '熱門搜尋123456' },
-]
-
-type HotKeyword = {
-  id: string
-  name: string
-}
-
 type HotKeywordsSectionProps = {
-  keywords?: HotKeyword[]
+  keywords?: PopularSearchKeyword[]
 }
 
 const HotKeywordsSection: React.FC<HotKeywordsSectionProps> = ({
-  keywords = MOCK_HOT_KEYWORDS,
+  keywords = [],
 }) => {
   if (keywords.length === 0) {
     return null
@@ -124,10 +114,10 @@ const HotKeywordsSection: React.FC<HotKeywordsSectionProps> = ({
       <Container>
         <Title>熱搜關鍵字</Title>
         <TagList>
-          {keywords.map((keyword) => (
-            <TagItem key={keyword.id}>
-              <NextLink href={`/tag/${keyword.name}`} target="_blank">
-                {keyword.name}
+          {keywords.map((item) => (
+            <TagItem key={item.rank}>
+              <NextLink href={`/search?q=${encodeURIComponent(item.keyword)}`}>
+                {item.keyword}
               </NextLink>
             </TagItem>
           ))}

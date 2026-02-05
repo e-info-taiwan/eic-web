@@ -10,6 +10,8 @@ import type {
   HomepagePick,
   HomepagePickCarousel,
   InfoGraph,
+  PopularSearchKeyword,
+  PopularSearchResponse,
   Section,
   SectionCategory,
   Topic,
@@ -326,5 +328,54 @@ export async function checkHomepageApiHealth(): Promise<boolean> {
     return response.ok
   } catch {
     return false
+  }
+}
+
+/**
+ * 獲取熱搜關鍵字資料
+ * 從 GCS 上的 GA4 分析資料 JSON 檔案取得
+ */
+function getPopularSearchEndpoint(): string {
+  switch (ENV) {
+    case 'prod':
+      // TODO: Update to production endpoint when available
+      return 'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
+    case 'staging':
+      return 'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
+    case 'dev':
+    default:
+      return 'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
+  }
+}
+
+export async function fetchPopularSearchKeywords(): Promise<
+  PopularSearchKeyword[]
+> {
+  try {
+    const endpoint = getPopularSearchEndpoint()
+    const controller = createTimeoutController(10000) // 10 秒 timeout
+
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[PopularSearch] Failed to fetch: ${response.status} ${response.statusText}`
+      )
+      return []
+    }
+
+    const data: PopularSearchResponse = await response.json()
+    return data.top_search_keywords || []
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[PopularSearch] Error fetching popular search keywords:',
+      error instanceof Error ? error.message : 'Unknown error'
+    )
+    return []
   }
 }

@@ -25,6 +25,7 @@ import type {
   HomepagePick,
   HomepagePickCarousel,
   InfoGraph,
+  PopularSearchKeyword,
   SectionCategory,
   Topic,
 } from '~/graphql/query/section'
@@ -34,7 +35,10 @@ import type { DataSetItem, FeaturedArticle } from '~/types/component'
 import type { CollaborationItem } from '~/types/component'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
-import { fetchHomepageData } from '~/utils/homepage-api'
+import {
+  fetchHomepageData,
+  fetchPopularSearchKeywords,
+} from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
 
@@ -97,6 +101,7 @@ type PageProps = {
   ads: Ad[]
   deepTopicAds: Ad[]
   donation: Donation | null
+  popularSearchKeywords: PopularSearchKeyword[]
 }
 
 const HiddenAnchor = styled.div`
@@ -122,6 +127,7 @@ const Index: NextPageWithLayout<PageProps> = ({
   ads,
   deepTopicAds,
   donation,
+  popularSearchKeywords,
 }) => {
   const [showDonationModal, setShowDonationModal] = useState(false)
 
@@ -162,7 +168,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       <FeaturedTopicsSection topics={topics} />
       <AdContent ads={deepTopicAds} />
       <GreenConsumptionSection categories={greenCategories} />
-      <HotKeywordsSection />
+      <HotKeywordsSection keywords={popularSearchKeywords} />
       <HiddenAnchor ref={anchorRef} />
 
       {/* Donation Modal - shown on first visit */}
@@ -226,13 +232,15 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
      * JSON API endpoint: /api/homepage
      * 詳細規格請參考: docs/homepage-api-spec.md
      */
-    const [headerData, homepageData, donationResult] = await Promise.all([
-      fetchHeaderData(),
-      fetchHomepageData(client),
-      client.query<{ donations: Donation[] }>({
-        query: donationQuery,
-      }),
-    ])
+    const [headerData, homepageData, donationResult, popularSearchKeywords] =
+      await Promise.all([
+        fetchHeaderData(),
+        fetchHomepageData(client),
+        client.query<{ donations: Donation[] }>({
+          query: donationQuery,
+        }),
+        fetchPopularSearchKeywords(),
+      ])
 
     // Get the first (most recent) active donation
     donation = donationResult.data?.donations?.[0] || null
@@ -272,6 +280,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
         ads,
         deepTopicAds,
         donation,
+        popularSearchKeywords,
       },
       revalidate: 60, // 每 60 秒重新驗證
     }

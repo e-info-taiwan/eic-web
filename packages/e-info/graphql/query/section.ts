@@ -99,6 +99,22 @@ export type Topic = {
   updatedAt?: string
 }
 
+// Popular Search Keywords (from GA4 analytics JSON)
+export type PopularSearchKeyword = {
+  rank: number
+  keyword: string
+  search_count: number
+}
+
+export type PopularSearchResponse = {
+  generated_at: string
+  period: {
+    start_date: string
+    end_date: string
+  }
+  top_search_keywords: PopularSearchKeyword[]
+}
+
 // HomepagePick for highlight section (uses card sizes)
 export type HomepagePickPost = {
   id: string
