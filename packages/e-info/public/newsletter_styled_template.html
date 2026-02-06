@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>環境資訊電子報 EIC Newsletter</title>
+  <title>環境資訊電子報 EIC Newsletter（大字版）</title>
   <style>
     /* Reset & Base */
     body {
@@ -49,13 +49,13 @@
     .reader-count {
       text-align: center;
       padding: 20px 20px 10px;
-      font-size: 15px;
+      font-size: 18px;
       color: #333;
     }
     .date-section {
       text-align: center;
       padding: 5px 20px 15px;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: bold;
       color: #333;
     }
@@ -63,7 +63,7 @@
       padding: 10px 20px 25px;
     }
     .main-title h1 {
-      font-size: 22px;
+      font-size: 36px;
       font-weight: bold;
       color: #388A48;
       margin: 0;
@@ -74,7 +74,7 @@
     .section-header {
       text-align: center;
       padding: 15px 20px 5px;
-      font-size: 18px;
+      font-size: 24px;
       font-weight: bold;
       color: #333;
     }
@@ -84,8 +84,9 @@
     }
     .toc-item {
       padding-bottom: 12px;
-      font-size: 14px;
+      font-size: 20px;
       color: #333;
+      line-height: 1.6;
     }
     .toc-item:last-child {
       border-bottom: none;
@@ -104,11 +105,11 @@
       margin-bottom: 15px;
     }
     .article-title {
-      font-size: 20px;
+      font-size: 26px;
       font-weight: 700;
       color: #232333;
       margin: 0 0 10px;
-      line-height: 28px;
+      line-height: 1.5;
     }
     .article-title a {
       color: #232333;
@@ -118,15 +119,17 @@
       text-decoration: underline;
     }
     .article-content {
-      font-size: 14px;
-      color: #333;
-      line-height: 1.8;
+      font-size: 0;
+      color: transparent;
+      line-height: 0;
       margin-bottom: 10px;
     }
     .article-content .read-more {
+      font-size: 20px;
+      line-height: 1.5;
       color: #DD8346;
       font-weight: bold;
-      margin-left: 4px;
+      margin-left: 0;
       text-decoration: underline;
     }
     .article-content .read-more:hover {
@@ -150,7 +153,7 @@
       color: white;
       text-align: center;
       padding: 12px 20px;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: bold;
     }
     .highlight-item {
@@ -176,7 +179,7 @@
       justify-content: space-between;
     }
     .highlight-title {
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 500;
       color: #232333;
       line-height: 1.5;
@@ -190,6 +193,7 @@
     }
     .highlight-content .read-more {
       text-align: right;
+      font-size: 20px;
     }
     .highlight-content .read-more a {
       text-decoration: underline;
@@ -235,6 +239,7 @@
     }
     .ranking-content .read-more {
       text-align: right;
+      font-size: 20px;
     }
     .ranking-content .read-more a {
       text-decoration: underline;
@@ -243,7 +248,7 @@
       color: #B55514;
     }
     .ranking-title {
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 500;
       color: #232333;
       line-height: 1.5;
@@ -287,13 +292,13 @@
       border-bottom: none;
     }
     .event-date {
-      font-size: 15px;
+      font-size: 26px;
       color: #388A48;
       font-weight: bold;
       margin-bottom: 5px;
     }
     .event-title {
-      font-size: 17px;
+      font-size: 22px;
       font-weight: bold;
       color: #333;
       margin-bottom: 5px;
@@ -306,8 +311,8 @@
       text-decoration: underline;
     }
     .event-org {
-      font-size: 14px;
-      color: #666;
+      font-size: 0;
+      color: transparent;
     }
 
     /* ===== 05-Jobs (環境徵才) ===== */
@@ -322,13 +327,13 @@
       border-bottom: none;
     }
     .job-date {
-      font-size: 15px;
+      font-size: 26px;
       color: #388A48;
       font-weight: bold;
       margin-bottom: 5px;
     }
     .job-title {
-      font-size: 17px;
+      font-size: 22px;
       font-weight: bold;
       color: #333;
       margin-bottom: 5px;
@@ -341,8 +346,8 @@
       text-decoration: underline;
     }
     .job-org {
-      font-size: 14px;
-      color: #666;
+      font-size: 0;
+      color: transparent;
     }
 
     /* ===== 06-Comment (推薦讀者回應) ===== */
@@ -351,20 +356,19 @@
       background-color: #fff;
     }
     .comment-quote {
-      font-size: 20px;
+      font-size: 26px;
       font-weight: 700;
       color: #5B9D68;
-      line-height: 28px;
+      line-height: 1.5;
       margin-bottom: 30px;
       text-align: center;
     }
     .comment-source {
-      font-size: 16px;
-      font-weight: 700;
-      color: #373740;
-      line-height: 1.5;
-      text-decoration: underline;
-      margin-bottom: 15px;
+      font-size: 0;
+      color: transparent;
+      line-height: 0;
+      text-decoration: none;
+      margin-bottom: 0;
       text-align: center;
     }
     .comment-link {
@@ -372,7 +376,7 @@
     }
     .comment-link a {
       color: #DD8346;
-      font-size: 16px;
+      font-size: 22px;
       font-weight: bold;
       text-decoration: underline;
     }
@@ -390,13 +394,13 @@
       text-align: center;
     }
     .referral-title {
-      font-size: 20px;
+      font-size: 26px;
       font-weight: bold;
       color: #388A48;
       margin-bottom: 20px;
     }
     .referral-text {
-      font-size: 15px;
+      font-size: 20px;
       color: #333;
       margin-bottom: 25px;
     }
@@ -405,7 +409,7 @@
       font-weight: bold;
     }
     .referral-links {
-      font-size: 15px;
+      font-size: 18px;
     }
     .referral-links a {
       color: #388A48;
@@ -514,18 +518,18 @@
     }
     .social-icons a {
       display: inline-block;
-      margin: 0 8px;
+      margin: 0 12px;
       font-size: 24px;
       color: #333;
     }
     .social-icon {
-      width: 30px;
-      height: 30px;
+      width: 48px;
+      height: 48px;
       display: inline-block;
       vertical-align: middle;
     }
     .footer-text {
-      font-size: 14px;
+      font-size: 18px;
       color: #333;
       margin-bottom: 20px;
       line-height: 1.8;
@@ -538,7 +542,7 @@
     }
     .footer-links a {
       color: #388A48;
-      font-size: 15px;
+      font-size: 22px;
       font-weight: bold;
       text-decoration: underline;
     }
@@ -547,10 +551,11 @@
     }
     .footer-links span {
       color: #388A48;
+      font-size: 22px;
       text-decoration: underline;
     }
     .copyright {
-      font-size: 12px;
+      font-size: 14px;
       color: #666;
     }
   </style>

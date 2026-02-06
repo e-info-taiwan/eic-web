@@ -360,6 +360,13 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     margin: 0 0 10px;
     line-height: 28px;
   }
+  .article-title a {
+    color: #232333;
+    text-decoration: none;
+  }
+  .article-title a:hover {
+    text-decoration: underline;
+  }
   .article-content {
     font-size: 14px;
     color: #333;
@@ -424,6 +431,13 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     color: #232333;
     line-height: 1.5;
   }
+  .highlight-title a {
+    color: #232333;
+    text-decoration: none;
+  }
+  .highlight-title a:hover {
+    text-decoration: underline;
+  }
   .highlight-content .read-more {
     text-align: right;
   }
@@ -484,6 +498,13 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     color: #232333;
     line-height: 1.5;
   }
+  .ranking-title a {
+    color: #232333;
+    text-decoration: none;
+  }
+  .ranking-title a:hover {
+    text-decoration: underline;
+  }
 
   /* Ads Section */
   .ads-section {
@@ -527,6 +548,13 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     color: #333;
     margin-bottom: 5px;
   }
+  .event-title a {
+    color: #333;
+    text-decoration: none;
+  }
+  .event-title a:hover {
+    text-decoration: underline;
+  }
   .event-org {
     font-size: 14px;
     color: #666;
@@ -554,6 +582,13 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     font-weight: bold;
     color: #333;
     margin-bottom: 5px;
+  }
+  .job-title a {
+    color: #333;
+    text-decoration: none;
+  }
+  .job-title a:hover {
+    text-decoration: underline;
   }
   .job-org {
     font-size: 14px;
