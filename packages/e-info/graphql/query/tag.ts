@@ -41,4 +41,43 @@ const tags = gql`
   ${postCardFragment}
 `
 
-export { tags }
+export type TagWithPostsCount = {
+  id: string | number
+  name: string
+  postsCount: number
+  posts: PostCard[]
+}
+
+const tagPostsForListing = gql`
+  query (
+    $tagName: String
+    $take: Int = 12
+    $skip: Int = 0
+    $relatedPostTypes: [String!] = [${convertToStringList(POST_STYLES)}]
+  ) {
+    tags(where: { name: { equals: $tagName } }) {
+      id
+      name
+      postsCount(
+        where: {
+          state: { equals: "published" }
+          style: { in: $relatedPostTypes }
+        }
+      )
+      posts(
+        take: $take
+        skip: $skip
+        where: {
+          state: { equals: "published" }
+          style: { in: $relatedPostTypes }
+        }
+        orderBy: { publishTime: desc }
+      ) {
+        ...PostFieldsCard
+      }
+    }
+  }
+  ${postCardFragment}
+`
+
+export { tagPostsForListing, tags }

@@ -1,27 +1,27 @@
 // 作者頁
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
-import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
+import Pagination from '~/components/shared/pagination'
 import SectionHeading from '~/components/shared/section-heading'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Author, AuthorImage } from '~/graphql/fragments/author'
 import type { Post } from '~/graphql/fragments/post'
 import { author as authorQuery } from '~/graphql/query/author'
-import { authorPosts as authorPostsQuery } from '~/graphql/query/post'
-import useInfiniteScroll from '~/hooks/useInfiniteScroll'
+import { authorPostsWithCount } from '~/graphql/query/post'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { ArticleCard } from '~/types/component'
+import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
+
+const POSTS_PER_PAGE = 12
 
 const AuthorWrapper = styled.div`
   padding: 20px 20px 24px;
@@ -112,80 +112,33 @@ const getAuthorImageUrl = (image: AuthorImage | null | undefined): string => {
 
 type PageProps = {
   headerData: HeaderContextData
-  authorPosts?: ArticleCard[]
+  posts: ArticleCard[]
+  authorId: string
   authorName: string
   authorBio?: string | null
   authorImage?: AuthorImage | null
+  currentPage: number
+  totalPages: number
 }
 
-const Author: NextPageWithLayout<PageProps> = ({
-  authorPosts,
+const AuthorPage: NextPageWithLayout<PageProps> = ({
+  posts,
+  authorId,
   authorName,
   authorBio,
   authorImage,
+  currentPage,
+  totalPages,
 }) => {
-  const client = getGqlClient()
-  const router = useRouter()
-
-  const [displayPosts, setDisplayPosts] = useState(authorPosts)
-
-  //infinite scroll: check amount of posts yet to be displayed.
-  //if amount = 0, means all posts are displayed, observer.unobserve.
-  const [dataAmount, setDataAmount] = useState(displayPosts?.length)
-
-  //fetch more related 12 posts
-  const fetchMoreAuthorPosts = async (
-    displayPosts: ArticleCard[] | undefined
-  ) => {
-    try {
-      {
-        // fetch author related 12 posts
-        const { data, error: gqlErrors } = await client.query<{
-          authorPosts: Post[]
-        }>({
-          query: authorPostsQuery,
-          variables: {
-            authorId: router?.query?.id,
-            first: 12,
-            skip: displayPosts?.length,
-          },
-        })
-
-        if (gqlErrors) {
-          const annotatingError = errors.helpers.wrap(
-            new Error('Errors returned in `author` query'),
-            'GraphQLError',
-            'failed to complete `author`',
-            { errors: gqlErrors }
-          )
-
-          throw annotatingError
-        }
-
-        const newPosts = data?.authorPosts?.map(postConvertFunc) || []
-
-        setDataAmount(newPosts.length) //amount of posts yet to be displayed.
-
-        setDisplayPosts([...(displayPosts || []), ...newPosts])
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-  // infinite scroll
-  const [ref, isAtBottom] = useInfiniteScroll({
-    amount: dataAmount,
-  })
-
-  useEffect(() => {
-    if (isAtBottom) {
-      fetchMoreAuthorPosts(displayPosts)
-    }
-  }, [isAtBottom])
-
-  const sectionTitle = `${authorName}`
+  const sectionTitle = authorName
   const hasAuthorInfo = authorImage || authorBio
+
+  const buildPageUrl = (page: number) => {
+    if (page === 1) {
+      return `/author/${authorId}`
+    }
+    return `/author/${authorId}?page=${page}`
+  }
 
   return (
     <AuthorWrapper aria-label={sectionTitle}>
@@ -206,20 +159,27 @@ const Author: NextPageWithLayout<PageProps> = ({
         </AuthorInfoSection>
       )}
 
-      <ArticleLists posts={displayPosts} AdPageKey="author" />
-      <span ref={ref} id="scroll-to-bottom-anchor" />
+      <ArticleLists posts={posts} AdPageKey="author" />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        buildPageUrl={buildPageUrl}
+      />
     </AuthorWrapper>
   )
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   params,
+  query,
   res,
 }) => {
   setCacheControl(res)
 
   const client = getGqlClient()
-  const id = params?.id
+  const id = params?.id as string
+  const page = Math.max(1, parseInt(query.page as string, 10) || 1)
+  const skip = (page - 1) * POSTS_PER_PAGE
 
   try {
     // fetch header data, author data, and author posts in parallel
@@ -229,9 +189,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         query: authorQuery,
         variables: { id },
       }),
-      client.query<{ authorPosts: Post[] }>({
-        query: authorPostsQuery,
-        variables: { authorId: id, first: 12 },
+      client.query<{ authorPosts: Post[]; authorPostsCount: number }>({
+        query: authorPostsWithCount,
+        variables: { authorId: id, first: POSTS_PER_PAGE, skip },
       }),
     ])
 
@@ -259,20 +219,25 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       throw annotatingError
     }
 
-    //if author id not exist, return 404
+    // if author id not exist, return 404
     if (!author) {
       return { notFound: true }
     }
 
-    const authorPosts = postsData?.authorPosts?.map(postConvertFunc) ?? []
+    const totalPosts = postsData?.authorPostsCount ?? 0
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE)
+    const posts = postsData?.authorPosts?.map(postConvertFunc) ?? []
 
     return {
       props: {
         headerData,
-        authorPosts,
+        posts,
+        authorId: id,
         authorName: author.name,
         authorBio: author.bio || null,
         authorImage: author.image || null,
+        currentPage: page,
+        totalPages,
       },
     }
   } catch (err) {
@@ -299,11 +264,11 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   }
 }
 
-Author.getLayout = function getLayout(page: ReactElement<PageProps>) {
+AuthorPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const { props } = page
   const ogTitle = `${props.authorName}`
 
   return <LayoutGeneral title={ogTitle}>{page}</LayoutGeneral>
 }
 
-export default Author
+export default AuthorPage

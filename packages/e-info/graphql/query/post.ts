@@ -325,5 +325,46 @@ const authorPosts = gql`
   ${postCardFragment}
 `
 
-export { authorPosts, latestPosts, post }
+const authorPostsWithCount = gql`
+  query ($authorId: ID, $first: Int! = 12, $skip: Int! = 0) {
+    authorPosts: posts(
+      take: $first
+      skip: $skip
+      where: {
+        OR: [
+          { reporters: { some: { id: { equals: $authorId } } } }
+          { translators: { some: { id: { equals: $authorId } } } }
+          { reviewers: { some: { id: { equals: $authorId } } } }
+          { writers: { some: { id: { equals: $authorId } } } }
+          { sources: { some: { id: { equals: $authorId } } } }
+        ]
+        state: { equals: "published" }
+        style: {
+          in: [${convertToStringList(postStyles)}]
+        }
+      }
+      orderBy: { publishTime: desc }
+    ) {
+      ...PostFieldsCard
+    }
+    authorPostsCount: postsCount(
+      where: {
+        OR: [
+          { reporters: { some: { id: { equals: $authorId } } } }
+          { translators: { some: { id: { equals: $authorId } } } }
+          { reviewers: { some: { id: { equals: $authorId } } } }
+          { writers: { some: { id: { equals: $authorId } } } }
+          { sources: { some: { id: { equals: $authorId } } } }
+        ]
+        state: { equals: "published" }
+        style: {
+          in: [${convertToStringList(postStyles)}]
+        }
+      }
+    )
+  }
+  ${postCardFragment}
+`
+
+export { authorPosts, authorPostsWithCount, latestPosts, post }
 export type { PostCard }

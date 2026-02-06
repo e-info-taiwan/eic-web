@@ -2,23 +2,23 @@
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
+import Pagination from '~/components/shared/pagination'
 import SectionHeading from '~/components/shared/section-heading'
 import type { HeaderContextData } from '~/contexts/header-context'
-import { postStyles } from '~/graphql/query/post'
-import type { Tag } from '~/graphql/query/tag'
-import { tags as tagQuery } from '~/graphql/query/tag'
-import useInfiniteScroll from '~/hooks/useInfiniteScroll'
+import type { TagWithPostsCount } from '~/graphql/query/tag'
+import { tagPostsForListing } from '~/graphql/query/tag'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { ArticleCard } from '~/types/component'
+import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
+
+const POSTS_PER_PAGE = 12
 
 const TagWrapper = styled.div`
   padding: 20px 20px 24px;
@@ -43,71 +43,27 @@ const TagWrapper = styled.div`
 
 type PageProps = {
   headerData: HeaderContextData
-  tagRelatedPosts?: ArticleCard[]
-  tagName?: string | string[]
+  posts: ArticleCard[]
+  tagName: string
+  currentPage: number
+  totalPages: number
 }
 
-const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts, tagName }) => {
-  const client = getGqlClient()
+const Tag: NextPageWithLayout<PageProps> = ({
+  posts,
+  tagName,
+  currentPage,
+  totalPages,
+}) => {
+  const sectionTitle = tagName
 
-  const [displayPosts, setDisplayPosts] = useState(tagRelatedPosts)
-
-  //infinite scroll: check number of posts yet to be displayed.
-  //if number = 0, means all posts are displayed, observer.unobserve.
-  const [dataAmount, setDataAmount] = useState(displayPosts?.length)
-
-  //fetch more related 12 posts
-  const fetchMoreTagPosts = async (displayPosts: ArticleCard[] | undefined) => {
-    try {
-      {
-        // fetch tag and related 12 posts
-        const { data, error: gqlError } = await client.query<{
-          tags: Tag[]
-        }>({
-          query: tagQuery,
-          variables: {
-            tagName: tagName,
-            postSkip: displayPosts?.length,
-            relatedPostFirst: 12,
-            relatedPostTypes: postStyles,
-          },
-        })
-        const tags = data?.tags ?? []
-
-        if (gqlError) {
-          const annotatingError = errors.helpers.wrap(
-            new Error('Errors returned in `tags` query'),
-            'GraphQLError',
-            'failed to complete `tags`',
-            { errors: gqlError }
-          )
-
-          throw annotatingError
-        }
-
-        const newPosts = tags[0]?.posts?.map(postConvertFunc) || []
-
-        setDataAmount(newPosts.length) //number of posts yet to be displayed.
-
-        setDisplayPosts([...(displayPosts || []), ...newPosts])
-      }
-    } catch (err) {
-      console.log(err)
+  const buildPageUrl = (page: number) => {
+    if (page === 1) {
+      return `/tag/${encodeURIComponent(tagName)}`
     }
+    return `/tag/${encodeURIComponent(tagName)}?page=${page}`
   }
 
-  // infinite scroll
-  const [ref, isAtBottom] = useInfiniteScroll({
-    amount: dataAmount,
-  })
-
-  useEffect(() => {
-    if (isAtBottom) {
-      fetchMoreTagPosts(displayPosts)
-    }
-  }, [isAtBottom])
-
-  const sectionTitle = `${tagName || ''}`
   return (
     <TagWrapper aria-label={sectionTitle}>
       <SectionHeading
@@ -116,33 +72,40 @@ const Tag: NextPageWithLayout<PageProps> = ({ tagRelatedPosts, tagName }) => {
         headingLevel={2}
       />
 
-      <ArticleLists posts={displayPosts} AdPageKey="tag" />
-      <span ref={ref} id="scroll-to-bottom-anchor" />
+      <ArticleLists posts={posts} AdPageKey="tag" />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        buildPageUrl={buildPageUrl}
+      />
     </TagWrapper>
   )
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   params,
+  query,
   res,
 }) => {
   setCacheControl(res)
 
   const client = getGqlClient()
-  const name = params?.name
+  const name = params?.name as string
+  const page = Math.max(1, parseInt(query.page as string, 10) || 1)
+  const skip = (page - 1) * POSTS_PER_PAGE
 
   try {
     // fetch header data and tag posts in parallel
     const [headerData, { data, error: gqlError }] = await Promise.all([
       fetchHeaderData(),
       client.query<{
-        tags: Tag[]
+        tags: TagWithPostsCount[]
       }>({
-        query: tagQuery,
+        query: tagPostsForListing,
         variables: {
           tagName: name,
-          relatedPostFirst: 12,
-          relatedPostTypes: postStyles,
+          take: POSTS_PER_PAGE,
+          skip,
         },
       }),
     ])
@@ -160,18 +123,22 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       throw annotatingError
     }
 
-    //if this tag not exist, return 404
-    if (!tags[0]?.posts) {
+    // if this tag not exist, return 404
+    if (!tags[0]) {
       return { notFound: true }
     }
 
-    const tagRelatedPosts = tags[0]?.posts?.map(postConvertFunc) || []
+    const totalPosts = tags[0].postsCount
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE)
+    const posts = tags[0].posts?.map(postConvertFunc) || []
 
     return {
       props: {
         headerData,
-        tagRelatedPosts,
+        posts,
         tagName: name,
+        currentPage: page,
+        totalPages,
       },
     }
   } catch (err) {
