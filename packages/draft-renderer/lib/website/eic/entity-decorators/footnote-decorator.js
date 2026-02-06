@@ -6,10 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.footnoteDecorator = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
-var _templateObject;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var FootnoteLink = _styledComponents["default"].a(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  color: ", ";\n  text-decoration: none;\n  cursor: pointer;\n  font-weight: 500;\n\n  &:hover {\n    color: ", ";\n    text-decoration: underline;\n  }\n"])), function (_ref) {
+var FootnoteLink = _styledComponents["default"].a.withConfig({
+  displayName: "footnote-decorator__FootnoteLink",
+  componentId: "sc-1jv2y9y-0"
+})(["color:", ";text-decoration:none;cursor:pointer;font-weight:500;&:hover{color:", ";text-decoration:underline;}"], function (_ref) {
   var theme = _ref.theme;
   return theme.colors.primary[40];
 }, function (_ref2) {

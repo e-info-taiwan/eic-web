@@ -7,19 +7,26 @@ exports.ImageBlock = ImageBlock;
 var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
-var _templateObject, _templateObject2, _templateObject3;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var Figure = _styledComponents["default"].figure(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 100%;\n  ", ";\n"])), function (_ref) {
+var Figure = _styledComponents["default"].figure.withConfig({
+  displayName: "image-block__Figure",
+  componentId: "sc-1v0uv2e-0"
+})(["width:100%;", ";"], function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
 });
-var FigureCaption = _styledComponents["default"].figcaption(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  width: 100%;\n  font-size: 12px;\n  line-height: 1.25;\n  text-align: justify;\n  color: #373740;\n  padding: 0;\n  margin: 8px 0 0;\n\n  ", " {\n    line-height: 1.25;\n  }\n"])), function (_ref2) {
+var FigureCaption = _styledComponents["default"].figcaption.withConfig({
+  displayName: "image-block__FigureCaption",
+  componentId: "sc-1v0uv2e-1"
+})(["width:100%;font-size:12px;line-height:1.25;text-align:justify;color:#373740;padding:0;margin:8px 0 0;", "{line-height:1.25;}"], function (_ref2) {
   var theme = _ref2.theme;
   return theme.breakpoint.xl;
 });
-var Anchor = _styledComponents["default"].a(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  text-decoration: none;\n"])));
+var Anchor = _styledComponents["default"].a.withConfig({
+  displayName: "image-block__Anchor",
+  componentId: "sc-1v0uv2e-2"
+})(["text-decoration:none;"]);
 function ImageBlock(props) {
   var block = props.block,
     contentState = props.contentState;

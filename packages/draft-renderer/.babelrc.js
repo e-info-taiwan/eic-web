@@ -15,6 +15,13 @@ module.exports = function(api) {
   ]
   const plugins = [
     [
+      'styled-components',
+      {
+        ssr: true,
+        displayName: true,
+      },
+    ],
+    [
       'file-loader',
       {
         name: '[hash].[ext]',

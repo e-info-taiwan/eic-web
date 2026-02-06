@@ -8,25 +8,41 @@ var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
 var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _slideshowSidebar = _interopRequireDefault(require("./slideshow-sidebar"));
-var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var LightBoxWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    background: rgba(36, 36, 36, 0.7);\n    width: 100%;\n    height: 100vh;\n    position: fixed;\n    top: 0;\n    left: 0;\n    color: white;\n    padding: 0 72px 0 48px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    z-index: 9999;\n  }\n"])), function (_ref) {
+var LightBoxWrapper = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-lightbox__LightBoxWrapper",
+  componentId: "sc-rdebmr-0"
+})(["display:none;", "{background:rgba(36,36,36,0.7);width:100%;height:100vh;position:fixed;top:0;left:0;color:white;padding:0 72px 0 48px;display:flex;align-items:center;justify-content:space-between;z-index:9999;}"], function (_ref) {
   var theme = _ref.theme;
   return theme.breakpoint.xl;
 });
-var FocusImageWrapper = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  font-weight: 400;\n  ", ";\n  line-height: 23px;\n  text-align: center;\n  color: #ffffff;\n"])), function (_ref2) {
+var FocusImageWrapper = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-lightbox__FocusImageWrapper",
+  componentId: "sc-rdebmr-1"
+})(["font-weight:400;", ";line-height:23px;text-align:center;color:#ffffff;"], function (_ref2) {
   var theme = _ref2.theme;
   return theme.fontSize.sm;
 });
-var FocusImage = _styledComponents["default"].figure(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  max-width: 900px;\n  max-height: 60vh;\n  margin-bottom: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n\n  img {\n    max-width: 100%;\n    max-height: 60vh;\n    object-fit: contain;\n  }\n\n  ", " {\n    max-width: 960px;\n  }\n"])), function (_ref3) {
+var FocusImage = _styledComponents["default"].figure.withConfig({
+  displayName: "slideshow-lightbox__FocusImage",
+  componentId: "sc-rdebmr-2"
+})(["max-width:900px;max-height:60vh;margin-bottom:32px;display:flex;align-items:center;justify-content:center;img{max-width:100%;max-height:60vh;object-fit:contain;}", "{max-width:960px;}"], function (_ref3) {
   var theme = _ref3.theme;
   return theme.breakpoint.xxl;
 });
-var FocusInfo = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  .focus-desc {\n    max-height: 46px;\n    overflow: hidden;\n    word-break: break-word;\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: 2;\n    opacity: 0.87;\n    margin-bottom: 12px;\n  }\n\n  .focus-number {\n    opacity: 0.5;\n    margin-top: 12px;\n  }\n"])));
-var CloseButtonWrapper = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  height: 60vh;\n  width: 64px;\n  position: relative;\n"])));
-var CloseButton = _styledComponents["default"].div(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  cursor: pointer;\n  position: absolute;\n  top: -64px;\n  border-radius: 50%;\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n\n  &::before,\n  &::after {\n    content: '';\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    width: 24px;\n    height: 2px;\n    background-color: #ffffff;\n  }\n\n  &::before {\n    transform: translate(-50%, -50%) rotate(45deg);\n  }\n\n  &::after {\n    transform: translate(-50%, -50%) rotate(-45deg);\n  }\n"])));
+var FocusInfo = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-lightbox__FocusInfo",
+  componentId: "sc-rdebmr-3"
+})([".focus-desc{max-height:46px;overflow:hidden;word-break:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;opacity:0.87;margin-bottom:12px;}.focus-number{opacity:0.5;margin-top:12px;}"]);
+var CloseButtonWrapper = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-lightbox__CloseButtonWrapper",
+  componentId: "sc-rdebmr-4"
+})(["height:60vh;width:64px;position:relative;"]);
+var CloseButton = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-lightbox__CloseButton",
+  componentId: "sc-rdebmr-5"
+})(["width:64px;height:64px;margin:auto;cursor:pointer;position:absolute;top:-64px;border-radius:50%;&:hover{background-color:rgba(255,255,255,0.2);}&::before,&::after{content:'';position:absolute;top:50%;left:50%;width:24px;height:2px;background-color:#ffffff;}&::before{transform:translate(-50%,-50%) rotate(45deg);}&::after{transform:translate(-50%,-50%) rotate(-45deg);}"]);
 function SlideshowLightBox(_ref4) {
   var focusImageIndex = _ref4.focusImageIndex,
     images = _ref4.images,

@@ -8,7 +8,6 @@ exports.annotationDecorator = void 0;
 var _react = _interopRequireWildcard(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _sharedStyle = require("../shared-style");
-var _templateObject, _templateObject2, _templateObject3, _templateObject4;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -17,11 +16,19 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var annotationDefaultSpacing = 8;
-var AnnotationText = _styledComponents["default"].span(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  ", ";\n"])), _sharedStyle.defaultLinkStyle);
-var AnnotationWrapper = _styledComponents["default"].span(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  display: inline-block;\n  cursor: pointer;\n\n  &:hover ", " {\n    border-bottom: 2px solid #04295e;\n  }\n"])), AnnotationText);
-var AnnotationBody = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  border-radius: 2px;\n  background-color: ", ";\n  padding: 20px 24px;\n  margin: 12px 0 28px;\n  font-size: 14px;\n  font-weight: 400;\n  line-height: 1.5;\n  display: inline-block;\n  text-align: left;\n  width: 100%;\n  color: ", ";\n\n  ", " {\n    padding: 20px;\n  }\n\n  > * + * {\n    margin: ", "px 0 0;\n    min-height: 0.01px; //to make margins between paragraphs effective\n  }\n\n  h2 {\n    ", "\n  }\n\n  ul {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n    }\n  }\n\n  ol {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n    }\n  }\n\n  a {\n    ", "\n  }\n\n  blockquote {\n    ", "\n  }\n"])), function (_ref) {
+var AnnotationText = _styledComponents["default"].span.withConfig({
+  displayName: "annotation-decorator__AnnotationText",
+  componentId: "sc-ah822b-0"
+})(["", ";"], _sharedStyle.defaultLinkStyle);
+var AnnotationWrapper = _styledComponents["default"].span.withConfig({
+  displayName: "annotation-decorator__AnnotationWrapper",
+  componentId: "sc-ah822b-1"
+})(["display:inline-block;cursor:pointer;&:hover ", "{border-bottom:2px solid #04295e;}"], AnnotationText);
+var AnnotationBody = _styledComponents["default"].div.withConfig({
+  displayName: "annotation-decorator__AnnotationBody",
+  componentId: "sc-ah822b-2"
+})(["border-radius:2px;background-color:", ";padding:20px 24px;margin:12px 0 28px;font-size:14px;font-weight:400;line-height:1.5;display:inline-block;text-align:left;width:100%;color:", ";", "{padding:20px;}> * + *{margin:", "px 0 0;min-height:0.01px;}h2{", "}ul{", " margin-top:", "px;> li{", "}}ol{", " margin-top:", "px;> li{", "}}a{", "}blockquote{", "}"], function (_ref) {
   var theme = _ref.theme;
   return theme.colors.grayscale[95];
 }, function (_ref2) {
@@ -31,7 +38,10 @@ var AnnotationBody = _styledComponents["default"].div(_templateObject3 || (_temp
   var theme = _ref3.theme;
   return theme.breakpoint.md;
 }, annotationDefaultSpacing, _sharedStyle.defaultH2Style, _sharedStyle.defaultUlStyle, annotationDefaultSpacing, _sharedStyle.defaultUnorderedListStyle, _sharedStyle.defaultOlStyle, annotationDefaultSpacing, _sharedStyle.defaultOrderedListStyle, _sharedStyle.defaultLinkStyle, _sharedStyle.defaultBlockQuoteStyle);
-var ArrowIconWrapper = _styledComponents["default"].span(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  width: 20px;\n  height: 20px;\n  margin: auto 4px;\n  transition: transform 0.3s;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  vertical-align: text-top;\n  background-color: ", ";\n  border-radius: 10px;\n  transform: ", ";\n"])), function (_ref4) {
+var ArrowIconWrapper = _styledComponents["default"].span.withConfig({
+  displayName: "annotation-decorator__ArrowIconWrapper",
+  componentId: "sc-ah822b-3"
+})(["width:20px;height:20px;margin:auto 4px;transition:transform 0.3s;display:inline-flex;align-items:center;justify-content:center;vertical-align:text-top;background-color:", ";border-radius:10px;transform:", ";"], function (_ref4) {
   var theme = _ref4.theme;
   return theme.colors.secondary[80];
 }, function (props) {

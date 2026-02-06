@@ -8,18 +8,28 @@ exports["default"] = SlideshowSideBar;
 var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
 var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireWildcard(require("styled-components"));
-var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5;
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
-var arrowShareStyle = (0, _styledComponents.css)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 64px;\n  height: 64px;\n  margin: auto;\n  cursor: pointer;\n  border-radius: 50%;\n  visibility: ", ";\n  position: relative;\n\n  &:hover {\n    background-color: rgba(255, 255, 255, 0.2);\n  }\n\n  &::before {\n    content: '';\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    width: 12px;\n    height: 12px;\n    border-left: 2px solid #ffffff;\n    border-bottom: 2px solid #ffffff;\n  }\n"])), function (props) {
+var arrowShareStyle = (0, _styledComponents.css)(["width:64px;height:64px;margin:auto;cursor:pointer;border-radius:50%;visibility:", ";position:relative;&:hover{background-color:rgba(255,255,255,0.2);}&::before{content:'';position:absolute;top:50%;left:50%;width:12px;height:12px;border-left:2px solid #ffffff;border-bottom:2px solid #ffffff;}"], function (props) {
   return props.shouldHideArrow ? 'hidden' : 'visible';
 });
-var SideBarWrapper = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  width: 64px;\n  position: relative;\n\n  .sidebar-images {\n    overflow-y: scroll;\n    max-height: 520px;\n    scrollbar-width: none;\n    margin: 12px auto;\n\n    &::-webkit-scrollbar {\n      display: none; /* for Chrome, Safari, and Opera */\n    }\n  }\n"])));
-var ArrowUp = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  ", "\n\n  &::before {\n    transform: translate(-50%, -25%) rotate(135deg);\n  }\n"])), arrowShareStyle);
-var ArrowDown = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  ", "\n\n  &::before {\n    transform: translate(-50%, -75%) rotate(-45deg);\n  }\n"])), arrowShareStyle);
-var SideBarImage = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  width: 100%;\n  aspect-ratio: 1/1;\n  cursor: pointer;\n  filter: ", ";\n\n  &:hover {\n    filter: ", ";\n  }\n\n  & + * {\n    margin-top: 12px;\n  }\n"])), function (props) {
+var SideBarWrapper = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-sidebar__SideBarWrapper",
+  componentId: "sc-gs6lwe-0"
+})(["width:64px;position:relative;.sidebar-images{overflow-y:scroll;max-height:520px;scrollbar-width:none;margin:12px auto;&::-webkit-scrollbar{display:none;}}"]);
+var ArrowUp = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-sidebar__ArrowUp",
+  componentId: "sc-gs6lwe-1"
+})(["", " &::before{transform:translate(-50%,-25%) rotate(135deg);}"], arrowShareStyle);
+var ArrowDown = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-sidebar__ArrowDown",
+  componentId: "sc-gs6lwe-2"
+})(["", " &::before{transform:translate(-50%,-75%) rotate(-45deg);}"], arrowShareStyle);
+var SideBarImage = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-sidebar__SideBarImage",
+  componentId: "sc-gs6lwe-3"
+})(["width:100%;aspect-ratio:1/1;cursor:pointer;filter:", ";&:hover{filter:", ";}& + *{margin-top:12px;}"], function (props) {
   return props.isfocused ? 'none' : 'brightness(35%)';
 }, function (props) {
   return props.isfocused ? 'none' : 'brightness(60%)';

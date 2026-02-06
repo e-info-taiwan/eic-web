@@ -7,11 +7,12 @@ exports.ColorBoxBlock = ColorBoxBlock;
 var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _sharedStyle = require("../shared-style");
-var _templateObject;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var colorBoxDefaultSpacing = 32;
-var ColorBoxRenderWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  background-color: ", ";\n  padding: 20px 24px;\n  position: relative;\n  color: rgba(0, 9, 40, 0.87);\n  ", ";\n  ", ";\n  line-height: 1.8;\n\n  ", " {\n    padding: 24px 32px;\n  }\n\n  > div > * + * {\n    margin: 16px 0 0;\n    min-height: 0.01px; //to make margins between paragraphs effective\n  }\n\n  h2 {\n    ", "\n  }\n\n  ul {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n\n      & + li {\n        margin: ", "px 0 0;\n      }\n    }\n  }\n\n  ol {\n    ", "\n    margin-top: ", "px;\n\n    > li {\n      ", "\n\n      & + li {\n        margin: ", "px 0 0;\n      }\n    }\n  }\n\n  a {\n    ", "\n  }\n\n  blockquote {\n    ", "\n  }\n"])), function (props) {
+var ColorBoxRenderWrapper = _styledComponents["default"].div.withConfig({
+  displayName: "color-box-block__ColorBoxRenderWrapper",
+  componentId: "sc-14t2fsu-0"
+})(["background-color:", ";padding:20px 24px;position:relative;color:rgba(0,9,40,0.87);", ";", ";line-height:1.8;", "{padding:24px 32px;}> div > * + *{margin:16px 0 0;min-height:0.01px;}h2{", "}ul{", " margin-top:", "px;> li{", " & + li{margin:", "px 0 0;}}}ol{", " margin-top:", "px;> li{", " & + li{margin:", "px 0 0;}}}a{", "}blockquote{", "}"], function (props) {
   return props.color ? props.color : '#f5f5f5';
 }, function (_ref) {
   var theme = _ref.theme;

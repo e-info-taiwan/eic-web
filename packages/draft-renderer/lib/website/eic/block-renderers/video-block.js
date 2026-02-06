@@ -6,10 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.VideoBlock = VideoBlock;
 var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
-var _templateObject;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var Video = _styledComponents["default"].video(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 100%;\n  ", ";\n  background-color: #000;\n"])), function (_ref) {
+var Video = _styledComponents["default"].video.withConfig({
+  displayName: "video-block__Video",
+  componentId: "sc-245v1y-0"
+})(["width:100%;", ";background-color:#000;"], function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
 });

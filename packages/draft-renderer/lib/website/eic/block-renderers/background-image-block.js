@@ -8,7 +8,6 @@ exports.BGImageBlock = BGImageBlock;
 var _react = _interopRequireWildcard(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
-var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -17,11 +16,22 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
-var BackgroundContainer = _styledComponents["default"].section(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  clear: both;\n  position: relative;\n  margin: 32px 0 0;\n  width: 100%;\n  min-height: 60vh;\n  overflow: hidden;\n"])));
-var BackgroundImage = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  position: absolute;\n  z-index: 0;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n\n  img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n  }\n"])));
-var BackgroundContentRow = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([""])));
-var BackgroundContent = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  position: relative;\n  z-index: 1;\n  &.static {\n    min-height: 60vh;\n    display: flex;\n    align-items: flex-end;\n    ", " {\n      padding: 20px;\n      color: #fff;\n      text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);\n      ", " {\n        padding: 32px;\n      }\n    }\n  }\n  &.parallax {\n    ", " {\n      > div {\n        background: rgba(169, 118, 118, 0.1);\n        border-radius: 8px;\n        padding: 20px;\n        ", " {\n          width: 480px;\n        }\n\n        > * + * {\n          margin: 27px 0 0;\n        }\n        h2 {\n          font-size: 1.44em;\n          ", " {\n            font-size: 1.77em;\n          }\n        }\n        h3 {\n          font-size: 1.33em;\n          ", " {\n            font-size: 1.55em;\n          }\n        }\n        h4 {\n          font-size: 1.11em;\n          ", " {\n            font-size: 1.33em;\n          }\n        }\n        ul {\n          list-style-type: disc;\n          list-style-position: inside;\n        }\n        ol {\n          list-style-type: decimal;\n          list-style-position: inside;\n        }\n      }\n      &.left {\n        padding: 0 20px 97px;\n        ", " {\n          padding: 0 40px 335px;\n        }\n        ", " {\n          padding: 0 80px 169px;\n          padding-right: calc(100% - 480px - 80px);\n        }\n        ", " {\n          padding-bottom: 296px;\n        }\n      }\n      &.right {\n        padding: 0 20px 97px;\n        ", " {\n          padding: 0 40px 335px;\n        }\n        ", " {\n          padding: 0 80px 169px;\n          padding-left: calc(100% - 480px - 80px);\n        }\n        ", " {\n          padding-bottom: 296px;\n        }\n      }\n      &.bottom {\n        padding: 0 20px 20px;\n        ", " {\n          padding: 0 40px 40px;\n        }\n        ", " {\n          padding: 0 calc(50% - 240px) 40px;\n        }\n        ", " {\n          padding-bottom: 80px;\n        }\n      }\n    }\n  }\n"])), BackgroundContentRow, function (_ref) {
+var BackgroundContainer = _styledComponents["default"].section.withConfig({
+  displayName: "background-image-block__BackgroundContainer",
+  componentId: "sc-1wi0e05-0"
+})(["clear:both;position:relative;margin:32px 0 0;width:100%;min-height:60vh;overflow:hidden;"]);
+var BackgroundImage = _styledComponents["default"].div.withConfig({
+  displayName: "background-image-block__BackgroundImage",
+  componentId: "sc-1wi0e05-1"
+})(["position:absolute;z-index:0;top:0;left:0;width:100%;height:100%;img{width:100%;height:100%;object-fit:cover;}"]);
+var BackgroundContentRow = _styledComponents["default"].div.withConfig({
+  displayName: "background-image-block__BackgroundContentRow",
+  componentId: "sc-1wi0e05-2"
+})([""]);
+var BackgroundContent = _styledComponents["default"].div.withConfig({
+  displayName: "background-image-block__BackgroundContent",
+  componentId: "sc-1wi0e05-3"
+})(["position:relative;z-index:1;&.static{min-height:60vh;display:flex;align-items:flex-end;", "{padding:20px;color:#fff;text-shadow:0px 1px 3px rgba(0,0,0,0.8);", "{padding:32px;}}}&.parallax{", "{> div{background:rgba(169,118,118,0.1);border-radius:8px;padding:20px;", "{width:480px;}> * + *{margin:27px 0 0;}h2{font-size:1.44em;", "{font-size:1.77em;}}h3{font-size:1.33em;", "{font-size:1.55em;}}h4{font-size:1.11em;", "{font-size:1.33em;}}ul{list-style-type:disc;list-style-position:inside;}ol{list-style-type:decimal;list-style-position:inside;}}&.left{padding:0 20px 97px;", "{padding:0 40px 335px;}", "{padding:0 80px 169px;padding-right:calc(100% - 480px - 80px);}", "{padding-bottom:296px;}}&.right{padding:0 20px 97px;", "{padding:0 40px 335px;}", "{padding:0 80px 169px;padding-left:calc(100% - 480px - 80px);}", "{padding-bottom:296px;}}&.bottom{padding:0 20px 20px;", "{padding:0 40px 40px;}", "{padding:0 calc(50% - 240px) 40px;}", "{padding-bottom:80px;}}}}"], BackgroundContentRow, function (_ref) {
   var theme = _ref.theme;
   return theme.breakpoint.md;
 }, BackgroundContentRow, function (_ref2) {
@@ -64,7 +74,10 @@ var BackgroundContent = _styledComponents["default"].div(_templateObject4 || (_t
   var theme = _ref12.theme;
   return theme.breakpoint.xxl;
 });
-var BackgroundEmptyRow = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  height: 30vh;\n"])));
+var BackgroundEmptyRow = _styledComponents["default"].div.withConfig({
+  displayName: "background-image-block__BackgroundEmptyRow",
+  componentId: "sc-1wi0e05-4"
+})(["height:30vh;"]);
 function BGImageBlock(props) {
   var block = props.block,
     contentState = props.contentState;

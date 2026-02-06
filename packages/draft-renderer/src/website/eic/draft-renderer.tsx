@@ -242,6 +242,7 @@ export default function DraftRenderer({
       <DraftEditorWrapper contentType={contentType}>
         <Editor
           editorState={editorState}
+          editorKey="eic-draft-editor"
           customStyleMap={customStyleMap}
           blockStyleFn={blockStyleFn.bind(null, editorState)}
           blockRendererFn={blockRendererFn}

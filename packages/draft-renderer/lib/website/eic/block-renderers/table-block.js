@@ -9,14 +9,12 @@ var _react = _interopRequireWildcard(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _draftJs = require("draft-js");
 var _cloneDeep = _interopRequireDefault(require("lodash/cloneDeep"));
-var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6, _templateObject7, _templateObject8, _templateObject9;
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -140,18 +138,45 @@ function convertTableDataToRaw(tableData) {
     });
   });
 }
-var Table = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  display: table;\n  width: 95%;\n  border-collapse: collapse;\n"])));
-var Tr = _styledComponents["default"].div(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  display: table-row;\n"])));
-var Td = _styledComponents["default"].div(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  display: table-cell;\n  border-width: 1px;\n  min-width: 100px;\n  min-height: 40px;\n  padding: 10px;\n"])));
-var StyledFirstRow = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  display: table-row;\n  height: 10px;\n\n  div {\n    display: table-cell;\n    position: relative;\n  }\n\n  span {\n    cursor: pointer;\n    line-height: 10px;\n  }\n\n  span:first-child {\n    position: absolute;\n    right: 50%;\n    transform: translateX(50%);\n  }\n\n  span:first-child:before {\n    content: '\u2022';\n  }\n\n  span:first-child:hover:before {\n    content: '\u2796';\n  }\n\n  span:last-child {\n    position: absolute;\n    right: -5px;\n  }\n\n  span:last-child:before {\n    content: '\u2022';\n  }\n\n  span:last-child:hover:before {\n    content: '\u2795';\n  }\n"])));
-var StyledFirstColumn = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  display: table-cell;\n  width: 10px;\n  position: relative;\n\n  span {\n    cursor: pointer;\n  }\n\n  span:first-child {\n    position: absolute;\n    bottom: 50%;\n    right: 0px;\n    transform: translateY(50%);\n  }\n\n  span:first-child:before {\n    content: '\u2022';\n  }\n\n  span:first-child:hover:before {\n    content: '\u2796';\n  }\n\n  span:last-child {\n    position: absolute;\n    bottom: -10px;\n    right: 0px;\n  }\n\n  span:last-child:before {\n    content: '\u2022';\n  }\n\n  span:last-child:hover:before {\n    content: '\u2795';\n  }\n"])));
-var TableBlockContainer = _styledComponents["default"].div(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  ", ";\n  position: relative;\n  overflow-x: auto;\n  -webkit-overflow-scrolling: touch;\n"])), function (_ref) {
+var Table = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__Table",
+  componentId: "sc-1qb2pp6-0"
+})(["display:table;width:95%;border-collapse:collapse;"]);
+var Tr = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__Tr",
+  componentId: "sc-1qb2pp6-1"
+})(["display:table-row;"]);
+var Td = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__Td",
+  componentId: "sc-1qb2pp6-2"
+})(["display:table-cell;border-width:1px;min-width:100px;min-height:40px;padding:10px;"]);
+var StyledFirstRow = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__StyledFirstRow",
+  componentId: "sc-1qb2pp6-3"
+})(["display:table-row;height:10px;div{display:table-cell;position:relative;}span{cursor:pointer;line-height:10px;}span:first-child{position:absolute;right:50%;transform:translateX(50%);}span:first-child:before{content:'\u2022';}span:first-child:hover:before{content:'\u2796';}span:last-child{position:absolute;right:-5px;}span:last-child:before{content:'\u2022';}span:last-child:hover:before{content:'\u2795';}"]);
+var StyledFirstColumn = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__StyledFirstColumn",
+  componentId: "sc-1qb2pp6-4"
+})(["display:table-cell;width:10px;position:relative;span{cursor:pointer;}span:first-child{position:absolute;bottom:50%;right:0px;transform:translateY(50%);}span:first-child:before{content:'\u2022';}span:first-child:hover:before{content:'\u2796';}span:last-child{position:absolute;bottom:-10px;right:0px;}span:last-child:before{content:'\u2022';}span:last-child:hover:before{content:'\u2795';}"]);
+var TableBlockContainer = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__TableBlockContainer",
+  componentId: "sc-1qb2pp6-5"
+})(["", ";position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch;"], function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
 });
-var StyledTable = _styledComponents["default"].div(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n  display: table;\n  width: 100%;\n  border-collapse: collapse;\n"])));
-var StyledTr = _styledComponents["default"].div(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral(["\n  display: table-row;\n\n  &:first-child {\n    background-color: #f0f9f4;\n    font-weight: 600;\n  }\n\n  &:nth-child(even) {\n    background-color: #fafafa;\n  }\n"])));
-var StyledTd = _styledComponents["default"].div(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral(["\n  display: table-cell;\n  border: 1px solid #e0e0e0;\n  min-width: 100px;\n  padding: 12px 16px;\n  ", ";\n  line-height: 1.6;\n  vertical-align: top;\n"])), function (_ref2) {
+var StyledTable = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__StyledTable",
+  componentId: "sc-1qb2pp6-6"
+})(["display:table;width:100%;border-collapse:collapse;"]);
+var StyledTr = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__StyledTr",
+  componentId: "sc-1qb2pp6-7"
+})(["display:table-row;&:first-child{background-color:#f0f9f4;font-weight:600;}&:nth-child(even){background-color:#fafafa;}"]);
+var StyledTd = _styledComponents["default"].div.withConfig({
+  displayName: "table-block__StyledTd",
+  componentId: "sc-1qb2pp6-8"
+})(["display:table-cell;border:1px solid #e0e0e0;min-width:100px;padding:12px 16px;", ";line-height:1.6;vertical-align:top;"], function (_ref2) {
   var theme = _ref2.theme;
   return theme.fontSize.sm;
 });

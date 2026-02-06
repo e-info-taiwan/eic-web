@@ -10,7 +10,6 @@ var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
 var _react = _interopRequireWildcard(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _slideshowLightbox = _interopRequireDefault(require("../components/slideshow-lightbox"));
-var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6, _templateObject7;
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -19,11 +18,13 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
 var SlideShowDesktopSize = 960;
 var SpacingBetweenSlideImages = 12;
-var SlideShowBlockWrapper = _styledComponents["default"].div(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n  width: 100%;\n  position: relative;\n  ", ";\n\n  ", " {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex-wrap: wrap;\n    gap: ", "px;\n    max-height: ", ";\n    overflow: ", ";\n    margin-bottom: ", ";\n  }\n\n  .slideshow-image {\n    max-height: ", ";\n  }\n"])), function (_ref) {
+var SlideShowBlockWrapper = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-block__SlideShowBlockWrapper",
+  componentId: "sc-gsubhh-0"
+})(["width:100%;position:relative;", ";", "{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:", "px;max-height:", ";overflow:", ";margin-bottom:", ";}.slideshow-image{max-height:", ";}"], function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
 }, function (_ref2) {
@@ -38,11 +39,17 @@ var SlideShowBlockWrapper = _styledComponents["default"].div(_templateObject || 
 }, function (props) {
   return props.shouldLimitFigureHeight ? 'calc(960px - 324px)' : 'none';
 });
-var SlideShowImage = _styledComponents["default"].figure(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n  width: 100%;\n  aspect-ratio: 1/1;\n  margin: 0;\n\n  & + .slideshow-image {\n    margin-top: ", "px;\n  }\n\n  ", " {\n    flex: 1 0 calc((100% - ", "px) / 3);\n    max-width: calc((100% - ", "px) / 3);\n\n    &:hover {\n      cursor: pointer;\n      filter: brightness(0.85);\n      transition: 0.3s;\n    }\n\n    & + .slideshow-image {\n      margin-top: unset;\n    }\n  }\n"])), SpacingBetweenSlideImages, function (_ref3) {
+var SlideShowImage = _styledComponents["default"].figure.withConfig({
+  displayName: "slideshow-block__SlideShowImage",
+  componentId: "sc-gsubhh-1"
+})(["width:100%;aspect-ratio:1/1;margin:0;& + .slideshow-image{margin-top:", "px;}", "{flex:1 0 calc((100% - ", "px) / 3);max-width:calc((100% - ", "px) / 3);&:hover{cursor:pointer;filter:brightness(0.85);transition:0.3s;}& + .slideshow-image{margin-top:unset;}}"], SpacingBetweenSlideImages, function (_ref3) {
   var theme = _ref3.theme;
   return theme.breakpoint.xl;
 }, SpacingBetweenSlideImages * 2, SpacingBetweenSlideImages * 2);
-var FigCaption = _styledComponents["default"].figcaption(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n  font-weight: 400;\n  line-height: 23px;\n  color: #000928;\n  opacity: 0.5;\n  ", ";\n  padding: 8px 20px 20px 20px;\n  text-align: center;\n\n  ", " {\n    ", ";\n    text-align: left;\n  }\n\n  ", " {\n    display: none;\n  }\n"])), function (_ref4) {
+var FigCaption = _styledComponents["default"].figcaption.withConfig({
+  displayName: "slideshow-block__FigCaption",
+  componentId: "sc-gsubhh-2"
+})(["font-weight:400;line-height:23px;color:#000928;opacity:0.5;", ";padding:8px 20px 20px 20px;text-align:center;", "{", ";text-align:left;}", "{display:none;}"], function (_ref4) {
   var theme = _ref4.theme;
   return theme.fontSize.xs;
 }, function (_ref5) {
@@ -55,11 +62,17 @@ var FigCaption = _styledComponents["default"].figcaption(_templateObject3 || (_t
   var theme = _ref7.theme;
   return theme.breakpoint.xl;
 });
-var GradientMask = _styledComponents["default"].div(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    cursor: pointer;\n    display: block;\n    position: absolute;\n    width: 100%;\n    height: ", "px;\n    bottom: 0;\n    left: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(255, 255, 255, 0) 648px,\n      rgba(255, 255, 255, 1) 960px\n    );\n  }\n"])), function (_ref8) {
+var GradientMask = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-block__GradientMask",
+  componentId: "sc-gsubhh-3"
+})(["display:none;", "{cursor:pointer;display:block;position:absolute;width:100%;height:", "px;bottom:0;left:0;background:linear-gradient( to bottom,rgba(255,255,255,0) 648px,rgba(255,255,255,1) 960px );}"], function (_ref8) {
   var theme = _ref8.theme;
   return theme.breakpoint.xl;
 }, SlideShowDesktopSize);
-var ExpandText = _styledComponents["default"].div(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n  display: none;\n\n  ", " {\n    display: block;\n    font-style: normal;\n    font-weight: 700;\n    ", ";\n    line-height: 18px;\n    letter-spacing: 0.03em;\n    color: #000928;\n    text-align: center;\n    cursor: pointer;\n    position: relative;\n    margin-bottom: 48px;\n    transition: all 0.2s ease;\n\n    &:hover::after,\n    &:active::after {\n      bottom: -30px;\n      transition: all 0.2s;\n    }\n\n    &::after {\n      content: '\u25BC';\n      position: absolute;\n      bottom: -26px;\n      left: 50%;\n      transform: translate(-50%, 0%);\n      font-size: 12px;\n      color: #000928;\n    }\n  }\n"])), function (_ref9) {
+var ExpandText = _styledComponents["default"].div.withConfig({
+  displayName: "slideshow-block__ExpandText",
+  componentId: "sc-gsubhh-4"
+})(["display:none;", "{display:block;font-style:normal;font-weight:700;", ";line-height:18px;letter-spacing:0.03em;color:#000928;text-align:center;cursor:pointer;position:relative;margin-bottom:48px;transition:all 0.2s ease;&:hover::after,&:active::after{bottom:-30px;transition:all 0.2s;}&::after{content:'\u25BC';position:absolute;bottom:-26px;left:50%;transform:translate(-50%,0%);font-size:12px;color:#000928;}}"], function (_ref9) {
   var theme = _ref9.theme;
   return theme.breakpoint.xl;
 }, function (_ref0) {
@@ -68,8 +81,14 @@ var ExpandText = _styledComponents["default"].div(_templateObject5 || (_template
 });
 
 // support old version of slideshow without delay propertiy
-var Figure = _styledComponents["default"].figure(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n  position: relative;\n  margin-block: unset;\n  margin-inline: unset;\n  margin: 0 10px;\n"])));
-var Image = _styledComponents["default"].img(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n  width: 100%;\n"])));
+var Figure = _styledComponents["default"].figure.withConfig({
+  displayName: "slideshow-block__Figure",
+  componentId: "sc-gsubhh-5"
+})(["position:relative;margin-block:unset;margin-inline:unset;margin:0 10px;"]);
+var Image = _styledComponents["default"].img.withConfig({
+  displayName: "slideshow-block__Image",
+  componentId: "sc-gsubhh-6"
+})(["width:100%;"]);
 function SlideshowBlock(entity) {
   var _images$, _images$2;
   var images = entity.getData();
