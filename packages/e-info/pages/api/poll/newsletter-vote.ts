@@ -121,14 +121,8 @@ export default async function handler(
         pollResult: mutationResult.data?.createPollResult,
       })
     } else {
-      // Anonymous voting - verify Turnstile token
-      if (!turnstileToken) {
-        return res
-          .status(400)
-          .json({ error: 'Turnstile token required for anonymous voting' })
-      }
-
-      const turnstileResult = await verifyTurnstileToken(turnstileToken)
+      // Anonymous voting - verify Turnstile token (or skip if Turnstile is disabled)
+      const turnstileResult = await verifyTurnstileToken(turnstileToken || '')
 
       if (!turnstileResult.success) {
         return res.status(403).json({

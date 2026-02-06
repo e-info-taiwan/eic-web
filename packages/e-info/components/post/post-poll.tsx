@@ -340,7 +340,8 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
   const [voteCounts, setVoteCounts] = useState<PollResultCounts | null>(null)
   const [autoVoteTriggered, setAutoVoteTriggered] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [turnstileToken, setTurnstileToken] = useState<string>('')
+  // null = not yet obtained, '' = Turnstile disabled, string = valid token
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   // Query poll results counts
   const { data: countsData, refetch: refetchCounts } =
@@ -413,8 +414,8 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
         return
       }
 
-      // For anonymous auto-vote, we need Turnstile token
-      if (!member && !turnstileToken) {
+      // For anonymous auto-vote, we need Turnstile token (null = not yet obtained)
+      if (!member && turnstileToken === null) {
         return
       }
 
@@ -550,9 +551,9 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
 
   const isLoggedIn = !!member
   // Allow voting during auth loading (will use anonymous if not logged in)
-  // For anonymous users, require Turnstile token
+  // For anonymous users, require Turnstile token (null = not yet obtained, '' = disabled)
   const isDisabled =
-    authLoading || (!isLoggedIn && !turnstileToken && !hasVoted)
+    authLoading || (!isLoggedIn && turnstileToken === null && !hasVoted)
 
   // Calculate percentage for each option based on vote counts
   const getPercentage = (optionKey: number): number => {
