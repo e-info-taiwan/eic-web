@@ -340,8 +340,10 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
   const [voteCounts, setVoteCounts] = useState<PollResultCounts | null>(null)
   const [autoVoteTriggered, setAutoVoteTriggered] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  // null = not yet obtained, '' = Turnstile disabled, string = valid token
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  // undefined = not yet obtained, '' = Turnstile disabled, string = valid token
+  const [turnstileToken, setTurnstileToken] = useState<string | undefined>(
+    undefined
+  )
 
   // Query poll results counts
   const { data: countsData, refetch: refetchCounts } =
@@ -414,8 +416,8 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
         return
       }
 
-      // For anonymous auto-vote, we need Turnstile token (null = not yet obtained)
-      if (!member && turnstileToken === null) {
+      // For anonymous auto-vote, we need Turnstile token (undefined = not yet obtained)
+      if (!member && turnstileToken === undefined) {
         return
       }
 
@@ -551,9 +553,9 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
 
   const isLoggedIn = !!member
   // Allow voting during auth loading (will use anonymous if not logged in)
-  // For anonymous users, require Turnstile token (null = not yet obtained, '' = disabled)
+  // For anonymous users, require Turnstile token (undefined = not yet obtained, '' = disabled)
   const isDisabled =
-    authLoading || (!isLoggedIn && turnstileToken === null && !hasVoted)
+    authLoading || (!isLoggedIn && turnstileToken === undefined && !hasVoted)
 
   // Calculate percentage for each option based on vote counts
   const getPercentage = (optionKey: number): number => {
