@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
 
 import type { ResizedImagesCard } from '~/graphql/fragments/post'
+import { publishedStateFilter } from '~/utils/preview'
 import {
   resizeImagesCardFragment,
   resizeImagesFragment,
@@ -577,7 +578,7 @@ export type InfoGraph = {
 export const latestInfoGraph = gql`
   query {
     infoGraphs(
-      where: { state: { equals: "published" } }
+      where: { ${publishedStateFilter} }
       orderBy: { createdAt: desc }
       take: 1
     ) {

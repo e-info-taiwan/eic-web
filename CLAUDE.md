@@ -178,6 +178,7 @@ type Topic {
   title: String             // Topic title
   status: String            // "published", "draft", etc.
   content: String           // Topic description/summary
+  authorInfo: String        // Author information
   heroImage: Photo          // Hero image for topic
   posts: [Post]             // Related articles
   postsCount: Int           // Number of articles

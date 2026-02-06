@@ -5,6 +5,7 @@ import type { PostCard } from '~/graphql/fragments/post'
 import { postCardFragment } from '~/graphql/fragments/post'
 import type { GenericTag, Override } from '~/types/common'
 import { convertToStringList } from '~/utils/common'
+import { publishedStateFilter } from '~/utils/preview'
 
 export type Tag = Override<
   Pick<GenericTag, 'id' | 'name' | 'posts'>,
@@ -29,7 +30,7 @@ const tags = gql`
         take: $relatedPostFirst
         skip: $postSkip
         where: {
-          state: { equals: "published" }
+          ${publishedStateFilter}
           style: { in: $relatedPostTypes }
         }
         orderBy: { publishTime: desc }
@@ -60,7 +61,7 @@ const tagPostsForListing = gql`
       name
       postsCount(
         where: {
-          state: { equals: "published" }
+          ${publishedStateFilter}
           style: { in: $relatedPostTypes }
         }
       )
@@ -68,7 +69,7 @@ const tagPostsForListing = gql`
         take: $take
         skip: $skip
         where: {
-          state: { equals: "published" }
+          ${publishedStateFilter}
           style: { in: $relatedPostTypes }
         }
         orderBy: { publishTime: desc }

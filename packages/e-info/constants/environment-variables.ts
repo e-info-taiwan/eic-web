@@ -39,6 +39,11 @@ switch (ENV) {
     break
 }
 
+// Preview mode: 強制不快取，確保草稿內容即時反映
+if (process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === 'true') {
+  GLOBAL_CACHE_SETTING = 'no-store'
+}
+
 // Cloudflare Turnstile (public site key for frontend widget)
 // If not set, Turnstile protection is disabled (graceful degradation)
 const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || ''

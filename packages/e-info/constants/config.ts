@@ -33,6 +33,7 @@ const FIREBASE_ADMIN_PRIVATE_KEY = (
 ).replace(/\\n/g, '\n')
 
 let API_ENDPOINT = ''
+let PREVIEW_API_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
   authDomain: '',
@@ -46,6 +47,7 @@ switch (ENV) {
   case 'prod':
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
+    PREVIEW_API_ENDPOINT = '' // TODO: 建立 prod preview CMS 後填入
     FIREBASE_CONFIG = {
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
       authDomain: 'e-info-prod.firebaseapp.com',
@@ -58,6 +60,7 @@ switch (ENV) {
   case 'staging':
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
+    PREVIEW_API_ENDPOINT = '' // TODO: 建立 staging preview CMS 後填入
     FIREBASE_CONFIG = {
       apiKey: '',
       authDomain: '',
@@ -71,6 +74,8 @@ switch (ENV) {
   default:
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
+    PREVIEW_API_ENDPOINT =
+      'https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql'
     FIREBASE_CONFIG = {
       // e-info-dev
       apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
@@ -84,6 +89,12 @@ switch (ENV) {
 }
 
 if (USE_MOCK_SERVER) API_ENDPOINT = `http://localhost:${MOCK_API_SERVER_PORT}/`
+
+// Preview Mode: 獨立部署的預覽模式，用於預覽草稿文章
+const IS_PREVIEW_MODE = process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === 'true'
+if (IS_PREVIEW_MODE && PREVIEW_API_ENDPOINT) {
+  API_ENDPOINT = PREVIEW_API_ENDPOINT
+}
 
 // 環境變數優先覆蓋 Firebase 設定（各欄位獨立檢查）
 if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
@@ -114,6 +125,7 @@ export {
   FIREBASE_ADMIN_PROJECT_ID,
   FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH,
   FIREBASE_CONFIG,
+  IS_PREVIEW_MODE,
   MAILCHIMP_API_KEY,
   MAILCHIMP_LIST_ID_DAILY,
   MAILCHIMP_LIST_ID_WEEKLY,

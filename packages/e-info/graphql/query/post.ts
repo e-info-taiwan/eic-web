@@ -20,6 +20,7 @@ import type {
   PhotoWithResizedOnly,
 } from '~/types/common'
 import { convertToStringList } from '~/utils/common'
+import { publishedStateFilter } from '~/utils/preview'
 
 export type Category = {
   id: string
@@ -125,7 +126,7 @@ export const postStyles = [...POST_STYLES, ...REPORT_STYLES]
 const post = gql`
   query ($id: ID!) {
     posts ( where: {
-      state: { equals: "published" }
+      ${publishedStateFilter}
       id: { equals: $id }
       style: {
         in: [${convertToStringList(postStyles)}]
@@ -257,7 +258,7 @@ const post = gql`
 
       relatedPosts (
         where: {
-           state: { equals: "published" }
+           ${publishedStateFilter}
            style: {
              in: [${convertToStringList(postStyles)}]
            }
@@ -286,7 +287,7 @@ const latestPosts = gql`
       skip: $skip
       where: {
         id: { not: { equals: $skipId } }
-        state: { equals: "published" }
+        ${publishedStateFilter}
         style: {
           in: [${convertToStringList(postStyles)}]
         }
@@ -312,7 +313,7 @@ const authorPosts = gql`
           { writers: { some: { id: { equals: $authorId } } } }
           { sources: { some: { id: { equals: $authorId } } } }
         ]
-        state: { equals: "published" }
+        ${publishedStateFilter}
         style: {
           in: [${convertToStringList(postStyles)}]
         }
@@ -338,7 +339,7 @@ const authorPostsWithCount = gql`
           { writers: { some: { id: { equals: $authorId } } } }
           { sources: { some: { id: { equals: $authorId } } } }
         ]
-        state: { equals: "published" }
+        ${publishedStateFilter}
         style: {
           in: [${convertToStringList(postStyles)}]
         }
@@ -356,7 +357,7 @@ const authorPostsWithCount = gql`
           { writers: { some: { id: { equals: $authorId } } } }
           { sources: { some: { id: { equals: $authorId } } } }
         ]
-        state: { equals: "published" }
+        ${publishedStateFilter}
         style: {
           in: [${convertToStringList(postStyles)}]
         }

@@ -6,6 +6,7 @@ import { postCardFragment } from '~/graphql/fragments/post'
 import { resizeImagesCardFragment } from '~/graphql/fragments/resized-images'
 import type { GenericCategory, Override } from '~/types/common'
 import { convertToStringList } from '~/utils/common'
+import { publishedStateFilter } from '~/utils/preview'
 
 export type Category = Override<
   Pick<
@@ -66,7 +67,7 @@ const categories = gql`
         take: $relatedPostFirst
         skip: $postSkip
         where: {
-          state: { equals: "published" }
+          ${publishedStateFilter}
           style: { in: $relatedPostTypes }
         }
         orderBy: { publishTime: desc }
@@ -77,7 +78,7 @@ const categories = gql`
         take: $relatedReportFirst
         skip: $reportSkip
         where: {
-          state: { equals: "published" }
+          ${publishedStateFilter}
           style: { in: $relatedReportTypes }
         }
         orderBy: { publishTime: desc }

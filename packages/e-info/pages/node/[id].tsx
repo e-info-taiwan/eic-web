@@ -10,6 +10,7 @@ import Blank from '~/components/post/article-type/blank'
 import Frame from '~/components/post/article-type/frame'
 import News from '~/components/post/article-type/news'
 import ScrollableVideo from '~/components/post/article-type/scrollable-video'
+import { IS_PREVIEW_MODE } from '~/constants/config'
 import { SITE_TITLE } from '~/constants/constant'
 import type { HeaderContextData } from '~/contexts/header-context'
 import { type Donation, footerDonationQuery } from '~/graphql/query/donation'
@@ -231,9 +232,8 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
         postData,
         donation,
       },
-      // ISR: 每 5 分鐘重新驗證一次
-      // 可根據需求調整：60（1分鐘）、300（5分鐘）、3600（1小時）
-      revalidate: 300,
+      // ISR: Preview mode 10 秒，正式站 5 分鐘
+      revalidate: IS_PREVIEW_MODE ? 10 : 300,
     }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(
