@@ -143,6 +143,7 @@ export default function MediaLinkList({
         if (success) {
           setIsFavorited(false)
           setFavoriteId(null)
+          gtag.sendMemberEvent('unbookmark', postId)
         }
       } else {
         // Add to favorites
@@ -154,6 +155,7 @@ export default function MediaLinkList({
         if (newFavoriteId) {
           setIsFavorited(true)
           setFavoriteId(newFavoriteId)
+          gtag.sendMemberEvent('bookmark', postId)
         }
       }
     } catch (error) {
