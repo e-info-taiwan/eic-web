@@ -144,6 +144,7 @@ const ReferralSubLink = styled.a`
 
 const NewsletterContent = styled.div<{ $raw?: boolean }>`
   background-color: #eee;
+  overflow-x: hidden;
 
   ${({ $raw }) =>
     !$raw &&
@@ -166,7 +167,21 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
 
   table {
     max-width: 100% !important;
+    width: 100% !important;
     border-collapse: collapse;
+  }
+
+  /* Override fixed-width inline styles (564px) from email template */
+  [style*="width: 564px"],
+  [style*="width:564px"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  td, th {
+    max-width: 100% !important;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   td.mcnTextContent {
@@ -302,6 +317,18 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     background: #fff;
     line-height: 1.5;
     margin-bottom: 20px;
+  }
+
+  tr[id^='focus-row-'] td,
+  tr[id^='topic-row-'] td {
+    display: block;
+    width: 100% !important;
+  }
+
+  tr[id^='focus-row-'] td img,
+  tr[id^='topic-row-'] td img {
+    max-width: 100%;
+    height: auto;
   }
 
   /* Responsive adjustments */
