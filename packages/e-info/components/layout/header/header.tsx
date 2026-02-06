@@ -708,11 +708,9 @@ const Header = () => {
     siteConfigs,
   } = useHeaderData()
 
-  // Get donation link from site configs
-  const donationLinkConfig = siteConfigs.find(
-    (config) => config.name === '捐款連結'
-  )
-  const donationLink = donationLinkConfig?.link || ''
+  // Get donation link from site configs (id: 3) 捐款連結
+  const donationLinkConfig = siteConfigs.find((config) => config.id === '3')
+  const donationLink = donationLinkConfig?.content || ''
 
   // Process news items from homepage picks
   const newsItems = newsBarPicks
