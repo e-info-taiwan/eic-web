@@ -7,6 +7,7 @@ import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { useAuth } from '~/hooks/useAuth'
 import type { FavoriteWithPost } from '~/lib/graphql/member'
 import {
@@ -24,7 +25,7 @@ const PageWrapper = styled.div`
 `
 
 const ContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 32px 20px 60px;
 

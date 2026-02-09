@@ -68,14 +68,15 @@ const SideIndexListItem = styled.li<StyleProps>`
   font-size: 14px;
   line-height: 1.5;
   cursor: pointer;
-  color: ${(props) => (props.isActive ? '#2d7a4f' : 'rgba(0, 9, 40, 0.87)')};
+  color: ${({ theme, isActive }) =>
+    isActive ? theme.colors.primary[20] : 'rgba(0, 9, 40, 0.87)'};
   transition: color 0.2s ease;
   display: flex;
   align-items: flex-start;
 
   &::before {
     content: '•';
-    color: #2d7a4f;
+    color: ${({ theme }) => theme.colors.primary[20]};
     font-size: 14px;
     margin-right: 8px;
     flex-shrink: 0;
@@ -86,7 +87,7 @@ const SideIndexListItem = styled.li<StyleProps>`
   }
 
   &:hover {
-    color: #2d7a4f;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 
   > a {

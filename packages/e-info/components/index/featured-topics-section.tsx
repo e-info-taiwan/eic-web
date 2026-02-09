@@ -4,12 +4,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { Topic } from '~/graphql/query/section'
 import { getBriefText } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 36px 0;
 
@@ -109,7 +110,7 @@ const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.primary[20] : '#373740'};
+    $isActive ? theme.colors.primary[20] : theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -264,7 +265,7 @@ const ArticleTitle = styled.h3`
 `
 
 const ArticleExcerpt = styled.p`
-  color: #373740;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
@@ -420,7 +421,7 @@ const RankingContent = styled.div`
 const RankingItemTitle = styled.h4`
   font-size: 20px;
   font-weight: 700;
-  color: #232333;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
   line-height: 28px;
 

@@ -2,6 +2,7 @@ import SharedImage from '@readr-media/react-image'
 import React from 'react'
 import styled from 'styled-components'
 
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { Ad } from '~/graphql/query/section'
 
 const Container = styled.div`
@@ -10,7 +11,7 @@ const Container = styled.div`
   gap: 24px;
   padding: 0;
   width: 100%;
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
 
   // Tablet

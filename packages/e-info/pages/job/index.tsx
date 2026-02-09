@@ -7,6 +7,7 @@ import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Job } from '~/graphql/query/job'
 import { jobs as jobsQuery } from '~/graphql/query/job'
@@ -32,7 +33,7 @@ const PageWrapper = styled.div`
 `
 
 const ContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
 
   ${({ theme }) => theme.breakpoint.xl} {

@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Newsletter } from '~/graphql/query/newsletter'
 import {
@@ -31,7 +32,7 @@ const PageWrapper = styled.div`
 const HeroSection = styled.div`
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   aspect-ratio: 1200 / 420;
   display: flex;
@@ -96,7 +97,7 @@ const HeroTitle = styled.h1`
 `
 
 const ContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 24px 20px 60px;
 

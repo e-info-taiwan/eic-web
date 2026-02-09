@@ -80,7 +80,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
       font-weight: 700;
       line-height: 24px;
       letter-spacing: 0;
-      color: #373740;
+      color: ${({ theme }) => theme.colors.grayscale[20]};
     }
   }
 
@@ -108,7 +108,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
         bottom: 0;
         left: 0;
         width: 8px;
-        background-color: #eee500;
+        background-color: ${theme.colors.primary[20]};
       }
     `}
 `

@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 
-import PostCategory from '~/components/post/post-category'
 import type { PostDetail } from '~/graphql/query/post'
-import { formatPostDate, formatReadTime } from '~/utils/post'
+import { formatPostDate } from '~/utils/post'
 
 import DateInfo from '../shared/date-info'
 
@@ -51,7 +50,6 @@ export default function PostTitle({
 
   return (
     <PostTitleWrapper>
-      {/* {shouldShowCategories && <PostCategory category={categories} />} */}
       <DateInfo date={date} />
       {showTitle && <Title>{title}</Title>}
     </PostTitleWrapper>

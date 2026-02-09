@@ -43,8 +43,13 @@ eic-web/
 │   │   │       ├── author.ts
 │   │   │       └── resized-images.ts
 │   │   ├── constants/            # Constants
-│   │   │   ├── config.ts         # API endpoints config
-│   │   │   └── constant.ts       # Common constants
+│   │   │   ├── config.ts         # API endpoints config (GraphQL, Homepage, Header, PopularSearch)
+│   │   │   ├── constant.ts       # Common constants (site title, default images, post styles)
+│   │   │   ├── environment-variables.ts # Build-time env vars (GA, GTM, site URL)
+│   │   │   ├── layout.ts         # Layout & pagination constants (MAX_CONTENT_WIDTH, POSTS_PER_PAGE, cache/timeout)
+│   │   │   ├── social.ts         # Social media URLs & share URL patterns
+│   │   │   ├── auth.ts           # Auth-related constants (location options, validation)
+│   │   │   └── redirects.ts      # Page rewrite mappings
 │   │   ├── utils/                # Utility functions
 │   │   ├── styles/               # Styles
 │   │   │   └── theme/            # styled-components theme
@@ -63,13 +68,41 @@ eic-web/
 
 ### API Environment Configuration
 
-API endpoints are defined in `packages/e-info/constants/config.ts`:
+All API endpoints are centrally managed in `packages/e-info/constants/config.ts`:
 
-- **Development**: `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql`
-- **Staging**: `https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/graphql`
-- **Production**: `https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/graphql`
+| Endpoint | Variable | Description |
+|----------|----------|-------------|
+| GraphQL API | `API_ENDPOINT` | Main CMS GraphQL endpoint |
+| Homepage API | `HOMEPAGE_API_ENDPOINT` | JSON API for homepage data (with GraphQL fallback) |
+| Header API | `HEADER_API_ENDPOINT` | JSON API for header/footer data (with GraphQL fallback) |
+| Popular Search | `POPULAR_SEARCH_ENDPOINT` | GCS JSON for GA4 popular search keywords |
+| Preview API | `PREVIEW_API_ENDPOINT` | Preview mode GraphQL endpoint |
 
 Environment variable `NEXT_PUBLIC_ENV` controls which environment to use (local/dev/staging/prod).
+
+### Constants Architecture
+
+```
+constants/
+├── config.ts              # Runtime env vars & API endpoints (per-environment switch)
+├── constant.ts            # Fixed values (SITE_TITLE, default images, post styles)
+├── environment-variables.ts # Build-time env vars (SITE_URL, GA_TRACKING_ID, GTM_ID)
+├── layout.ts              # Layout & data constants:
+│                          #   MAX_CONTENT_WIDTH ('1200px') - used across 27+ files
+│                          #   POSTS_PER_PAGE (12), POSTS_PER_CATEGORY (3)
+│                          #   CACHE_TTL_MS, API_TIMEOUT_MS, HEALTH_CHECK_TIMEOUT_MS
+├── social.ts              # Social media constants:
+│                          #   SOCIAL_LINKS { facebook, x, instagram, line }
+│                          #   SHARE_URL { facebook(url), x(url), line(url) }
+├── auth.ts                # Location options, validation rules
+└── redirects.ts           # Page rewrite mappings
+```
+
+**Usage Guidelines**:
+- **Layout constants**: Use `MAX_CONTENT_WIDTH` in styled-components instead of hardcoded `1200px`
+- **Pagination**: Import `POSTS_PER_PAGE` / `POSTS_PER_CATEGORY` from `~/constants/layout` instead of defining locally
+- **Social URLs**: Use `SOCIAL_LINKS` for profile links, `SHARE_URL` for share buttons
+- **API endpoints**: All endpoints go through `config.ts` environment switch, never hardcode in utility files
 
 ### Apollo Client Configuration
 
@@ -523,6 +556,35 @@ h3 {
 - `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, `OAUTH_REDIRECT_URIS`, `OAUTH_REFRESH_TOKEN` from constant.ts
 - `MISO_API_KEY` from config.ts
 - `INTERESTED_CATEGORIES`, `NEWSLETTER_OPTIONS`, `NEWSLETTER_FORMAT_OPTIONS` from auth.ts
+
+## Recent Important Changes (2026-02-09)
+
+### 9. Extract Hardcoded Strings to Config Constants
+
+**Changes**:
+- Created `constants/social.ts` — centralized social media profile URLs (`SOCIAL_LINKS`) and share URL patterns (`SHARE_URL`)
+- Created `constants/layout.ts` — centralized layout (`MAX_CONTENT_WIDTH`), pagination (`POSTS_PER_PAGE`, `POSTS_PER_CATEGORY`), and API timing constants (`CACHE_TTL_MS`, `API_TIMEOUT_MS`, `HEALTH_CHECK_TIMEOUT_MS`)
+- Added `HOMEPAGE_API_ENDPOINT`, `HEADER_API_ENDPOINT`, `POPULAR_SEARCH_ENDPOINT` to `config.ts` (consolidated from local switch functions in utility files)
+- Replaced hardcoded `max-width: 1200px` across 27 files (39 occurrences) with `${MAX_CONTENT_WIDTH}`
+- Replaced local `POSTS_PER_PAGE = 12` definitions in 4 page files with shared import
+- Replaced local `CACHE_TTL_MS` and timeout values in `homepage-api.ts` / `header-data.ts` with shared imports
+- Removed duplicated endpoint switch functions (`getHomepageApiEndpoint`, `getHeaderApiEndpoint`, `getPopularSearchEndpoint`)
+
+**New Files**:
+- `packages/e-info/constants/social.ts`
+- `packages/e-info/constants/layout.ts`
+
+**Modified Files** (key files):
+- `packages/e-info/constants/config.ts` — added 3 new API endpoint exports
+- `packages/e-info/utils/homepage-api.ts` — uses config endpoints and layout constants
+- `packages/e-info/utils/header-data.ts` — uses config endpoints and layout constants
+- `packages/e-info/components/shared/media-link.tsx` — uses `SHARE_URL`
+- `packages/e-info/components/layout/header/header.tsx` — uses `SOCIAL_LINKS`, `MAX_CONTENT_WIDTH`
+- `packages/e-info/components/layout/footer.tsx` — uses `SOCIAL_LINKS`, `MAX_CONTENT_WIDTH`
+- `packages/e-info/pages/event/[id].tsx` — uses `SHARE_URL`, `MAX_CONTENT_WIDTH`
+- `packages/e-info/pages/job/[id].tsx` — uses `SHARE_URL`, `MAX_CONTENT_WIDTH`
+- `packages/e-info/pages/{tag,category,section,author}/` — uses `POSTS_PER_PAGE`
+- 27 files total for `MAX_CONTENT_WIDTH` replacement
 
 ## Development Workflow
 

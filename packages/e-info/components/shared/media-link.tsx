@@ -2,6 +2,7 @@ import NextLink from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
+import { SHARE_URL } from '~/constants/social'
 import { useAuth } from '~/hooks/useAuth'
 import {
   addFavorite,
@@ -97,21 +98,21 @@ export default function MediaLinkList({
   const externalLinks: ExternalLinkItem[] = [
     {
       name: 'Facebook',
-      href: `https://www.facebook.com/share.php?u=${href}`,
+      href: SHARE_URL.facebook(href),
       svgIcon: IconFacebook,
       alt: '分享至 Facebook',
       click: () => gtag.sendEvent('post', 'click', 'post-share-fb'),
     },
     {
       name: 'X',
-      href: `https://twitter.com/intent/tweet?url=${href}`,
+      href: SHARE_URL.x(href),
       svgIcon: IconX,
       alt: '分享至 X',
       click: () => gtag.sendEvent('post', 'click', 'post-share-twitter'),
     },
     {
       name: 'Line',
-      href: `https://social-plugins.line.me/lineit/share?url=${href}`,
+      href: SHARE_URL.line(href),
       svgIcon: IconLine,
       alt: '分享至 LINE',
       click: () => gtag.sendEvent('post', 'click', 'post-share-line'),

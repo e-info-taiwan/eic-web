@@ -205,7 +205,7 @@ const Citation = styled.article`
     font-size: 20px;
     font-weight: 700;
     line-height: 1.5;
-    color: #2d7a4f;
+    color: ${({ theme }) => theme.colors.primary[20]};
     margin-bottom: 12px;
 
     ${({ theme }) => theme.breakpoint.md} {
@@ -235,11 +235,11 @@ const Citation = styled.article`
     }
 
     a {
-      color: #2d7a4f;
+      color: ${({ theme }) => theme.colors.primary[20]};
       text-decoration: underline;
 
       &:hover {
-        color: #1f5537;
+        color: ${({ theme }) => theme.colors.primary[0]};
       }
     }
   }

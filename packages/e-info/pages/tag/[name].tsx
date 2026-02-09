@@ -9,6 +9,7 @@ import LayoutGeneral from '~/components/layout/layout-general'
 import ArticleLists from '~/components/shared/article-lists'
 import Pagination from '~/components/shared/pagination'
 import SectionHeading from '~/components/shared/section-heading'
+import { POSTS_PER_PAGE } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { TagWithPostsCount } from '~/graphql/query/tag'
 import { tagPostsForListing } from '~/graphql/query/tag'
@@ -17,8 +18,6 @@ import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
-
-const POSTS_PER_PAGE = 12
 
 const TagWrapper = styled.div`
   padding: 20px 20px 24px;
@@ -66,11 +65,7 @@ const Tag: NextPageWithLayout<PageProps> = ({
 
   return (
     <TagWrapper aria-label={sectionTitle}>
-      <SectionHeading
-        title={sectionTitle}
-        highlightColor="#eee500"
-        headingLevel={2}
-      />
+      <SectionHeading title={sectionTitle} />
 
       <ArticleLists posts={posts} AdPageKey="tag" />
       <Pagination

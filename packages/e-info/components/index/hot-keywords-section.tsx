@@ -2,6 +2,7 @@ import NextLink from 'next/link'
 import React from 'react'
 import styled from 'styled-components'
 
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { PopularSearchKeyword } from '~/graphql/query/section'
 
 const SectionContainer = styled.section`
@@ -20,7 +21,7 @@ const SectionContainer = styled.section`
 `
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   display: flex;
   flex-direction: column;

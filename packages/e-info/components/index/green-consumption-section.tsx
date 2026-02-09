@@ -4,12 +4,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { SectionInfo } from '~/utils/homepage-api'
 import { mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
 const SectionContainer = styled.section`
-  background-color: #388a48;
+  background-color: ${({ theme }) => theme.colors.primary[20]};
   padding: 24px 0 20px;
   margin: 32px 0 0;
 
@@ -26,7 +27,7 @@ const SectionContainer = styled.section`
 `
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 0;
 `

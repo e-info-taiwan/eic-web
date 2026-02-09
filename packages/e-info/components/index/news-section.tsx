@@ -7,12 +7,13 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { SectionInfo } from '~/utils/homepage-api'
 import { getBriefText, mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 36px 0;
 
@@ -112,7 +113,7 @@ const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.primary[20] : '#373740'};
+    $isActive ? theme.colors.primary[20] : theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -186,7 +187,7 @@ const NewsItem = styled.a`
 `
 
 const NewsDate = styled.div`
-  color: #388a48;
+  color: ${({ theme }) => theme.colors.primary[20]};
   font-size: 16px;
   font-weight: 700;
   line-height: 1.5;
@@ -202,7 +203,7 @@ const NewsTitle = styled.h3`
   transition: color 0.3s ease;
 
   ${NewsItem}:hover & {
-    color: #388a48;
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
 
@@ -366,7 +367,7 @@ const RelatedContent = styled.div`
 `
 
 const RelatedDate = styled.div`
-  color: #388a48;
+  color: ${({ theme }) => theme.colors.primary[20]};
   font-size: 16px;
   font-weight: 700;
   line-height: 1.5;

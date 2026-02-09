@@ -153,12 +153,7 @@ const Search: NextPageWithLayout<PageProps> = () => {
   return (
     <>
       <SearchWrapper aria-label={sectionTitle}>
-        <SectionHeading
-          title={sectionTitle}
-          highlightColor="#eee500"
-          headingLevel={1}
-          showBorder={false}
-        />
+        <SectionHeading title={sectionTitle} showBorder={false} />
 
         <SearchBar onSubmit={handleSubmit}>
           <SearchInput

@@ -10,6 +10,7 @@ import ArticleLists from '~/components/shared/article-lists'
 import Pagination from '~/components/shared/pagination'
 import SectionHeading from '~/components/shared/section-heading'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { POSTS_PER_PAGE } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Author, AuthorImage } from '~/graphql/fragments/author'
 import type { Post } from '~/graphql/fragments/post'
@@ -20,8 +21,6 @@ import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
-
-const POSTS_PER_PAGE = 12
 
 const AuthorWrapper = styled.div`
   padding: 20px 20px 24px;
@@ -142,12 +141,7 @@ const AuthorPage: NextPageWithLayout<PageProps> = ({
 
   return (
     <AuthorWrapper aria-label={sectionTitle}>
-      <SectionHeading
-        title={sectionTitle}
-        highlightColor="#eee500"
-        headingLevel={2}
-        showBorder={false}
-      />
+      <SectionHeading title={sectionTitle} showBorder={false} />
       {hasAuthorInfo && (
         <AuthorInfoSection>
           {authorImage && (

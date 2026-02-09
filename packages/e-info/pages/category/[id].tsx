@@ -15,6 +15,7 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH, POSTS_PER_PAGE } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
@@ -30,8 +31,6 @@ import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { postConvertFunc } from '~/utils/post'
 
-const POSTS_PER_PAGE = 12
-
 const PageWrapper = styled.div`
   padding: 20px 0 24px;
 
@@ -41,7 +40,7 @@ const PageWrapper = styled.div`
 
   ${({ theme }) => theme.breakpoint.lg} {
     padding: 20px 0 60px;
-    max-width: 1200px;
+    max-width: ${MAX_CONTENT_WIDTH};
     margin: auto;
   }
 
@@ -143,7 +142,7 @@ const CategoryTab = styled(Link)<{ $isActive?: boolean }>`
   background: none;
   border: none;
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.primary[20] : '#373740'};
+    $isActive ? theme.colors.primary[20] : theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -194,7 +193,7 @@ const ColumnPageWrapper = styled.div`
 const ColumnHeroSection = styled.div`
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   aspect-ratio: 1200 / 420;
   display: flex;
@@ -258,7 +257,7 @@ const ColumnHeroTitle = styled.h1`
 `
 
 const ColumnCategoryTagsWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   background: linear-gradient(
     180deg,
@@ -277,7 +276,7 @@ const ColumnCategoryTagsWrapper = styled.div`
 `
 
 const ColumnCategoryTagsContainer = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -315,7 +314,7 @@ const ColumnCategoryTag = styled(Link)<{ $isActive?: boolean }>`
 `
 
 const ColumnContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 24px 27px;
 

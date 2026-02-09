@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import NewsletterModal from '~/components/shared/newsletter-modal'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
+import { SOCIAL_LINKS } from '~/constants/social'
 import { useHeaderData } from '~/contexts/header-context'
 import LogoEIC from '~/public/eic-logo.svg'
 
@@ -22,7 +24,7 @@ const FooterContainer = styled.footer`
 `
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
 `
 
@@ -344,7 +346,7 @@ const Footer = () => {
 
           <SocialSection>
             <SocialLink
-              href="https://www.facebook.com/enc.teia"
+              href={SOCIAL_LINKS.facebook}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -354,7 +356,7 @@ const Footer = () => {
               </svg>
             </SocialLink>
             <SocialLink
-              href="https://x.com/e_info"
+              href={SOCIAL_LINKS.x}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X (Twitter)"
@@ -364,7 +366,7 @@ const Footer = () => {
               </svg>
             </SocialLink>
             <SocialLink
-              href="https://www.instagram.com/enc.teia/"
+              href={SOCIAL_LINKS.instagram}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"

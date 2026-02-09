@@ -13,6 +13,7 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { Donation } from '~/graphql/query/donation'
 import type { PostDetail } from '~/graphql/query/post'
 import useReadingProgress from '~/hooks/useReadingProgress'
@@ -29,7 +30,7 @@ const NewsContainer = styled.div`
 `
 const HeroImage = styled.figure`
   width: 100%;
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
 
   //shared-component of @readr-media/react-image
@@ -70,7 +71,7 @@ const HiddenAnchor = styled.div`
 
 const ContentWrapper = styled.main`
   display: block;
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
 
   ${({ theme }) => theme.breakpoint.xl} {

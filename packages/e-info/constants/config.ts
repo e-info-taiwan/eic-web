@@ -34,6 +34,9 @@ const FIREBASE_ADMIN_PRIVATE_KEY = (
 
 let API_ENDPOINT = ''
 let PREVIEW_API_ENDPOINT = ''
+let HOMEPAGE_API_ENDPOINT = ''
+let HEADER_API_ENDPOINT = ''
+let POPULAR_SEARCH_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
   authDomain: '',
@@ -48,6 +51,12 @@ switch (ENV) {
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     PREVIEW_API_ENDPOINT = '' // TODO: 建立 prod preview CMS 後填入
+    HOMEPAGE_API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage' // TODO: Update when prod endpoint is ready
+    HEADER_API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header' // TODO: Update when prod endpoint is ready
+    POPULAR_SEARCH_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json' // TODO: Update to production endpoint
     FIREBASE_CONFIG = {
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
       authDomain: 'e-info-prod.firebaseapp.com',
@@ -61,6 +70,12 @@ switch (ENV) {
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     PREVIEW_API_ENDPOINT = '' // TODO: 建立 staging preview CMS 後填入
+    HOMEPAGE_API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage' // TODO: Update when staging endpoint is ready
+    HEADER_API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header' // TODO: Update when staging endpoint is ready
+    POPULAR_SEARCH_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
     FIREBASE_CONFIG = {
       apiKey: '',
       authDomain: '',
@@ -76,6 +91,12 @@ switch (ENV) {
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     PREVIEW_API_ENDPOINT =
       'https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql'
+    HOMEPAGE_API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage'
+    HEADER_API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
+    POPULAR_SEARCH_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
     FIREBASE_CONFIG = {
       // e-info-dev
       apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
@@ -125,11 +146,14 @@ export {
   FIREBASE_ADMIN_PROJECT_ID,
   FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH,
   FIREBASE_CONFIG,
+  HEADER_API_ENDPOINT,
+  HOMEPAGE_API_ENDPOINT,
   IS_PREVIEW_MODE,
   MAILCHIMP_API_KEY,
   MAILCHIMP_LIST_ID_DAILY,
   MAILCHIMP_LIST_ID_WEEKLY,
   MAILCHIMP_SERVER_PREFIX,
   MOCK_API_SERVER_PORT,
+  POPULAR_SEARCH_ENDPOINT,
   TURNSTILE_SECRET_KEY,
 }

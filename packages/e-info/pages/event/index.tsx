@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Event } from '~/graphql/query/event'
 import { events as eventsQuery } from '~/graphql/query/event'
@@ -33,7 +34,7 @@ const PageWrapper = styled.div`
 `
 
 const ContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
 
   ${({ theme }) => theme.breakpoint.xl} {

@@ -37,7 +37,6 @@
 | 社群分享按鈕 | `components/shared/media-link.tsx:110` | `post > click` | `post-share-twitter` |
 | 社群分享按鈕 | `components/shared/media-link.tsx:117` | `post > click` | `post-share-line` |
 | 書籤按鈕 | `components/shared/media-link.tsx:122` | `post > click` | `post-bookmark` |
-| 文章分類連結 | `components/post/post-category.tsx:67` | `post > click` | `post-{分類名稱}` |
 | 文章標籤連結 | `components/post/tag.tsx:58` | `post > click` | `post-{標籤名稱}` |
 | 相關文章區塊 | `components/post/related-post.tsx:101` | `post > click` | `post-related-{文章標題}` |
 | 訂閱電子報按鈕 | `components/post/subscribe-button.tsx:19` | `post > click` | `post-mailsubscribe` |
@@ -49,11 +48,7 @@
 | 頁面/功能 | 檔案位置 | Category > Action | Label |
 |----------|---------|-------------------|-------|
 | 首頁 | `pages/index.tsx:135` | `homepage > scroll` | `scroll to end` |
-| 編輯精選區塊 | `components/index/editor-choice-section.tsx:99` | `homepage > click` | `editorchoice-{文章標題}` |
-| 編輯精選區塊 | `components/index/editor-choice-section.tsx:116` | `homepage > click` | `editorchoice-left` |
 | 最新文章列表 | `components/index/category-list.tsx:77` | `homepage > click` | `latest-{文章標題}` |
-| 分類報導卡片 | `components/index/category-report-card.tsx:177` | `homepage > click` | `latest-{文章標題}` |
-| 專題卡片 | `components/index/feature-card.tsx:238` | `homepage > click` | `feature-{專題標題}` |
 
 ---
 

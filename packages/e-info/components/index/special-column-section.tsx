@@ -4,12 +4,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { SectionInfo } from '~/utils/homepage-api'
 import { mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 36px 0;
 
@@ -109,7 +110,7 @@ const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.primary[20] : '#373740'};
+    $isActive ? theme.colors.primary[20] : theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;

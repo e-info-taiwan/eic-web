@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { InfoGraph } from '~/graphql/query/section'
 
 type InforgraphicProps = {
@@ -52,7 +53,7 @@ const Container = styled.div`
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     padding: 48px 60px;
-    max-width: 1200px;
+    max-width: ${MAX_CONTENT_WIDTH};
   }
 `
 

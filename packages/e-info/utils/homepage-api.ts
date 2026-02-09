@@ -5,6 +5,15 @@
 
 import type { ApolloClient } from '@apollo/client/core'
 
+import {
+  HOMEPAGE_API_ENDPOINT,
+  POPULAR_SEARCH_ENDPOINT,
+} from '~/constants/config'
+import {
+  API_TIMEOUT_MS,
+  CACHE_TTL_MS,
+  HEALTH_CHECK_TIMEOUT_MS,
+} from '~/constants/layout'
 import type {
   Ad,
   HomepagePick,
@@ -26,28 +35,9 @@ import {
   topicsWithPosts,
 } from '~/graphql/query/section'
 
-// API Endpoints 設定
-const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
-
 // In-memory cache for homepage data
 let cachedHomepageData: HomepageData | null = null
 let cacheTimestamp = 0
-const CACHE_TTL_MS = 60 * 1000 // 60 seconds
-
-function getHomepageApiEndpoint(): string {
-  switch (ENV) {
-    case 'prod':
-      // TODO
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage'
-    case 'staging':
-      // TODO
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage'
-    case 'dev':
-    default:
-      // TODO
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage'
-  }
-}
 
 /**
  * Homepage API Response 型別
@@ -102,10 +92,9 @@ function createTimeoutController(timeoutMs: number): AbortController {
  * 從 JSON API 獲取首頁資料
  */
 async function fetchFromJsonApi(): Promise<HomepageApiResponse> {
-  const endpoint = getHomepageApiEndpoint()
-  const controller = createTimeoutController(10000) // 10 秒 timeout
+  const controller = createTimeoutController(API_TIMEOUT_MS)
 
-  const response = await fetch(endpoint, {
+  const response = await fetch(HOMEPAGE_API_ENDPOINT, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -376,9 +365,8 @@ export async function fetchHomepageData(
  */
 export async function checkHomepageApiHealth(): Promise<boolean> {
   try {
-    const endpoint = getHomepageApiEndpoint()
-    const controller = createTimeoutController(5000) // 5 秒 timeout
-    const response = await fetch(endpoint, {
+    const controller = createTimeoutController(HEALTH_CHECK_TIMEOUT_MS)
+    const response = await fetch(HOMEPAGE_API_ENDPOINT, {
       method: 'HEAD',
       signal: controller.signal,
     })
@@ -388,31 +376,13 @@ export async function checkHomepageApiHealth(): Promise<boolean> {
   }
 }
 
-/**
- * 獲取熱搜關鍵字資料
- * 從 GCS 上的 GA4 分析資料 JSON 檔案取得
- */
-function getPopularSearchEndpoint(): string {
-  switch (ENV) {
-    case 'prod':
-      // TODO: Update to production endpoint when available
-      return 'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
-    case 'staging':
-      return 'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
-    case 'dev':
-    default:
-      return 'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
-  }
-}
-
 export async function fetchPopularSearchKeywords(): Promise<
   PopularSearchKeyword[]
 > {
   try {
-    const endpoint = getPopularSearchEndpoint()
-    const controller = createTimeoutController(10000) // 10 秒 timeout
+    const controller = createTimeoutController(API_TIMEOUT_MS)
 
-    const response = await fetch(endpoint, {
+    const response = await fetch(POPULAR_SEARCH_ENDPOINT, {
       method: 'GET',
       signal: controller.signal,
     })

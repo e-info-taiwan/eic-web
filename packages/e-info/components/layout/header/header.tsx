@@ -5,6 +5,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import NewsletterModal from '~/components/shared/newsletter-modal'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
+import { SOCIAL_LINKS } from '~/constants/social'
 import { useHeaderData } from '~/contexts/header-context'
 import type { HeaderNavSection } from '~/graphql/query/section'
 import { useAuth } from '~/hooks/useAuth'
@@ -31,7 +33,7 @@ const HeaderContainer = styled.header<{ $isHidden?: boolean }>`
 `
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 30px 12px 30px 12px;
 
@@ -483,7 +485,7 @@ const SecondaryMenuBar = styled.div<{ $isVisible: boolean }>`
 `
 
 const SecondaryMenuContainer = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   display: flex;
   padding: 0 16px;
@@ -1177,7 +1179,7 @@ const Header = () => {
               <MobileMenuFooter>
                 <SocialIcons>
                   <a
-                    href="https://www.facebook.com/enc.teia"
+                    href={SOCIAL_LINKS.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Facebook"
@@ -1185,7 +1187,7 @@ const Header = () => {
                     <IconFacebook />
                   </a>
                   <a
-                    href="https://www.instagram.com/enc.teia/"
+                    href={SOCIAL_LINKS.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"

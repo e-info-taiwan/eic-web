@@ -57,9 +57,6 @@ export const theme = {
   width: {
     // 全站
     main: '1096px', // 網頁內容
-    // 首頁 - 編輯精選區塊
-    featuredEditorChoiceCard: '720px',
-    editorChoiceCard: '296px',
   },
   zIndex: {
     top: 10000,

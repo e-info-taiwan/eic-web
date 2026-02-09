@@ -4,6 +4,12 @@
  */
 
 import { getGqlClient } from '~/apollo-client'
+import { HEADER_API_ENDPOINT } from '~/constants/config'
+import {
+  API_TIMEOUT_MS,
+  CACHE_TTL_MS,
+  HEALTH_CHECK_TIMEOUT_MS,
+} from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   HeaderNavSection,
@@ -20,28 +26,9 @@ import {
   topicsForHeader,
 } from '~/graphql/query/section'
 
-// API Endpoints 設定
-const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
-
 // In-memory cache for header data
 let cachedHeaderData: HeaderContextData | null = null
 let cacheTimestamp = 0
-const CACHE_TTL_MS = 60 * 1000 // 60 seconds
-
-function getHeaderApiEndpoint(): string {
-  switch (ENV) {
-    case 'prod':
-      // TODO: Update when prod endpoint is ready
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
-    case 'staging':
-      // TODO: Update when staging endpoint is ready
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
-    case 'dev':
-    default:
-      // TODO: Update when dev endpoint is ready
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
-  }
-}
 
 /**
  * 建立具有 timeout 功能的 AbortController
@@ -57,8 +44,8 @@ function createTimeoutController(timeoutMs: number): AbortController {
  * 從 JSON API 獲取 Header/Footer 資料
  */
 async function fetchFromJsonApi(): Promise<HeaderContextData> {
-  const endpoint = getHeaderApiEndpoint()
-  const controller = createTimeoutController(10000) // 10 秒 timeout
+  const endpoint = HEADER_API_ENDPOINT
+  const controller = createTimeoutController(API_TIMEOUT_MS)
 
   const response = await fetch(endpoint, {
     method: 'GET',
@@ -200,8 +187,8 @@ export async function fetchHeaderData(): Promise<HeaderContextData> {
  */
 export async function checkHeaderApiHealth(): Promise<boolean> {
   try {
-    const endpoint = getHeaderApiEndpoint()
-    const controller = createTimeoutController(5000) // 5 秒 timeout
+    const endpoint = HEADER_API_ENDPOINT
+    const controller = createTimeoutController(HEALTH_CHECK_TIMEOUT_MS)
     const response = await fetch(endpoint, {
       method: 'HEAD',
       signal: controller.signal,

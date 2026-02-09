@@ -22,6 +22,11 @@
 |── pages/            - 頁面檔
 |   └── api/          - 後端 API
 |── constants/        - 常數、設定
+|   |── config.ts     - API 端點設定（依環境切換：dev/staging/prod）
+|   |── constant.ts   - 固定常數（站名、預設圖片、文章樣式）
+|   |── layout.ts     - 佈局與分頁常數（MAX_CONTENT_WIDTH、POSTS_PER_PAGE、Cache/Timeout）
+|   |── social.ts     - 社群媒體 URL 與分享連結 pattern
+|   └── environment-variables.ts - 建構時環境變數（GA、GTM、SITE_URL）
 |── contexts/         - React Context
 |── graphql/          - GraphQL request schema 檔案
 |   |── fragments/    - GraphQL fragments

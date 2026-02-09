@@ -6,6 +6,8 @@ import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
+import { MAX_CONTENT_WIDTH } from '~/constants/layout'
+import { SHARE_URL } from '~/constants/social'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Job } from '~/graphql/query/job'
 import { jobById } from '~/graphql/query/job'
@@ -23,7 +25,7 @@ const PageWrapper = styled.div`
 `
 
 const ContentWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 40px 20px 60px;
 
@@ -249,27 +251,18 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
 
   const handleShareFacebook = () => {
     window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        window.location.href
-      )}`,
+      SHARE_URL.facebook(encodeURIComponent(window.location.href)),
       '_blank'
     )
   }
 
   const handleShareX = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-        window.location.href
-      )}`,
-      '_blank'
-    )
+    window.open(SHARE_URL.x(encodeURIComponent(window.location.href)), '_blank')
   }
 
   const handleShareLine = () => {
     window.open(
-      `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(
-        window.location.href
-      )}`,
+      SHARE_URL.line(encodeURIComponent(window.location.href)),
       '_blank'
     )
   }

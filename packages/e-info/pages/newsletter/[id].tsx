@@ -146,7 +146,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   background-color: #eee;
   overflow-x: hidden;
 
-  ${({ $raw }) =>
+  ${({ $raw, theme }) =>
     !$raw &&
     `
   /* Override inline styles from standardHtml */
@@ -383,12 +383,12 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   .article-title {
     font-size: 20px;
     font-weight: 700;
-    color: #232333;
+    color: ${theme.colors.grayscale[0]};
     margin: 0 0 10px;
     line-height: 28px;
   }
   .article-title a {
-    color: #232333;
+    color: ${theme.colors.grayscale[0]};
     text-decoration: none;
   }
   .article-title a:hover {
@@ -401,20 +401,20 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     margin-bottom: 10px;
   }
   .article-content .read-more {
-    color: #DD8346;
+    color: ${theme.colors.secondary[20]};
     font-weight: bold;
     margin-left: 4px;
     text-decoration: underline;
   }
   .article-content .read-more:hover {
-    color: #B55514;
+    color: ${theme.colors.secondary[0]};
   }
   .read-more {
     text-align: right;
     font-size: 14px;
   }
   .read-more a {
-    color: #DD8346;
+    color: ${theme.colors.secondary[20]};
     font-weight: bold;
   }
 
@@ -423,7 +423,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     margin-bottom: 53px;
   }
   .green-header {
-    background-color: #388A48;
+    background-color: ${theme.colors.primary[20]};
     color: white;
     text-align: center;
     padding: 12px 20px;
@@ -455,11 +455,11 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   .highlight-title {
     font-size: 18px;
     font-weight: 500;
-    color: #232333;
+    color: ${theme.colors.grayscale[0]};
     line-height: 1.5;
   }
   .highlight-title a {
-    color: #232333;
+    color: ${theme.colors.grayscale[0]};
     text-decoration: none;
   }
   .highlight-title a:hover {
@@ -472,7 +472,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     text-decoration: underline;
   }
   .highlight-content .read-more a:hover {
-    color: #B55514;
+    color: ${theme.colors.secondary[0]};
   }
 
   /* ===== 03-Ranking (閱讀排名) ===== */
@@ -497,7 +497,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   .ranking-number {
     font-size: 42px;
     font-weight: bold;
-    color: #388A48;
+    color: ${theme.colors.primary[20]};
     width: 50px;
     flex-shrink: 0;
     text-align: center;
@@ -517,16 +517,16 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     text-decoration: underline;
   }
   .ranking-content .read-more a:hover {
-    color: #B55514;
+    color: ${theme.colors.secondary[0]};
   }
   .ranking-title {
     font-size: 18px;
     font-weight: 500;
-    color: #232333;
+    color: ${theme.colors.grayscale[0]};
     line-height: 1.5;
   }
   .ranking-title a {
-    color: #232333;
+    color: ${theme.colors.grayscale[0]};
     text-decoration: none;
   }
   .ranking-title a:hover {
@@ -565,7 +565,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   }
   .event-date {
     font-size: 15px;
-    color: #388A48;
+    color: ${theme.colors.primary[20]};
     font-weight: bold;
     margin-bottom: 5px;
   }
@@ -600,7 +600,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   }
   .job-date {
     font-size: 15px;
-    color: #388A48;
+    color: ${theme.colors.primary[20]};
     font-weight: bold;
     margin-bottom: 5px;
   }
@@ -638,7 +638,7 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   .comment-source {
     font-size: 16px;
     font-weight: 700;
-    color: #373740;
+    color: ${theme.colors.grayscale[20]};
     line-height: 1.5;
     text-decoration: underline;
     margin-bottom: 15px;
@@ -648,13 +648,13 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     text-align: center;
   }
   .comment-link a {
-    color: #DD8346;
+    color: ${theme.colors.secondary[20]};
     font-size: 16px;
     font-weight: bold;
     text-decoration: underline;
   }
   .comment-link a:hover {
-    color: #B55514;
+    color: ${theme.colors.secondary[0]};
   }
   `}
 `
@@ -843,7 +843,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
         {/* <NewsletterFooter>
           <SocialLinks>
             <SocialLink
-              href="https://www.facebook.com/enc.teia"
+              href={SOCIAL_LINKS.facebook}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -853,7 +853,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
               </svg>
             </SocialLink>
             <SocialLink
-              href="https://x.com/e_info"
+              href={SOCIAL_LINKS.x}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X"
@@ -863,7 +863,7 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
               </svg>
             </SocialLink>
             <SocialLink
-              href="https://line.me/R/ti/p/@e-info"
+              href={SOCIAL_LINKS.line}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LINE"

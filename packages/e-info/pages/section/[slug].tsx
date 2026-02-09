@@ -14,6 +14,11 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
+import {
+  MAX_CONTENT_WIDTH,
+  POSTS_PER_CATEGORY,
+  POSTS_PER_PAGE,
+} from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
@@ -36,9 +41,6 @@ import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { mergePostsWithFeatured, postConvertFunc } from '~/utils/post'
 
-const POSTS_PER_PAGE = 12
-const POSTS_PER_CATEGORY = 3
-
 // ========== Shared Styled Components ==========
 
 const PageWrapper = styled.div`
@@ -56,7 +58,7 @@ const DefaultPageWrapper = styled.div`
 
   ${({ theme }) => theme.breakpoint.lg} {
     padding: 20px 0 60px;
-    max-width: 1200px;
+    max-width: ${MAX_CONTENT_WIDTH};
     margin: auto;
   }
 
@@ -152,7 +154,7 @@ const DefaultCategoryTabs = styled.div`
 const DefaultCategoryTab = styled(Link)`
   background: none;
   border: none;
-  color: #373740;
+  color: ${({ theme }) => theme.colors.grayscale[20]};
   font-weight: 700;
   font-size: 20px;
   line-height: 28px;
@@ -288,7 +290,7 @@ const EmptyMessage = styled.div`
 const HeroSection = styled.div`
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   aspect-ratio: 1200 / 420;
   display: flex;
@@ -358,7 +360,7 @@ const HeroTitle = styled.h1`
 
 // Category Tags Section
 const CategoryTagsWrapper = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   background: linear-gradient(
     180deg,
@@ -377,7 +379,7 @@ const CategoryTagsWrapper = styled.div`
 `
 
 const CategoryTagsContainer = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -412,7 +414,7 @@ const CategoryTag = styled(Link)`
 
 // Description Section (placeholder for future CMS field)
 const DescriptionSection = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 24px 20px;
   text-align: left;
@@ -429,7 +431,7 @@ const DescriptionSection = styled.div`
 
 // Categories Grid Container (2 columns on desktop)
 const CategoriesGrid = styled.div`
-  max-width: 1200px;
+  max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 0 20px;
 
