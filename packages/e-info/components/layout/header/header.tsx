@@ -524,6 +524,10 @@ const SecondaryMenuContainer = styled.div`
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 4px 32px 4px 40px;
+  }
 `
 
 const SecondaryMenuItem = styled(Link)`
