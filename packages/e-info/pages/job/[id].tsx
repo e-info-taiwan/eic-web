@@ -160,14 +160,14 @@ const ContentSection = styled.div`
 `
 
 const SectionTitle = styled.h2`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[20]};
-  margin: 0 0 16px;
+  line-height: 1.8;
+  color: #000;
+  margin: 0 0 8px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 20px;
+    font-size: 18px;
   }
 `
 
@@ -226,6 +226,18 @@ const formatDate = (dateString?: string): string => {
   return `${year}年${month}月${day}日`
 }
 
+// Format datetime as yyyy-mm-dd-HH:mm
+const formatDateTime = (dateString?: string): string => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day}-${hours}:${minutes}`
+}
+
 // Format date range
 const formatDateRange = (startDate?: string, endDate?: string): string => {
   if (!startDate) return ''
@@ -282,27 +294,27 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
       <ContentWrapper>
         <JobHeader>
           <CategoryLabel>環境徵才</CategoryLabel>
-          {(job.startDate || job.endDate) && (
-            <DateInfo>
-              徵才期間：{formatDateRange(job.startDate, job.endDate)}
-            </DateInfo>
+          {job.createdAt && (
+            <DateInfo>{formatDateTime(job.createdAt)}</DateInfo>
           )}
           <JobTitle>{job.title}</JobTitle>
 
           <JobMetaGrid>
+            {(job.startDate || job.endDate) && (
+              <MetaItem>
+                <MetaLabel>
+                  時間—{formatDateRange(job.startDate, job.endDate)}
+                </MetaLabel>
+              </MetaItem>
+            )}
             {job.company && (
               <MetaItem>
-                <MetaLabel>招募單位：{job.company}</MetaLabel>
+                <MetaLabel>招募單位—{job.company}</MetaLabel>
               </MetaItem>
             )}
             {job.salary && (
               <MetaItem>
-                <MetaLabel>薪資：{job.salary}</MetaLabel>
-              </MetaItem>
-            )}
-            {job.bonus && (
-              <MetaItem>
-                <MetaLabel>福利：{job.bonus}</MetaLabel>
+                <MetaLabel>薪資—{job.salary}</MetaLabel>
               </MetaItem>
             )}
           </JobMetaGrid>
@@ -329,7 +341,7 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
         <JobContent>
           {job.jobDescription && (
             <ContentSection>
-              <SectionTitle>職務說明</SectionTitle>
+              <SectionTitle>【職務說明】</SectionTitle>
               <ContentText
                 dangerouslySetInnerHTML={{ __html: job.jobDescription }}
               />
@@ -338,16 +350,23 @@ const JobPage: NextPageWithLayout<PageProps> = ({ job }) => {
 
           {job.requirements && (
             <ContentSection>
-              <SectionTitle>應徵條件</SectionTitle>
+              <SectionTitle>【應徵條件】</SectionTitle>
               <ContentText
                 dangerouslySetInnerHTML={{ __html: job.requirements }}
               />
             </ContentSection>
           )}
 
+          {job.bonus && (
+            <ContentSection>
+              <SectionTitle>【加分條件】</SectionTitle>
+              <ContentText dangerouslySetInnerHTML={{ __html: job.bonus }} />
+            </ContentSection>
+          )}
+
           {job.applicationMethod && (
             <ContentSection>
-              <SectionTitle>應徵方式</SectionTitle>
+              <SectionTitle>【應徵方式】</SectionTitle>
               <ContentText
                 dangerouslySetInnerHTML={{ __html: job.applicationMethod }}
               />

@@ -98,13 +98,14 @@ const EventTitle = styled.h1`
 `
 
 const EventMetaGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
   text-align: center;
 
   ${({ theme }) => theme.breakpoint.md} {
-    gap: 24px;
+    gap: 18px;
   }
 `
 
@@ -116,9 +117,10 @@ const MetaItem = styled.div`
 
 const MetaLabel = styled.div`
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   color: #000;
   white-space: pre-line;
+  line-height: 1.5;
 
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 18px;
@@ -127,13 +129,26 @@ const MetaLabel = styled.div`
 
 const MetaValue = styled.div`
   font-size: 16px;
-  font-weight: 400;
-  line-height: 1.6;
+  font-weight: 500;
+  line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
 
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 18px;
   }
+`
+
+const MetaInlineGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const MetaInline = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.5;
 `
 
 const ShareButtons = styled.div`
@@ -378,24 +393,15 @@ const EventPage: NextPageWithLayout<PageProps> = ({ event }) => {
                 <MetaValue>{event.organizer}</MetaValue>
               </MetaItem>
             )}
-            {event.location && (
-              <MetaItem>
-                <MetaLabel>活動地點</MetaLabel>
-                <MetaValue>{event.location}</MetaValue>
-              </MetaItem>
-            )}
-            {event.fee && (
-              <MetaItem>
-                <MetaLabel>活動費用</MetaLabel>
-                <MetaValue>{event.fee}</MetaValue>
-              </MetaItem>
-            )}
-            {event.contactInfo && (
-              <MetaItem>
-                <MetaLabel>聯絡資訊</MetaLabel>
-                <MetaValue>{event.contactInfo}</MetaValue>
-              </MetaItem>
-            )}
+            <MetaInlineGroup>
+              {event.location && (
+                <MetaInline>活動地點—{event.location}</MetaInline>
+              )}
+              {event.fee && <MetaInline>活動費用—{event.fee}</MetaInline>}
+              {event.contactInfo && (
+                <MetaInline>聯絡資訊—{event.contactInfo}</MetaInline>
+              )}
+            </MetaInlineGroup>
           </EventMetaGrid>
           <ShareButtons>
             <ShareButton onClick={handleCopyLink} aria-label="複製連結">

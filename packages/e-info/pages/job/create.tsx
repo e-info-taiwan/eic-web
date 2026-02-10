@@ -374,9 +374,11 @@ const CreateJobPage: NextPageWithLayout = () => {
       newErrors.startDate = '請選擇開始日期'
     }
 
-    if (!formData.endDate) {
-      newErrors.endDate = '請選擇結束日期'
-    } else if (formData.startDate && formData.endDate < formData.startDate) {
+    if (
+      formData.endDate &&
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
       newErrors.endDate = '結束日期不可早於開始日期'
     }
 

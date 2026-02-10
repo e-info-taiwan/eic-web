@@ -55,7 +55,6 @@ export default async function handler(
       !body.title ||
       !body.company ||
       !body.startDate ||
-      !body.endDate ||
       !body.jobDescription
     ) {
       return res.status(400).json({
@@ -76,7 +75,8 @@ export default async function handler(
       bonus: body.bonus || '',
       applicationMethod: body.applicationMethod,
       startDate: new Date(body.startDate).toISOString(),
-      endDate: new Date(body.endDate).toISOString(),
+      endDate: new Date(body.endDate || body.startDate).toISOString(),
+      sortOrder: 0,
       state: 'draft',
       isApproved: false,
     }
