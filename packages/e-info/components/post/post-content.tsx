@@ -268,8 +268,11 @@ export default function PostContent({
   // Use original content field (Draft.js format)
   const contentToRender = postData?.content
   const briefToRender = postData?.brief
+  const isBriefPlainText = typeof briefToRender === 'string'
 
-  const shouldShowSummary = hasContentInRawContentBlock(briefToRender)
+  const shouldShowSummary = isBriefPlainText
+    ? briefToRender.trim().length > 0
+    : hasContentInRawContentBlock(briefToRender)
   const shouldShowContent = hasContentInRawContentBlock(contentToRender)
   // Note: actionList and citation fields are removed in new API
   const shouldShowActionList = false
@@ -338,10 +341,14 @@ export default function PostContent({
     <Container shouldPaddingTop={shouldPaddingTop} ref={articleRef}>
       {shouldShowSummary && (
         <Summary>
-          <DraftRenderer
-            rawContentBlock={briefToRender}
-            contentType={ValidPostContentType.SUMMARY}
-          />
+          {isBriefPlainText ? (
+            <p>{briefToRender}</p>
+          ) : (
+            <DraftRenderer
+              rawContentBlock={briefToRender}
+              contentType={ValidPostContentType.SUMMARY}
+            />
+          )}
         </Summary>
       )}
 
