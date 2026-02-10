@@ -4,7 +4,7 @@ import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
@@ -427,13 +427,14 @@ type PageProps = {
 
 const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
   const [currentPage, setCurrentPage] = useState(1)
+  const articleListRef = useRef<HTMLDivElement>(null)
   const itemsPerPage = 6
   const posts = topic.posts || []
   const totalPages = Math.ceil(posts.length / itemsPerPage)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    articleListRef.current?.scrollIntoView({ behavior: 'smooth' })
     gtag.sendEvent('topic', 'click', `page-${page}`)
   }
 
@@ -530,7 +531,7 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
         </TopicHeader>
 
         {/* Article List */}
-        <ArticleList>
+        <ArticleList ref={articleListRef}>
           {currentPosts.map((post) => (
             <Link
               key={post.id}
