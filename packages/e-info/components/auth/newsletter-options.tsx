@@ -169,7 +169,7 @@ const NewsletterOptions = ({
             onChange={(e) => onDailyChange(e.target.checked)}
           />
           <CheckboxIcon $checked={dailyNewsletter} />
-          訂閱《環境資訊電子報》每日報
+          訂閱《環境資訊中心電子報》每日報
         </CheckboxItem>
         <CheckboxItem>
           <HiddenCheckbox
@@ -178,7 +178,7 @@ const NewsletterOptions = ({
             onChange={(e) => onWeeklyChange(e.target.checked)}
           />
           <CheckboxIcon $checked={weeklyNewsletter} />
-          訂閱《環境資訊電子報一週回顧》
+          訂閱《環境資訊中心電子報一週回顧》
         </CheckboxItem>
       </CheckboxGroup>
 

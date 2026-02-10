@@ -528,7 +528,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                   onChange={(e) => setDailyChecked(e.target.checked)}
                 />
                 <CheckboxIcon $checked={dailyChecked} />
-                訂閱《環境資訊電子報》每日報
+                訂閱《環境資訊中心電子報》每日報
               </CheckboxItem>
 
               {/* Weekly newsletter option */}
@@ -539,7 +539,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
                   onChange={(e) => setWeeklyChecked(e.target.checked)}
                 />
                 <CheckboxIcon $checked={weeklyChecked} />
-                訂閱《環境資訊電子報一週回顧》
+                訂閱《環境資訊中心電子報一週回顧》
               </CheckboxItem>
             </CheckboxGroup>
 

@@ -292,19 +292,19 @@ const defaultToggles: NewsletterToggles = {
 const newsletterOptions = [
   {
     key: 'dailyStandard' as const,
-    label: '《環境資訊電子報》每日報（一般版）',
+    label: '《環境資訊中心電子報》每日報（一般版）',
   },
   {
     key: 'dailyStyled' as const,
-    label: '《環境資訊電子報》每日報（美化版）',
+    label: '《環境資訊中心電子報》每日報（美化版）',
   },
   {
     key: 'weeklyStandard' as const,
-    label: '《環境資訊電子報一週回顧》（一般版）',
+    label: '《環境資訊中心電子報一週回顧》（一般版）',
   },
   {
     key: 'weeklyStyled' as const,
-    label: '《環境資訊電子報一週回顧》（美化版）',
+    label: '《環境資訊中心電子報一週回顧》（美化版）',
   },
 ]
 
