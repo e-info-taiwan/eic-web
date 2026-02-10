@@ -20,6 +20,7 @@ import IconLeftArrow from '~/public/icons/left-arrow.svg'
 import IconMail from '~/public/icons/mail.svg'
 import IconMember from '~/public/icons/member.svg'
 import IconSearch from '~/public/icons/search.svg'
+import IconX from '~/public/icons/x.svg'
 import loadingAnimation from '~/public/lottie/loading.json'
 // Styled Components
 const HeaderContainer = styled.header<{ $isHidden?: boolean }>`
@@ -106,6 +107,11 @@ const SearchButton = styled(Link)`
   justify-content: center;
   transition: background-color 0.3s ease;
 
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.primary[0]};
   }
@@ -125,12 +131,14 @@ const SearchButton = styled(Link)`
 const LoginButton = styled.button`
   white-space: nowrap;
   background: none;
-  border: 1px solid ${({ theme }) => theme.colors.primary[40]};
+  border: none;
+  outline: 1px solid ${({ theme }) => theme.colors.primary[40]};
   color: ${({ theme }) => theme.colors.primary[40]};
-  padding: 5.5px 12px;
+  padding: 2.5px 4px;
   border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.3s ease;
 
@@ -138,11 +146,22 @@ const LoginButton = styled.button`
     background-color: ${({ theme }) => theme.colors.primary[40]};
     color: white;
   }
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding: 1.5px 12px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    padding: 5.5px 12px;
+  }
 `
 
 const LogoutButton = styled.button`
   background-color: ${({ theme }) => theme.colors.primary[20]};
-  border: 1px solid ${({ theme }) => theme.colors.primary[20]};
+  border: none;
+  outline: 1px solid ${({ theme }) => theme.colors.primary[20]};
   color: ${({ theme }) => theme.colors.primary[95]};
   padding: 2.5px 4px;
   border-radius: 6px;
@@ -374,6 +393,29 @@ const NavItem = styled.a`
   }
 `
 
+const NewsletterLink = styled.button`
+  display: block;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.grayscale[20]};
+  }
+
+  ${({ theme }) => theme.breakpoint.md} {
+    display: none;
+  }
+`
+
 const HamburgerButton = styled.button`
   display: none;
   background: none;
@@ -407,16 +449,6 @@ const NewsBar = styled.div`
   /* Marquee effect for mobile and tablet devices */
   @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
     white-space: nowrap;
-  }
-`
-
-const NewsLabel = styled.span`
-  font-weight: 700;
-  margin-right: 10px;
-  flex-shrink: 0;
-
-  @media (max-width: ${({ theme }) => theme.mediaSize.xl - 1}px) {
-    margin-right: 8px;
   }
 `
 
@@ -488,7 +520,7 @@ const SecondaryMenuContainer = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   display: flex;
-  padding: 0 16px;
+  padding: 4px 16px;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
@@ -932,6 +964,9 @@ const Header = () => {
                 </Link>
               </Logo>
               <RightSection>
+                <NewsletterLink onClick={() => setIsNewsletterModalOpen(true)}>
+                  電子報
+                </NewsletterLink>
                 <SearchButton href="/search">
                   <IconSearch />
                 </SearchButton>
@@ -1084,8 +1119,7 @@ const Header = () => {
                 $isLeaving={index === prevNewsIndex}
                 href={news.url || '#'}
               >
-                <NewsLabel>快訊</NewsLabel>
-                {news.title}
+                快訊 {news.title}
               </NewsContent>
             ))}
           </NewsBar>
@@ -1111,7 +1145,7 @@ const Header = () => {
 
         {!currentSubMenu && !isTopicSubMenuOpen ? (
           <MobileMenuContent>
-            <MobileMenuSection>
+            <MobileMenuSection style={{ gap: '8px' }}>
               <ActionButton
                 href={donationLink}
                 target="_blank"
@@ -1193,6 +1227,14 @@ const Header = () => {
                     aria-label="Instagram"
                   >
                     <IconInstagram />
+                  </a>
+                  <a
+                    href="https://x.com/e_info"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="X"
+                  >
+                    <IconX />
                   </a>
                   <a href="mailto:service@tnf.org.tw" aria-label="聯絡我們">
                     <IconMail className="mail" />
