@@ -38,19 +38,19 @@ const PostTitleWrapper = styled.div`
 type PostProps = {
   postData: PostDetail
   showTitle: boolean
+  showDate?: boolean
 }
 
 export default function PostTitle({
   postData: { title, publishTime },
   showTitle = true,
+  showDate = true,
 }: PostProps): JSX.Element {
   const date = formatPostDate(publishTime)
 
-  // const shouldShowCategories = Boolean(categories?.length)
-
   return (
     <PostTitleWrapper>
-      <DateInfo date={date} />
+      {showDate && <DateInfo date={date} />}
       {showTitle && <Title>{title}</Title>}
     </PostTitleWrapper>
   )

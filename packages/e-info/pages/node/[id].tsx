@@ -12,6 +12,7 @@ import News from '~/components/post/article-type/news'
 import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import { IS_PREVIEW_MODE } from '~/constants/config'
 import { SITE_TITLE } from '~/constants/constant'
+import { pageRedirects } from '~/constants/redirects'
 import type { HeaderContextData } from '~/contexts/header-context'
 import { type Donation, footerDonationQuery } from '~/graphql/query/donation'
 import { newsletterByOriginalUrl } from '~/graphql/query/newsletter'
@@ -27,9 +28,14 @@ type PageProps = {
   headerData: HeaderContextData
   postData: PostDetail
   donation: Donation | null
+  isRedirectPage: boolean
 }
 
-const Post: NextPageWithLayout<PageProps> = ({ postData, donation }) => {
+const Post: NextPageWithLayout<PageProps> = ({
+  postData,
+  donation,
+  isRedirectPage,
+}) => {
   const router = useRouter()
 
   // Track reading history for logged-in members
@@ -63,7 +69,13 @@ const Post: NextPageWithLayout<PageProps> = ({ postData, donation }) => {
     // Legacy styles
     case ValidPostStyle.NEWS:
     case ValidPostStyle.EMBEDDED:
-      articleType = <News postData={postData} donation={donation} />
+      articleType = (
+        <News
+          postData={postData}
+          donation={donation}
+          isRedirectPage={isRedirectPage}
+        />
+      )
       break
     case ValidPostStyle.SCROLLABLE_VIDEO:
       articleType = <ScrollableVideo postData={postData} />
@@ -75,7 +87,13 @@ const Post: NextPageWithLayout<PageProps> = ({ postData, donation }) => {
       articleType = <Frame postData={postData} />
       break
     default:
-      articleType = <News postData={postData} donation={donation} />
+      articleType = (
+        <News
+          postData={postData}
+          donation={donation}
+          isRedirectPage={isRedirectPage}
+        />
+      )
       break
   }
 
@@ -226,11 +244,16 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     //   }
     // }
 
+    const isRedirectPage = pageRedirects.some(
+      (r) => r.postId === String(postId)
+    )
+
     return {
       props: {
         headerData,
         postData,
         donation,
+        isRedirectPage,
       },
       // ISR: Preview mode 10 秒，正式站 5 分鐘
       revalidate: IS_PREVIEW_MODE ? 10 : 300,

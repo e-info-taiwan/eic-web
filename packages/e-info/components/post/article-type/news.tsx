@@ -148,9 +148,14 @@ const DonationWrapper = styled.div`
 type PostProps = {
   postData: PostDetail
   donation?: Donation | null
+  isRedirectPage?: boolean
 }
 
-export default function News({ postData, donation }: PostProps): JSX.Element {
+export default function News({
+  postData,
+  donation,
+  isRedirectPage = false,
+}: PostProps): JSX.Element {
   const anchorRef = useScrollToEnd(() =>
     gtag.sendEvent('post', 'scroll', 'scroll to end')
   )
@@ -203,7 +208,11 @@ export default function News({ postData, donation }: PostProps): JSX.Element {
 
           <ContentWrapper>
             <TitleSection>
-              <PostTitle showTitle={true} postData={postData} />
+              <PostTitle
+                showTitle={true}
+                showDate={!isRedirectPage}
+                postData={postData}
+              />
             </TitleSection>
 
             <TwoColumnSection>
