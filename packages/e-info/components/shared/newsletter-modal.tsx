@@ -30,12 +30,8 @@ const ModalContainer = styled.div`
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 40px 6px;
+  padding: 40px 14px 36px;
   position: relative;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 30px 6px;
-  }
 `
 
 // Close button
@@ -78,7 +74,7 @@ const Description = styled.p`
 const CheckboxGroup = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-bottom: 12px;
 `
@@ -88,8 +84,8 @@ const CheckboxItem = styled.label`
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
   cursor: pointer;
