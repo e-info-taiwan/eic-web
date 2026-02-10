@@ -58,13 +58,17 @@ const AccentBar = styled.div`
   }
 `
 
-const TitleLink = styled(Link)`
+const TitleButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
-  text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;
@@ -263,7 +267,6 @@ const MAX_CATEGORY_TABS = 4
 
 const SupplementSection = ({ section }: SupplementSectionProps) => {
   const categories = section?.categories || []
-  const sectionSlug = section?.slug || 'supplement'
   const sectionName = section?.name || '副刊'
 
   // Filter categories that have posts (either featured or regular), limit to 4
@@ -276,36 +279,42 @@ const SupplementSection = ({ section }: SupplementSectionProps) => {
     )
     .slice(0, MAX_CATEGORY_TABS)
 
-  const [activeCategory, setActiveCategory] = useState<string>(
-    categoriesWithPosts[0]?.id || ''
-  )
+  const [activeCategory, setActiveCategory] = useState<string>('')
 
   const handleCategoryClick = (categoryId: string) => {
     setActiveCategory(categoryId)
   }
 
-  // If no categories with posts, don't render the section
-  if (categoriesWithPosts.length === 0) {
+  const sectionPosts = section?.posts || []
+
+  // If no section posts and no categories with posts, don't render
+  if (sectionPosts.length === 0 && categoriesWithPosts.length === 0) {
     return null
   }
 
-  const currentCategory = categoriesWithPosts.find(
-    (cat) => cat.id === activeCategory
-  )
-
-  // Merge featured posts (in input order) with regular posts
-  const currentPosts = mergePostsWithFeatured(
-    currentCategory?.featuredPostsInInputOrder || [],
-    currentCategory?.posts || [],
-    3 // max 3 posts for this section
-  )
+  // When no tab is selected (activeCategory === ''), show section-level posts
+  // When a tab is selected, show that category's posts
+  const currentCategory =
+    activeCategory !== ''
+      ? categoriesWithPosts.find((cat) => cat.id === activeCategory)
+      : null
+  const currentPosts =
+    activeCategory === ''
+      ? sectionPosts.slice(0, 3)
+      : mergePostsWithFeatured(
+          currentCategory?.featuredPostsInInputOrder || [],
+          currentCategory?.posts || [],
+          3
+        )
 
   return (
     <Container>
       <Divider />
       <Header>
         <AccentBar />
-        <TitleLink href={`/section/${sectionSlug}`}>{sectionName}</TitleLink>
+        <TitleButton onClick={() => setActiveCategory('')}>
+          {sectionName}
+        </TitleButton>
         <CategoryTabs>
           {categoriesWithPosts.map((category) => (
             <CategoryTab

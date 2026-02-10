@@ -23,13 +23,13 @@
 
 ```typescript
 interface HomepageApiResponse {
-  // 大分類資料 (時事新聞、專欄、副刊、綠色消費)
+  // 大分類資料 (時事新聞、專欄、副刊)
   sections: Section[]
 
-  // 焦點話題 (category slug = "hottopic") - 使用 card 尺寸圖片
+  // 焦點話題 (category slug = "breakingnews") - 使用 card 尺寸圖片
   highlightPicks: HomepagePick[]
 
-  // 首頁輪播大圖 (category slug = "homepepicks") - 使用完整尺寸圖片
+  // 首頁輪播大圖 (category slug = "homepagegraph") - 使用完整尺寸圖片
   carouselPicks: HomepagePickCarousel[]
 
   // 深度專題 (isPinned = true, status = "published") - 使用 card 尺寸圖片
@@ -43,6 +43,18 @@ interface HomepageApiResponse {
 
   // 首頁廣告 - 深度專題下方 (showOnHomepageDeepTopic = true, state = "active") - 使用 card 尺寸圖片
   deepTopicAds: Ad[]
+
+  // Section-level posts (各大分類的跨分類文章，預設顯示用)
+  newsPosts?: SectionPost[]       // 時事新聞 section 文章
+  columnPosts?: SectionPost[]     // 專欄 section 文章
+  supplementPosts?: SectionPost[] // 副刊 section 文章
+
+  // 綠色消費 tag 文章 (以 tag 為資料來源，非 section/category)
+  greenMain?: SectionPost[]       // 主「綠色消費」tag 文章
+  greenBuy?: SectionPost[]        // 「買前必讀」tag 文章
+  greenFood?: SectionPost[]       // 「食材食品」tag 文章
+  greenClothing?: SectionPost[]   // 「衣著紡織」tag 文章
+  greenLeisure?: SectionPost[]    // 「休閒娛樂」tag 文章
 }
 ```
 
@@ -88,7 +100,7 @@ interface ResizedImages {
 對應目前的 `multipleSectionsWithCategoriesAndPosts` 查詢。
 
 **查詢條件**:
-- Section IDs: `['3', '4', '5', '6']`
+- Section IDs: `['1', '2', '3']`（不含綠色消費，綠色消費改為 tag-based 查詢）
 - 每個 category 取 8 篇文章（精選文章 + 一般文章）
 - Categories 依 `sortOrder` 升冪排序
 - Posts 依 `publishTime` 降冪排序
@@ -99,7 +111,7 @@ interface ResizedImages {
 **GraphQL 等效查詢**:
 ```graphql
 query {
-  sections(where: { id: { in: ["3", "4", "5", "6"] } }, orderBy: { id: asc }) {
+  sections(where: { id: { in: ["1", "2", "3"] } }, orderBy: { id: asc }) {
     id
     slug
     name
@@ -157,10 +169,9 @@ query {
 **Section ID 對應**:
 | ID | Slug | Name | 用途 |
 |----|------|------|------|
-| 3 | latestnews | 時事新聞 | NewsSection |
-| 4 | column | 專欄 | SpecialColumnSection |
-| 5 | sub | 副刊 | SupplementSection |
-| 6 | green | 綠色消費 | GreenConsumptionSection |
+| 1 | news | 時事新聞 | NewsSection |
+| 2 | column | 專欄 | SpecialColumnSection |
+| 3 | supplement | 副刊 | SupplementSection |
 
 **TypeScript 型別**:
 ```typescript
@@ -204,12 +215,147 @@ interface ContentApiDataBlock {
 
 ---
 
-### 2. highlightPicks (焦點話題)
+### 1.5. newsPosts / columnPosts / supplementPosts (Section-level 文章)
 
-對應目前的 `homepagePicksByCategory` 查詢，categorySlug = `"hottopic"`。
+對應目前的 `homepageSectionPosts` 查詢。各大分類的跨分類文章，用於預設顯示（未選擇子分類 tab 時）。
 
 **查詢條件**:
-- Category slug: `"hottopic"`
+- 依 section ID 篩選：時事新聞 (1)、專欄 (2)、副刊 (3)
+- 每個 section 取 8 篇文章
+- Posts 依 `publishTime` 降冪排序
+- **圖片尺寸**: Card (original, w480, w800)
+
+**GraphQL 等效查詢**:
+```graphql
+query ($postsPerSection: Int = 8) {
+  newsPosts: posts(
+    where: { category: { section: { id: { equals: "1" } } } }
+    take: $postsPerSection
+    orderBy: { publishTime: desc }
+  ) {
+    id
+    title
+    publishTime
+    brief
+    contentApiData
+    heroImage {
+      resized { original, w480, w800 }
+      resizedWebp { original, w480, w800 }
+    }
+  }
+  columnPosts: posts(
+    where: { category: { section: { id: { equals: "2" } } } }
+    take: $postsPerSection
+    orderBy: { publishTime: desc }
+  ) {
+    # 同上
+  }
+  supplementPosts: posts(
+    where: { category: { section: { id: { equals: "3" } } } }
+    take: $postsPerSection
+    orderBy: { publishTime: desc }
+  ) {
+    # 同上
+  }
+}
+```
+
+---
+
+### 1.6. greenMain / greenBuy / greenFood / greenClothing / greenLeisure (綠色消費 tag 文章)
+
+對應目前的 `homepageGreenConsumptionPosts` 查詢。綠色消費區塊改為以 **tag** 為資料來源（不再使用 section/category 結構）。
+
+**資料來源 (Tag 名稱)**:
+| 欄位 | Tag 名稱 | 用途 |
+|------|----------|------|
+| greenMain | 綠色消費 | 預設顯示的主 tag 文章 |
+| greenBuy | 買前必讀 | 子 tab 文章 |
+| greenFood | 食材食品 | 子 tab 文章 |
+| greenClothing | 衣著紡織 | 子 tab 文章 |
+| greenLeisure | 休閒娛樂 | 子 tab 文章 |
+
+**查詢條件**:
+- 依 tag name 篩選（寫死 5 個 tag 名稱）
+- 每個 tag 取 3 篇文章
+- Posts 依 `publishTime` 降冪排序
+- **圖片尺寸**: Card (original, w480, w800)
+
+**GraphQL 等效查詢**:
+```graphql
+query ($postsPerTag: Int = 3) {
+  greenMain: posts(
+    where: { tags: { some: { name: { equals: "綠色消費" } } } }
+    take: $postsPerTag
+    orderBy: { publishTime: desc }
+  ) {
+    id
+    title
+    publishTime
+    brief
+    contentApiData
+    heroImage {
+      resized { original, w480, w800 }
+      resizedWebp { original, w480, w800 }
+    }
+  }
+  greenBuy: posts(
+    where: { tags: { some: { name: { equals: "買前必讀" } } } }
+    take: $postsPerTag
+    orderBy: { publishTime: desc }
+  ) {
+    # 同上
+  }
+  greenFood: posts(
+    where: { tags: { some: { name: { equals: "食材食品" } } } }
+    take: $postsPerTag
+    orderBy: { publishTime: desc }
+  ) {
+    # 同上
+  }
+  greenClothing: posts(
+    where: { tags: { some: { name: { equals: "衣著紡織" } } } }
+    take: $postsPerTag
+    orderBy: { publishTime: desc }
+  ) {
+    # 同上
+  }
+  greenLeisure: posts(
+    where: { tags: { some: { name: { equals: "休閒娛樂" } } } }
+    take: $postsPerTag
+    orderBy: { publishTime: desc }
+  ) {
+    # 同上
+  }
+}
+```
+
+**前端處理**:
+- 綠色消費 tag 資料始終從 GraphQL 獲取（JSON API 不含此資料時）
+- 前端在 `fetchHomepageData` 中會與主 API 請求並行查詢此資料
+- 預設顯示 `greenMain`（綠色消費 tag），點擊子 tab 切換到對應 tag 文章
+
+**TypeScript 型別**:
+```typescript
+interface GreenConsumptionData {
+  posts: SectionPost[]           // 主「綠色消費」tag 文章（預設顯示）
+  subTags: GreenConsumptionTag[] // 子 tag（買前必讀、食材食品、衣著紡織、休閒娛樂）
+}
+
+interface GreenConsumptionTag {
+  name: string
+  posts: SectionPost[]
+}
+```
+
+---
+
+### 2. highlightPicks (焦點話題)
+
+對應目前的 `homepagePicksByCategory` 查詢，categorySlug = `"breakingnews"`。
+
+**查詢條件**:
+- Category slug: `"breakingnews"`
 - 依 `sortOrder` 升冪排序
 - **圖片尺寸**: Card (original, w480, w800)
 
@@ -217,7 +363,7 @@ interface ContentApiDataBlock {
 ```graphql
 query {
   homepagePicks(
-    where: { category: { slug: { equals: "hottopic" } } }
+    where: { category: { slug: { equals: "breakingnews" } } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -299,7 +445,7 @@ interface HomepagePick {
 對應目前的 `homepagePicksForCarousel` 查詢。
 
 **查詢條件**:
-- Category slug: `"homepepicks"`
+- Category slug: `"homepagegraph"`
 - 依 `sortOrder` 升冪排序
 - **圖片尺寸**: 完整尺寸 (original, w480, w800, w1200, w1600, w2400) - 輪播需要較大圖片
 
@@ -307,7 +453,7 @@ interface HomepagePick {
 ```graphql
 query {
   homepagePicks(
-    where: { category: { slug: { equals: "homepepicks" } } }
+    where: { category: { slug: { equals: "homepagegraph" } } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -668,8 +814,8 @@ interface ResizedImages {
 {
   "sections": [
     {
-      "id": "3",
-      "slug": "latestnews",
+      "id": "1",
+      "slug": "news",
       "name": "時事新聞",
       "categories": [
         {
@@ -678,6 +824,7 @@ interface ResizedImages {
           "name": "台灣新聞",
           "sortOrder": 1,
           "postsCount": 100,
+          "featuredPostsInInputOrder": [],
           "posts": [
             {
               "id": "238659",
@@ -686,16 +833,8 @@ interface ResizedImages {
               "brief": "文章摘要...",
               "contentApiData": null,
               "heroImage": {
-                "resized": {
-                  "original": "https://...",
-                  "w480": "https://...",
-                  "w800": "https://..."
-                },
-                "resizedWebp": {
-                  "original": "https://...",
-                  "w480": "https://...",
-                  "w800": "https://..."
-                }
+                "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
+                "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://..." }
               }
             }
           ]
@@ -703,6 +842,62 @@ interface ResizedImages {
       ]
     }
   ],
+  "newsPosts": [
+    {
+      "id": "238665",
+      "title": "時事新聞 section 文章",
+      "publishTime": "2026-01-25T16:00:00.000Z",
+      "brief": "...",
+      "contentApiData": null,
+      "heroImage": {
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
+        "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://..." }
+      }
+    }
+  ],
+  "columnPosts": [
+    {
+      "id": "238618",
+      "title": "專欄 section 文章",
+      "publishTime": "2024-03-06T02:59:45.000Z",
+      "brief": "...",
+      "contentApiData": null,
+      "heroImage": {
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
+        "resizedWebp": null
+      }
+    }
+  ],
+  "supplementPosts": [
+    {
+      "id": "238621",
+      "title": "副刊 section 文章",
+      "publishTime": "2024-03-06T02:20:10.000Z",
+      "brief": "...",
+      "contentApiData": null,
+      "heroImage": {
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
+        "resizedWebp": null
+      }
+    }
+  ],
+  "greenMain": [
+    {
+      "id": "12345",
+      "title": "綠色消費 tag 文章",
+      "publishTime": "2025-01-15T00:00:00.000Z",
+      "brief": "...",
+      "contentApiData": null,
+      "heroImage": {
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
+        "resizedWebp": null
+      }
+    }
+  ],
+  "greenBuy": [],
+  "greenFood": [],
+  "greenClothing": [],
+  "greenLeisure": [],
   "highlightPicks": [
     {
       "id": "1",
@@ -711,11 +906,7 @@ interface ResizedImages {
       "customTitle": "焦點話題標題",
       "customDescription": null,
       "customImage": {
-        "resized": {
-          "original": "https://...",
-          "w480": "https://...",
-          "w800": "https://..."
-        },
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
       },
       "posts": {
@@ -724,11 +915,7 @@ interface ResizedImages {
         "publishTime": "2025-01-15T00:00:00.000Z",
         "heroImage": null
       },
-      "category": {
-        "id": "10",
-        "slug": "hottopic",
-        "name": "焦點話題"
-      }
+      "category": { "id": "4", "slug": "breakingnews", "name": "快訊" }
     }
   ],
   "carouselPicks": [
@@ -739,44 +926,19 @@ interface ResizedImages {
       "customTitle": "輪播標題",
       "customDescription": "輪播描述",
       "customImage": {
-        "resized": {
-          "original": "https://...",
-          "w480": "https://...",
-          "w800": "https://...",
-          "w1200": "https://...",
-          "w1600": "https://...",
-          "w2400": "https://..."
-        },
-        "resizedWebp": {
-          "original": "https://...",
-          "w480": "https://...",
-          "w800": "https://...",
-          "w1200": "https://...",
-          "w1600": "https://...",
-          "w2400": "https://..."
-        }
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://...", "w1200": "https://...", "w1600": "https://...", "w2400": "https://..." },
+        "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://...", "w1200": "https://...", "w1600": "https://...", "w2400": "https://..." }
       },
       "posts": {
         "id": "23456",
         "title": "輪播文章標題",
         "publishTime": "2025-01-14T00:00:00.000Z",
         "heroImage": {
-          "resized": {
-            "original": "https://...",
-            "w480": "https://...",
-            "w800": "https://...",
-            "w1200": "https://...",
-            "w1600": "https://...",
-            "w2400": "https://..."
-          },
+          "resized": { "original": "https://...", "w480": "https://...", "w800": "https://...", "w1200": "https://...", "w1600": "https://...", "w2400": "https://..." },
           "resizedWebp": null
         }
       },
-      "category": {
-        "id": "11",
-        "slug": "homepepicks",
-        "name": "首頁輪播"
-      }
+      "category": { "id": "6", "slug": "homepagegraph", "name": "首頁大圖" }
     }
   ],
   "topics": [
@@ -786,11 +948,7 @@ interface ResizedImages {
       "status": "published",
       "content": "專題描述...",
       "heroImage": {
-        "resized": {
-          "original": "https://...",
-          "w480": "https://...",
-          "w800": "https://..."
-        },
+        "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
       },
       "postsCount": 4,
@@ -801,11 +959,7 @@ interface ResizedImages {
           "publishTime": "2025-01-13T00:00:00.000Z",
           "brief": "文章摘要...",
           "heroImage": {
-            "resized": {
-              "original": "https://...",
-              "w480": "https://...",
-              "w800": "https://..."
-            },
+            "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
             "resizedWebp": null
           }
         }
@@ -821,11 +975,7 @@ interface ResizedImages {
     "youtubeUrl": null,
     "state": "published",
     "image": {
-      "resized": {
-        "original": "https://...",
-        "w480": "https://...",
-        "w800": "https://..."
-      },
+      "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
       "resizedWebp": null
     }
   },
@@ -839,11 +989,7 @@ interface ResizedImages {
       "sortOrder": 1,
       "imageUrl": "https://e-info.org.tw/node/242562",
       "image": {
-        "resized": {
-          "original": "https://storage.googleapis.com/...",
-          "w480": "https://storage.googleapis.com/...",
-          "w800": "https://storage.googleapis.com/..."
-        },
+        "resized": { "original": "https://storage.googleapis.com/...", "w480": "https://storage.googleapis.com/...", "w800": "https://storage.googleapis.com/..." },
         "resizedWebp": null
       }
     }
@@ -858,11 +1004,7 @@ interface ResizedImages {
       "sortOrder": 1,
       "imageUrl": "www.mirrormedia.mg",
       "image": {
-        "resized": {
-          "original": "https://storage.googleapis.com/...",
-          "w480": "https://storage.googleapis.com/...",
-          "w800": "https://storage.googleapis.com/..."
-        },
+        "resized": { "original": "https://storage.googleapis.com/...", "w480": "https://storage.googleapis.com/...", "w800": "https://storage.googleapis.com/..." },
         "resizedWebp": null
       }
     }
@@ -910,13 +1052,15 @@ HTTP Status Codes:
 - **[homepage-api-example.json](./homepage-api-example.json)** - 從 dev 環境 GraphQL API 實際查詢產生的完整 response
 
 此檔案包含：
-- 4 個 sections（每個 section 包含多個 categories，每個 category 最多 8 篇文章）- **使用 Card 尺寸圖片**
+- 3 個 sections（時事新聞、專欄、副刊，每個 section 包含多個 categories）- **使用 Card 尺寸圖片**
+- 3 組 section-level posts（newsPosts、columnPosts、supplementPosts，各 8 篇）- **使用 Card 尺寸圖片**
+- 5 組綠色消費 tag 文章（greenMain、greenBuy、greenFood、greenClothing、greenLeisure，各 3 篇）- **使用 Card 尺寸圖片**
 - 3 個 highlightPicks - **使用 Card 尺寸圖片**
 - 3 個 carouselPicks - **使用完整尺寸圖片**
-- 23 個 topics（每個 topic 4 篇文章）- **使用 Card 尺寸圖片**
+- 23 個 topics（每個 topic 最多 4 篇文章）- **使用 Card 尺寸圖片**
 - 1 個 infoGraph - **使用 Card 尺寸圖片**
 - 2 個 ads（showOnHomepage）- **使用 Card 尺寸圖片**
-- 2 個 deepTopicAds（showOnHomepageDeepTopic）- **使用 Card 尺寸圖片**
+- deepTopicAds（dev 環境目前無資料）- **使用 Card 尺寸圖片**
 
 ---
 
@@ -925,8 +1069,9 @@ HTTP Status Codes:
 前端已實作 JSON API 優先、GraphQL fallback 的機制：
 
 1. 優先嘗試呼叫 `/api/homepage` JSON API
-2. 若失敗（網路錯誤、500 錯誤等），自動 fallback 到原本的 7 個 GraphQL 查詢
+2. 若失敗（網路錯誤、500 錯誤等），自動 fallback 到 GraphQL 查詢
 3. Fallback 機制確保服務可用性
+4. **綠色消費 tag 資料**始終從 GraphQL 獲取（與主 API 請求並行），因為 JSON API 不含此資料
 
 ### In-Memory 快取機制
 
@@ -958,6 +1103,28 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
 
 ## 變更記錄
 
+### 2026-02-10
+- **綠色消費改為 tag-based 資料來源**
+  - 綠色消費區塊不再使用 section/category 結構，改為以 tag 名稱篩選文章
+  - 新增 `homepageGreenConsumptionPosts` GraphQL 查詢，使用 5 個 alias 一次查詢 5 個 tag 的文章
+  - Tag 名稱：綠色消費（主）、買前必讀、食材食品、衣著紡織、休閒娛樂
+  - 前端始終從 GraphQL 獲取此資料（與主 API 請求並行），JSON API 不含此資料
+- **Section IDs 更新**
+  - sections 查詢的 Section IDs 從 `['3', '4', '5', '6']` 改為 `['1', '2', '3']`
+  - 移除綠色消費 section（ID 5/6），改用 tag-based 查詢
+- **新增 Section-level posts**
+  - 新增 `homepageSectionPosts` 查詢，提供各大分類的跨分類文章
+  - 新增欄位：`newsPosts`、`columnPosts`、`supplementPosts`
+  - 用於未選擇子分類 tab 時的預設顯示
+- **新增 Green consumption tag 欄位**
+  - 新增欄位：`greenMain`、`greenBuy`、`greenFood`、`greenClothing`、`greenLeisure`
+- **修正 Category slug**
+  - highlightPicks: `"hottopic"` → `"breakingnews"`（與程式碼一致）
+  - carouselPicks: `"homepepicks"` → `"homepagegraph"`（與程式碼一致）
+- **更新 homepage-api-example.json**
+  - 從 dev 環境 GraphQL API 重新產生完整範例
+  - 反映新的 section IDs、tag-based 綠色消費、正確的 category slug
+
 ### 2026-02-02
 - **新增 In-Memory 快取機制文件**
   - 記錄前端 60 秒 TTL 快取機制
@@ -970,7 +1137,7 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
 - **新增精選文章欄位 (`featuredPostsInInputOrder`)**
   - Category 新增 `featuredPostsInInputOrder` 欄位，可在 CMS 設定精選文章
   - 首頁顯示邏輯：精選文章優先顯示，再補上一般文章（去重複）
-  - 影響區塊：時事新聞、專欄、副刊、綠色消費
+  - 影響區塊：時事新聞、專欄、副刊
 - **Topics 排序邏輯更新**
   - 移除查詢條件中的 `isPinned = true` 限制，改為前端排序
   - 排序邏輯：`isPinned = true` 的 topics 優先，依 `sortOrder` 排序；其次為 `isPinned = false` 的 topics，依 `sortOrder` 排序

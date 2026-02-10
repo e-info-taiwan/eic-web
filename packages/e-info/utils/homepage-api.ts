@@ -23,13 +23,16 @@ import type {
   PopularSearchResponse,
   Section,
   SectionCategory,
+  SectionPost,
   Topic,
 } from '~/graphql/query/section'
 import {
   homepageAds,
   homepageDeepTopicAds,
+  homepageGreenConsumptionPosts,
   homepagePicksByCategory,
   homepagePicksForCarousel,
+  homepageSectionPosts,
   latestInfoGraph,
   multipleSectionsWithCategoriesAndPosts,
   topicsWithPosts,
@@ -50,6 +53,16 @@ export interface HomepageApiResponse {
   infoGraph: InfoGraph | null
   ads: Ad[]
   deepTopicAds: Ad[]
+  // Section-level posts (aggregated across all categories)
+  newsPosts?: SectionPost[]
+  columnPosts?: SectionPost[]
+  supplementPosts?: SectionPost[]
+  // Green consumption tag posts
+  greenMain?: SectionPost[]
+  greenBuy?: SectionPost[]
+  greenFood?: SectionPost[]
+  greenClothing?: SectionPost[]
+  greenLeisure?: SectionPost[]
 }
 
 /**
@@ -60,6 +73,20 @@ export interface SectionInfo {
   slug: string
   name: string
   categories: SectionCategory[]
+  posts: SectionPost[] // Section-level posts（預設顯示用）
+}
+
+/**
+ * 綠色消費區塊資料型別（以 tag 為資料來源）
+ */
+export interface GreenConsumptionTag {
+  name: string
+  posts: SectionPost[]
+}
+
+export interface GreenConsumptionData {
+  posts: SectionPost[] // 主「綠色消費」tag 文章（預設顯示）
+  subTags: GreenConsumptionTag[] // 子 tag（買前必讀、食材食品、衣著紡織、休閒娛樂）
 }
 
 /**
@@ -69,7 +96,7 @@ export interface HomepageData {
   newsSection: SectionInfo
   columnSection: SectionInfo
   supplementSection: SectionInfo
-  greenSection: SectionInfo
+  greenSection: GreenConsumptionData
   highlightPicks: HomepagePick[]
   carouselPicks: HomepagePickCarousel[]
   topics: Topic[]
@@ -118,6 +145,8 @@ async function fetchFromGraphQL(
 ): Promise<HomepageApiResponse> {
   const [
     sectionsResult,
+    sectionPostsResult,
+    greenResult,
     highlightResult,
     topicsResult,
     carouselResult,
@@ -128,9 +157,27 @@ async function fetchFromGraphQL(
     client.query<{ sections: Section[] }>({
       query: multipleSectionsWithCategoriesAndPosts,
       variables: {
-        sectionIds: ['1', '2', '3', '5'],
+        sectionIds: ['1', '2', '3'],
         postsPerCategory: 8,
       },
+    }),
+    client.query<{
+      newsPosts: SectionPost[]
+      columnPosts: SectionPost[]
+      supplementPosts: SectionPost[]
+    }>({
+      query: homepageSectionPosts,
+      variables: { postsPerSection: 8 },
+    }),
+    client.query<{
+      greenMain: SectionPost[]
+      greenBuy: SectionPost[]
+      greenFood: SectionPost[]
+      greenClothing: SectionPost[]
+      greenLeisure: SectionPost[]
+    }>({
+      query: homepageGreenConsumptionPosts,
+      variables: { postsPerTag: 3 },
     }),
     client.query<{ homepagePicks: HomepagePick[] }>({
       query: homepagePicksByCategory,
@@ -162,6 +209,14 @@ async function fetchFromGraphQL(
     infoGraph: infoGraphResult.data?.infoGraphs?.[0] || null,
     ads: adsResult.data?.ads || [],
     deepTopicAds: deepTopicAdsResult.data?.ads || [],
+    newsPosts: sectionPostsResult.data?.newsPosts || [],
+    columnPosts: sectionPostsResult.data?.columnPosts || [],
+    supplementPosts: sectionPostsResult.data?.supplementPosts || [],
+    greenMain: greenResult.data?.greenMain || [],
+    greenBuy: greenResult.data?.greenBuy || [],
+    greenFood: greenResult.data?.greenFood || [],
+    greenClothing: greenResult.data?.greenClothing || [],
+    greenLeisure: greenResult.data?.greenLeisure || [],
   }
 }
 
@@ -203,24 +258,31 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
     slug: 'news',
     name: '時事新聞',
     categories: [],
+    posts: response.newsPosts || [],
   }
   let columnSection: SectionInfo = {
     id: '2',
     slug: 'column',
     name: '專欄',
     categories: [],
+    posts: response.columnPosts || [],
   }
   let supplementSection: SectionInfo = {
     id: '3',
     slug: 'supplement',
     name: '副刊',
     categories: [],
+    posts: response.supplementPosts || [],
   }
-  let greenSection: SectionInfo = {
-    id: '5',
-    slug: 'greenconsumption',
-    name: '綠色消費',
-    categories: [],
+  // 綠色消費區塊（tag-based）
+  const greenSection: GreenConsumptionData = {
+    posts: response.greenMain || [],
+    subTags: [
+      { name: '買前必讀', posts: response.greenBuy || [] },
+      { name: '食材食品', posts: response.greenFood || [] },
+      { name: '衣著紡織', posts: response.greenClothing || [] },
+      { name: '休閒娛樂', posts: response.greenLeisure || [] },
+    ],
   }
 
   // 根據 section id 分配資料，並提取 slug
@@ -228,7 +290,7 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
     switch (section.id) {
       case '1': // 時事新聞 (news)
         newsSection = {
-          id: section.id,
+          ...newsSection,
           slug: section.slug || 'news',
           name: section.name || '時事新聞',
           categories: section.categories,
@@ -236,7 +298,7 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
         break
       case '2': // 專欄 (column)
         columnSection = {
-          id: section.id,
+          ...columnSection,
           slug: section.slug || 'column',
           name: section.name || '專欄',
           categories: section.categories,
@@ -244,17 +306,9 @@ function transformApiResponse(response: HomepageApiResponse): HomepageData {
         break
       case '3': // 副刊 (supplement)
         supplementSection = {
-          id: section.id,
+          ...supplementSection,
           slug: section.slug || 'supplement',
           name: section.name || '副刊',
-          categories: section.categories,
-        }
-        break
-      case '5': // 綠色消費 (greenconsumption)
-        greenSection = {
-          id: section.id,
-          slug: section.slug || 'greenconsumption',
-          name: section.name || '綠色消費',
           categories: section.categories,
         }
         break
@@ -303,11 +357,35 @@ export async function fetchHomepageData(
   let response: HomepageApiResponse
   let usedFallback = false
 
+  // 綠色消費 tag 資料始終從 GraphQL 獲取（JSON API 不含此資料）
+  const greenPromise = client
+    .query<{
+      greenMain: SectionPost[]
+      greenBuy: SectionPost[]
+      greenFood: SectionPost[]
+      greenClothing: SectionPost[]
+      greenLeisure: SectionPost[]
+    }>({
+      query: homepageGreenConsumptionPosts,
+      variables: { postsPerTag: 3 },
+    })
+    .catch(() => null)
+
   try {
     // 優先嘗試 JSON API
     response = await fetchFromJsonApi()
     // eslint-disable-next-line no-console
     console.log('[Homepage] Successfully fetched data from JSON API')
+
+    // JSON API 不含綠色消費 tag 資料，從 GraphQL 補充
+    const greenResult = await greenPromise
+    if (greenResult) {
+      response.greenMain = greenResult.data?.greenMain || []
+      response.greenBuy = greenResult.data?.greenBuy || []
+      response.greenFood = greenResult.data?.greenFood || []
+      response.greenClothing = greenResult.data?.greenClothing || []
+      response.greenLeisure = greenResult.data?.greenLeisure || []
+    }
   } catch (jsonApiError) {
     // JSON API 失敗，fallback 到 GraphQL
     // eslint-disable-next-line no-console

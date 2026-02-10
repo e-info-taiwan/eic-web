@@ -440,6 +440,174 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
   ${resizeWebpImagesCardFragment}
 `
 
+// Query section-level posts for homepage (aggregated across all categories in each section)
+export const homepageSectionPosts = gql`
+  query ($postsPerSection: Int = 8) {
+    newsPosts: posts(
+      where: { category: { section: { id: { equals: "1" } } } }
+      take: $postsPerSection
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+    columnPosts: posts(
+      where: { category: { section: { id: { equals: "2" } } } }
+      take: $postsPerSection
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+    supplementPosts: posts(
+      where: { category: { section: { id: { equals: "3" } } } }
+      take: $postsPerSection
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
+// Query green consumption posts by tag names (hardcoded tags)
+export const homepageGreenConsumptionPosts = gql`
+  query ($postsPerTag: Int = 3) {
+    greenMain: posts(
+      where: { tags: { some: { name: { equals: "綠色消費" } } } }
+      take: $postsPerTag
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+    greenBuy: posts(
+      where: { tags: { some: { name: { equals: "買前必讀" } } } }
+      take: $postsPerTag
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+    greenFood: posts(
+      where: { tags: { some: { name: { equals: "食材食品" } } } }
+      take: $postsPerTag
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+    greenClothing: posts(
+      where: { tags: { some: { name: { equals: "衣著紡織" } } } }
+      take: $postsPerTag
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+    greenLeisure: posts(
+      where: { tags: { some: { name: { equals: "休閒娛樂" } } } }
+      take: $postsPerTag
+      orderBy: { publishTime: desc }
+    ) {
+      id
+      title
+      publishTime
+      brief
+      contentApiData
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
 // Query for homepage picks by category slug
 export const homepagePicksByCategory = gql`
   query ($categorySlug: String!) {

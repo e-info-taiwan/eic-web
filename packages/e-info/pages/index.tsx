@@ -35,6 +35,7 @@ import type { CollaborationItem } from '~/types/component'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
 import {
+  type GreenConsumptionData,
   type SectionInfo,
   fetchHomepageData,
   fetchPopularSearchKeywords,
@@ -93,7 +94,7 @@ type PageProps = {
   newsSection: SectionInfo
   columnSection: SectionInfo
   supplementSection: SectionInfo
-  greenSection: SectionInfo
+  greenSection: GreenConsumptionData
   topics: Topic[]
   carouselPicks: HomepagePickCarousel[]
   highlightPicks: HomepagePick[]
@@ -167,7 +168,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       <SupplementSection section={supplementSection} />
       <FeaturedTopicsSection topics={topics} />
       <AdContent ads={deepTopicAds} />
-      <GreenConsumptionSection section={greenSection} />
+      <GreenConsumptionSection data={greenSection} />
       <HotKeywordsSection keywords={popularSearchKeywords} />
       <HiddenAnchor ref={anchorRef} />
 

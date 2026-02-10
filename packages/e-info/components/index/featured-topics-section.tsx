@@ -58,13 +58,17 @@ const AccentBar = styled.div`
   }
 `
 
-const TitleLink = styled(Link)`
+const TitleButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0;
-  text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;
@@ -478,9 +482,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
     (topic) => topic.posts && topic.posts.length > 0
   )
 
-  const [activeTopic, setActiveTopic] = useState<string>(
-    topicsWithPosts[0]?.id || ''
-  )
+  const [activeTopic, setActiveTopic] = useState<string>('')
 
   const handleTopicClick = (topicId: string) => {
     setActiveTopic(topicId)
@@ -491,11 +493,36 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
     return null
   }
 
-  const currentTopic = topicsWithPosts.find((topic) => topic.id === activeTopic)
-  const currentPosts = currentTopic?.posts || []
+  // When no tab is selected (activeTopic === ''), aggregate all topics' posts
+  // When a tab is selected, show that topic's posts
+  let currentPosts: (typeof topicsWithPosts)[0]['posts']
+  let heroTopic: (typeof topicsWithPosts)[0] | undefined
+  if (activeTopic === '') {
+    heroTopic = topicsWithPosts[0]
+    // Aggregate all topics' posts, deduplicate by id, sort by publishTime desc
+    const allPostsMap = new Map<
+      string,
+      (typeof topicsWithPosts)[0]['posts'][0]
+    >()
+    for (const topic of topicsWithPosts) {
+      for (const post of topic.posts || []) {
+        if (!allPostsMap.has(post.id)) {
+          allPostsMap.set(post.id, post)
+        }
+      }
+    }
+    currentPosts = [...allPostsMap.values()].sort(
+      (a, b) =>
+        new Date(b.publishTime).getTime() - new Date(a.publishTime).getTime()
+    )
+  } else {
+    const currentTopic = topicsWithPosts.find(
+      (topic) => topic.id === activeTopic
+    )
+    heroTopic = currentTopic
+    currentPosts = currentTopic?.posts || []
+  }
 
-  // Hero uses topic info, articles list uses posts
-  const heroTopic = currentTopic
   const articlePosts = currentPosts.slice(0, 3)
 
   return (
@@ -503,7 +530,7 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
       {/* Header */}
       <Header>
         <AccentBar />
-        <TitleLink href="/feature">深度專題</TitleLink>
+        <TitleButton onClick={() => setActiveTopic('')}>深度專題</TitleButton>
         <CategoryTabs>
           {topicsWithPosts.map((topic) => (
             <CategoryTab

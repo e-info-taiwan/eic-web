@@ -5,8 +5,7 @@ import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
-import type { SectionInfo } from '~/utils/homepage-api'
-import { mergePostsWithFeatured } from '~/utils/post'
+import type { GreenConsumptionData } from '~/utils/homepage-api'
 
 // Styled Components
 const SectionContainer = styled.section`
@@ -65,13 +64,17 @@ const AccentBar = styled.div`
   }
 `
 
-const TitleLink = styled(Link)`
+const TitleButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[100]};
   margin: 0;
-  text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     color: #f7c34c;
@@ -225,49 +228,26 @@ const EmptyMessage = styled.p`
 `
 
 type GreenConsumptionSectionProps = {
-  section?: SectionInfo
+  data?: GreenConsumptionData
 }
 
-const MAX_CATEGORY_TABS = 4
+const GreenConsumptionSection = ({ data }: GreenConsumptionSectionProps) => {
+  const mainPosts = data?.posts || []
+  const subTags = (data?.subTags || []).filter((t) => t.posts.length > 0)
 
-const GreenConsumptionSection = ({ section }: GreenConsumptionSectionProps) => {
-  const categories = section?.categories || []
-  const sectionSlug = section?.slug || 'greenconsumption'
-  const sectionName = section?.name || '綠色消費'
+  const [activeTab, setActiveTab] = useState<string>('')
 
-  // Filter categories that have posts (either featured or regular), limit to 4
-  const categoriesWithPosts = categories
-    .filter(
-      (cat) =>
-        (cat.featuredPostsInInputOrder &&
-          cat.featuredPostsInInputOrder.length > 0) ||
-        (cat.posts && cat.posts.length > 0)
-    )
-    .slice(0, MAX_CATEGORY_TABS)
-
-  const [activeCategory, setActiveCategory] = useState<string>(
-    categoriesWithPosts[0]?.id || ''
-  )
-
-  const handleCategoryClick = (categoryId: string) => {
-    setActiveCategory(categoryId)
-  }
-
-  // If no categories with posts, don't render the section
-  if (categoriesWithPosts.length === 0) {
+  // If no posts at all, don't render the section
+  if (mainPosts.length === 0 && subTags.length === 0) {
     return null
   }
 
-  const currentCategory = categoriesWithPosts.find(
-    (cat) => cat.id === activeCategory
-  )
-
-  // Merge featured posts (in input order) with regular posts
-  const currentPosts = mergePostsWithFeatured(
-    currentCategory?.featuredPostsInInputOrder || [],
-    currentCategory?.posts || [],
-    3 // max 3 posts for this section
-  )
+  // When no tab is selected, show main "綠色消費" tag posts
+  // When a tab is selected, show that sub-tag's posts
+  const currentPosts =
+    activeTab === ''
+      ? mainPosts.slice(0, 3)
+      : (subTags.find((t) => t.name === activeTab)?.posts || []).slice(0, 3)
 
   return (
     <SectionContainer>
@@ -275,15 +255,15 @@ const GreenConsumptionSection = ({ section }: GreenConsumptionSectionProps) => {
         {/* Header */}
         <Header>
           <AccentBar />
-          <TitleLink href={`/section/${sectionSlug}`}>{sectionName}</TitleLink>
+          <TitleButton onClick={() => setActiveTab('')}>綠色消費</TitleButton>
           <CategoryTabs>
-            {categoriesWithPosts.map((category) => (
+            {subTags.map((tag) => (
               <CategoryTab
-                key={category.id}
-                $isActive={activeCategory === category.id}
-                onClick={() => handleCategoryClick(category.id)}
+                key={tag.name}
+                $isActive={activeTab === tag.name}
+                onClick={() => setActiveTab(tag.name)}
               >
-                {category.name}
+                {tag.name}
               </CategoryTab>
             ))}
           </CategoryTabs>
@@ -306,7 +286,7 @@ const GreenConsumptionSection = ({ section }: GreenConsumptionSectionProps) => {
                   <ArticleCard>
                     <ImageWrapper>
                       <SharedImage
-                        key={`green-${activeCategory}-${post.id}`}
+                        key={`green-${activeTab}-${post.id}`}
                         images={image || {}}
                         imagesWebP={imageWebp || {}}
                         defaultImage={DEFAULT_POST_IMAGE_PATH}
