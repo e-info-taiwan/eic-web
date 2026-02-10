@@ -2,7 +2,7 @@ import CustomImage from '@readr-media/react-image'
 import React from 'react'
 import styled from 'styled-components'
 
-import defaultImage from '../assets/default-og-img.png'
+import defaultImage from '../assets/post-default.png'
 import SlideShowSideBar from './slideshow-sidebar'
 
 const LightBoxWrapper = styled.div`
@@ -61,6 +61,7 @@ const FocusInfo = styled.div`
     -webkit-line-clamp: 2;
     opacity: 0.87;
     margin-bottom: 12px;
+    text-align: left;
   }
 
   .focus-number {

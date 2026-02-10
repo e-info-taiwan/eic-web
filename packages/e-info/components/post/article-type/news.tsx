@@ -96,10 +96,8 @@ const TitleSection = styled.section`
 
 const TwoColumnSection = styled.section`
   display: block;
-  padding: 0 20px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 0;
     max-width: 568px;
     margin: 0 auto;
   }

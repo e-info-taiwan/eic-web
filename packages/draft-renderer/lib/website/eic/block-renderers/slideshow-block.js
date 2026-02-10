@@ -18,15 +18,15 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
+var defaultImage = "/lib/public/57b35d645151e45c1816907625905202.png";
 var SlideShowDesktopSize = 960;
 var SpacingBetweenSlideImages = 12;
 var SlideShowBlockWrapper = _styledComponents["default"].div.withConfig({
   displayName: "slideshow-block__SlideShowBlockWrapper",
   componentId: "sc-gsubhh-0"
-})(["width:100%;position:relative;", ";", "{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:", "px;max-height:", ";overflow:", ";margin-bottom:", ";}.slideshow-image{max-height:", ";}"], function (_ref) {
+})(["width:calc(100% + 36px);position:relative;background-color:", ";margin:0 -18px;padding:18px 28px;", "{width:100%;background-color:transparent;margin:0;padding:0;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:", "px;max-height:", ";overflow:", ";margin-bottom:", ";}.slideshow-image{max-height:", ";}"], function (_ref) {
   var theme = _ref.theme;
-  return theme.margin["default"];
+  return theme.colors.grayscale[95];
 }, function (_ref2) {
   var theme = _ref2.theme;
   return theme.breakpoint.xl;
@@ -49,7 +49,7 @@ var SlideShowImage = _styledComponents["default"].figure.withConfig({
 var FigCaption = _styledComponents["default"].figcaption.withConfig({
   displayName: "slideshow-block__FigCaption",
   componentId: "sc-gsubhh-2"
-})(["font-weight:400;line-height:23px;color:#000928;opacity:0.5;", ";padding:8px 20px 20px 20px;text-align:center;", "{", ";text-align:left;}", "{display:none;}"], function (_ref4) {
+})(["font-weight:400;line-height:23px;color:#000928;opacity:0.5;", ";padding:8px 20px 12px 20px;text-align:center;", "{", ";text-align:left;}", "{display:none;}"], function (_ref4) {
   var theme = _ref4.theme;
   return theme.fontSize.xs;
 }, function (_ref5) {
@@ -79,15 +79,34 @@ var ExpandText = _styledComponents["default"].div.withConfig({
   var theme = _ref0.theme;
   return theme.fontSize.md;
 });
+var OverallCaption = _styledComponents["default"].figcaption.withConfig({
+  displayName: "slideshow-block__OverallCaption",
+  componentId: "sc-gsubhh-5"
+})(["font-weight:400;line-height:1.6;color:#000928;opacity:0.5;", ";padding:8px 20px 20px 20px;text-align:center;", "{", ";text-align:left;padding:8px 0 20px 0;}", "{", ";text-align:left;padding:8px 0 20px 0;}"], function (_ref1) {
+  var theme = _ref1.theme;
+  return theme.fontSize.xs;
+}, function (_ref10) {
+  var theme = _ref10.theme;
+  return theme.breakpoint.md;
+}, function (_ref11) {
+  var theme = _ref11.theme;
+  return theme.fontSize.sm;
+}, function (_ref12) {
+  var theme = _ref12.theme;
+  return theme.breakpoint.xl;
+}, function (_ref13) {
+  var theme = _ref13.theme;
+  return theme.fontSize.sm;
+});
 
 // support old version of slideshow without delay propertiy
 var Figure = _styledComponents["default"].figure.withConfig({
   displayName: "slideshow-block__Figure",
-  componentId: "sc-gsubhh-5"
+  componentId: "sc-gsubhh-6"
 })(["position:relative;margin-block:unset;margin-inline:unset;margin:0 10px;"]);
 var Image = _styledComponents["default"].img.withConfig({
   displayName: "slideshow-block__Image",
-  componentId: "sc-gsubhh-6"
+  componentId: "sc-gsubhh-7"
 })(["width:100%;"]);
 function SlideshowBlock(entity) {
   var _images$, _images$2;
@@ -105,7 +124,8 @@ function SlideshowBlock(entity) {
 // 202206 latest version of slideshow, support delay property
 function SlideshowBlockV2(entity) {
   var _entity$getData = entity.getData(),
-    images = _entity$getData.images;
+    images = _entity$getData.images,
+    overallCaption = _entity$getData.overallCaption;
   var _useState = (0, _react.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
     expandSlideShow = _useState2[0],
@@ -166,7 +186,7 @@ function SlideshowBlockV2(entity) {
     onClick: function onClick() {
       return setExpandSlideShow(!expandSlideShow);
     }
-  }, "\u5C55\u958B\u6240\u6709\u5716\u7247"), showLightBox && /*#__PURE__*/_react["default"].createElement(_slideshowLightbox["default"], {
+  }, "\u5C55\u958B\u6240\u6709\u5716\u7247"), overallCaption && /*#__PURE__*/_react["default"].createElement(OverallCaption, null, "\u6574\u7D44\u591A\u5716\u5716\u8AAA\uFF1A", overallCaption), showLightBox && /*#__PURE__*/_react["default"].createElement(_slideshowLightbox["default"], {
     focusImageIndex: focusImageIndex,
     images: images,
     setShowLightBox: setShowLightBox,

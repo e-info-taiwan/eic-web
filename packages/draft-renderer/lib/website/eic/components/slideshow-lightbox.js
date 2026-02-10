@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _slideshowSidebar = _interopRequireDefault(require("./slideshow-sidebar"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
+var defaultImage = "/lib/public/57b35d645151e45c1816907625905202.png";
 var LightBoxWrapper = _styledComponents["default"].div.withConfig({
   displayName: "slideshow-lightbox__LightBoxWrapper",
   componentId: "sc-rdebmr-0"
@@ -34,7 +34,7 @@ var FocusImage = _styledComponents["default"].figure.withConfig({
 var FocusInfo = _styledComponents["default"].div.withConfig({
   displayName: "slideshow-lightbox__FocusInfo",
   componentId: "sc-rdebmr-3"
-})([".focus-desc{max-height:46px;overflow:hidden;word-break:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;opacity:0.87;margin-bottom:12px;}.focus-number{opacity:0.5;margin-top:12px;}"]);
+})([".focus-desc{max-height:46px;overflow:hidden;word-break:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;opacity:0.87;margin-bottom:12px;text-align:left;}.focus-number{opacity:0.5;margin-top:12px;}"]);
 var CloseButtonWrapper = _styledComponents["default"].div.withConfig({
   displayName: "slideshow-lightbox__CloseButtonWrapper",
   componentId: "sc-rdebmr-4"

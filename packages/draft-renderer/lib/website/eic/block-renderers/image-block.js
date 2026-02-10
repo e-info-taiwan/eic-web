@@ -8,7 +8,7 @@ var _react = _interopRequireDefault(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _reactImage = _interopRequireDefault(require("@readr-media/react-image"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
-var defaultImage = "/lib/public/722f90c535fa64c27555ec6ee5f22393.png";
+var defaultImage = "/lib/public/57b35d645151e45c1816907625905202.png";
 var Figure = _styledComponents["default"].figure.withConfig({
   displayName: "image-block__Figure",
   componentId: "sc-1v0uv2e-0"

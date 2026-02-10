@@ -2,7 +2,7 @@ import CustomImage from '@readr-media/react-image'
 import React from 'react'
 import styled, { css } from 'styled-components'
 
-import defaultImage from '../assets/default-og-img.png'
+import defaultImage from '../assets/post-default.png'
 
 const arrowShareStyle = css`
   width: 64px;

@@ -2,7 +2,7 @@ import { ContentBlock, ContentState } from 'draft-js'
 import React from 'react'
 import styled from 'styled-components'
 import CustomImage from '@readr-media/react-image'
-import defaultImage from '../assets/default-og-img.png'
+import defaultImage from '../assets/post-default.png'
 
 const Figure = styled.figure`
   width: 100%;

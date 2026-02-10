@@ -3,18 +3,24 @@ import { DraftEntityInstance } from 'draft-js'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
-import defaultImage from '../assets/default-og-img.png'
+import defaultImage from '../assets/post-default.png'
 import SlideShowLightBox from '../components/slideshow-lightbox'
 
 const SlideShowDesktopSize = 960
 const SpacingBetweenSlideImages = 12
 
 const SlideShowBlockWrapper = styled.div`
-  width: 100%;
+  width: calc(100% + 36px);
   position: relative;
-  ${({ theme }) => theme.margin.default};
+  background-color: ${({ theme }) => theme.colors.grayscale[95]};
+  margin: 0 -18px;
+  padding: 18px 28px;
 
   ${({ theme }) => theme.breakpoint.xl} {
+    width: 100%;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -62,7 +68,7 @@ const FigCaption = styled.figcaption`
   color: #000928;
   opacity: 0.5;
   ${({ theme }) => theme.fontSize.xs};
-  padding: 8px 20px 20px 20px;
+  padding: 8px 20px 12px 20px;
   text-align: center;
 
   ${({ theme }) => theme.breakpoint.md} {
@@ -129,6 +135,28 @@ const ExpandText = styled.div`
   }
 `
 
+const OverallCaption = styled.figcaption`
+  font-weight: 400;
+  line-height: 1.6;
+  color: #000928;
+  opacity: 0.5;
+  ${({ theme }) => theme.fontSize.xs};
+  padding: 8px 20px 20px 20px;
+  text-align: center;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    ${({ theme }) => theme.fontSize.sm};
+    text-align: left;
+    padding: 8px 0 20px 0;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    ${({ theme }) => theme.fontSize.sm};
+    text-align: left;
+    padding: 8px 0 20px 0;
+  }
+`
+
 // support old version of slideshow without delay propertiy
 const Figure = styled.figure`
   position: relative;
@@ -156,7 +184,7 @@ export function SlideshowBlock(entity: DraftEntityInstance) {
 
 // 202206 latest version of slideshow, support delay property
 export function SlideshowBlockV2(entity: DraftEntityInstance) {
-  const { images } = entity.getData()
+  const { images, overallCaption } = entity.getData()
   const [expandSlideShow, setExpandSlideShow] = useState(false)
   const [showLightBox, setShowLightBox] = useState(false)
   const [focusImageIndex, setFocusImageIndex] = useState(0)
@@ -223,6 +251,9 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
         >
           展開所有圖片
         </ExpandText>
+      )}
+      {overallCaption && (
+        <OverallCaption>整組多圖圖說：{overallCaption}</OverallCaption>
       )}
       {showLightBox && (
         <SlideShowLightBox
