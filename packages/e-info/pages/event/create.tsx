@@ -1,7 +1,7 @@
 // 建立活動頁面
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
-import type { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
@@ -229,11 +229,27 @@ const FileInfo = styled.div`
   color: ${({ theme }) => theme.colors.grayscale[40]};
 `
 
-const ErrorMessage = styled.div`
+const ErrorMessageWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.error.d};
 `
+
+const CrossIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+    <path d="M11 4l-1-1-3 3-3-3-1 1 3 3-3 3 1 1 3-3 3 3 1-1-3-3 3-3z" />
+  </svg>
+)
+
+const ErrorMessage = ({ children }: { children: ReactNode }) => (
+  <ErrorMessageWrapper>
+    <CrossIcon />
+    {children}
+  </ErrorMessageWrapper>
+)
 
 const DateRangeWrapper = styled.div`
   display: flex;
@@ -492,13 +508,15 @@ const CreateEventPage: NextPageWithLayout = () => {
       newErrors.startDate = '請選擇開始日期'
     }
 
-    if (!formData.endDate) {
-      newErrors.endDate = '請選擇結束日期'
-    } else if (formData.startDate && formData.endDate < formData.startDate) {
+    if (
+      formData.endDate &&
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
       newErrors.endDate = '結束日期不可早於開始日期'
     }
 
-    if (!formData.locationValue.trim()) {
+    if (formData.locationMethod === '實體' && !formData.locationValue.trim()) {
       newErrors.locationValue = '請填寫活動地點'
     }
 
@@ -519,6 +537,8 @@ const CreateEventPage: NextPageWithLayout = () => {
 
     if (!formData.content.trim()) {
       newErrors.content = '請填寫活動內容'
+    } else if (formData.content.length > 1000) {
+      newErrors.content = '活動內容不可超過1000字'
     }
 
     setErrors(newErrors)
@@ -575,7 +595,10 @@ const CreateEventPage: NextPageWithLayout = () => {
       // Combine contact info
       const contactInfo = `${formData.contactMethod}: ${formData.contactValue}`
       // Combine location
-      const location = `${formData.locationMethod}: ${formData.locationValue}`
+      const location =
+        formData.locationMethod === '實體'
+          ? `${formData.locationMethod}: ${formData.locationValue}`
+          : formData.locationMethod
 
       const response = await fetch('/api/create-event', {
         method: 'POST',
@@ -632,8 +655,10 @@ const CreateEventPage: NextPageWithLayout = () => {
               type="text"
               value={formData.name}
               onChange={handleInputChange}
-              maxLength={40}
             />
+            {formData.name.length > 40 && (
+              <ErrorMessage>超過字數！</ErrorMessage>
+            )}
             {errors.name && <ErrorMessage>{errors.name}</ErrorMessage>}
           </FormGroup>
 
@@ -732,7 +757,6 @@ const CreateEventPage: NextPageWithLayout = () => {
             >
               <option value="physical">實體活動</option>
               <option value="online">線上活動</option>
-              <option value="hybrid">混合式活動</option>
             </EventTypeSelect>
           </FormGroup>
 
@@ -777,14 +801,16 @@ const CreateEventPage: NextPageWithLayout = () => {
                 <option value="線上">線上</option>
                 <option value="其他">其他</option>
               </LocationSelect>
-              <LocationInput
-                id="locationValue"
-                name="locationValue"
-                type="text"
-                value={formData.locationValue}
-                onChange={handleInputChange}
-                placeholder="請輸入地點資訊"
-              />
+              {formData.locationMethod === '實體' && (
+                <LocationInput
+                  id="locationValue"
+                  name="locationValue"
+                  type="text"
+                  value={formData.locationValue}
+                  onChange={handleInputChange}
+                  placeholder="請輸入地點資訊"
+                />
+              )}
             </LocationWrapper>
             {errors.locationValue && (
               <ErrorMessage>{errors.locationValue}</ErrorMessage>
@@ -825,7 +851,7 @@ const CreateEventPage: NextPageWithLayout = () => {
 
           <FormGroup>
             <Label htmlFor="content">
-              內容<RequiredMark>*</RequiredMark>
+              內容 (1000 字內)<RequiredMark>*</RequiredMark>
             </Label>
             <Textarea
               id="content"
@@ -834,6 +860,9 @@ const CreateEventPage: NextPageWithLayout = () => {
               onChange={handleInputChange}
               placeholder="請輸入活動詳細內容"
             />
+            {formData.content.length > 1000 && (
+              <ErrorMessage>活動內容不可超過1000字</ErrorMessage>
+            )}
             {errors.content && <ErrorMessage>{errors.content}</ErrorMessage>}
           </FormGroup>
 

@@ -53,7 +53,7 @@ export default async function handler(
     }
 
     // Validate required fields
-    if (!body.name || !body.organizer || !body.startDate || !body.endDate) {
+    if (!body.name || !body.organizer || !body.startDate) {
       return res.status(400).json({
         success: false,
         error: 'Missing required fields',
@@ -69,7 +69,8 @@ export default async function handler(
       contactInfo: body.contactInfo,
       eventType: body.eventType,
       startDate: new Date(body.startDate).toISOString(),
-      endDate: new Date(body.endDate).toISOString(),
+      endDate: new Date(body.endDate || body.startDate).toISOString(),
+      sortOrder: 0,
       location: body.location,
       fee: body.fee,
       registrationUrl: body.registrationUrl,

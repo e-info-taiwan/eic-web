@@ -6,6 +6,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
+import { LOCATION_OPTIONS } from '~/constants/auth'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
@@ -343,16 +344,8 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9 // 9 events per page (3x3 grid)
 
-  // Generate location options from events data
-  const locationOptions = Array.from(
-    new Set(
-      events
-        .map((event) => event.location)
-        .filter(
-          (location): location is string => !!location && location.trim() !== ''
-        )
-    )
-  ).sort()
+  // Use fixed city/county options for location filter
+  const locationOptions = LOCATION_OPTIONS
 
   // Generate date options from events data (YYYY-MM format)
   const dateOptions = Array.from(
@@ -397,9 +390,9 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
 
   // Filter events based on selected filters
   const filteredEvents = events.filter((event) => {
-    // Location filter (exact match)
+    // Location filter (partial match - check if location contains the city name)
     if (selectedLocation !== 'all') {
-      if (event.location !== selectedLocation) {
+      if (!event.location || !event.location.includes(selectedLocation)) {
         return false
       }
     }
@@ -493,9 +486,9 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
               }}
             >
               <option value="all">全部</option>
-              {locationOptions.map((location) => (
-                <option key={location} value={location}>
-                  {location}
+              {locationOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </Select>
