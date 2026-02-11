@@ -50,14 +50,16 @@ switch (ENV) {
   case 'prod':
     API_ENDPOINT =
       'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/graphql'
-    PREVIEW_API_ENDPOINT = '' // TODO: 建立 prod preview CMS 後填入
+    PREVIEW_API_ENDPOINT =
+      'https://eic-web-preview-prod-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
       'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/homepage' // TODO: Update when prod endpoint is ready
     HEADER_API_ENDPOINT =
       'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/header' // TODO: Update when prod endpoint is ready
     POPULAR_SEARCH_ENDPOINT =
-      'https://storage.googleapis.com/statics-e-info-prod/ga/popular_search.json' // TODO: Update to production endpoint
+      'https://storage.googleapis.com/statics-e-info-prod/ga/popular_search.json'
     FIREBASE_CONFIG = {
+      // e-info-prod
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
       authDomain: 'e-info-prod.firebaseapp.com',
       projectId: 'e-info-prod',
