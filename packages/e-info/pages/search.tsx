@@ -93,11 +93,18 @@ const SearchResultsWrapper = styled.div`
   }
 `
 
-type GoogleCSE = {
+const CSE_ELEMENT_NAME = 'eic-search'
+
+type GoogleCSEElement = {
+  execute: (query: string) => void
+}
+
+type GoogleCSEApi = {
   search?: {
     cse?: {
       element?: {
-        getElement: (id: string) => { execute: (query: string) => void } | null
+        getElement: (name: string) => GoogleCSEElement | null
+        go: (container?: Element | string) => void
       }
     }
   }
@@ -113,12 +120,12 @@ const Search: NextPageWithLayout<PageProps> = () => {
   const [query, setQuery] = useState('')
   const [cseReady, setCseReady] = useState(false)
 
+  const getGoogle = () => (window as never as { google?: GoogleCSEApi }).google
+
   const executeSearch = useCallback((searchQuery: string) => {
-    const tryExecute = (retries = 5) => {
-      const google = (window as never as { google?: GoogleCSE }).google
-      const element = google?.search?.cse?.element?.getElement(
-        'searchresults-only0'
-      )
+    const tryExecute = (retries = 10) => {
+      const element =
+        getGoogle()?.search?.cse?.element?.getElement(CSE_ELEMENT_NAME)
       if (element) {
         element.execute(searchQuery)
       } else if (retries > 0) {
@@ -128,6 +135,17 @@ const Search: NextPageWithLayout<PageProps> = () => {
     tryExecute()
   }, [])
 
+  // On mount: if CSE script was already loaded (SPA re-visit),
+  // call go() to re-scan DOM for the new gcse-* element
+  useEffect(() => {
+    const google = getGoogle()
+    if (google?.search?.cse?.element) {
+      google.search.cse.element.go()
+      setCseReady(true)
+    }
+  }, [])
+
+  // Execute search when query and CSE are both ready
   useEffect(() => {
     const q = router.query.q
     if (typeof q === 'string') {
@@ -138,6 +156,7 @@ const Search: NextPageWithLayout<PageProps> = () => {
     }
   }, [router.query.q, cseReady, executeSearch])
 
+  // Handle first-time script load
   const handleCseReady = () => {
     setCseReady(true)
   }
@@ -145,7 +164,11 @@ const Search: NextPageWithLayout<PageProps> = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (query.trim()) {
-      router.push({ pathname: '/search', query: { q: query.trim() } })
+      router.push(
+        { pathname: '/search', query: { q: query.trim() } },
+        undefined,
+        { shallow: true }
+      )
     }
   }
 
@@ -170,7 +193,10 @@ const Search: NextPageWithLayout<PageProps> = () => {
         onReady={handleCseReady}
       />
       <SearchResultsWrapper>
-        <div className="gcse-searchresults-only" />
+        <div
+          className="gcse-searchresults-only"
+          data-gname={CSE_ELEMENT_NAME}
+        />
       </SearchResultsWrapper>
     </>
   )
