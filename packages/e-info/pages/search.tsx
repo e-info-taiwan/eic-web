@@ -114,15 +114,18 @@ const Search: NextPageWithLayout<PageProps> = () => {
   const [cseReady, setCseReady] = useState(false)
 
   const executeSearch = useCallback((searchQuery: string) => {
-    const google = (window as never as { google?: GoogleCSE }).google
-    if (google?.search?.cse?.element) {
-      const element = google.search.cse.element.getElement(
+    const tryExecute = (retries = 5) => {
+      const google = (window as never as { google?: GoogleCSE }).google
+      const element = google?.search?.cse?.element?.getElement(
         'searchresults-only0'
       )
       if (element) {
         element.execute(searchQuery)
+      } else if (retries > 0) {
+        setTimeout(() => tryExecute(retries - 1), 200)
       }
     }
+    tryExecute()
   }, [])
 
   useEffect(() => {
