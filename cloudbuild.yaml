@@ -5,6 +5,7 @@ steps:
     env:
       - 'NEXT_PUBLIC_ENV=${BRANCH_NAME}'
       - 'NEXT_PUBLIC_IS_PREVIEW_MODE=${_IS_PREVIEW_MODE}'
+      - 'NEXT_PUBLIC_TURNSTILE_SITE_KEY=${_TURNSTILE_SITE_KEY}'
     entrypoint: 'bash'
     args:
       - '-c'
@@ -114,3 +115,4 @@ substitutions:
   _CLOUD_RUN_SERVICE_NAMES: ''
   _ENVIRONMENT: ''  # Optional: 'dev', 'prod' - overrides branch-based detection
   _IS_PREVIEW_MODE: 'false'  # Preview mode: 'true' to enable preview deployment
+  _TURNSTILE_SITE_KEY: ''  # Cloudflare Turnstile public site key

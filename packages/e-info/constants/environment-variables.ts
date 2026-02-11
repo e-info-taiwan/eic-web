@@ -37,8 +37,9 @@ if (process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === 'true') {
 }
 
 // Cloudflare Turnstile (public site key for frontend widget)
+// Must use NEXT_PUBLIC_ prefix to be available in client-side code
 // If not set, Turnstile protection is disabled (graceful degradation)
-const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || ''
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
 
 export {
   ENV,

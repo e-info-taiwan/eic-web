@@ -87,7 +87,7 @@
 
 | 變數名稱              | 資料型態 | 初始值 | 變數說明                             |
 | --------------------- | -------- | ------ | ------------------------------------ |
-| TURNSTILE_SITE_KEY    | 字串     | ''     | Turnstile Site Key（前端 widget 用） |
+| NEXT_PUBLIC_TURNSTILE_SITE_KEY | 字串 | '' | Turnstile Site Key（前端 widget 用，需 NEXT_PUBLIC_ 前綴） |
 | TURNSTILE_SECRET_KEY  | 字串     | ''     | Turnstile Secret Key（後端驗證用）   |
 
 > **說明**：Turnstile 用於保護公開表單（活動建立、徵才建立）免受機器人攻擊。
