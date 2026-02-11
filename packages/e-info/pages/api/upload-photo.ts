@@ -4,6 +4,7 @@ import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { API_ENDPOINT } from '~/constants/config'
+import { verifyFirebaseToken } from '~/utils/verify-firebase'
 import { getClientIp, verifyTurnstileToken } from '~/utils/verify-turnstile'
 
 // Disable Next.js body parsing - we need to handle multipart form data ourselves
@@ -54,24 +55,38 @@ export default async function handler(
     // Parse the multipart form data
     const { fields, files } = await parseForm(req)
 
-    // Verify Turnstile token (bot protection)
-    const tokenField = fields.turnstileToken
-    const turnstileToken = Array.isArray(tokenField)
-      ? tokenField[0]
-      : tokenField
-    const clientIp = getClientIp(
-      req.headers as Record<string, string | string[] | undefined>,
-      req.socket.remoteAddress
-    )
-    const turnstileResult = await verifyTurnstileToken(
-      (turnstileToken as string) || '',
-      clientIp
-    )
-    if (!turnstileResult.success) {
-      return res.status(403).json({
-        success: false,
-        error: turnstileResult.error || 'Bot verification failed',
-      })
+    // Verify identity: Firebase auth (authenticated users) OR Turnstile (public forms)
+    const idTokenField = fields.idToken
+    const idToken = Array.isArray(idTokenField) ? idTokenField[0] : idTokenField
+    let isAuthenticated = false
+
+    if (idToken && typeof idToken === 'string') {
+      const firebaseResult = await verifyFirebaseToken(idToken)
+      if (firebaseResult.success) {
+        isAuthenticated = true
+      }
+    }
+
+    if (!isAuthenticated) {
+      // Fall back to Turnstile verification for unauthenticated requests
+      const tokenField = fields.turnstileToken
+      const turnstileToken = Array.isArray(tokenField)
+        ? tokenField[0]
+        : tokenField
+      const clientIp = getClientIp(
+        req.headers as Record<string, string | string[] | undefined>,
+        req.socket.remoteAddress
+      )
+      const turnstileResult = await verifyTurnstileToken(
+        (turnstileToken as string) || '',
+        clientIp
+      )
+      if (!turnstileResult.success) {
+        return res.status(403).json({
+          success: false,
+          error: turnstileResult.error || 'Bot verification failed',
+        })
+      }
     }
 
     const imageFiles = files.file

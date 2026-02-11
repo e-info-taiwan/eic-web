@@ -287,9 +287,14 @@ export const updateMemberAvatar = async (
   userId: string
 ): Promise<Member> => {
   // Use our API proxy to upload the photo (bypasses CORS)
+  // Send Firebase ID token so server can skip Turnstile for authenticated users
+  const idToken = await getIdToken()
   const formData = new FormData()
   formData.append('file', file)
   formData.append('name', `avatar-${userId}-${Date.now()}`)
+  if (idToken) {
+    formData.append('idToken', idToken)
+  }
 
   let uploadResponse
   try {
