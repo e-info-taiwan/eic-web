@@ -261,8 +261,7 @@ const NewsletterCard = styled(Link)`
 const ThumbnailWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
-  border-radius: 4px;
+  aspect-ratio: 128 / 85;
   overflow: hidden;
   margin-bottom: 8px;
 
@@ -272,40 +271,31 @@ const ThumbnailWrapper = styled.div`
 `
 
 const CardDate = styled.span`
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
   color: ${({ theme }) => theme.colors.primary[20]};
   margin-bottom: 4px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 12px;
     margin-bottom: 6px;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    font-size: 14px;
   }
 `
 
 const CardTitle = styled.span`
-  font-size: 10px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[20]};
   text-align: center;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.4;
   word-break: break-word;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 12px;
     -webkit-line-clamp: 5;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    font-size: 13px;
   }
 `
 
