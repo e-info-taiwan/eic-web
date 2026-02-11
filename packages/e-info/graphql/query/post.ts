@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 
-import { POST_STYLES, REPORT_STYLES } from '~/constants/constant'
+import { POST_STYLES } from '~/constants/constant'
 import { Author, authorFragment } from '~/graphql/fragments/author'
 import {
   Post,
@@ -121,7 +121,7 @@ export type PostDetail = Override<
   }
 >
 
-export const postStyles = [...POST_STYLES, ...REPORT_STYLES]
+export const postStyles = [...POST_STYLES]
 
 const post = gql`
   query ($id: ID!) {

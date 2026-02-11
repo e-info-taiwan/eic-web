@@ -11,7 +11,7 @@ import PostPoll from '~/components/post/post-poll'
 import MediaLinkList from '~/components/shared/media-link'
 import { PostDetail } from '~/graphql/query/post'
 import useOutboundLinkTracking from '~/hooks/useOutboundLinkTracking'
-import { ValidPostContentType, ValidPostStyle } from '~/types/common'
+import { ValidPostContentType } from '~/types/common'
 import { copyAndSliceDraftBlock, getBlocksCount } from '~/utils/post'
 
 const defaultMarginBottom = css`
@@ -285,13 +285,7 @@ export default function PostContent({
   )
   const shouldShowFootnotes = footnotes.length > 0
 
-  //WORKAROUND：
-  //when article type is `frame`, and has `summary` or first block of `content` is not an "EMBEDDEDCODE" , `<Container>` requires "padding-top".
-  const shouldPaddingTop =
-    articleType === ValidPostStyle.FRAME &&
-    (shouldShowSummary ||
-      (!shouldShowSummary &&
-        getFirstBlockEntityType(contentToRender) !== 'EMBEDDEDCODE'))
+  const shouldPaddingTop = false
 
   const articleRef = useRef<HTMLElement>(null)
 
@@ -299,12 +293,7 @@ export default function PostContent({
   useOutboundLinkTracking(articleRef)
 
   //Draft Style: add IntersectionObserver to detect side-index titles.
-  //`BLANK` type: hide side-index-block
   useEffect(() => {
-    if (articleType === ValidPostStyle.BLANK) {
-      return
-    }
-
     if (!articleRef.current) {
       return
     }

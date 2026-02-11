@@ -228,7 +228,7 @@ export default function News({
               <RightColumn>
                 <PostContent
                   postData={postData}
-                  articleType={ValidPostStyle.NEWS}
+                  articleType={ValidPostStyle.DEFAULT}
                   currentSideIndex={currentSideIndex}
                   setCurrentSideIndex={setCurrentSideIndex}
                 />

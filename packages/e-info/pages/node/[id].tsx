@@ -6,10 +6,7 @@ import { useEffect } from 'react'
 
 import { getGqlClient } from '~/apollo-client'
 import CustomHead from '~/components/layout/custom-head'
-import Blank from '~/components/post/article-type/blank'
-import Frame from '~/components/post/article-type/frame'
 import News from '~/components/post/article-type/news'
-import ScrollableVideo from '~/components/post/article-type/scrollable-video'
 import { IS_PREVIEW_MODE } from '~/constants/config'
 import { SITE_TITLE } from '~/constants/constant'
 import { pageRedirects } from '~/constants/redirects'
@@ -20,7 +17,7 @@ import type { PostDetail } from '~/graphql/query/post'
 import { post as postQuery } from '~/graphql/query/post'
 import { useReadingTracker } from '~/hooks/useReadingTracker'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { ResizedImages, ValidPostStyle } from '~/types/common'
+import { ResizedImages } from '~/types/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
 
@@ -60,42 +57,13 @@ const Post: NextPageWithLayout<PageProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postData?.id, router.asPath])
 
-  let articleType: JSX.Element
-
-  switch (postData.style) {
-    // New API styles (render as News layout)
-    case ValidPostStyle.DEFAULT:
-    case ValidPostStyle.EDITOR:
-    // Legacy styles
-    case ValidPostStyle.NEWS:
-    case ValidPostStyle.EMBEDDED:
-      articleType = (
-        <News
-          postData={postData}
-          donation={donation}
-          isRedirectPage={isRedirectPage}
-        />
-      )
-      break
-    case ValidPostStyle.SCROLLABLE_VIDEO:
-      articleType = <ScrollableVideo postData={postData} />
-      break
-    case ValidPostStyle.BLANK:
-      articleType = <Blank postData={postData} />
-      break
-    case ValidPostStyle.FRAME:
-      articleType = <Frame postData={postData} />
-      break
-    default:
-      articleType = (
-        <News
-          postData={postData}
-          donation={donation}
-          isRedirectPage={isRedirectPage}
-        />
-      )
-      break
-  }
+  const articleType = (
+    <News
+      postData={postData}
+      donation={donation}
+      isRedirectPage={isRedirectPage}
+    />
+  )
 
   // head info
   function convertDraftToText(blocks: RawDraftContentBlock[]) {
@@ -201,11 +169,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     }
 
     const postData = data.posts[0]
-    const postStyle = postData.style
-
-    if (postStyle === ValidPostStyle.EMBEDDED) {
-      return { notFound: true }
-    }
 
     // Redirect newsletter posts to /newsletter/[id]
     if (postData.isNewsletter) {
@@ -225,24 +188,6 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
         }
       }
     }
-
-    // Note: New API doesn't have slug field
-    // REPORT and PROJECT3 redirects are disabled until slug is available
-    // if (postStyle === ValidPostStyle.REPORT) {
-    //   return {
-    //     redirect: {
-    //       destination: `https://${SITE_URL}/project/${postSlug}/`,
-    //       permanent: false,
-    //     },
-    //   }
-    // } else if (postStyle === ValidPostStyle.PROJECT3) {
-    //   return {
-    //     redirect: {
-    //       destination: `https://${SITE_URL}/project/3/${postSlug}/`,
-    //       permanent: false,
-    //     },
-    //   }
-    // }
 
     const isRedirectPage = pageRedirects.some(
       (r) => r.postId === String(postId)

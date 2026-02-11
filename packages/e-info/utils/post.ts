@@ -2,8 +2,6 @@ import { Eic } from '@eic-web/draft-renderer'
 import dayjs from 'dayjs'
 import type { RawDraftContentState } from 'draft-js'
 
-import { REPORT_STYLES } from '~/constants/constant'
-import { SITE_URL } from '~/constants/environment-variables'
 import type { ContentApiDataBlock, Post } from '~/graphql/fragments/post'
 import type {
   GenericPhoto,
@@ -11,52 +9,19 @@ import type {
   keyOfResizedImages,
   ResizedImages,
 } from '~/types/common'
-import { ValidPostStyle } from '~/types/common'
 import type { ArticleCard } from '~/types/component'
 const { removeEmptyContentBlock, hasContentInRawContentBlock } = Eic
 
 export function getHref({
-  style,
   id,
-  slug,
 }: Partial<Pick<GenericPost, 'style' | 'id'> & { slug: string }>): string {
-  switch (style) {
-    case ValidPostStyle.DEFAULT:
-    case ValidPostStyle.EDITOR:
-    case ValidPostStyle.NEWS:
-    case ValidPostStyle.EMBEDDED:
-    case ValidPostStyle.FRAME:
-    case ValidPostStyle.SCROLLABLE_VIDEO:
-    case ValidPostStyle.BLANK:
-      return `/node/${id}`
-    case ValidPostStyle.REPORT:
-      return `https://${SITE_URL}/project/${slug}/`
-    case ValidPostStyle.PROJECT3:
-      return `https://${SITE_URL}/project/3/${slug}/`
-    default:
-      // undefined value can't be serialized, so set default value to '/'
-      return '/'
-  }
+  return id ? `/node/${id}` : '/'
 }
 
 export function getUid({
-  style,
   id,
-  slug,
 }: Partial<Pick<GenericPost, 'style' | 'id'> & { slug: string }>): string {
-  switch (style) {
-    case ValidPostStyle.NEWS:
-    case ValidPostStyle.EMBEDDED:
-    case ValidPostStyle.FRAME:
-    case ValidPostStyle.BLANK:
-      return `post-${id}`
-    case ValidPostStyle.REPORT:
-      return `project-${slug}`
-    case ValidPostStyle.PROJECT3:
-      return `project-3-${slug}`
-    default:
-      return `default-uid-${style}-${slug}-${id}`
-  }
+  return `post-${id}`
 }
 
 export function getImageSrc(
@@ -87,10 +52,6 @@ export function getImageSrc(
   }
 
   return imageSrc
-}
-
-export function isReport(style: string = ''): boolean {
-  return REPORT_STYLES.includes(style)
 }
 
 export function formatPostDate(datetime: dayjs.ConfigType): string {
@@ -294,7 +255,7 @@ export function convertPostToArticleCard(
     href: getHref({ style, id }),
     date: formatPostDate(publishTime),
     summary: getBriefText(brief, contentApiData, 100),
-    isReport: isReport(style),
+    isReport: false,
     images: images ?? {},
     imagesWebP: imagesWebP ?? {},
     tags: tags?.map((tag) => ({ id: tag.id, name: tag.name })) ?? [],

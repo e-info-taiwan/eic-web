@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 
-import { POST_STYLES, REPORT_STYLES } from '~/constants/constant'
+import { POST_STYLES } from '~/constants/constant'
 import type { PhotoWithResizedCard, PostCard } from '~/graphql/fragments/post'
 import { postCardFragment } from '~/graphql/fragments/post'
 import { resizeImagesCardFragment } from '~/graphql/fragments/resized-images'
@@ -15,7 +15,6 @@ export type Category = Override<
     | 'slug'
     | 'title'
     | 'posts'
-    | 'reports'
     | 'ogImage'
     | 'ogDescription'
     | 'updatedAt'
@@ -24,7 +23,6 @@ export type Category = Override<
   >,
   {
     posts?: PostCard[]
-    reports?: PostCard[]
     ogImage?: PhotoWithResizedCard | null
   }
 >
@@ -41,25 +39,21 @@ const categories = gql`
     $first: Int
     $slug: String
     $relatedPostFirst: Int = 4
-    $relatedReportFirst: Int = 1
     $postSkip: Int
-    $reportSkip: Int
     $shouldQueryRelatedPost: Boolean = false
-    $shouldQueryRelatedReport: Boolean = false
     $relatedPostTypes: [String!] = [${convertToStringList(POST_STYLES)}]
-    $relatedReportTypes: [String!] = [${convertToStringList(REPORT_STYLES)}]
   ) {
     categories(
       take: $first
-      where: { 
-        state: { equals: "true" } 
+      where: {
+        state: { equals: "true" }
         slug: { equals: $slug }
       }
       orderBy: { sortOrder: asc }
     ) {
       id
       slug
-      title    
+      title
       updatedAt
       createdAt
       sortOrder
@@ -72,17 +66,6 @@ const categories = gql`
         }
         orderBy: { publishTime: desc }
       ) @include(if: $shouldQueryRelatedPost) {
-        ...PostFieldsCard
-      }
-      reports: relatedPost(
-        take: $relatedReportFirst
-        skip: $reportSkip
-        where: {
-          ${publishedStateFilter}
-          style: { in: $relatedReportTypes }
-        }
-        orderBy: { publishTime: desc }
-      ) @include(if: $shouldQueryRelatedReport) {
         ...PostFieldsCard
       }
       ogDescription

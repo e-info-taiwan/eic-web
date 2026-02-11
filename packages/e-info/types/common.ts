@@ -29,22 +29,8 @@ export type PhotoWithResizedOnly = Pick<GenericPhoto, 'resized' | 'resizedWebp'>
 // ref: https://github.com/mirror-media/Lilith/blob/95bb4f8e9b43bd60515e1ba5b9b77d512f880bca/packages/readr/lists/Post.ts#L139
 /* eslint-disable no-unused-vars */
 export enum ValidPostStyle {
-  // New API styles
   DEFAULT = 'default',
   EDITOR = 'editor',
-  // Legacy styles (kept for backward compatibility)
-  NEWS = 'news',
-  FRAME = 'frame',
-  BLANK = 'blank',
-  REPORT = 'report',
-  PROJECT3 = 'project3',
-  EMBEDDED = 'embedded',
-  REVIEW = 'review',
-  MEMO = 'memo',
-  DUMMY = 'dummy',
-  CARD = 'card',
-  QA = 'qa',
-  SCROLLABLE_VIDEO = 'scrollablevideo',
 }
 
 export enum ValidJobTitles {
