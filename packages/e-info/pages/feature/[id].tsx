@@ -97,20 +97,7 @@ const TopicSummary = styled.p`
   line-height: 1.8;
   color: ${({ theme }) => theme.colors.grayscale[20]};
   margin: 0 0 16px;
-  text-align: center;
-`
-
-const UpdateTime = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  margin-bottom: 20px;
-  text-align: center;
-
-  span {
-    color: ${({ theme }) => theme.colors.secondary[20]};
-  }
+  text-align: left;
 `
 
 const AuthorInfo = styled.div`
@@ -374,22 +361,6 @@ const PaginationEllipsis = styled.span`
   }
 `
 
-// Helper function to format date
-const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return ''
-  try {
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${year}/${month}/${day} ${hours}:${minutes}`
-  } catch {
-    return ''
-  }
-}
-
 // Helper function to get image URL from post (with fallback to default image)
 const getImageUrl = (post: TopicPost): string => {
   const resized = post.heroImage?.resized
@@ -485,11 +456,11 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
   return (
     <PageWrapper>
       {/* Hero Section */}
-      <HeroSection>
-        {heroImageUrl && (
+      {heroImageUrl && (
+        <HeroSection>
           <HeroImage src={heroImageUrl} alt={topic.title || ''} />
-        )}
-      </HeroSection>
+        </HeroSection>
+      )}
 
       {/* Content */}
       <ContentWrapper>
@@ -501,13 +472,6 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
 
           {/* Summary (content field from API) */}
           {topic.content && <TopicSummary>{topic.content}</TopicSummary>}
-
-          {/* Update Time */}
-          {topic.updatedAt && (
-            <UpdateTime>
-              最新更新時間 <span>{formatDate(topic.updatedAt)}</span>
-            </UpdateTime>
-          )}
 
           {/* Author Info */}
           {topic.authorInfo && <AuthorInfo>{topic.authorInfo}</AuthorInfo>}
