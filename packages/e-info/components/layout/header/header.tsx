@@ -1088,14 +1088,16 @@ const Header = () => {
         >
           <SecondaryMenuContainer>
             {hoveredCategory !== null &&
-              navigationItems[hoveredCategory]?.categories?.map((category) => (
-                <SecondaryMenuItem
-                  key={category.id}
-                  href={`/category/${category.id}`}
-                >
-                  {category.name}
-                </SecondaryMenuItem>
-              ))}
+              navigationItems[hoveredCategory]?.categories
+                ?.slice(0, 10)
+                .map((category) => (
+                  <SecondaryMenuItem
+                    key={category.id}
+                    href={`/category/${category.id}`}
+                  >
+                    {category.name}
+                  </SecondaryMenuItem>
+                ))}
           </SecondaryMenuContainer>
         </SecondaryMenuBar>
 
@@ -1256,7 +1258,7 @@ const Header = () => {
             </SubMenuHeader>
 
             <SubMenuList>
-              {currentSubMenu.categories.map((category) => (
+              {currentSubMenu.categories.slice(0, 10).map((category) => (
                 <SubMenuItem
                   key={category.id}
                   href={`/category/${category.id}`}

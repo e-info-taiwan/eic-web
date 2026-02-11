@@ -55,7 +55,7 @@ export function getImageSrc(
 }
 
 export function formatPostDate(datetime: dayjs.ConfigType): string {
-  return dayjs(datetime).format('YYYY-MM-DD-HH:mm')
+  return dayjs(datetime).format('YYYY年MM月DD日')
 }
 
 export function formatReadTime(readingTime = 0): string {

@@ -1123,6 +1123,7 @@ export type HeaderNavSection = {
 }
 
 // Query sections for header navigation (showInHeader = true)
+// Limit categories to top 10 by sortOrder (專欄 has 50+ categories)
 export const sectionsForHeader = gql`
   query {
     sections(
@@ -1132,7 +1133,7 @@ export const sectionsForHeader = gql`
       id
       slug
       name
-      categories(orderBy: { sortOrder: asc }) {
+      categories(orderBy: { sortOrder: asc }, take: 10) {
         id
         slug
         name
