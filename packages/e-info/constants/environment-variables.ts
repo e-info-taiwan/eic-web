@@ -14,14 +14,6 @@ switch (ENV) {
     GOOGLE_CSE_ID = 'e7af92d93bc65444d'
     break
 
-  case 'staging':
-    SITE_URL = 'staging.e-info.org.tw'
-    GA_TRACKING_ID = 'G-9FMKSK8LLR'
-    GTM_ID = ''
-    GLOBAL_CACHE_SETTING = 'public, max-age=300'
-    GOOGLE_CSE_ID = 'e7af92d93bc65444d'
-    break
-
   case 'dev':
     SITE_URL = 'eic-web-dev-1090198686704.asia-east1.run.app'
     GA_TRACKING_ID = 'G-9FMKSK8LLR'

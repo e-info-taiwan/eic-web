@@ -78,7 +78,7 @@ All API endpoints are centrally managed in `packages/e-info/constants/config.ts`
 | Popular Search | `POPULAR_SEARCH_ENDPOINT` | GCS JSON for GA4 popular search keywords |
 | Preview API | `PREVIEW_API_ENDPOINT` | Preview mode GraphQL endpoint |
 
-Environment variable `NEXT_PUBLIC_ENV` controls which environment to use (local/dev/staging/prod).
+Environment variable `NEXT_PUBLIC_ENV` controls which environment to use (local/dev/prod).
 
 ### Constants Architecture
 

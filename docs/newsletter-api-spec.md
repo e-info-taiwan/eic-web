@@ -7,8 +7,7 @@ Newsletter（電子報）是獨立於 Post 的內容類型，用於管理和發�
 ## GraphQL API Endpoint
 
 - **Development**: `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql`
-- **Staging**: `https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/graphql`
-- **Production**: `https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/graphql`
+- **Production**: `https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/graphql`
 
 ## Newsletter Type
 

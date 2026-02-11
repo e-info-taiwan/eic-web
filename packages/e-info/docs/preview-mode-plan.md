@@ -12,7 +12,7 @@
 
 - [x] Preview API endpoint 確認：`https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql` — **已驗證可用**，需要 IAM 認證（Bearer token）。連接同一個 dev 資料庫（111,822 篇文章）。
 - [x] 移除 `state: published` 篩選後，preview endpoint 是否回傳所有狀態的文章？ — **API 嚴格遵守 query filter**，不含 state filter 時會回傳所有狀態的文章。目前 dev 環境尚無 draft 文章，但機制正確。
-- [x] 是否需要 staging/prod 環境的 preview endpoint？ — **需要**，使用環境變數 `NEXT_PUBLIC_PREVIEW_API_ENDPOINT` 讓各環境的 Cloud Build trigger 自行設定對應的 preview CMS endpoint。
+- [x] 是否需要 prod 環境的 preview endpoint？ — **需要**，使用環境變數 `NEXT_PUBLIC_PREVIEW_API_ENDPOINT` 讓各環境的 Cloud Build trigger 自行設定對應的 preview CMS endpoint。
 - [x] Preview server 的 Cloud Run service name 與部署觸發方式 — 使用 Cloud Build trigger，`_IS_PREVIEW_MODE=true`，Cloud Run service 會自動建立。
 
 ---
@@ -37,7 +37,7 @@ export { API_ENDPOINT, IS_PREVIEW_MODE, ... }
 - `NEXT_PUBLIC_IS_PREVIEW_MODE`：build-time 環境變數，`'true'` 啟用
 - `NEXT_PUBLIC_PREVIEW_API_ENDPOINT`：build-time 環境變數，preview CMS 的 GraphQL endpoint
   - dev: `https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql`
-  - staging/prod: 日後建立對應 CMS preview service 後設定
+  - prod: 日後建立對應 CMS preview service 後設定
 - 各環境的 Cloud Build trigger 透過 substitution variable 各自設定 endpoint，程式碼無需硬編碼
 
 ## Step 2: 新增 state filter 工具函式
@@ -152,7 +152,7 @@ Substitution variables:
   _PREVIEW_API_ENDPOINT:    https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql
 ```
 
-日後建立 staging/prod 環境時，建立對應 trigger 並設定各自的 `_PREVIEW_API_ENDPOINT`。
+日後建立 prod 環境時，建立對應 trigger 並設定各自的 `_PREVIEW_API_ENDPOINT`。
 
 `gcloud run deploy` 在目標 service 不存在時會自動建立 Cloud Run service，不需要預先在 GCP 建立。
 

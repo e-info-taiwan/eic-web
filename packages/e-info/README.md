@@ -22,7 +22,7 @@
 |── pages/            - 頁面檔
 |   └── api/          - 後端 API
 |── constants/        - 常數、設定
-|   |── config.ts     - API 端點設定（依環境切換：dev/staging/prod）
+|   |── config.ts     - API 端點設定（依環境切換：dev/prod）
 |   |── constant.ts   - 固定常數（站名、預設圖片、文章樣式）
 |   |── layout.ts     - 佈局與分頁常數（MAX_CONTENT_WIDTH、POSTS_PER_PAGE、Cache/Timeout）
 |   |── social.ts     - 社群媒體 URL 與分享連結 pattern
@@ -126,9 +126,9 @@
 
 ## 部屬
 
-目前採用 Cloud Build 進行自動化部署，共有 dev、staging、prod 三個分支，須以發 PR 的方式合併分支。
+目前採用 Cloud Build 進行自動化部署，共有 dev、prod 兩個分支，須以發 PR 的方式合併分支。
 
-當功能已在 feature branch 開發完畢，即可發 PR 並 merge 進 dev 分支，便會觸發自動化部署並更新測試機。 若要將專案推到正式機，須與 PM（產品經理）確認，再從 dev 分支發 PR merge 到 staging 分支，確認 staging 功能正常後，接著再發 PR 至 prod 分支。其中，正式機的部署目前需要手動核准。
+當功能已在 feature branch 開發完畢，即可發 PR 並 merge 進 dev 分支，便會觸發自動化部署並更新測試機。 若要將專案推到正式機，須與 PM（產品經理）確認，再從 dev 分支發 PR merge 到 prod 分支。其中，正式機的部署目前需要手動核准。
 
 ---
 
@@ -138,11 +138,6 @@
 
 - [Cloud Build | sachiel-readr-dev](https://console.cloud.google.com/cloud-build/triggers;region=global/edit/7029a598-d081-4cac-a86a-108c6898ad8a?project=mirrorlearning-161006)
 - [Cloud Run | readr-next-dev](https://console.cloud.google.com/run/detail/asia-east1/readr-next-dev/metrics?project=mirrorlearning-161006)
-
-### Staging
-
-- [Cloud Build | sachiel-readr-staging](https://console.cloud.google.com/cloud-build/triggers;region=global/edit/1f92c2c5-b83b-4b69-82b0-c68d132b1ded?authuser=1&hl=zh-tw&project=mirrorlearning-161006)
-- [Cloud Run | readr-next-staging](https://console.cloud.google.com/run/detail/asia-east1/readr-next-staging/metrics?authuser=1&hl=zh-tw&project=mirrorlearning-161006)
 
 ### Prod
 

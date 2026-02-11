@@ -10,8 +10,7 @@
 
 建議路徑：
 - **開發環境**: `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header`
-- **Staging**: `https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/header`
-- **正式環境**: `https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/header`
+- **正式環境**: `https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/header`
 
 ## HTTP 規格
 
@@ -384,9 +383,7 @@ const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
 function getHeaderApiEndpoint(): string {
   switch (ENV) {
     case 'prod':
-      return 'https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/header'
-    case 'staging':
-      return 'https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/header'
+      return 'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/header'
     case 'dev':
     default:
       return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
@@ -491,7 +488,7 @@ export async function fetchHeaderData(): Promise<HeaderContextData> {
 
 ### Phase 3: 部署
 
-1. 部署 CMS API 至 staging/prod
+1. 部署 CMS API 至 prod
 2. 更新前端 endpoint 設定
 3. 監控 API 健康狀態
 

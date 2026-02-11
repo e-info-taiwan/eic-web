@@ -7,8 +7,7 @@
 | 環境 | Endpoint |
 |------|----------|
 | Dev | `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql` |
-| Staging | `https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/graphql` |
-| Production | `https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/graphql` |
+| Production | `https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/graphql` |
 
 ---
 

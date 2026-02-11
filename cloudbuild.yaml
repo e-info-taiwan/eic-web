@@ -39,13 +39,11 @@ steps:
         if [ -n "$_ENVIRONMENT" ]; then
           case "$_ENVIRONMENT" in
             prod|production) SUFFIX="_PROD" ;;
-            staging)         SUFFIX="_STAGING" ;;
             *)               SUFFIX="_DEV" ;;
           esac
         else
           case "$$BRANCH_NAME" in
             main|master|prod) SUFFIX="_PROD" ;;
-            staging)          SUFFIX="_STAGING" ;;
             *)                SUFFIX="_DEV" ;;
           esac
         fi
@@ -114,5 +112,5 @@ substitutions:
   _TARGET_PACKAGE: ''
   _IMAGE_NAME: ''
   _CLOUD_RUN_SERVICE_NAMES: ''
-  _ENVIRONMENT: ''  # Optional: 'dev', 'staging', 'prod' - overrides branch-based detection
+  _ENVIRONMENT: ''  # Optional: 'dev', 'prod' - overrides branch-based detection
   _IS_PREVIEW_MODE: 'false'  # Preview mode: 'true' to enable preview deployment

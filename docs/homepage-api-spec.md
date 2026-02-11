@@ -8,8 +8,7 @@
 
 建議路徑：
 - **開發環境**: `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage`
-- **Staging**: `https://readr-gql-staging-4g6paft7cq-de.a.run.app/api/homepage`
-- **正式環境**: `https://readr-gql-prod-4g6paft7cq-de.a.run.app/api/homepage`
+- **正式環境**: `https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/homepage`
 
 ## HTTP 規格
 
