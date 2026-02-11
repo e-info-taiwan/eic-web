@@ -140,10 +140,6 @@ const Search: NextPageWithLayout<PageProps> = () => {
 
   const handleCseReady = () => {
     setCseReady(true)
-    const q = router.query.q
-    if (typeof q === 'string') {
-      executeSearch(q)
-    }
   }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
