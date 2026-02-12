@@ -8,10 +8,7 @@ import styled from 'styled-components'
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
 import PostPoll from '~/components/post/post-poll'
-import {
-  type HeaderContextData,
-  useHeaderData,
-} from '~/contexts/header-context'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { NewsletterDetail } from '~/graphql/query/newsletter'
 import { newsletterById } from '~/graphql/query/newsletter'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -37,109 +34,11 @@ const ContentWrapper = styled.div`
   }
 `
 
-const Title = styled.h1`
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 28px;
-  color: ${({ theme }) => theme.colors.primary[20]};
-  margin: 0 0 24px;
-  text-align: center;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 28px;
-    font-weight: 500;
-    line-height: 32px;
-    margin-bottom: 32px;
-  }
-`
-
-const SendDate = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  text-align: center;
-  margin-bottom: 20px;
-`
-
 const Banner = styled.div`
   position: relative;
   width: 100%;
   aspect-ratio: 1060 / 126;
   margin-bottom: 12px;
-`
-
-const ReaderCount = styled.div`
-  text-align: center;
-  padding: 0 20px 12px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-`
-
-const ReferralSection = styled.section`
-  border: 3px solid ${({ theme }) => theme.colors.primary[20]};
-  padding: 24px 16px;
-  margin-top: 53px;
-  margin-bottom: 53px;
-  text-align: center;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    padding: 32px 24px;
-  }
-`
-
-const ReferralTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[40]};
-  margin: 0 0 16px;
-`
-
-const ReferralText = styled.p`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[20]};
-  margin: 0 0 24px;
-
-  strong {
-    color: ${({ theme }) => theme.colors.primary[40]};
-  }
-`
-
-const ReferralLinkWrapper = styled.div`
-  margin-bottom: 8px;
-`
-
-const ReferralLink = styled.a`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[40]};
-  text-decoration: underline;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.8;
-  }
-`
-
-const ReferralSubLinkWrapper = styled.div``
-
-const ReferralSubLink = styled.a`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
-  text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `
 
 const NewsletterContent = styled.div<{ $raw?: boolean }>`
@@ -347,314 +246,120 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
   margin: 0 auto;
   background-color: #ffffff;
 
-  /* ===== 01-Content ===== */
-  .section-header {
-    text-align: center;
-    padding: 15px 20px 5px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-  }
-  .toc-list {
-    padding: 15px 20px;
-    border-bottom: 20px solid #D9D9D9;
-  }
-  .toc-item {
-    padding-bottom: 12px;
-    font-size: 14px;
-    color: #333;
-  }
-  .toc-item:last-child {
-    border-bottom: none;
-  }
-  .toc-item::before {
-    content: "·";
-    margin-right: 8px;
-    font-weight: bold;
-  }
-  .article-section {
-    padding: 20px 0;
-    border-bottom: 1px solid #eee;
-  }
-  .article-image {
-    width: 100%;
-    margin-bottom: 15px;
-  }
-  .article-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: ${theme.colors.grayscale[0]};
-    margin: 0 0 10px;
-    line-height: 28px;
-  }
-  .article-title a {
-    color: ${theme.colors.grayscale[0]};
-    text-decoration: none;
-  }
-  .article-title a:hover {
-    text-decoration: underline;
-  }
-  .article-content {
-    font-size: 14px;
-    color: #333;
-    line-height: 1.8;
-    margin-bottom: 10px;
-  }
-  .article-content .read-more {
-    color: ${theme.colors.secondary[20]};
-    font-weight: bold;
-    margin-left: 4px;
-    text-decoration: underline;
-  }
-  .article-content .read-more:hover {
-    color: ${theme.colors.secondary[0]};
-  }
-  .read-more {
-    text-align: right;
-    font-size: 14px;
-  }
-  .read-more a {
-    color: ${theme.colors.secondary[20]};
-    font-weight: bold;
-  }
+  /* ===== Outer wrapper table ===== */
+  .outer-wrapper { width: 100%; border-collapse: collapse; }
 
-  /* ===== 02-Highlight (焦點話題) ===== */
-  .highlight-list {
-    margin-bottom: 53px;
-  }
-  .green-header {
-    background-color: ${theme.colors.primary[20]};
-    color: white;
-    text-align: center;
-    padding: 12px 20px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  .highlight-item {
-    display: flex;
-    padding: 20px 0;
-    border-bottom: 1px solid #eee;
-    align-items: stretch;
-  }
-  .highlight-item:last-child {
-    border-bottom: none;
-  }
-  .highlight-thumb {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    flex-shrink: 0;
-    margin-right: 15px;
-  }
-  .highlight-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .highlight-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: ${theme.colors.grayscale[0]};
-    line-height: 1.5;
-  }
-  .highlight-title a {
-    color: ${theme.colors.grayscale[0]};
-    text-decoration: none;
-  }
-  .highlight-title a:hover {
-    text-decoration: underline;
-  }
-  .highlight-content .read-more {
-    text-align: right;
-  }
-  .highlight-content .read-more a {
-    text-decoration: underline;
-  }
-  .highlight-content .read-more a:hover {
-    color: ${theme.colors.secondary[0]};
-  }
+  /* ===== Global link styles ===== */
+  .read-more-link { color: #DD8346; font-weight: bold; text-decoration: underline; }
+  .read-more-link:hover { color: #B55514; }
+  .dark-link { color: #232333; text-decoration: none; }
+  .dark-link:hover { text-decoration: underline; }
+  .muted-link { color: #333; text-decoration: none; }
 
-  /* ===== 03-Ranking (閱讀排名) ===== */
-  .ranking-list {
-    margin-bottom: 53px;
-  }
-  .ranking-item {
-    display: flex;
-    padding: 15px 0;
-    align-items: stretch;
-  }
-  .ranking-item:last-child {
-    border-bottom: none;
-  }
-  .ranking-thumb {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    flex-shrink: 0;
-    margin-right: 10px;
-  }
-  .ranking-number {
-    font-size: 42px;
-    font-weight: bold;
-    color: ${theme.colors.primary[20]};
-    width: 50px;
-    flex-shrink: 0;
-    text-align: center;
-    line-height: 1;
-    margin-right: 10px;
-  }
-  .ranking-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .ranking-content .read-more {
-    text-align: right;
-  }
-  .ranking-content .read-more a {
-    text-decoration: underline;
-  }
-  .ranking-content .read-more a:hover {
-    color: ${theme.colors.secondary[0]};
-  }
-  .ranking-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: ${theme.colors.grayscale[0]};
-    line-height: 1.5;
-  }
-  .ranking-title a {
-    color: ${theme.colors.grayscale[0]};
-    text-decoration: none;
-  }
-  .ranking-title a:hover {
-    text-decoration: underline;
-  }
+  /* ===== 00-Header ===== */
+  .subscriber-count { padding: 20px 20px 10px; font-size: 15px; color: #333; line-height: 1.6; text-align: center; }
+  .header-date { padding: 5px 20px 15px; font-size: 16px; font-weight: bold; color: #333; text-align: center; }
+  .header-title-td { padding: 10px 20px 25px; }
+  .header-title { font-size: 22px; font-weight: bold; color: #388A48; margin: 0; line-height: 1.4; text-align: center; }
 
-  /* Ads Section */
-  .ads-section {
-    padding: 20px 0;
-    background-color: #fff;
-    text-align: center;
-  }
-  .ad-link {
-    display: inline-block;
-    margin: 0 10px 15px;
-  }
-  .ad-link:last-child {
-    margin-bottom: 0;
-  }
-  .ad-image {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+  /* ===== Section Header (green bar) ===== */
+  .section-header { background-color: #388A48; padding: 12px 20px; font-size: 18px; font-weight: bold; color: #ffffff; text-align: center; }
 
-  /* ===== 04-Events (近期活動) ===== */
-  .event-list {
-    margin-bottom: 53px;
-  }
-  .event-item {
-    padding: 15px 0;
-    border-bottom: 1px solid #ddd;
-  }
-  .event-item:last-child {
-    border-bottom: none;
-  }
-  .event-date {
-    font-size: 15px;
-    color: ${theme.colors.primary[20]};
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  .event-title {
-    font-size: 17px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-  }
-  .event-title a {
-    color: #333;
-    text-decoration: none;
-  }
-  .event-title a:hover {
-    text-decoration: underline;
-  }
-  .event-org {
-    font-size: 14px;
-    color: #666;
-  }
+  /* ===== 01-Content (TOC) ===== */
+  .toc-title { padding: 15px 20px 5px; font-size: 18px; font-weight: bold; color: #333; text-align: center; }
+  .toc-container { padding: 15px 20px; border-bottom: 20px solid #D9D9D9; }
+  .toc-item { padding-bottom: 12px; font-size: 14px; color: #333; line-height: 1.6; }
+  .toc-item-last { padding-bottom: 0; font-size: 14px; color: #333; line-height: 1.6; }
 
-  /* ===== 05-Jobs (環境徵才) ===== */
-  .job-list {
-    margin-bottom: 53px;
-  }
-  .job-item {
-    padding: 15px 0;
-    border-bottom: 1px solid #333;
-  }
-  .job-item:last-child {
-    border-bottom: none;
-  }
-  .job-date {
-    font-size: 15px;
-    color: ${theme.colors.primary[20]};
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  .job-title {
-    font-size: 17px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-  }
-  .job-title a {
-    color: #333;
-    text-decoration: none;
-  }
-  .job-title a:hover {
-    text-decoration: underline;
-  }
-  .job-org {
-    font-size: 14px;
-    color: #666;
-  }
+  /* ===== Articles ===== */
+  .article-cell { padding: 20px; border-bottom: 1px solid #eee; }
+  .article-img { width: 100%; height: auto; display: block; margin-bottom: 15px; }
+  .article-title { font-size: 20px; font-weight: 700; color: #232333; margin: 0 0 10px; line-height: 28px; }
+  .article-title a { color: #232333; text-decoration: none; }
+  .article-title a:hover { text-decoration: underline; }
+  .article-excerpt { font-size: 14px; color: #333; line-height: 1.8; margin: 0 0 10px; }
+  .read-more-inline { color: #DD8346; font-weight: bold; margin-left: 4px; text-decoration: underline; }
+  .read-more-inline:hover { color: #B55514; }
+
+  /* ===== 02-Highlight & 03-Ranking (shared card styles) ===== */
+  .card-section { padding: 0 20px 53px; }
+  .card-row-border { border-bottom: 1px solid #eee; }
+  .card-thumb-td { padding: 20px 15px 20px 0; }
+  .card-thumb { width: 120px; height: 120px; display: block; object-fit: cover; }
+  .card-content-td { padding: 20px 0; }
+  .card-content-table { height: 120px; }
+  .card-title { font-size: 18px; font-weight: 500; color: #232333; line-height: 1.5; }
+  .card-title a { color: #232333; text-decoration: none; }
+  .card-title a:hover { text-decoration: underline; }
+  .card-read-more { font-size: 14px; }
+
+  /* ===== 03-Ranking specific ===== */
+  .ranking-thumb-td { padding: 15px 0; }
+  .ranking-number { padding: 15px 0; font-size: 42px; font-weight: bold; color: #388A48; line-height: 1; text-align: center; }
+  .ranking-content-td { padding: 15px 0 15px 10px; }
+
+  /* ===== Ads ===== */
+  .ads-cell { padding: 20px; text-align: center; }
+  .ad-spacer { padding-bottom: 15px; }
+  .ad-img { max-width: 100%; height: auto; display: block; }
+
+  /* ===== 04-Events & 05-Jobs (shared list styles) ===== */
+  .list-item { padding: 15px 0; border-bottom: 1px solid #ddd; }
+  .list-item-dark { padding: 15px 0; border-bottom: 1px solid #333; }
+  .list-item-last { padding: 15px 0; }
+  .list-date { font-size: 15px; color: #388A48; font-weight: bold; margin-bottom: 5px; }
+  .list-title { font-size: 17px; font-weight: bold; margin-bottom: 5px; }
+  .list-title a { color: #333; text-decoration: none; }
+  .list-title a:hover { text-decoration: underline; }
+  .list-org { font-size: 14px; color: #666; }
 
   /* ===== 06-Comment (推薦讀者回應) ===== */
-  .comment-section {
-    padding: 30px 0;
-    background-color: #fff;
-  }
-  .comment-quote {
-    font-size: 20px;
-    font-weight: 700;
-    color: #5B9D68;
-    line-height: 28px;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  .comment-source {
-    font-size: 16px;
-    font-weight: 700;
-    color: ${theme.colors.grayscale[20]};
-    line-height: 1.5;
-    text-decoration: underline;
-    margin-bottom: 15px;
-    text-align: center;
-  }
-  .comment-link {
-    text-align: center;
-  }
-  .comment-link a {
-    color: ${theme.colors.secondary[20]};
-    font-size: 16px;
-    font-weight: bold;
-    text-decoration: underline;
-  }
-  .comment-link a:hover {
-    color: ${theme.colors.secondary[0]};
+  .comment-cell { padding: 30px 20px; }
+  .comment-quote { font-size: 20px; font-weight: 700; color: #5B9D68; line-height: 28px; margin: 0 0 30px; text-align: center; }
+  .comment-source { font-size: 16px; font-weight: 700; color: #373740; line-height: 1.5; text-decoration: underline; margin: 0 0 15px; text-align: center; }
+  .comment-read-more { text-align: center; margin: 0; }
+  .comment-read-more a { color: #DD8346; font-size: 16px; font-weight: bold; text-decoration: underline; }
+  .comment-read-more a:hover { color: #B55514; }
+
+  /* ===== 07-Poll ===== */
+  .poll-cell { padding: 20px; }
+  .poll-title { font-size: 18px; font-weight: 500; color: #388A48; margin-bottom: 16px; }
+  .poll-desc { font-size: 14px; color: #232333; margin-bottom: 24px; line-height: 1.5; }
+  .poll-option { padding-bottom: 8px; }
+  .poll-vote-link { text-decoration: none; color: inherit; display: block; }
+  .poll-radio-td { padding-right: 12px; }
+  .poll-radio { width: 20px; height: 20px; border: 2px solid #A0A0A2; border-radius: 50%; background-color: #ffffff; }
+  .poll-bar-bg { background-color: #EAEAEA; border-radius: 4px; }
+  .poll-bar-fill { background-color: #CFEDD1; height: 25px; border-radius: 4px 0 0 4px; font-size: 0; line-height: 0; }
+  .poll-bar-label { height: 25px; padding: 0 8px; white-space: nowrap; }
+  .poll-emoji { width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 4px; }
+  .poll-text { font-size: 16px; line-height: 25px; color: #232333; vertical-align: middle; }
+
+  /* ===== 08-Referral ===== */
+  .referral-cell { padding: 20px; }
+  .referral-box { border: 2px solid #388A48; }
+  .referral-inner { padding: 25px 20px; text-align: center; }
+  .referral-title { font-size: 20px; font-weight: bold; color: #388A48; margin-bottom: 20px; }
+  .referral-desc { font-size: 15px; color: #333; margin: 0 0 25px; line-height: 1.6; }
+  .referral-highlight { color: #388A48; font-weight: bold; }
+  .referral-links { font-size: 15px; }
+  .referral-link { color: #388A48; display: block; margin: 8px 0; }
+
+  /* ===== 09-Footer ===== */
+  .footer-cell { padding: 30px 20px; text-align: center; }
+  .social-icons { margin-bottom: 20px; }
+  .social-icon-td { padding: 0 8px; }
+  .social-icon { width: 30px; height: 30px; display: block; }
+  .footer-text { font-size: 14px; color: #333; margin: 0 0 20px; line-height: 1.8; }
+  .footer-links { font-size: 15px; margin: 0 0 20px; }
+  .footer-link { color: #388A48; font-weight: bold; text-decoration: underline; }
+  .footer-divider { color: #388A48; }
+  .footer-copyright { font-size: 12px; color: #666; margin: 0; }
+
+  /* ===== Responsive ===== */
+  @media only screen and (max-width: 620px) {
+    .card-thumb { width: 90px !important; height: 90px !important; }
+    .ranking-number { width: 36px !important; font-size: 32px !important; }
   }
   `}
 `
@@ -666,83 +371,6 @@ const ErrorMessage = styled.div`
   font-size: 16px;
 `
 
-const NewsletterFooter = styled.footer`
-  background-color: #fff;
-  padding: 40px 16px;
-  text-align: center;
-  border-top: 1px solid #ccc;
-  margin-top: 40px;
-`
-
-const SocialLinks = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 24px;
-`
-
-const SocialLink = styled.a`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: #333;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.7;
-  }
-
-  svg {
-    width: 32px;
-    height: 32px;
-    fill: currentColor;
-  }
-`
-
-const FooterText = styled.p`
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 8px;
-  line-height: 1.6;
-`
-
-const FooterActions = styled.div`
-  margin: 32px 0;
-
-  a {
-    font-size: 18px;
-    font-weight: 500;
-    color: #2d7a4f;
-    text-decoration: underline;
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-
-  span {
-    color: #2d7a4f;
-    margin: 0 8px;
-  }
-`
-
-const Copyright = styled.p`
-  font-size: 14px;
-  color: #999;
-  margin: 0;
-`
-
-// Format date as yyyy/mm/dd
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}/${month}/${day}`
-}
-
 type PageProps = {
   headerData: HeaderContextData
   newsletter: NewsletterDetail | null
@@ -753,11 +381,6 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
 }) => {
   const router = useRouter()
   const pollRef = useRef<HTMLElement>(null)
-  const { siteConfigs } = useHeaderData()
-
-  // Get subscriber count from site configs (id: 2) 電子報訂閱人數
-  const subscriberCountConfig = siteConfigs?.find((config) => config.id === '2')
-  const subscriberCount = subscriberCountConfig?.content
 
   // Get vote, utm_source, and raw from query parameters
   const { vote, utm_source, raw } = router.query
@@ -801,34 +424,17 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
             priority
           />
         </Banner>
-        {subscriberCount && (
-          <ReaderCount>
-            你現在正與 {subscriberCount} 人一起閱讀環境新聞
-          </ReaderCount>
-        )}
-        <SendDate>{formatDate(newsletter.sendDate)}</SendDate>
-        <Title>{newsletter.title}</Title>
 
         {newsletter.standardHtml && (
           <NewsletterContent
             $raw={isRawMode}
-            dangerouslySetInnerHTML={{ __html: newsletter.standardHtml }}
+            dangerouslySetInnerHTML={{
+              __html: newsletter.standardHtml.includes('00-Header')
+                ? `<table role="presentation" class="outer-wrapper" width="100%" cellpadding="0" cellspacing="0" border="0">${newsletter.standardHtml}</table>`
+                : newsletter.standardHtml,
+            }}
           />
         )}
-
-        {/* <ReferralSection>
-          <ReferralTitle>你的推薦狀態</ReferralTitle>
-          <ReferralText>
-            你總共有 <strong>0</strong> 個推薦。邀請 <strong>1</strong>{' '}
-            個朋友訂閱來獲得點數。
-          </ReferralText>
-          <ReferralLinkWrapper>
-            <ReferralLink href="#">點擊此處邀請你的朋友訂閱！</ReferralLink>
-          </ReferralLinkWrapper>
-          <ReferralSubLinkWrapper>
-            <ReferralSubLink href="#">或查看集點狀態及獎勵。</ReferralSubLink>
-          </ReferralSubLinkWrapper>
-        </ReferralSection> */}
 
         {newsletter.poll && (
           <PostPoll
@@ -839,60 +445,6 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
             autoVote={shouldAutoVote ? voteOption : undefined}
           />
         )}
-
-        {/* <NewsletterFooter>
-          <SocialLinks>
-            <SocialLink
-              href={SOCIAL_LINKS.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-            >
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-              </svg>
-            </SocialLink>
-            <SocialLink
-              href={SOCIAL_LINKS.x}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="X"
-            >
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </SocialLink>
-            <SocialLink
-              href={SOCIAL_LINKS.line}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LINE"
-            >
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-              </svg>
-            </SocialLink>
-          </SocialLinks>
-          <FooterText>電子報由社團法人台灣環境資訊協會發行</FooterText>
-          <FooterText>對我們有任何疑問或指教歡迎利用以上連結連繫</FooterText>
-          <FooterActions>
-            <a href="#">更新資料</a>
-            <span>|</span>
-            <a href="#">退訂電子報</a>
-            <span>|</span>
-            <a
-              href="https://e-info.neticrm.tw/civicrm/contribute/transact?reset=1&id=9"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              我要捐款
-            </a>
-          </FooterActions>
-          <Copyright>
-            Copyright © {new Date().getFullYear()} Taiwan Environmental
-            Information Association, All rights reserved.
-          </Copyright>
-        </NewsletterFooter> */}
       </ContentWrapper>
     </PageWrapper>
   )
