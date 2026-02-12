@@ -125,8 +125,7 @@ query {
         id
         title
         publishTime
-        brief
-        contentApiData
+        contentPreview
         heroImage {
           resized {
             original
@@ -145,8 +144,7 @@ query {
         id
         title
         publishTime
-        brief
-        contentApiData
+        contentPreview
         heroImage {
           resized {
             original
@@ -195,20 +193,11 @@ interface SectionPost {
   id: string
   title: string
   publishTime: string  // ISO 8601 格式
-  brief: string | Record<string, unknown> | null
-  contentApiData: ContentApiDataBlock[] | null
+  contentPreview: string | null  // 純文字摘要
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
   } | null
-}
-
-interface ContentApiDataBlock {
-  id: string
-  type: string
-  content?: string[]
-  styles?: Record<string, unknown>
-  alignment?: string
 }
 ```
 
@@ -235,8 +224,7 @@ query ($postsPerSection: Int = 8) {
     id
     title
     publishTime
-    brief
-    contentApiData
+    contentPreview
     heroImage {
       resized { original, w480, w800 }
       resizedWebp { original, w480, w800 }
@@ -291,8 +279,7 @@ query ($postsPerTag: Int = 3) {
     id
     title
     publishTime
-    brief
-    contentApiData
+    contentPreview
     heroImage {
       resized { original, w480, w800 }
       resizedWebp { original, w480, w800 }
@@ -586,7 +573,7 @@ query {
       id
       title
       publishTime
-      brief
+      contentPreview
       heroImage {
         resized {
           original
@@ -626,7 +613,7 @@ interface TopicPost {
   id: string
   title: string
   publishTime: string
-  brief: string | Record<string, unknown> | null
+  contentPreview: string | null  // 純文字摘要
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
@@ -830,8 +817,7 @@ interface ResizedImages {
               "id": "238659",
               "title": "最新測試文章",
               "publishTime": "2025-11-23T00:00:00.000Z",
-              "brief": "文章摘要...",
-              "contentApiData": null,
+              "contentPreview": "文章摘要...",
               "heroImage": {
                 "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
                 "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://..." }
@@ -847,8 +833,7 @@ interface ResizedImages {
       "id": "238665",
       "title": "時事新聞 section 文章",
       "publishTime": "2026-01-25T16:00:00.000Z",
-      "brief": "...",
-      "contentApiData": null,
+      "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://..." }
@@ -860,8 +845,7 @@ interface ResizedImages {
       "id": "238618",
       "title": "專欄 section 文章",
       "publishTime": "2024-03-06T02:59:45.000Z",
-      "brief": "...",
-      "contentApiData": null,
+      "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
@@ -873,8 +857,7 @@ interface ResizedImages {
       "id": "238621",
       "title": "副刊 section 文章",
       "publishTime": "2024-03-06T02:20:10.000Z",
-      "brief": "...",
-      "contentApiData": null,
+      "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
@@ -886,8 +869,7 @@ interface ResizedImages {
       "id": "12345",
       "title": "綠色消費 tag 文章",
       "publishTime": "2025-01-15T00:00:00.000Z",
-      "brief": "...",
-      "contentApiData": null,
+      "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
@@ -957,7 +939,7 @@ interface ResizedImages {
           "id": "34567",
           "title": "專題文章標題",
           "publishTime": "2025-01-13T00:00:00.000Z",
-          "brief": "文章摘要...",
+          "contentPreview": "文章摘要...",
           "heroImage": {
             "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
             "resizedWebp": null
@@ -1101,6 +1083,12 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
 ---
 
 ## 變更記錄
+
+### 2026-02-12
+- **文章摘要欄位改用 `contentPreview`**
+  - 所有文章（SectionPost、TopicPost）的 `brief` + `contentApiData` 改為 `contentPreview`（純文字摘要）
+  - 移除 `ContentApiDataBlock` 型別定義
+  - 大幅減少 API payload（`brief` 為 Draft.js JSON、`contentApiData` 為完整內容區塊，改為輕量純文字）
 
 ### 2026-02-10
 - **綠色消費改為 tag-based 資料來源**
