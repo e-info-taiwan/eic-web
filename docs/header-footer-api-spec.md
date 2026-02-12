@@ -16,7 +16,7 @@
 
 - **Method**: `GET`
 - **Content-Type**: `application/json`
-- **Cache-Control**: 建議 `public, max-age=300` (5 分鐘，header/footer 資料變動較少)
+- **Cache-Control**: 建議 `public, max-age=60` (60 秒，與前端 in-memory cache TTL 一致)
 
 ---
 
@@ -33,7 +33,7 @@ interface HeaderFooterApiResponse {
   // 深度專題 (published + 有文章，取前 6 筆)
   topics: HeaderNavTopic[]
 
-  // 快訊跑馬燈 (category slug = "flashnews")
+  // 熱門話題跑馬燈 (category slug = "hottopic")
   newsBarPicks: NewsBarPick[]
 
   // 網站設定 (state = "active")
@@ -65,7 +65,7 @@ query {
     id
     slug
     name
-    categories(orderBy: { sortOrder: asc }) {
+    categories(orderBy: { sortOrder: asc }, take: 10) {
       id
       slug
       name
@@ -157,19 +157,19 @@ interface HeaderNavTopic {
 
 ---
 
-### 4. newsBarPicks (快訊跑馬燈)
+### 4. newsBarPicks (熱門話題跑馬燈)
 
-Header 快訊跑馬燈的內容，輕量版只包含標題與連結。
+Header 熱門話題跑馬燈的內容，輕量版只包含標題與連結。
 
 **查詢條件**:
-- Category slug: `"flashnews"`
+- Category slug: `"hottopic"`
 - 依 `sortOrder` 升冪排序
 
 **GraphQL 等效查詢**:
 ```graphql
 query {
   homepagePicks(
-    where: { category: { slug: { equals: "flashnews" } } }
+    where: { category: { slug: { equals: "hottopic" } } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -234,10 +234,13 @@ interface SiteConfig {
 ```
 
 **常用設定項目**:
-| name | 用途 | 使用欄位 |
-|------|------|----------|
-| 公益勸募字號 | Footer 顯示勸募許可字號 | `content` |
-| 捐款連結 | Header/Footer 捐款按鈕連結 | `link` |
+| id | name | 用途 | 前端使用欄位 |
+|----|------|------|------------|
+| `1` | 公益勸募字號 | Footer 顯示勸募許可字號 | `content` |
+| `2` | 電子報訂閱人數 | 顯示訂閱人數 | `content` |
+| `3` | 捐款連結 | Header/Footer 捐款按鈕連結 | `content` |
+
+> **注意**: 前端以 `config.id` 而非 `config.name` 來查找設定。捐款連結的 URL 存放在 `content` 欄位中（非 `link` 欄位）。
 
 ---
 
@@ -289,15 +292,22 @@ interface SiteConfig {
     {
       "id": "1",
       "name": "公益勸募字號",
-      "content": "衛部救字第1121363934號",
-      "link": null,
+      "content": "衛部救字第1141364365號",
+      "link": "",
       "state": "active"
     },
     {
       "id": "2",
+      "name": "電子報訂閱人數",
+      "content": "123284934",
+      "link": "",
+      "state": "active"
+    },
+    {
+      "id": "3",
       "name": "捐款連結",
-      "content": null,
-      "link": "https://e-info.neticrm.tw/civicrm/contribute/transact?reset=1&id=9",
+      "content": "https://e-info.neticrm.tw/civicrm/contribute/transact?reset=1&id=9",
+      "link": "",
       "state": "active"
     }
   ]
@@ -330,7 +340,7 @@ HTTP Status Codes:
 
 ## 效能建議
 
-1. **快取策略**: 建議在 CDN 層設定 5 分鐘快取（header/footer 資料變動較少）
+1. **快取策略**: 前端 in-memory cache TTL 為 60 秒，CDN 層可設定較長快取
 2. **資料大小**: Header/Footer API payload 約 5-10KB，遠小於 Homepage API
 3. **並行查詢**: 後端可使用 Promise.all 並行執行各個查詢
 4. **壓縮**: 啟用 gzip/brotli 壓縮
@@ -343,116 +353,63 @@ HTTP Status Codes:
 - **[header-footer-api-example.json](./header-footer-api-example.json)** - 從 dev 環境 GraphQL API 實際查詢產生的完整 response
 
 此檔案包含：
-- 4 個 sections（latestnews: 9 categories, critic: 2, column: 57, green: 3）
+- 5 個 sections（news: 9, opinion: 3, column: 10, supplement: 10, greenconsumption: 1）
 - 4 個 featuredTags
-- 4 個 topics（深度專題）
-- 3 個 newsBarPicks（快訊跑馬燈）
+- 6 個 topics（深度專題）
+- 3 個 newsBarPicks（熱門話題跑馬燈，category slug = "hottopic"）
 - 3 個 siteConfigs（公益勸募字號、電子報訂閱人數、捐款連結）
 
-檔案大小：約 12KB (474 行)
+> **注意**: categories 已套用 `take: 10` 限制（例如專欄實際有 50+ 個 categories，但只回傳前 10 個）。
+
+檔案大小：約 8KB (300 行)
 
 ---
 
-## 前端整合
+## 前端整合（已實作）
 
-### 現有架構
+### 架構概要
 
-目前前端已實作 GraphQL 查詢與 in-memory 快取機制：
+前端已實作 JSON API 優先、GraphQL fallback 的機制。
+
+**API Endpoint 設定**: 集中管理在 `packages/e-info/constants/config.ts`，透過 `HEADER_API_ENDPOINT` 匯出，依 `NEXT_PUBLIC_ENV` 切換環境。
+
+**快取與 Timeout 設定**: 集中管理在 `packages/e-info/constants/layout.ts`：
+- `CACHE_TTL_MS` = 60 秒 (in-memory cache TTL)
+- `API_TIMEOUT_MS` = 10 秒 (JSON API request timeout)
+- `HEALTH_CHECK_TIMEOUT_MS` = 5 秒 (health check timeout)
+
+### 資料流
+
+```
+fetchHeaderData()
+  ├─ 1. 檢查 in-memory cache (60 秒 TTL)
+  │     └─ 有效 → 直接回傳
+  ├─ 2. 嘗試 JSON API (HEADER_API_ENDPOINT, 10 秒 timeout)
+  │     └─ 成功 → 更新 cache，回傳
+  ├─ 3. Fallback: 嘗試 GraphQL (5 個並行查詢)
+  │     └─ 成功 → 更新 cache，回傳
+  └─ 4. 兩者皆失敗
+        ├─ 有過期 cache → 回傳過期 cache (stale)
+        └─ 無 cache → 回傳空資料結構 (不拋出錯誤)
+```
+
+### 完全失敗時的空資料結構
+
+當 JSON API 和 GraphQL 都失敗且無快取時，回傳空資料以避免頁面崩潰：
 
 ```typescript
-// packages/e-info/utils/header-data.ts
-const CACHE_TTL_MS = 60 * 1000  // 60 秒
-
-export async function fetchHeaderData(): Promise<HeaderContextData> {
-  // 1. 檢查快取是否有效
-  // 2. 若快取有效，直接回傳
-  // 3. 若快取過期，執行 5 個 GraphQL 查詢
-  // 4. 更新快取
+{
+  sections: [],
+  featuredTags: [],
+  topics: [],
+  newsBarPicks: [],
+  siteConfigs: [],
 }
 ```
 
-### 建議修改
+### Health Check
 
-修改 `fetchHeaderData()` 函數，採用 JSON API 優先、GraphQL fallback 的機制：
-
-```typescript
-// packages/e-info/utils/header-data.ts
-
-const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
-
-function getHeaderApiEndpoint(): string {
-  switch (ENV) {
-    case 'prod':
-      return 'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/header'
-    case 'dev':
-    default:
-      return 'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
-  }
-}
-
-async function fetchFromJsonApi(): Promise<HeaderContextData> {
-  const endpoint = getHeaderApiEndpoint()
-  const controller = new AbortController()
-  setTimeout(() => controller.abort(), 10000) // 10 秒 timeout
-
-  const response = await fetch(endpoint, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    signal: controller.signal,
-  })
-
-  if (!response.ok) {
-    throw new Error(`Header API returned status ${response.status}`)
-  }
-
-  return response.json()
-}
-
-async function fetchFromGraphQL(): Promise<HeaderContextData> {
-  // 現有的 5 個 GraphQL 查詢邏輯
-  const client = getGqlClient()
-  const [sectionsResult, tagsResult, ...] = await Promise.all([...])
-  return { sections, featuredTags, topics, newsBarPicks, siteConfigs }
-}
-
-export async function fetchHeaderData(): Promise<HeaderContextData> {
-  const now = Date.now()
-
-  // 快取檢查（同現有邏輯）
-  if (cachedHeaderData && now - cacheTimestamp < CACHE_TTL_MS) {
-    return cachedHeaderData
-  }
-
-  let data: HeaderContextData
-
-  try {
-    // 優先嘗試 JSON API
-    data = await fetchFromJsonApi()
-    console.log('[Header] Successfully fetched data from JSON API')
-  } catch (jsonApiError) {
-    // JSON API 失敗，fallback 到 GraphQL
-    console.warn('[Header] JSON API failed, falling back to GraphQL:', jsonApiError)
-
-    try {
-      data = await fetchFromGraphQL()
-      console.log('[Header] Successfully fetched data from GraphQL (fallback)')
-    } catch (graphqlError) {
-      // 兩個都失敗，嘗試回傳過期快取
-      if (cachedHeaderData) {
-        console.warn('[Header] Returning stale cached data due to fetch error')
-        return cachedHeaderData
-      }
-      throw graphqlError
-    }
-  }
-
-  // 更新快取
-  cachedHeaderData = data
-  cacheTimestamp = now
-
-  return data
-}
-```
+提供 `checkHeaderApiHealth()` 函數，使用 HEAD 請求檢查 JSON API 可用性（5 秒 timeout）。
 
 ### 相關程式碼位置
 
@@ -464,37 +421,27 @@ export async function fetchHeaderData(): Promise<HeaderContextData> {
 
 ---
 
-## 實作步驟
+## 實作進度
 
-### Phase 1: 後端實作 (CMS)
-
-1. 在 CMS 新增 `/api/header` endpoint
-2. 實作資料查詢邏輯（參考上述 GraphQL 查詢）
-3. 設定 Cache-Control headers
-4. 部署至 dev 環境測試
-
-### Phase 2: 前端整合
-
-1. 修改 `packages/e-info/utils/header-data.ts`
-   - 新增 `getHeaderApiEndpoint()` 函數
-   - 新增 `fetchFromJsonApi()` 函數
-   - 將現有 GraphQL 邏輯封裝為 `fetchFromGraphQL()` 函數
-   - 修改 `fetchHeaderData()` 採用 JSON API 優先機制
-
-2. 測試
-   - 驗證 JSON API 正常運作
-   - 驗證 fallback 機制（模擬 API 失敗）
-   - 驗證 stale cache 機制
-
-### Phase 3: 部署
-
-1. 部署 CMS API 至 prod
-2. 更新前端 endpoint 設定
-3. 監控 API 健康狀態
+| Phase | 狀態 | 說明 |
+|-------|------|------|
+| Phase 1: 後端 (CMS) | **已完成** (dev) | Dev 環境 `/api/header` endpoint 已上線 |
+| Phase 2: 前端整合 | **已完成** | JSON API 優先 + GraphQL fallback + health check |
+| Phase 3: 部署 | **待完成** | Prod 環境 endpoint 待確認（config.ts 中有 TODO 標記） |
 
 ---
 
 ## 變更記錄
+
+### 2026-02-12
+- 根據實際程式碼更新文件，修正多處規格與實作不一致
+- 修正 newsBarPicks category slug: `flashnews` → `hottopic`
+- 修正 sections GraphQL 查詢: 加入 `take: 10` 限制 categories 數量
+- 修正 siteConfigs: 捐款連結使用 `content` 欄位（非 `link`），補充 ID 對照表
+- 修正 siteConfigs response 範例: 加入電子報訂閱人數、修正捐款連結 ID 與欄位
+- 修正 Cache-Control 建議: 5 分鐘 → 60 秒（與前端 `CACHE_TTL_MS` 一致）
+- 更新前端整合章節: 反映已實作的架構（config.ts endpoint、layout.ts 常數、health check）
+- 更新實作步驟: 標記 Phase 1/2 已完成，Phase 3 待完成
 
 ### 2026-02-02
 - 初版文件建立
