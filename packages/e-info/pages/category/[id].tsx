@@ -188,6 +188,15 @@ const EmptyMessage = styled.div`
 
 const ColumnPageWrapper = styled.div`
   width: 100%;
+  padding-bottom: 24px;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    padding-bottom: 48px;
+  }
+
+  ${({ theme }) => theme.breakpoint.lg} {
+    padding-bottom: 60px;
+  }
 `
 
 const ColumnHeroSection = styled.div`

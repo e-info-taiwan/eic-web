@@ -63,6 +63,8 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
     font-weight: 500;
     text-align: left;
     margin-top: 12px;
+    color: ${({ theme }) => theme.colors.grayscale[0]};
+    transition: color 0.3s ease;
 
     // Display an ellipsis (...) for titles that exceed 4 lines
     display: -webkit-box;
@@ -71,9 +73,12 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
     overflow: hidden;
   }
 
+  &:hover .title {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
   .summary {
     margin-top: 24px;
-    margin-bottom: 24px;
 
     p {
       font-size: 16px;
@@ -81,6 +86,18 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
       line-height: 24px;
       letter-spacing: 0;
       color: ${({ theme }) => theme.colors.grayscale[20]};
+    }
+
+    ${({ theme }) => theme.breakpoint.xl} {
+      margin-top: 20px;
+    }
+  }
+
+  .tags {
+    margin-top: 24px;
+
+    ${({ theme }) => theme.breakpoint.xl} {
+      margin-top: 32px;
     }
   }
 
@@ -195,7 +212,11 @@ export default function ArticleListCard({
             <p>{summary}</p>
           </div>
         )}
-        {tags.length > 0 && <PostTag tags={tags} />}
+        {tags.length > 0 && (
+          <div className="tags">
+            <PostTag tags={tags} />
+          </div>
+        )}
       </TextWrapper>
     </CardContainer>
   )
