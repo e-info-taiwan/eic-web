@@ -357,35 +357,11 @@ export async function fetchHomepageData(
   let response: HomepageApiResponse
   let usedFallback = false
 
-  // 綠色消費 tag 資料始終從 GraphQL 獲取（JSON API 不含此資料）
-  const greenPromise = client
-    .query<{
-      greenMain: SectionPost[]
-      greenBuy: SectionPost[]
-      greenFood: SectionPost[]
-      greenClothing: SectionPost[]
-      greenLeisure: SectionPost[]
-    }>({
-      query: homepageGreenConsumptionPosts,
-      variables: { postsPerTag: 3 },
-    })
-    .catch(() => null)
-
   try {
-    // 優先嘗試 JSON API
+    // 優先嘗試 JSON API（已包含綠色消費 tag 資料）
     response = await fetchFromJsonApi()
     // eslint-disable-next-line no-console
     console.log('[Homepage] Successfully fetched data from JSON API')
-
-    // JSON API 不含綠色消費 tag 資料，從 GraphQL 補充
-    const greenResult = await greenPromise
-    if (greenResult) {
-      response.greenMain = greenResult.data?.greenMain || []
-      response.greenBuy = greenResult.data?.greenBuy || []
-      response.greenFood = greenResult.data?.greenFood || []
-      response.greenClothing = greenResult.data?.greenClothing || []
-      response.greenLeisure = greenResult.data?.greenLeisure || []
-    }
   } catch (jsonApiError) {
     // JSON API 失敗，fallback 到 GraphQL
     // eslint-disable-next-line no-console

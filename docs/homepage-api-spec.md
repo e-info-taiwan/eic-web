@@ -330,8 +330,8 @@ query ($postsPerTag: Int = 3) {
 ```
 
 **前端處理**:
-- 綠色消費 tag 資料始終從 GraphQL 獲取（JSON API 不含此資料時）
-- 前端在 `fetchHomepageData` 中會與主 API 請求並行查詢此資料
+- 綠色消費 tag 資料包含在 JSON API 中，與其他首頁資料一起獲取
+- 若 JSON API 失敗，fallback 到 GraphQL 時會一併查詢此資料
 - 預設顯示 `greenMain`（綠色消費 tag），點擊子 tab 切換到對應 tag 文章
 
 **TypeScript 型別**:
@@ -1068,10 +1068,9 @@ HTTP Status Codes:
 
 前端已實作 JSON API 優先、GraphQL fallback 的機制：
 
-1. 優先嘗試呼叫 `/api/homepage` JSON API
+1. 優先嘗試呼叫 `/api/homepage` JSON API（已包含所有首頁資料，含綠色消費 tag 文章）
 2. 若失敗（網路錯誤、500 錯誤等），自動 fallback 到 GraphQL 查詢
 3. Fallback 機制確保服務可用性
-4. **綠色消費 tag 資料**始終從 GraphQL 獲取（與主 API 請求並行），因為 JSON API 不含此資料
 
 ### In-Memory 快取機制
 
@@ -1108,7 +1107,7 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
   - 綠色消費區塊不再使用 section/category 結構，改為以 tag 名稱篩選文章
   - 新增 `homepageGreenConsumptionPosts` GraphQL 查詢，使用 5 個 alias 一次查詢 5 個 tag 的文章
   - Tag 名稱：綠色消費（主）、買前必讀、食材食品、衣著紡織、休閒娛樂
-  - 前端始終從 GraphQL 獲取此資料（與主 API 請求並行），JSON API 不含此資料
+  - JSON API 已包含此資料，前端直接使用；若 JSON API 失敗，fallback 到 GraphQL 時會一併查詢
 - **Section IDs 更新**
   - sections 查詢的 Section IDs 從 `['3', '4', '5', '6']` 改為 `['1', '2', '3']`
   - 移除綠色消費 section（ID 5/6），改用 tag-based 查詢
