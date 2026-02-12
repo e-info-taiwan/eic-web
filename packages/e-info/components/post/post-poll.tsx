@@ -3,6 +3,7 @@ import Lottie from 'lottie-react'
 import { forwardRef, useContext, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
+import type { TurnstileWidgetHandle } from '~/components/shared/turnstile-widget'
 import TurnstileWidget from '~/components/shared/turnstile-widget'
 import AuthContext from '~/contexts/auth-context'
 import {
@@ -344,6 +345,7 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
   const [turnstileToken, setTurnstileToken] = useState<string | undefined>(
     undefined
   )
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null)
 
   // Query poll results counts
   const { data: countsData, refetch: refetchCounts } =
@@ -639,6 +641,11 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
     setTurnstileToken(token)
   }
 
+  const handleTurnstileExpire = () => {
+    setTurnstileToken(undefined)
+    turnstileRef.current?.reset()
+  }
+
   return (
     <PollWrapper ref={combinedRef} $hideBorderTop={hideBorderTop}>
       <PollTitle>心情互動</PollTitle>
@@ -680,7 +687,11 @@ const PostPoll = forwardRef<HTMLElement, PostPollProps>(function PostPoll(
       {/* Show Turnstile widget for anonymous users who haven't voted */}
       {!isLoggedIn && !hasVoted && (
         <TurnstileContainer>
-          <TurnstileWidget onVerify={handleTurnstileVerify} />
+          <TurnstileWidget
+            ref={turnstileRef}
+            onVerify={handleTurnstileVerify}
+            onExpire={handleTurnstileExpire}
+          />
         </TurnstileContainer>
       )}
     </PollWrapper>

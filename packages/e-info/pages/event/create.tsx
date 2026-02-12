@@ -2,10 +2,11 @@
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement, ReactNode } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { TurnstileWidgetHandle } from '~/components/shared/turnstile-widget'
 import TurnstileWidget from '~/components/shared/turnstile-widget'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -427,9 +428,15 @@ const CreateEventPage: NextPageWithLayout = () => {
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null)
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token)
+  }, [])
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null)
+    turnstileRef.current?.reset()
   }, [])
 
   const handleInputChange = (
@@ -570,6 +577,8 @@ const CreateEventPage: NextPageWithLayout = () => {
       if (result.success && result.photoId) {
         setPhotoId(result.photoId)
         setUploadSuccess(true)
+        // Reset Turnstile to get a fresh token for form submission
+        turnstileRef.current?.reset()
         if (errors.image) {
           setErrors((prev) => ({ ...prev, image: undefined }))
         }
@@ -871,7 +880,11 @@ const CreateEventPage: NextPageWithLayout = () => {
             {errors.content && <ErrorMessage>{errors.content}</ErrorMessage>}
           </FormGroup>
 
-          <TurnstileWidget onVerify={handleTurnstileVerify} />
+          <TurnstileWidget
+            ref={turnstileRef}
+            onVerify={handleTurnstileVerify}
+            onExpire={handleTurnstileExpire}
+          />
 
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? '送出中...' : '送出'}

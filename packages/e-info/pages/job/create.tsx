@@ -2,10 +2,11 @@
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { TurnstileWidgetHandle } from '~/components/shared/turnstile-widget'
 import TurnstileWidget from '~/components/shared/turnstile-widget'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -312,9 +313,15 @@ const CreateJobPage: NextPageWithLayout = () => {
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null)
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token)
+  }, [])
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null)
+    turnstileRef.current?.reset()
   }, [])
 
   const handleInputChange = (
@@ -588,7 +595,11 @@ const CreateJobPage: NextPageWithLayout = () => {
             )}
           </FormGroup>
 
-          <TurnstileWidget onVerify={handleTurnstileVerify} />
+          <TurnstileWidget
+            ref={turnstileRef}
+            onVerify={handleTurnstileVerify}
+            onExpire={handleTurnstileExpire}
+          />
 
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? '送出中...' : '送出'}
