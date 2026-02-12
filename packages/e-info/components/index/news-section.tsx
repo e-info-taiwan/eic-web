@@ -9,7 +9,7 @@ import {
 } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { SectionInfo } from '~/utils/homepage-api'
-import { getBriefText, mergePostsWithFeatured } from '~/utils/post'
+import { mergePostsWithFeatured } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -503,27 +503,22 @@ const NewsSection = ({ section }: NewsSectionProps) => {
         {/* A - Sidebar */}
         <Sidebar>
           {sidebarPosts.length > 0 ? (
-            sidebarPosts.map((post, index) => {
-              // Only show brief for the first sidebar post
-              const briefText =
-                index === 0
-                  ? getBriefText(post.brief, post.contentApiData, 40)
-                  : ''
-              return (
-                <Link
-                  key={post.id}
-                  href={`/node/${post.id}`}
-                  passHref
-                  legacyBehavior
-                >
-                  <NewsItem>
-                    <NewsDate>{formatDate(post.publishTime)}</NewsDate>
-                    <NewsTitle>{post.title}</NewsTitle>
-                    {briefText && <NewsBrief>{briefText}</NewsBrief>}
-                  </NewsItem>
-                </Link>
-              )
-            })
+            sidebarPosts.map((post, index) => (
+              <Link
+                key={post.id}
+                href={`/node/${post.id}`}
+                passHref
+                legacyBehavior
+              >
+                <NewsItem>
+                  <NewsDate>{formatDate(post.publishTime)}</NewsDate>
+                  <NewsTitle>{post.title}</NewsTitle>
+                  {index === 0 && post.contentPreview && (
+                    <NewsBrief>{post.contentPreview}</NewsBrief>
+                  )}
+                </NewsItem>
+              </Link>
+            ))
           ) : (
             <EmptyMessage>目前沒有文章</EmptyMessage>
           )}
@@ -555,18 +550,8 @@ const NewsSection = ({ section }: NewsSectionProps) => {
                   {formatDate(featuredPost.publishTime)}
                 </FeaturedDate>
                 <FeaturedTitle>{featuredPost.title}</FeaturedTitle>
-                {getBriefText(
-                  featuredPost.brief,
-                  featuredPost.contentApiData,
-                  40
-                ) && (
-                  <FeaturedBrief>
-                    {getBriefText(
-                      featuredPost.brief,
-                      featuredPost.contentApiData,
-                      40
-                    )}
-                  </FeaturedBrief>
+                {featuredPost.contentPreview && (
+                  <FeaturedBrief>{featuredPost.contentPreview}</FeaturedBrief>
                 )}
               </FeaturedContent>
             </FeaturedArticle>

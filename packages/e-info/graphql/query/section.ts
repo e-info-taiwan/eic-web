@@ -10,20 +10,11 @@ import {
 } from '~/graphql/fragments/resized-images'
 import type { ResizedImages } from '~/types/common'
 
-export type ContentApiDataBlock = {
-  id: string
-  type: string
-  content?: string[]
-  styles?: Record<string, unknown>
-  alignment?: string
-}
-
 export type SectionPost = {
   id: string
   title: string
   publishTime: string
-  brief: string | Record<string, unknown> | null
-  contentApiData: ContentApiDataBlock[] | null
+  contentPreview?: string | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
@@ -69,8 +60,7 @@ export type TopicPost = {
   id: string
   title: string
   publishTime: string
-  brief: string | Record<string, unknown> | null
-  contentApiData: ContentApiDataBlock[] | null
+  contentPreview?: string | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
@@ -205,7 +195,7 @@ export const topicsWithPosts = gql`
         id
         title
         publishTime
-        brief
+        contentPreview
         heroImage {
           resized {
             ...ResizedImagesCardField
@@ -294,8 +284,7 @@ export const topicById = gql`
         id
         title
         publishTime
-        brief
-        contentApiData
+        contentPreview
         heroImage {
           resized {
             ...ResizedImagesCardField
@@ -360,8 +349,7 @@ export const sectionWithCategoriesAndPosts = gql`
           id
           title
           publishTime
-          brief
-          contentApiData
+          contentPreview
           heroImage {
             resized {
               ...ResizedImagesCardField
@@ -407,8 +395,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
           id
           title
           publishTime
-          brief
-          contentApiData
+          contentPreview
           heroImage {
             resized {
               ...ResizedImagesCardField
@@ -422,8 +409,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
           id
           title
           publishTime
-          brief
-          contentApiData
+          contentPreview
           heroImage {
             resized {
               ...ResizedImagesCardField
@@ -451,8 +437,7 @@ export const homepageSectionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -470,8 +455,7 @@ export const homepageSectionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -489,8 +473,7 @@ export const homepageSectionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -516,8 +499,7 @@ export const homepageGreenConsumptionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -535,8 +517,7 @@ export const homepageGreenConsumptionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -554,8 +535,7 @@ export const homepageGreenConsumptionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -573,8 +553,7 @@ export const homepageGreenConsumptionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -592,8 +571,7 @@ export const homepageGreenConsumptionPosts = gql`
       id
       title
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -867,8 +845,7 @@ export type CategoryPostForListing = {
   title: string
   style: string
   publishTime: string
-  brief: string | Record<string, unknown> | null
-  contentApiData: ContentApiDataBlock[] | null
+  contentPreview: string | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
@@ -914,8 +891,7 @@ export const sectionPostsForListing = gql`
       title
       style
       publishTime
-      brief
-      contentApiData
+      contentPreview
       heroImage {
         resized {
           ...ResizedImagesCardField
@@ -997,8 +973,7 @@ export const sectionPageBySlug = gql`
           id
           title
           publishTime
-          brief
-          contentApiData
+          contentPreview
           heroImage {
             resized {
               ...ResizedImagesCardField
@@ -1012,8 +987,7 @@ export const sectionPageBySlug = gql`
           id
           title
           publishTime
-          brief
-          contentApiData
+          contentPreview
           heroImage {
             resized {
               ...ResizedImagesCardField
@@ -1079,8 +1053,7 @@ export const categoryPostsForListing = gql`
         title
         style
         publishTime
-        brief
-        contentApiData
+        contentPreview
         heroImage {
           resized {
             ...ResizedImagesCardField

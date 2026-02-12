@@ -6,7 +6,6 @@ import styled from 'styled-components'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { Topic } from '~/graphql/query/section'
-import { getBriefText } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -591,10 +590,8 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
                     <ArticleItem>
                       <ArticleContent>
                         <ArticleTitle>{post.title}</ArticleTitle>
-                        {getBriefText(post.brief, null, 100) && (
-                          <ArticleExcerpt>
-                            {getBriefText(post.brief, null, 100)}
-                          </ArticleExcerpt>
+                        {post.contentPreview && (
+                          <ArticleExcerpt>{post.contentPreview}</ArticleExcerpt>
                         )}
                       </ArticleContent>
                       <ArticleImageWrapper>

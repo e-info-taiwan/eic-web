@@ -21,7 +21,7 @@ type FavoriteWithPost = {
     id: string
     title: string
     publishTime: string
-    brief: string | Record<string, unknown> | null
+    contentPreview: string | null
     heroImage: {
       resized: { original: string; w480: string; w800: string } | null
       resizedWebp: { original: string; w480: string; w800: string } | null
@@ -54,7 +54,7 @@ const GET_MEMBER_FAVORITES = `
         id
         title
         publishTime
-        brief
+        contentPreview
         heroImage {
           resized {
             original

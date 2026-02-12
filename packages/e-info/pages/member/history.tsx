@@ -17,7 +17,6 @@ import {
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
-import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -427,7 +426,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
                     </ArticleDate>
                     <ArticleTitle>{history.post?.title}</ArticleTitle>
                     <ArticleSummary>
-                      {getBriefText(history.post?.brief, null, 150)}
+                      {history.post?.contentPreview}
                     </ArticleSummary>
                     <TagList>
                       {history.post?.tags.map((tag) => (

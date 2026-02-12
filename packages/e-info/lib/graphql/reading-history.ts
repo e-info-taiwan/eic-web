@@ -8,7 +8,7 @@ export type ReadingHistoryPost = {
   id: string
   title: string
   publishTime: string
-  brief: string | Record<string, unknown> | null
+  contentPreview: string | null
   heroImage: {
     resized: {
       original: string

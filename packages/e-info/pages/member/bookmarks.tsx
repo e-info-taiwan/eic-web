@@ -17,7 +17,6 @@ import {
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
-import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -418,7 +417,7 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
                     </ArticleDate>
                     <ArticleTitle>{favorite.post.title}</ArticleTitle>
                     <ArticleSummary>
-                      {getBriefText(favorite.post.brief, null, 150)}
+                      {favorite.post.contentPreview}
                     </ArticleSummary>
                     <TagList>
                       {favorite.post.tags.map((tag) => (

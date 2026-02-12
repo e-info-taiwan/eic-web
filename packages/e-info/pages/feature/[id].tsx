@@ -20,7 +20,6 @@ import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
-import { getBriefText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
@@ -516,9 +515,7 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
                 </ArticleImageWrapper>
                 <ArticleContent>
                   <ArticleTitle>{post.title}</ArticleTitle>
-                  <ArticleExcerpt>
-                    {getBriefText(post.brief, post.contentApiData, 150)}
-                  </ArticleExcerpt>
+                  <ArticleExcerpt>{post.contentPreview}</ArticleExcerpt>
                 </ArticleContent>
               </ArticleCard>
             </Link>
