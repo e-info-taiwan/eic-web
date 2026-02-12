@@ -68,9 +68,9 @@ interface HomepageApiResponse {
 
 ```typescript
 interface ResizedImagesCard {
-  original: string | null
-  w480: string | null
-  w800: string | null
+  original: string
+  w480: string
+  w800: string
 }
 ```
 
@@ -195,7 +195,7 @@ interface SectionPost {
   id: string
   title: string
   publishTime: string  // ISO 8601 格式
-  brief: string | object | null
+  brief: string | Record<string, unknown> | null
   contentApiData: ContentApiDataBlock[] | null
   heroImage: {
     resized: ResizedImagesCard | null
@@ -553,9 +553,10 @@ interface HomepagePickCarousel {
 - **圖片尺寸**: Card (original, w480, w800)
 
 **排序與顯示邏輯** (前端處理):
-1. `isPinned = true` 的 topics 優先顯示，依 `sortOrder` 升冪排序
-2. `isPinned = false` 的 topics，依 `sortOrder` 升冪排序
-3. 總共取前 4 筆顯示
+1. 先過濾掉沒有文章的 topics (`posts.length > 0`)
+2. `isPinned = true` 的 topics 優先顯示，依 `sortOrder` 升冪排序
+3. `isPinned = false` 的 topics，依 `sortOrder` 升冪排序
+4. 總共取前 4 筆顯示
 
 **GraphQL 等效查詢**:
 ```graphql
@@ -625,7 +626,7 @@ interface TopicPost {
   id: string
   title: string
   publishTime: string
-  brief: string | object | null
+  brief: string | Record<string, unknown> | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
@@ -784,9 +785,9 @@ query {
 
 ```typescript
 interface ResizedImagesCard {
-  original: string | null
-  w480: string | null
-  w800: string | null
+  original: string
+  w480: string
+  w800: string
 }
 ```
 
