@@ -280,6 +280,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
   const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const isLoadingMoreRef = useRef(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -319,8 +320,9 @@ const MemberHistoryPage: NextPageWithLayout = () => {
   }, [loading, firebaseUser, router])
 
   const handleLoadMore = useCallback(async () => {
-    if (!member?.id || !firebaseUser?.uid || isLoadingMore || !hasMore) return
+    if (!member?.id || !firebaseUser?.uid || isLoadingMoreRef.current) return
 
+    isLoadingMoreRef.current = true
     setIsLoadingMore(true)
     try {
       const moreHistories = await getReadingHistory(
@@ -336,21 +338,15 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     } catch (err) {
       console.error('Failed to load more reading history:', err)
     } finally {
+      isLoadingMoreRef.current = false
       setIsLoadingMore(false)
     }
-  }, [
-    member?.id,
-    firebaseUser?.uid,
-    isLoadingMore,
-    hasMore,
-    histories.length,
-    totalCount,
-  ])
+  }, [member?.id, firebaseUser?.uid, histories.length, totalCount])
 
   // Infinite scroll: observe sentinel to trigger load more
   useEffect(() => {
     const sentinel = sentinelRef.current
-    if (!sentinel || !hasMore) return
+    if (!sentinel) return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -363,7 +359,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     observer.observe(sentinel)
 
     return () => observer.disconnect()
-  }, [hasMore, handleLoadMore])
+  }, [handleLoadMore])
 
   // Don't render if not authenticated
   if (!loading && !firebaseUser) {
