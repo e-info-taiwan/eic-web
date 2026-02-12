@@ -388,8 +388,8 @@ const NewsletterDetailPage: NextPageWithLayout<PageProps> = ({
   const voteOption = vote ? parseInt(vote as string, 10) : undefined
   const isValidVote = voteOption && voteOption >= 1 && voteOption <= 5
 
-  // Only auto-vote when both vote AND utm_source=email are present
-  const shouldAutoVote = isValidVote && utm_source === 'email'
+  // Only auto-vote when both vote AND utm_source are present
+  const shouldAutoVote = isValidVote && !!utm_source
 
   // Auto-scroll to poll section when vote parameter exists
   useEffect(() => {
