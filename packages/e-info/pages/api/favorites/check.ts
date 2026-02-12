@@ -15,7 +15,7 @@ type RequestBody = {
 
 // Query to verify member owns this firebaseId
 const VERIFY_MEMBER_OWNERSHIP = `
-  query VerifyMemberOwnership($memberId: ID!, $firebaseId: String!) {
+  query VerifyMemberOwnership($memberId: ID!) {
     member(where: { id: $memberId }) {
       id
       firebaseId
@@ -76,7 +76,7 @@ export default async function handler(
     // Verify the memberId belongs to this firebaseId
     const ownershipResult = await serverGraphQL<{
       member: { id: string; firebaseId: string } | null
-    }>(VERIFY_MEMBER_OWNERSHIP, { memberId, firebaseId })
+    }>(VERIFY_MEMBER_OWNERSHIP, { memberId })
 
     if (ownershipResult.error) {
       console.error(
