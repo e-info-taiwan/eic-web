@@ -22,6 +22,8 @@ import IconMember from '~/public/icons/member.svg'
 import IconSearch from '~/public/icons/search.svg'
 import IconX from '~/public/icons/x.svg'
 import loadingAnimation from '~/public/lottie/loading.json'
+import { sendDonationPV } from '~/utils/donation-pv'
+
 // Styled Components
 const HeaderContainer = styled.header<{ $isHidden?: boolean }>`
   background-color: ${({ theme }) => theme.colors.grayscale[100]};
@@ -1020,6 +1022,7 @@ const Header = () => {
                     href={donationLink}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => sendDonationPV('header')}
                   >
                     捐款支持
                   </ActionButton>
@@ -1073,6 +1076,7 @@ const Header = () => {
                 href={donationLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => sendDonationPV('header')}
               >
                 捐款支持
               </ActionButton>
@@ -1156,6 +1160,7 @@ const Header = () => {
                 href={donationLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => sendDonationPV('header')}
               >
                 捐款支持
               </ActionButton>

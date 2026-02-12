@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import type { Donation } from '~/graphql/query/donation'
+import { sendDonationPV } from '~/utils/donation-pv'
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.primary[95]};
@@ -90,7 +91,12 @@ export default function PostDonation({
       )}
       {description && <Description>{description}</Description>}
       {donationUrl && (
-        <DonateButton href={donationUrl} target="_blank" rel="noopener">
+        <DonateButton
+          href={donationUrl}
+          target="_blank"
+          rel="noopener"
+          onClick={() => sendDonationPV('article_footer')}
+        >
           前往捐款
         </DonateButton>
       )}

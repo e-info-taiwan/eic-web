@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 
 import type { Donation } from '~/graphql/query/donation'
+import { sendDonationPV } from '~/utils/donation-pv'
 import * as gtag from '~/utils/gtag'
 
 // Modal overlay
@@ -142,6 +143,7 @@ const DonationModal = ({ isOpen, onClose, donation }: DonationModalProps) => {
   const handleCTAClick = () => {
     // Track donation click as conversion
     gtag.sendConversion('donation_complete', donation?.donationUrl || undefined)
+    sendDonationPV('homepage_popup')
     // Close modal when CTA is clicked
     onClose()
   }

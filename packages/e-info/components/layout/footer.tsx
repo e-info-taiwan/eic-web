@@ -6,6 +6,7 @@ import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { SOCIAL_LINKS } from '~/constants/social'
 import { useHeaderData } from '~/contexts/header-context'
 import LogoEIC from '~/public/eic-logo.svg'
+import { sendDonationPV } from '~/utils/donation-pv'
 
 // Styled Components
 const FooterContainer = styled.footer`
@@ -290,6 +291,7 @@ const Footer = () => {
                 href={donationLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => sendDonationPV('footer')}
               >
                 捐款支持
               </Button>
