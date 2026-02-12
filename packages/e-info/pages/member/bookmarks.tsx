@@ -349,21 +349,12 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
     }
   }
 
-  // Show loading state
-  if (loading || initialLoading) {
-    return (
-      <PageWrapper>
-        <ContentWrapper>
-          <LoadingWrapper>載入中...</LoadingWrapper>
-        </ContentWrapper>
-      </PageWrapper>
-    )
-  }
-
   // Don't render if not authenticated
-  if (!firebaseUser) {
+  if (!loading && !firebaseUser) {
     return null
   }
+
+  const isContentLoading = loading || initialLoading
 
   return (
     <PageWrapper>
@@ -396,7 +387,9 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
 
           <PageTitle>收藏文章</PageTitle>
 
-          {favorites.length === 0 ? (
+          {isContentLoading ? (
+            <LoadingWrapper>載入中...</LoadingWrapper>
+          ) : favorites.length === 0 ? (
             <EmptyMessage>目前沒有收藏文章</EmptyMessage>
           ) : (
             <>

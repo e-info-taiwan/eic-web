@@ -358,21 +358,12 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     }
   }
 
-  // Show loading state
-  if (loading || initialLoading) {
-    return (
-      <PageWrapper>
-        <ContentWrapper>
-          <LoadingWrapper>載入中...</LoadingWrapper>
-        </ContentWrapper>
-      </PageWrapper>
-    )
-  }
-
   // Don't render if not authenticated
-  if (!firebaseUser) {
+  if (!loading && !firebaseUser) {
     return null
   }
+
+  const isContentLoading = loading || initialLoading
 
   return (
     <PageWrapper>
@@ -405,7 +396,9 @@ const MemberHistoryPage: NextPageWithLayout = () => {
 
           <PageTitle>閱讀紀錄</PageTitle>
 
-          {histories.length === 0 ? (
+          {isContentLoading ? (
+            <LoadingWrapper>載入中...</LoadingWrapper>
+          ) : histories.length === 0 ? (
             <EmptyMessage>目前沒有閱讀紀錄</EmptyMessage>
           ) : (
             <>
