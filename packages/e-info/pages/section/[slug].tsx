@@ -39,7 +39,11 @@ import IconForward from '~/public/icons/arrow_forward.svg'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
-import { mergePostsWithFeatured, postConvertFunc } from '~/utils/post'
+import {
+  formatPostDate,
+  mergePostsWithFeatured,
+  postConvertFunc,
+} from '~/utils/post'
 
 // ========== Shared Styled Components ==========
 
@@ -672,16 +676,6 @@ const MobileReadMoreLink = styled(Link)`
 
 // ========== Helper Functions ==========
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  return `${year}/${month}/${day} ${hours}:${minutes}`
-}
-
 function generatePaginationItems(
   currentPage: number,
   totalPages: number
@@ -775,7 +769,9 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
                 }}
               />
             </LargeCardImageWrapper>
-            <LargeCardDate>{formatDate(largePost.publishTime)}</LargeCardDate>
+            <LargeCardDate>
+              {formatPostDate(largePost.publishTime)}
+            </LargeCardDate>
             <LargeCardTitle>{largePost.title}</LargeCardTitle>
           </LargeCard>
         </Link>
@@ -800,7 +796,9 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
                 />
               </SmallCardImageWrapper>
               <SmallCardContent>
-                <SmallCardDate>{formatDate(post.publishTime)}</SmallCardDate>
+                <SmallCardDate>
+                  {formatPostDate(post.publishTime)}
+                </SmallCardDate>
                 <SmallCardTitle>{post.title}</SmallCardTitle>
               </SmallCardContent>
             </SmallCard>

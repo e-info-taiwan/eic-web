@@ -10,13 +10,11 @@ import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { useAuth } from '~/hooks/useAuth'
 import type { ReadingHistoryWithPost } from '~/lib/graphql/reading-history'
-import {
-  getReadingHistory,
-  getReadingHistoryCount,
-} from '~/lib/graphql/reading-history'
+import { getReadingHistory } from '~/lib/graphql/reading-history'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { formatPostDate } from '~/utils/post'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -241,22 +239,6 @@ const sidebarItems = [
 
 const ITEMS_PER_PAGE = 18
 
-// Helper function to format date
-const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return ''
-  try {
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${year}/${month}/${day} ${hours}:${minutes}`
-  } catch {
-    return ''
-  }
-}
-
 // Helper function to get image URL from reading history post
 const getImageUrl = (history: ReadingHistoryWithPost): string => {
   const heroImage = history.post?.heroImage
@@ -277,7 +259,6 @@ const MemberHistoryPage: NextPageWithLayout = () => {
   const { firebaseUser, member, loading } = useAuth()
 
   const [histories, setHistories] = useState<ReadingHistoryWithPost[]>([])
-  const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const isLoadingMoreRef = useRef(false)
@@ -290,15 +271,16 @@ const MemberHistoryPage: NextPageWithLayout = () => {
 
     setInitialLoading(true)
     try {
-      const [data, count] = await Promise.all([
-        getReadingHistory(member.id, firebaseUser.uid, ITEMS_PER_PAGE, 0),
-        getReadingHistoryCount(member.id),
-      ])
+      const { items, total } = await getReadingHistory(
+        member.id,
+        firebaseUser.uid,
+        ITEMS_PER_PAGE,
+        0
+      )
       // Filter out histories with null posts (deleted posts)
-      const validHistories = data.filter((h) => h.post !== null)
+      const validHistories = items.filter((h) => h.post !== null)
       setHistories(validHistories)
-      setTotalCount(count)
-      setHasMore(validHistories.length < count)
+      setHasMore(validHistories.length < total)
     } catch (err) {
       console.error('Failed to fetch reading history:', err)
     } finally {
@@ -325,7 +307,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     isLoadingMoreRef.current = true
     setIsLoadingMore(true)
     try {
-      const moreHistories = await getReadingHistory(
+      const { items: moreHistories, total } = await getReadingHistory(
         member.id,
         firebaseUser.uid,
         ITEMS_PER_PAGE,
@@ -334,14 +316,14 @@ const MemberHistoryPage: NextPageWithLayout = () => {
       // Filter out histories with null posts
       const validHistories = moreHistories.filter((h) => h.post !== null)
       setHistories((prev) => [...prev, ...validHistories])
-      setHasMore(histories.length + validHistories.length < totalCount)
+      setHasMore(histories.length + validHistories.length < total)
     } catch (err) {
       console.error('Failed to load more reading history:', err)
     } finally {
       isLoadingMoreRef.current = false
       setIsLoadingMore(false)
     }
-  }, [member?.id, firebaseUser?.uid, histories.length, totalCount])
+  }, [member?.id, firebaseUser?.uid, histories.length])
 
   // Infinite scroll: observe sentinel to trigger load more
   useEffect(() => {
@@ -359,7 +341,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
     observer.observe(sentinel)
 
     return () => observer.disconnect()
-  }, [handleLoadMore])
+  }, [handleLoadMore, hasMore])
 
   // Don't render if not authenticated
   if (!loading && !firebaseUser) {
@@ -418,7 +400,9 @@ const MemberHistoryPage: NextPageWithLayout = () => {
                       />
                     </ArticleImage>
                     <ArticleDate>
-                      {formatDate(history.post?.publishTime)}
+                      {history.post?.publishTime
+                        ? formatPostDate(history.post.publishTime)
+                        : ''}
                     </ArticleDate>
                     <ArticleTitle>{history.post?.title}</ArticleTitle>
                     <ArticleSummary>

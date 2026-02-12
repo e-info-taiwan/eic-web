@@ -17,6 +17,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { formatPostDate } from '~/utils/post'
 
 const PageWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
@@ -315,22 +316,6 @@ const Divider = styled.hr`
   }
 `
 
-// Helper function to format date
-const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return ''
-  try {
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${year}/${month}/${day} ${hours}:${minutes}`
-  } catch {
-    return ''
-  }
-}
-
 // Helper function to get image URL from topic (with fallback to default image)
 const getTopicImageUrl = (topic: Topic): string => {
   const resized = topic.heroImage?.resized
@@ -359,7 +344,7 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
   const renderFeaturedArticle = (topic: Topic, index: number) => {
     const topicHref = `/feature/${topic.id}`
     const topicImage = getTopicImageUrl(topic)
-    const topicDate = formatDate(topic.updatedAt)
+    const topicDate = topic.updatedAt ? formatPostDate(topic.updatedAt) : ''
 
     return (
       <FeaturedSection key={topic.id}>
@@ -416,7 +401,7 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
                 post.heroImage?.resized?.w480 ||
                 post.heroImage?.resized?.original ||
                 DEFAULT_POST_IMAGE_PATH
-              const postDate = formatDate(post.publishTime)
+              const postDate = formatPostDate(post.publishTime)
 
               return (
                 <Link key={post.id} href={postHref} passHref legacyBehavior>

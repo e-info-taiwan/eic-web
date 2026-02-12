@@ -10,13 +10,11 @@ import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { useAuth } from '~/hooks/useAuth'
 import type { FavoriteWithPost } from '~/lib/graphql/member'
-import {
-  getMemberFavorites,
-  getMemberFavoritesCount,
-} from '~/lib/graphql/member'
+import { getMemberFavorites } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { formatPostDate } from '~/utils/post'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -241,22 +239,6 @@ const sidebarItems = [
 
 const ITEMS_PER_PAGE = 18
 
-// Helper function to format date
-const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return ''
-  try {
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${year}/${month}/${day} ${hours}:${minutes}`
-  } catch {
-    return ''
-  }
-}
-
 // Helper function to get image URL from favorite post
 const getImageUrl = (favorite: FavoriteWithPost): string => {
   const heroImage = favorite.post.heroImage
@@ -277,7 +259,6 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
   const { firebaseUser, member, loading } = useAuth()
 
   const [favorites, setFavorites] = useState<FavoriteWithPost[]>([])
-  const [totalCount, setTotalCount] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const isLoadingMoreRef = useRef(false)
@@ -290,13 +271,14 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
 
     setInitialLoading(true)
     try {
-      const [data, count] = await Promise.all([
-        getMemberFavorites(member.id, firebaseUser.uid, ITEMS_PER_PAGE, 0),
-        getMemberFavoritesCount(member.id),
-      ])
-      setFavorites(data)
-      setTotalCount(count)
-      setHasMore(data.length < count)
+      const { items, total } = await getMemberFavorites(
+        member.id,
+        firebaseUser.uid,
+        ITEMS_PER_PAGE,
+        0
+      )
+      setFavorites(items)
+      setHasMore(items.length < total)
     } catch (err) {
       console.error('Failed to fetch favorites:', err)
     } finally {
@@ -323,21 +305,21 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
     isLoadingMoreRef.current = true
     setIsLoadingMore(true)
     try {
-      const moreFavorites = await getMemberFavorites(
+      const { items: moreFavorites, total } = await getMemberFavorites(
         member.id,
         firebaseUser.uid,
         ITEMS_PER_PAGE,
         favorites.length
       )
       setFavorites((prev) => [...prev, ...moreFavorites])
-      setHasMore(favorites.length + moreFavorites.length < totalCount)
+      setHasMore(favorites.length + moreFavorites.length < total)
     } catch (err) {
       console.error('Failed to load more favorites:', err)
     } finally {
       isLoadingMoreRef.current = false
       setIsLoadingMore(false)
     }
-  }, [member?.id, firebaseUser?.uid, favorites.length, totalCount])
+  }, [member?.id, firebaseUser?.uid, favorites.length])
 
   // Infinite scroll: observe sentinel to trigger load more
   useEffect(() => {
@@ -414,7 +396,7 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
                       />
                     </ArticleImage>
                     <ArticleDate>
-                      {formatDate(favorite.post.publishTime)}
+                      {formatPostDate(favorite.post.publishTime)}
                     </ArticleDate>
                     <ArticleTitle>{favorite.post.title}</ArticleTitle>
                     <ArticleSummary>

@@ -493,12 +493,17 @@ export const removeFavorite = async (
  * Get member's favorites with full post data
  * Uses API route with Firebase token verification
  */
+export type FavoritesResult = {
+  items: FavoriteWithPost[]
+  total: number
+}
+
 export const getMemberFavorites = async (
   memberId: string,
   firebaseId: string,
   take?: number,
   skip?: number
-): Promise<FavoriteWithPost[]> => {
+): Promise<FavoritesResult> => {
   const idToken = await getIdToken()
 
   try {
@@ -525,13 +530,16 @@ export const getMemberFavorites = async (
 
     if (!response.ok || !result.success) {
       console.error('getMemberFavorites error:', result.error)
-      return []
+      return { items: [], total: 0 }
     }
 
-    return result.favorites || []
+    return {
+      items: result.favorites || [],
+      total: result.total ?? 0,
+    }
   } catch (error) {
     console.error('getMemberFavorites error:', error)
-    return []
+    return { items: [], total: 0 }
   }
 }
 

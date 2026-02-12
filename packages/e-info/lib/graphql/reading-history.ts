@@ -45,12 +45,17 @@ const COUNT_READING_HISTORY = gql`
  * Get member's reading history with full post data
  * Uses API route with Firebase token verification
  */
+export type ReadingHistoryResult = {
+  items: ReadingHistoryWithPost[]
+  total: number
+}
+
 export const getReadingHistory = async (
   memberId: string,
   firebaseId: string,
   take?: number,
   skip: number = 0
-): Promise<ReadingHistoryWithPost[]> => {
+): Promise<ReadingHistoryResult> => {
   const idToken = await getIdToken()
 
   try {
@@ -77,13 +82,16 @@ export const getReadingHistory = async (
 
     if (!response.ok || !result.success) {
       console.error('getReadingHistory error:', result.error)
-      return []
+      return { items: [], total: 0 }
     }
 
-    return result.readingHistories || []
+    return {
+      items: result.readingHistories || [],
+      total: result.total ?? 0,
+    }
   } catch (error) {
     console.error('getReadingHistory error:', error)
-    return []
+    return { items: [], total: 0 }
   }
 }
 
