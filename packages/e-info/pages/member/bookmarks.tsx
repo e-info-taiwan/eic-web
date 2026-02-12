@@ -2,7 +2,7 @@ import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
@@ -215,25 +215,6 @@ const Tag = styled.li`
   padding: 2px 10px;
 `
 
-const LoadMoreButton = styled.button`
-  display: block;
-  margin: 40px auto 0;
-  padding: 12px 32px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.grayscale[40]};
-  background-color: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.grayscale[60]};
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.grayscale[95]};
-  }
-`
-
 const LoadingWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -258,7 +239,7 @@ const sidebarItems = [
   { label: '通知', href: '/member/notifications' },
 ]
 
-const ITEMS_PER_PAGE = 9
+const ITEMS_PER_PAGE = 18
 
 // Helper function to format date
 const formatDate = (dateString: string | undefined): string => {
@@ -300,6 +281,7 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
   const [hasMore, setHasMore] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
   // Fetch favorites when member is available
   const fetchFavorites = useCallback(async () => {
@@ -334,8 +316,8 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
     }
   }, [loading, firebaseUser, router])
 
-  const handleLoadMore = async () => {
-    if (!member?.id || !firebaseUser?.uid || isLoadingMore) return
+  const handleLoadMore = useCallback(async () => {
+    if (!member?.id || !firebaseUser?.uid || isLoadingMore || !hasMore) return
 
     setIsLoadingMore(true)
     try {
@@ -352,7 +334,32 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
     } finally {
       setIsLoadingMore(false)
     }
-  }
+  }, [
+    member?.id,
+    firebaseUser?.uid,
+    isLoadingMore,
+    hasMore,
+    favorites.length,
+    totalCount,
+  ])
+
+  // Infinite scroll: observe sentinel to trigger load more
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel || !hasMore) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+    observer.observe(sentinel)
+
+    return () => observer.disconnect()
+  }, [hasMore, handleLoadMore])
 
   // Don't render if not authenticated
   if (!loading && !firebaseUser) {
@@ -427,12 +434,9 @@ const MemberBookmarksPage: NextPageWithLayout = () => {
               </ArticleGrid>
 
               {hasMore && (
-                <LoadMoreButton
-                  onClick={handleLoadMore}
-                  disabled={isLoadingMore}
-                >
-                  {isLoadingMore ? '載入中...' : 'load more'}
-                </LoadMoreButton>
+                <LoadingWrapper ref={sentinelRef}>
+                  {isLoadingMore && '載入中...'}
+                </LoadingWrapper>
               )}
             </>
           )}
