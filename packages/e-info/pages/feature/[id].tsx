@@ -612,6 +612,21 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       }
     }
 
+    // Redirect if topic has a valid redirect URL
+    if (topic.redirectUrl) {
+      try {
+        new URL(topic.redirectUrl)
+        return {
+          redirect: {
+            destination: topic.redirectUrl,
+            permanent: false,
+          },
+        }
+      } catch {
+        // Invalid URL, ignore and render normally
+      }
+    }
+
     return {
       props: {
         headerData,

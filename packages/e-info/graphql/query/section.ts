@@ -1,7 +1,6 @@
 import gql from 'graphql-tag'
 
 import type { ResizedImagesCard } from '~/graphql/fragments/post'
-import { publishedStateFilter } from '~/utils/preview'
 import {
   resizeImagesCardFragment,
   resizeImagesFragment,
@@ -9,6 +8,7 @@ import {
   resizeWebpImagesFragment,
 } from '~/graphql/fragments/resized-images'
 import type { ResizedImages } from '~/types/common'
+import { publishedStateFilter } from '~/utils/preview'
 
 export type SectionPost = {
   id: string
@@ -88,6 +88,7 @@ export type Topic = {
   isPinned: boolean
   sortOrder: number | null
   updatedAt?: string
+  redirectUrl?: string | null
 }
 
 // Popular Search Keywords (from GA4 analytics JSON)
@@ -301,6 +302,7 @@ export const topicById = gql`
       authorInfo
       isPinned
       updatedAt
+      redirectUrl
     }
   }
   ${resizeImagesCardFragment}
