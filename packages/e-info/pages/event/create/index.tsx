@@ -633,7 +633,7 @@ const CreateEventPage: NextPageWithLayout = () => {
       const result = await response.json()
 
       if (result.success) {
-        router.push('/submission-complete')
+        router.push('/event/create/done')
       } else {
         alert(result.error || '送出失敗，請重試')
       }

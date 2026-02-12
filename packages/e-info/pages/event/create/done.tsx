@@ -1,12 +1,18 @@
-// 表單完成頁面
+// 活動建立完成頁面
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
+import { fetchHeaderData } from '~/utils/header-data'
+
+type PageProps = {
+  headerData: HeaderContextData
+}
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -86,13 +92,6 @@ const SubMessage = styled.p`
   }
 `
 
-const Placeholder = styled.div`
-  font-size: 16px;
-  line-height: 1.8;
-  color: ${({ theme }) => theme.colors.grayscale[60]};
-  margin: 0 0 16px 0;
-`
-
 const Button = styled.button`
   padding: 12px 40px;
   font-size: 16px;
@@ -110,13 +109,13 @@ const Button = styled.button`
   }
 `
 
-const SubmissionCompletePage: NextPageWithLayout = () => {
+const EventCreateDonePage: NextPageWithLayout<PageProps> = () => {
   return (
     <PageWrapper>
       <ContentWrapper>
         <SectionTitle>
           <AccentBar />
-          <Title>建立環境徵才</Title>
+          <Title>建立環境活動</Title>
         </SectionTitle>
 
         <MessageSection>
@@ -124,7 +123,7 @@ const SubmissionCompletePage: NextPageWithLayout = () => {
           <SubMessage>
             編輯會在後台CMS中進行審核
             <br />
-            OOOOO（文字待補）
+            審核通過後將予以發佈
           </SubMessage>
         </MessageSection>
 
@@ -136,20 +135,29 @@ const SubmissionCompletePage: NextPageWithLayout = () => {
   )
 }
 
-SubmissionCompletePage.getLayout = function getLayout(page: ReactElement) {
+EventCreateDonePage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral title="提交完成 - 環境資訊中心" description="表單提交完成">
+    <LayoutGeneral
+      title="活動提交完成 - 環境資訊中心"
+      description="活動建立完成"
+    >
       {page}
     </LayoutGeneral>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async ({
+  res,
+}) => {
   setCacheControl(res)
 
+  const headerData = await fetchHeaderData()
+
   return {
-    props: {},
+    props: {
+      headerData,
+    },
   }
 }
 
-export default SubmissionCompletePage
+export default EventCreateDonePage
