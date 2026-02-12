@@ -409,7 +409,7 @@ const CreateEventPage: NextPageWithLayout = () => {
     organizer: '',
     contactMethod: 'email',
     contactValue: '',
-    eventType: 'physical',
+    eventType: 'course_camp_workshop',
     startDate: '',
     endDate: '',
     locationMethod: '實體',
@@ -755,8 +755,13 @@ const CreateEventPage: NextPageWithLayout = () => {
               value={formData.eventType}
               onChange={handleInputChange}
             >
-              <option value="physical">實體活動</option>
-              <option value="online">線上活動</option>
+              <option value="course_camp_workshop">課程/營隊/工作坊</option>
+              <option value="lecture_forum">演講/座談會</option>
+              <option value="seminar">研討會</option>
+              <option value="exhibition_preview">展覽/節目預告</option>
+              <option value="action_participation">行動參與</option>
+              <option value="call_for_entries">徵件</option>
+              <option value="other">其他</option>
             </EventTypeSelect>
           </FormGroup>
 

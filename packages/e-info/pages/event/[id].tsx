@@ -321,9 +321,15 @@ const getHeroImageUrl = (event: Event): string => {
 
 // Map event type to Chinese display name
 const EVENT_TYPE_MAP: Record<string, string> = {
+  course_camp_workshop: '課程/營隊/工作坊',
+  lecture_forum: '演講/座談會',
+  seminar: '研討會',
+  exhibition_preview: '展覽/節目預告',
+  action_participation: '行動參與',
+  call_for_entries: '徵件',
+  other: '其他',
+  // Legacy value for backward compatibility
   physical: '實體活動',
-  online: '線上活動',
-  hybrid: '混合式活動',
 }
 
 const getEventTypeLabel = (eventType?: string): string => {
