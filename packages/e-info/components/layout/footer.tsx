@@ -253,11 +253,13 @@ const Footer = () => {
 
   const navigationData = [
     [
+      { label: '環境徵才', href: '/job' },
+      { label: '活動', href: '/event' },
       { label: '關於我們', href: '/about' },
       { label: '合作媒體', href: '/media-partners' },
-      { label: '編輯室自律公約', href: '/editorial-guidelines' },
     ],
     [
+      { label: '編輯室自律公約', href: '/editorial-guidelines' },
       { label: '網站授權條款', href: '/copyright' },
       { label: '常見問題', href: '/faq' },
       { label: '獲獎紀錄', href: '/awards' },
