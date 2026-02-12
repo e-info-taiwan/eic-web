@@ -142,6 +142,10 @@ const ArticleCard = styled.a`
   display: block;
   text-decoration: none;
   cursor: pointer;
+
+  &:hover h3 {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
 `
 
 const ArticleImage = styled.div`
@@ -177,6 +181,7 @@ const ArticleTitle = styled.h3`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color 0.3s ease;
 `
 
 const ArticleSummary = styled.p`
