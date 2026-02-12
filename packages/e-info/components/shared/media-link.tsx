@@ -1,6 +1,6 @@
 import NextLink from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 
 import { SHARE_URL } from '~/constants/social'
 import { useAuth } from '~/hooks/useAuth'
@@ -38,10 +38,27 @@ const MediaLinkWrapper = styled.ul<{ className: string }>`
   }
 `
 
-const BookmarkButton = styled.button<{ $isActive: boolean }>`
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
+
+const BookmarkButton = styled.button<{
+  $isActive: boolean
+  $isLoading: boolean
+}>`
   svg path {
     fill: ${({ $isActive }) => ($isActive ? '#2d7a4f' : 'black')};
   }
+
+  ${({ $isLoading }) =>
+    $isLoading &&
+    css`
+      svg {
+        animation: ${spin} 0.8s linear infinite;
+        opacity: 0.5;
+      }
+    `}
 `
 
 type ExternalLinkItem = {
@@ -65,7 +82,7 @@ export default function MediaLinkList({
   const [isFavorited, setIsFavorited] = useState(false)
   const [favoriteId, setFavoriteId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const { member, firebaseUser } = useAuth()
+  const { member, firebaseUser, loading: authLoading } = useAuth()
 
   useEffect(() => {
     setHref(() => window.location.href)
@@ -122,6 +139,9 @@ export default function MediaLinkList({
   const handleBookmarkClick = useCallback(async () => {
     gtag.sendEvent('post', 'click', 'post-bookmark')
 
+    // Wait if auth state is still loading
+    if (authLoading) return
+
     // Check if user is logged in
     if (!member) {
       alert('請先登入才能收藏文章')
@@ -164,7 +184,15 @@ export default function MediaLinkList({
     } finally {
       setIsLoading(false)
     }
-  }, [member, firebaseUser, postId, isFavorited, favoriteId, isLoading])
+  }, [
+    member,
+    firebaseUser,
+    postId,
+    isFavorited,
+    favoriteId,
+    isLoading,
+    authLoading,
+  ])
 
   return (
     <MediaLinkWrapper className={className}>
@@ -174,7 +202,8 @@ export default function MediaLinkList({
           aria-label={isFavorited ? '取消收藏' : '加入收藏'}
           onClick={handleBookmarkClick}
           $isActive={isFavorited}
-          disabled={isLoading}
+          $isLoading={isLoading || authLoading}
+          disabled={isLoading || authLoading}
         >
           {isFavorited ? <IconBookmarkFilled /> : <IconBookmark />}
         </BookmarkButton>
