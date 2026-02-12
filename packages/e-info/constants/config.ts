@@ -53,9 +53,9 @@ switch (ENV) {
     PREVIEW_API_ENDPOINT =
       'https://eic-web-preview-prod-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
-      'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/homepage' // TODO: Update when prod endpoint is ready
+      'https://storage.googleapis.com/statics-e-info-prod/json/homepage.json'
     HEADER_API_ENDPOINT =
-      'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/header' // TODO: Update when prod endpoint is ready
+      'https://storage.googleapis.com/statics-e-info-prod/json/header.json' // TODO: Update when prod endpoint is ready
     POPULAR_SEARCH_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/ga/popular_search.json'
     FIREBASE_CONFIG = {
@@ -75,9 +75,9 @@ switch (ENV) {
     PREVIEW_API_ENDPOINT =
       'https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
-      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage'
+      'https://storage.googleapis.com/statics-e-info-dev/json/homepage.json'
     HEADER_API_ENDPOINT =
-      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header'
+      'https://storage.googleapis.com/statics-e-info-dev/json/header.json' // TODO: Update when prod endpoint is ready
     POPULAR_SEARCH_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
     FIREBASE_CONFIG = {
