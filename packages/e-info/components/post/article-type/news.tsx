@@ -217,7 +217,7 @@ export default function News({
 
             <TwoColumnSection>
               <LeftColumn>
-                <PostCredit postData={postData} />
+                <PostCredit postData={postData} hideBookmark={isRedirectPage} />
                 <SideIndex
                   rawContentBlock={postData?.content}
                   currentIndex={currentSideIndex}

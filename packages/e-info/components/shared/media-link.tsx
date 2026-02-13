@@ -72,11 +72,13 @@ type ExternalLinkItem = {
 type MediaLinkListProps = {
   className?: string
   postId?: string
+  hideBookmark?: boolean
 }
 
 export default function MediaLinkList({
   className = 'media-link-list',
   postId,
+  hideBookmark = false,
 }: MediaLinkListProps): JSX.Element {
   const [href, setHref] = useState('')
   const [isFavorited, setIsFavorited] = useState(false)
@@ -196,18 +198,20 @@ export default function MediaLinkList({
 
   return (
     <MediaLinkWrapper className={className}>
-      <li key="Bookmark">
-        <BookmarkButton
-          type="button"
-          aria-label={isFavorited ? '取消收藏' : '加入收藏'}
-          onClick={handleBookmarkClick}
-          $isActive={isFavorited}
-          $isLoading={isLoading || authLoading}
-          disabled={isLoading || authLoading}
-        >
-          {isFavorited ? <IconBookmarkFilled /> : <IconBookmark />}
-        </BookmarkButton>
-      </li>
+      {!hideBookmark && (
+        <li key="Bookmark">
+          <BookmarkButton
+            type="button"
+            aria-label={isFavorited ? '取消收藏' : '加入收藏'}
+            onClick={handleBookmarkClick}
+            $isActive={isFavorited}
+            $isLoading={isLoading || authLoading}
+            disabled={isLoading || authLoading}
+          >
+            {isFavorited ? <IconBookmarkFilled /> : <IconBookmark />}
+          </BookmarkButton>
+        </li>
+      )}
       {externalLinks.map((item) => {
         return (
           <li key={item.name} aria-label={item.alt} onClick={item.click}>

@@ -89,6 +89,7 @@ const SectionPath = styled.div`
 
 type PostProps = {
   postData: PostDetail
+  hideBookmark?: boolean
 }
 
 // Helper function to render author list with links
@@ -109,7 +110,10 @@ function renderAuthorList(authors: Author[], label: string) {
   )
 }
 
-export default function PostCredit({ postData }: PostProps): JSX.Element {
+export default function PostCredit({
+  postData,
+  hideBookmark = false,
+}: PostProps): JSX.Element {
   const reporters = postData?.reporters ?? []
   const translators = postData?.translators ?? []
   const reviewers = postData?.reviewers ?? []
@@ -174,7 +178,7 @@ export default function PostCredit({ postData }: PostProps): JSX.Element {
       </TagSection>
 
       <SnsLinksWrapper>
-        <MediaLinkList postId={postData?.id} />
+        <MediaLinkList postId={postData?.id} hideBookmark={hideBookmark} />
       </SnsLinksWrapper>
     </PostCreditWrapper>
   )

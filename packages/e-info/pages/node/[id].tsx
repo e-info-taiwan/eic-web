@@ -35,8 +35,8 @@ const Post: NextPageWithLayout<PageProps> = ({
 }) => {
   const router = useRouter()
 
-  // Track reading history for logged-in members
-  useReadingTracker(postData?.id)
+  // Track reading history for logged-in members (skip for redirect pages)
+  useReadingTracker(isRedirectPage ? undefined : postData?.id)
 
   // Track article pageview with category/section dimensions
   // Only track once per article load (when id or path changes)
