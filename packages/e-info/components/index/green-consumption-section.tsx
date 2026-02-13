@@ -47,6 +47,7 @@ const Header = styled.div`
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     padding-left: 78px;
     justify-content: normal;
+    flex-wrap: nowrap;
   }
 `
 
@@ -105,8 +106,6 @@ const CategoryTabs = styled.div`
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     width: 100%;
     justify-content: center;
-    overflow-x: visible;
-    flex-wrap: nowrap;
   }
 
   // Desktop
@@ -114,6 +113,9 @@ const CategoryTabs = styled.div`
     width: auto;
     margin-top: 0;
     margin-left: 28px;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
   }
 `
 
