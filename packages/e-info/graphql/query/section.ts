@@ -67,11 +67,6 @@ export type TopicPost = {
   } | null
 }
 
-export type TopicTag = {
-  id: string
-  name: string
-}
-
 export type Topic = {
   id: string
   title: string
@@ -83,7 +78,6 @@ export type Topic = {
   } | null
   postsCount: number
   posts: TopicPost[]
-  tags?: TopicTag[]
   authorInfo?: string | null
   isPinned: boolean
   sortOrder: number | null
@@ -294,10 +288,6 @@ export const topicById = gql`
             ...ResizedWebPImagesCardField
           }
         }
-      }
-      tags {
-        id
-        name
       }
       authorInfo
       isPinned

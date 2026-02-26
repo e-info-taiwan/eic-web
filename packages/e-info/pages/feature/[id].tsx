@@ -109,52 +109,6 @@ const AuthorInfo = styled.div`
   margin-bottom: 20px;
 `
 
-const TagSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-bottom: 48px;
-`
-
-const TagRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0;
-  flex-wrap: wrap;
-  justify-content: center;
-`
-
-const TagLabel = styled.span`
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.secondary[20]};
-  white-space: nowrap;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 16px;
-  }
-`
-
-const TagList = styled.div`
-  display: flex;
-  gap: 0;
-  flex-wrap: wrap;
-  justify-content: center;
-`
-
-const Tag = styled.span`
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.secondary[20]};
-  white-space: nowrap;
-
-  ${({ theme }) => theme.breakpoint.md} {
-    font-size: 16px;
-  }
-`
-
 const ArticleList = styled.div`
   display: flex;
   flex-direction: column;
@@ -449,9 +403,6 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
   // Get hero image URL
   const heroImageUrl = getHeroImageUrl(topic)
 
-  // Get tags as array of names
-  const tagNames = topic.tags?.map((tag) => tag.name) || []
-
   return (
     <PageWrapper>
       {/* Hero Section */}
@@ -474,23 +425,6 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
 
           {/* Author Info */}
           {topic.authorInfo && <AuthorInfo>{topic.authorInfo}</AuthorInfo>}
-
-          {/* Tags */}
-          {tagNames.length > 0 && (
-            <TagSection>
-              <TagRow>
-                <TagLabel>標籤：</TagLabel>
-                <TagList>
-                  {tagNames.map((tagName, index) => (
-                    <Tag key={index}>
-                      {tagName}
-                      {index < tagNames.length - 1 && '、'}
-                    </Tag>
-                  ))}
-                </TagList>
-              </TagRow>
-            </TagSection>
-          )}
         </TopicHeader>
 
         {/* Article List */}

@@ -12,7 +12,6 @@ export type Job = {
   startDate?: string
   endDate?: string
   isApproved?: boolean
-  showOnHomepage?: boolean
   sortOrder?: number
   state?: string
   createdAt?: string
