@@ -187,6 +187,43 @@ const NewsletterContent = styled.div<{ $raw?: boolean }>`
     margin-right: 8px;
   }
 
+  /* Weekly review sections (焦點新聞回顧, 精彩專文回顧) */
+  .item-list h3 {
+    background-color: #2d7a4f;
+    color: #fff;
+    padding: 8px 15px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .item-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+  }
+
+  .item-list ul li {
+    padding: 8px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .item-list ul li:last-child {
+    border-bottom: none;
+  }
+
+  .item-list ul li a {
+    color: #333;
+    text-decoration: none;
+  }
+
+  .item-list ul li a:hover {
+    color: #2d7a4f;
+  }
+
   /* View header for special sections */
   .view-header {
     margin-top: 15px;
