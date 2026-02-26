@@ -60,6 +60,7 @@ const TurnstileWidget = forwardRef<TurnstileWidgetHandle, Props>(
 
         const id = window.turnstile.render(containerRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
+          theme: 'light',
           callback: (token: string) => onVerifyRef.current(token),
           'expired-callback': () => onExpireRef.current?.(),
           'error-callback': () => onErrorRef.current?.(),
