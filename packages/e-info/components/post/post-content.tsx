@@ -1,4 +1,5 @@
 import { Eic } from '@eic-web/draft-renderer'
+import type { RawDraftContentState } from 'draft-js'
 import { useEffect, useMemo, useRef } from 'react'
 import styled, { css } from 'styled-components'
 
@@ -404,7 +405,11 @@ export default function PostContent({
             {typeof postData?.citations === 'string' ? (
               <div dangerouslySetInnerHTML={{ __html: postData.citations }} />
             ) : (
-              <DraftRenderer rawContentBlock={postData?.citations} />
+              <DraftRenderer
+                rawContentBlock={
+                  postData?.citations as unknown as RawDraftContentState
+                }
+              />
             )}
           </div>
         </Citation>

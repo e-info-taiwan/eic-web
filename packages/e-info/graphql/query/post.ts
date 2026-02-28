@@ -113,7 +113,7 @@ export type PostDetail = Override<
     brief: any // JSON type for draft-js content
     briefApiData: any // JSON type for API format
     contentApiData: any // JSON type for API format
-    citations: string | null
+    citations: string | Record<string, unknown> | null
     attachments: Attachment[]
     poll: Poll | null
     ad: PostAd | null
