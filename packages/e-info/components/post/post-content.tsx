@@ -227,9 +227,12 @@ const Citation = styled.article`
     a {
       color: ${({ theme }) => theme.colors.primary[20]};
       text-decoration: underline;
+      border-bottom: none;
+      padding-bottom: 0;
 
       &:hover {
         color: ${({ theme }) => theme.colors.primary[0]};
+        border-bottom: none;
       }
     }
   }
