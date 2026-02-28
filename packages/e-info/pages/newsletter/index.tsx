@@ -242,7 +242,10 @@ const CalendarCell = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 200px;
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    min-height: 200px;
+  }
 `
 
 const NewsletterCard = styled(Link)`
@@ -397,15 +400,6 @@ type NewsletterMap = {
   [date: string]: Newsletter
 }
 
-// Format date as YYYY/MM/DD
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}/${month}/${day}`
-}
-
 type PageProps = {
   headerData: HeaderContextData
   initialYear: number
@@ -460,7 +454,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   const daysInMonth = new Date(year, month, 0).getDate()
 
   // Generate calendar cells with newsletter mapped to correct day of week
-  const calendarCells: { newsletter?: Newsletter }[] = []
+  const calendarCells: { day?: number; newsletter?: Newsletter }[] = []
 
   // Add empty cells for days before the first day of the month
   for (let i = 0; i < firstDayOfMonth; i++) {
@@ -471,6 +465,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   for (let day = 1; day <= daysInMonth; day++) {
     const dateKey = `${year}-${month}-${day}`
     calendarCells.push({
+      day,
       newsletter: newsletterMap[dateKey],
     })
   }
@@ -673,14 +668,53 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
           )}
 
           {/* Desktop: Calendar grid with weekday headers */}
-          {newsletters.length > 0 && (
-            <DesktopCalendarGrid>
-              {WEEKDAYS.map((day) => (
-                <WeekdayHeader key={day}>週{day}</WeekdayHeader>
-              ))}
+          <DesktopCalendarGrid>
+            {WEEKDAYS.map((day) => (
+              <WeekdayHeader key={day}>週{day}</WeekdayHeader>
+            ))}
 
-              {calendarCells.map((cell, index) => (
-                <CalendarCell key={index}>
+            {calendarCells.map((cell, index) => (
+              <CalendarCell key={index}>
+                {cell.day !== undefined && (
+                  <>
+                    <CardDate>
+                      {month}/{cell.day}
+                    </CardDate>
+                    {cell.newsletter && (
+                      <NewsletterCard
+                        href={`/newsletter/${cell.newsletter.id}`}
+                        onClick={handleNewsletterClick}
+                      >
+                        <ThumbnailWrapper>
+                          <Image
+                            src={
+                              cell.newsletter.heroImage?.resized?.w480 ||
+                              cell.newsletter.heroImage?.resized?.original ||
+                              DEFAULT_POST_IMAGE_PATH
+                            }
+                            alt={cell.newsletter.title || '電子報'}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                          />
+                        </ThumbnailWrapper>
+                        <CardTitle>{cell.newsletter.title}</CardTitle>
+                      </NewsletterCard>
+                    )}
+                  </>
+                )}
+              </CalendarCell>
+            ))}
+          </DesktopCalendarGrid>
+
+          {/* Mobile/Tablet: Grid showing all days */}
+          <MobileTabletGrid>
+            {calendarCells
+              .filter((cell) => cell.day !== undefined)
+              .map((cell) => (
+                <CalendarCell key={cell.day}>
+                  <CardDate>
+                    {month}/{cell.day}
+                  </CardDate>
                   {cell.newsletter && (
                     <NewsletterCard
                       href={`/newsletter/${cell.newsletter.id}`}
@@ -698,41 +732,11 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                           style={{ objectFit: 'cover' }}
                         />
                       </ThumbnailWrapper>
-                      <CardDate>
-                        {formatDate(cell.newsletter.sendDate)}
-                      </CardDate>
                       <CardTitle>{cell.newsletter.title}</CardTitle>
                     </NewsletterCard>
                   )}
                 </CalendarCell>
               ))}
-            </DesktopCalendarGrid>
-          )}
-
-          {/* Mobile/Tablet: Simple grid without empty cells */}
-          <MobileTabletGrid>
-            {newsletters.map((newsletter) => (
-              <NewsletterCard
-                key={newsletter.id}
-                href={`/newsletter/${newsletter.id}`}
-                onClick={handleNewsletterClick}
-              >
-                <ThumbnailWrapper>
-                  <Image
-                    src={
-                      newsletter.heroImage?.resized?.w480 ||
-                      newsletter.heroImage?.resized?.original ||
-                      DEFAULT_POST_IMAGE_PATH
-                    }
-                    alt={newsletter.title || '電子報'}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                </ThumbnailWrapper>
-                <CardDate>{formatDate(newsletter.sendDate)}</CardDate>
-                <CardTitle>{newsletter.title}</CardTitle>
-              </NewsletterCard>
-            ))}
           </MobileTabletGrid>
 
           {newsletters.length === 0 && !loading && (
