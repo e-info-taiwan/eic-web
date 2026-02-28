@@ -48,7 +48,6 @@ const SlideShowImage = styled.figure`
 
   ${({ theme }) => theme.breakpoint.xl} {
     flex: 1 0 calc((100% - ${SpacingBetweenSlideImages * 2}px) / 3);
-    max-width: calc((100% - ${SpacingBetweenSlideImages * 2}px) / 3);
 
     &:hover {
       cursor: pointer;

@@ -42,10 +42,10 @@ var SlideShowBlockWrapper = _styledComponents["default"].div.withConfig({
 var SlideShowImage = _styledComponents["default"].figure.withConfig({
   displayName: "slideshow-block__SlideShowImage",
   componentId: "sc-gsubhh-1"
-})(["width:100%;aspect-ratio:1/1;margin:0;& + .slideshow-image{margin-top:", "px;}", "{flex:1 0 calc((100% - ", "px) / 3);max-width:calc((100% - ", "px) / 3);&:hover{cursor:pointer;filter:brightness(0.85);transition:0.3s;}& + .slideshow-image{margin-top:unset;}}"], SpacingBetweenSlideImages, function (_ref3) {
+})(["width:100%;aspect-ratio:1/1;margin:0;& + .slideshow-image{margin-top:", "px;}", "{flex:1 0 calc((100% - ", "px) / 3);&:hover{cursor:pointer;filter:brightness(0.85);transition:0.3s;}& + .slideshow-image{margin-top:unset;}}"], SpacingBetweenSlideImages, function (_ref3) {
   var theme = _ref3.theme;
   return theme.breakpoint.xl;
-}, SpacingBetweenSlideImages * 2, SpacingBetweenSlideImages * 2);
+}, SpacingBetweenSlideImages * 2);
 var FigCaption = _styledComponents["default"].figcaption.withConfig({
   displayName: "slideshow-block__FigCaption",
   componentId: "sc-gsubhh-2"
