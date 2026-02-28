@@ -30,12 +30,21 @@ const NewsContainer = styled.div`
 `
 const HeroImage = styled.figure`
   width: 100%;
-  max-width: ${MAX_CONTENT_WIDTH};
+  max-width: 960px;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
   margin: 0 auto;
 
   //shared-component of @readr-media/react-image
   .readr-media-react-image {
-    max-height: 800px;
+    width: 100%;
+    height: 100%;
+
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   figcaption {
@@ -52,12 +61,8 @@ const HeroImage = styled.figure`
     }
 
     ${({ theme }) => theme.breakpoint.xl} {
-      width: 1200px;
+      width: 960px;
     }
-  }
-
-  ${({ theme }) => theme.breakpoint.lg} {
-    margin: 0px auto 0px;
   }
 `
 
