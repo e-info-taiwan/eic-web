@@ -634,11 +634,11 @@ export type NewsBarPick = {
 }
 
 // Query for NewsBar marquee - lightweight version with only title and URL
-// Fetches only "熱門話題" (hottopic) category picks
+// Fetches only "快訊" (breakingnews) category picks
 export const homepagePicksForNewsBar = gql`
   query {
     homepagePicks(
-      where: { category: { slug: { equals: "hottopic" } } }
+      where: { category: { slug: { equals: "breakingnews" } } }
       orderBy: { sortOrder: asc }
     ) {
       id
