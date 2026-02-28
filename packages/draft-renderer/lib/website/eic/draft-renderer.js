@@ -24,7 +24,7 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var DraftEditorWrapper = _styledComponents["default"].div.withConfig({
   displayName: "draft-renderer__DraftEditorWrapper",
   componentId: "sc-1fkkdeo-0"
-})(["font-family:'Georgia',serif;text-align:left;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';width:100%;height:100%;font-weight:400;color:#000000;*:has(.bg) + *:has(.bg){section{margin-top:0 !important;}}.public-DraftStyleDefault-header-two{", " & + *{", "}}.public-DraftStyleDefault-ul{", "}.public-DraftStyleDefault-ol{", "}.public-DraftStyleDefault-pre{overflow:hidden;}.alignCenter *{text-align:center;}.alignLeft *{text-align:left;}figure.left{", "{", ";float:left;transform:translateX(calc(-50% - 32px));}}figure.right{", "{", ";float:right;transform:translateX(32px);}}", ""], _index.defaultH2Style, _index.narrowSpacingBetweenContent, _index.defaultUlStyle, _index.defaultOlStyle, function (_ref) {
+})(["font-family:'Georgia',serif;text-align:left;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';width:100%;height:100%;font-weight:400;color:#000000;*:has(.bg) + *:has(.bg){section{margin-top:0 !important;}}.public-DraftStyleDefault-header-one{", " & + *{", "}}.public-DraftStyleDefault-header-two{", " & + *{", "}}.public-DraftStyleDefault-header-three{", " & + *{", "}}.public-DraftStyleDefault-header-four{", " & + *{", "}}.public-DraftStyleDefault-header-five{", " & + *{", "}}.public-DraftStyleDefault-ul{", "}.public-DraftStyleDefault-ol{", "}.public-DraftStyleDefault-pre{overflow:hidden;}.alignCenter *{text-align:center;}.alignLeft *{text-align:left;}figure.left{", "{", ";float:left;transform:translateX(calc(-50% - 32px));}}figure.right{", "{", ";float:right;transform:translateX(32px);}}", ""], _index.defaultH1Style, _index.narrowSpacingBetweenContent, _index.defaultH2Style, _index.narrowSpacingBetweenContent, _index.defaultH3Style, _index.narrowSpacingBetweenContent, _index.defaultH4Style, _index.narrowSpacingBetweenContent, _index.defaultH5Style, _index.narrowSpacingBetweenContent, _index.defaultUlStyle, _index.defaultOlStyle, function (_ref) {
   var theme = _ref.theme;
   return theme.breakpoint.xl;
 }, _index.textAroundPictureStyle, function (_ref2) {
@@ -87,9 +87,11 @@ var blockStyleFn = function blockStyleFn(editorState, block) {
     }
   }
   switch (block.getType()) {
+    case 'header-one':
     case 'header-two':
     case 'header-three':
     case 'header-four':
+    case 'header-five':
     case 'blockquote':
       result += 'public-DraftStyleDefault-' + block.getType();
       break;

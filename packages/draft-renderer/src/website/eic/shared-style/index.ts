@@ -17,16 +17,54 @@ export const textAroundPictureStyle = css`
   }
 `
 
+export const defaultH1Style = css`
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: #232333;
+`
+
 export const defaultH2Style = css`
-  ${({ theme }) => theme.fontSize.lg};
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 900;
   line-height: 32px;
+  letter-spacing: 0;
+  color: #232333;
+`
+
+export const defaultH3Style = css`
+  ${({ theme }) => theme.fontSize.md};
+  font-weight: 700;
+  line-height: 28px;
   letter-spacing: 0;
   color: #232333;
 
   ${({ theme }) => theme.breakpoint.md} {
-    ${({ theme }) => theme.fontSize.xl};
+    ${({ theme }) => theme.fontSize.lg};
+    line-height: 32px;
   }
+`
+
+export const defaultH4Style = css`
+  ${({ theme }) => theme.fontSize.sm};
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #232333;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    ${({ theme }) => theme.fontSize.md};
+    line-height: 28px;
+  }
+`
+
+export const defaultH5Style = css`
+  ${({ theme }) => theme.fontSize.sm};
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #232333;
 `
 
 export const defaultUlStyle = css`

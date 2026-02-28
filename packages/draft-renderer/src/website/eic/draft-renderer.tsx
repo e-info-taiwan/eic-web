@@ -19,7 +19,11 @@ import {
   SummaryStyle,
 } from './shared-style/content-type'
 import {
+  defaultH1Style,
   defaultH2Style,
+  defaultH3Style,
+  defaultH4Style,
+  defaultH5Style,
   defaultOlStyle,
   defaultUlStyle,
   narrowSpacingBetweenContent,
@@ -60,8 +64,40 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
   }
 
   /* Draft built-in buttons' style */
+  .public-DraftStyleDefault-header-one {
+    ${defaultH1Style}
+
+    & + * {
+      ${narrowSpacingBetweenContent}
+    }
+  }
+
   .public-DraftStyleDefault-header-two {
     ${defaultH2Style}
+
+    & + * {
+      ${narrowSpacingBetweenContent}
+    }
+  }
+
+  .public-DraftStyleDefault-header-three {
+    ${defaultH3Style}
+
+    & + * {
+      ${narrowSpacingBetweenContent}
+    }
+  }
+
+  .public-DraftStyleDefault-header-four {
+    ${defaultH4Style}
+
+    & + * {
+      ${narrowSpacingBetweenContent}
+    }
+  }
+
+  .public-DraftStyleDefault-header-five {
+    ${defaultH5Style}
 
     & + * {
       ${narrowSpacingBetweenContent}
@@ -172,9 +208,11 @@ const blockStyleFn = (editorState: any, block: any) => {
   }
 
   switch (block.getType()) {
+    case 'header-one':
     case 'header-two':
     case 'header-three':
     case 'header-four':
+    case 'header-five':
     case 'blockquote':
       result += 'public-DraftStyleDefault-' + block.getType()
       break
