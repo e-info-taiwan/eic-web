@@ -67,6 +67,10 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
   .public-DraftStyleDefault-header-one {
     ${defaultH1Style}
 
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
+
     & + * {
       ${narrowSpacingBetweenContent}
     }
@@ -74,6 +78,10 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
 
   .public-DraftStyleDefault-header-two {
     ${defaultH2Style}
+
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
 
     & + * {
       ${narrowSpacingBetweenContent}
@@ -83,6 +91,10 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
   .public-DraftStyleDefault-header-three {
     ${defaultH3Style}
 
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
+
     & + * {
       ${narrowSpacingBetweenContent}
     }
@@ -91,6 +103,10 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
   .public-DraftStyleDefault-header-four {
     ${defaultH4Style}
 
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
+
     & + * {
       ${narrowSpacingBetweenContent}
     }
@@ -98,6 +114,10 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
 
   .public-DraftStyleDefault-header-five {
     ${defaultH5Style}
+
+    &:not(:first-child) {
+      margin-top: 32px;
+    }
 
     & + * {
       ${narrowSpacingBetweenContent}
