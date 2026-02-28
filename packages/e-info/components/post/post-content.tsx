@@ -196,22 +196,12 @@ const ActionList = styled.article`
 
 //引用數據
 const Citation = styled.article`
-  margin-bottom: 48px;
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-bottom: 60px;
-  }
+  margin-bottom: 32px;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[40]};
+  padding-top: 36px;
 
-  h3 {
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.5;
-    color: ${({ theme }) => theme.colors.primary[20]};
-    margin-bottom: 12px;
-
-    ${({ theme }) => theme.breakpoint.md} {
-      font-size: 24px;
-      margin-bottom: 16px;
-    }
+  ${({ theme }) => theme.breakpoint.md} {
+    padding-top: 52px;
   }
 
   .content {
@@ -243,6 +233,14 @@ const Citation = styled.article`
       }
     }
   }
+`
+
+const CitationTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 16px;
 `
 
 type PostProps = {
@@ -398,10 +396,14 @@ export default function PostContent({
 
       {shouldShowCitation && (
         <Citation>
-          <div
-            className="content"
-            dangerouslySetInnerHTML={{ __html: postData?.citations || '' }}
-          />
+          <CitationTitle>參考資料</CitationTitle>
+          <div className="content">
+            {typeof postData?.citations === 'string' ? (
+              <div dangerouslySetInnerHTML={{ __html: postData.citations }} />
+            ) : (
+              <DraftRenderer rawContentBlock={postData?.citations} />
+            )}
+          </div>
         </Citation>
       )}
 
