@@ -68,6 +68,7 @@ const AccentBar = styled.div`
 const TitleButton = styled.button`
   background: none;
   border: none;
+  outline: none;
   padding: 0;
   font-family: inherit;
   font-size: 18px;
@@ -122,6 +123,7 @@ const CategoryTabs = styled.div`
 const CategoryTab = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
+  outline: none;
   color: ${({ $isActive, theme }) =>
     $isActive ? theme.colors.primary[100] : theme.colors.grayscale[20]};
   font-weight: 700;
