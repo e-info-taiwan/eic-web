@@ -390,9 +390,9 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
 
   // Filter events based on selected filters
   const filteredEvents = events.filter((event) => {
-    // Location filter (partial match - check if location contains the city name)
+    // City filter (exact match on city field)
     if (selectedLocation !== 'all') {
-      if (!event.location || !event.location.includes(selectedLocation)) {
+      if (!event.city || event.city !== selectedLocation) {
         return false
       }
     }

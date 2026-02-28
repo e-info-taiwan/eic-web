@@ -16,6 +16,7 @@ export type Event = {
   organizer?: string
   contactInfo?: string
   eventType?: string
+  city?: string
   startDate?: string
   endDate?: string
   location?: string
@@ -44,6 +45,7 @@ const events = gql`
       }
       organizer
       eventType
+      city
       startDate
       endDate
       location
@@ -77,6 +79,7 @@ const eventById = gql`
       organizer
       contactInfo
       eventType
+      city
       startDate
       endDate
       location
