@@ -67,6 +67,11 @@ const Summary = styled.article`
 const Content = styled.article`
   ${defaultMarginBottom}
 
+  /* Add spacing between split DraftRenderer segments */
+  > * + * {
+    margin-top: 32px;
+  }
+
   /* Timeline styles for embeddedcode */
   .timeline-title {
     color: ${({ theme }) => theme.colors.secondary[0]};
