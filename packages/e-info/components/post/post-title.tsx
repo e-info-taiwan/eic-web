@@ -7,8 +7,8 @@ import DateInfo from '../shared/date-info'
 
 const Title = styled.h1`
   font-size: 28px;
-  font-weight: 500;
-  line-height: 36px;
+  font-weight: 900;
+  line-height: 32px;
   letter-spacing: 0;
   color: ${({ theme }) => theme.colors.grayscale[0]};
   margin: 0 0 16px;
