@@ -283,7 +283,12 @@ export default function PostContent({
   const shouldShowContent = hasContentInRawContentBlock(contentToRender)
   // Note: actionList and citation fields are removed in new API
   const shouldShowActionList = false
-  const shouldShowCitation = !!postData?.citations
+  const shouldShowCitation =
+    typeof postData?.citations === 'string'
+      ? postData.citations.trim().length > 0
+      : hasContentInRawContentBlock(
+          postData?.citations as unknown as RawDraftContentState
+        )
 
   // Extract footnotes from content
   const footnotes = useMemo(
