@@ -3,11 +3,11 @@ import type { LocationOption } from '~/types/auth'
 // 地區選項列表 - 台灣所有縣市
 export const LOCATION_OPTIONS: { value: LocationOption; label: string }[] = [
   // 六都
-  { value: '台北市', label: '台北市' },
+  { value: '臺北市', label: '台北市' },
   { value: '新北市', label: '新北市' },
   { value: '桃園市', label: '桃園市' },
-  { value: '台中市', label: '台中市' },
-  { value: '台南市', label: '台南市' },
+  { value: '臺中市', label: '台中市' },
+  { value: '臺南市', label: '台南市' },
   { value: '高雄市', label: '高雄市' },
   // 其他縣市
   { value: '基隆市', label: '基隆市' },
@@ -22,7 +22,7 @@ export const LOCATION_OPTIONS: { value: LocationOption; label: string }[] = [
   { value: '屏東縣', label: '屏東縣' },
   { value: '宜蘭縣', label: '宜蘭縣' },
   { value: '花蓮縣', label: '花蓮縣' },
-  { value: '台東縣', label: '台東縣' },
+  { value: '臺東縣', label: '台東縣' },
   { value: '澎湖縣', label: '澎湖縣' },
   { value: '金門縣', label: '金門縣' },
   { value: '連江縣', label: '連江縣' },

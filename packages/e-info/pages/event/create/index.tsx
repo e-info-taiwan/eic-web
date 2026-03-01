@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import { LOCATION_OPTIONS } from '~/constants/auth'
 import type { TurnstileWidgetHandle } from '~/components/shared/turnstile-widget'
 import TurnstileWidget from '~/components/shared/turnstile-widget'
 import type { HeaderContextData } from '~/contexts/header-context'
@@ -378,6 +379,7 @@ type FormData = {
   organizer: string
   contactMethod: string
   contactValue: string
+  city: string
   eventType: string
   startDate: string
   endDate: string
@@ -393,6 +395,7 @@ type FormErrors = {
   image?: string
   organizer?: string
   contactValue?: string
+  city?: string
   eventType?: string
   startDate?: string
   endDate?: string
@@ -410,6 +413,7 @@ const CreateEventPage: NextPageWithLayout = () => {
     organizer: '',
     contactMethod: 'email',
     contactValue: '',
+    city: '',
     eventType: 'course_camp_workshop',
     startDate: '',
     endDate: '',
@@ -509,6 +513,10 @@ const CreateEventPage: NextPageWithLayout = () => {
       } catch {
         newErrors.contactValue = '請輸入有效的網址格式（需包含 https://）'
       }
+    }
+
+    if (!formData.city) {
+      newErrors.city = '請選擇活動縣市'
     }
 
     if (!formData.startDate) {
@@ -619,6 +627,7 @@ const CreateEventPage: NextPageWithLayout = () => {
           photoId,
           organizer: formData.organizer,
           contactInfo,
+          city: formData.city,
           eventType: formData.eventType,
           startDate: formData.startDate,
           endDate: formData.endDate,
@@ -752,6 +761,26 @@ const CreateEventPage: NextPageWithLayout = () => {
             {errors.contactValue && (
               <ErrorMessage>{errors.contactValue}</ErrorMessage>
             )}
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="city">
+              活動縣市<RequiredMark>*</RequiredMark>
+            </Label>
+            <EventTypeSelect
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleInputChange}
+            >
+              <option value="">請選擇縣市</option>
+              {LOCATION_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </EventTypeSelect>
+            {errors.city && <ErrorMessage>{errors.city}</ErrorMessage>}
           </FormGroup>
 
           <FormGroup>

@@ -9,6 +9,7 @@ type RequestBody = {
   photoId?: string
   organizer: string
   contactInfo: string
+  city?: string
   eventType: string
   startDate: string
   endDate: string
@@ -67,6 +68,7 @@ export default async function handler(
       name: body.name,
       organizer: body.organizer,
       contactInfo: body.contactInfo,
+      city: body.city || null,
       eventType: body.eventType,
       startDate: new Date(body.startDate).toISOString(),
       endDate: new Date(body.endDate || body.startDate).toISOString(),

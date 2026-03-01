@@ -388,11 +388,17 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     return `${year}年${month}月`
   }
 
+  // Normalize 台/臺 variants for comparison
+  const normalizeCity = (str: string) => str.replace(/臺/g, '台')
+
   // Filter events based on selected filters
   const filteredEvents = events.filter((event) => {
-    // City filter (exact match on city field)
+    // City filter (with 台/臺 normalization)
     if (selectedLocation !== 'all') {
-      if (!event.city || event.city !== selectedLocation) {
+      if (
+        !event.city ||
+        normalizeCity(event.city) !== normalizeCity(selectedLocation)
+      ) {
         return false
       }
     }
