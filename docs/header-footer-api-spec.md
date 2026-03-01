@@ -9,8 +9,8 @@
 ## API Endpoint
 
 建議路徑：
-- **開發環境**: `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/header`
-- **正式環境**: `https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/header`
+- **開發環境**: `https://storage.googleapis.com/statics-e-info-dev/json/header.json`
+- **正式環境**: `https://storage.googleapis.com/statics-e-info-prod/json/header.json`
 
 ## HTTP 規格
 
@@ -33,7 +33,7 @@ interface HeaderFooterApiResponse {
   // 深度專題 (published + 有文章，取前 6 筆)
   topics: HeaderNavTopic[]
 
-  // 熱門話題跑馬燈 (category slug = "hottopic")
+  // 熱門話題跑馬燈 (category slug = "breakingnews")
   newsBarPicks: NewsBarPick[]
 
   // 網站設定 (state = "active")
@@ -162,14 +162,14 @@ interface HeaderNavTopic {
 Header 熱門話題跑馬燈的內容，輕量版只包含標題與連結。
 
 **查詢條件**:
-- Category slug: `"hottopic"`
+- Category slug: `"breakingnews"`
 - 依 `sortOrder` 升冪排序
 
 **GraphQL 等效查詢**:
 ```graphql
 query {
   homepagePicks(
-    where: { category: { slug: { equals: "hottopic" } } }
+    where: { category: { slug: { equals: "breakingnews" } } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -353,10 +353,10 @@ HTTP Status Codes:
 - **[header-footer-api-example.json](./header-footer-api-example.json)** - 從 dev 環境 GraphQL API 實際查詢產生的完整 response
 
 此檔案包含：
-- 5 個 sections（news: 9, opinion: 3, column: 10, supplement: 10, greenconsumption: 1）
+- 5 個 sections（showInHeader = true，每個 section 最多 10 個 categories）
 - 4 個 featuredTags
-- 6 個 topics（深度專題）
-- 3 個 newsBarPicks（熱門話題跑馬燈，category slug = "hottopic"）
+- 6 個 topics（深度專題，published + 有文章）
+- 3 個 newsBarPicks（熱門話題跑馬燈，category slug = "breakingnews"）
 - 3 個 siteConfigs（公益勸募字號、電子報訂閱人數、捐款連結）
 
 > **注意**: categories 已套用 `take: 10` 限制（例如專欄實際有 50+ 個 categories，但只回傳前 10 個）。
@@ -427,15 +427,20 @@ fetchHeaderData()
 |-------|------|------|
 | Phase 1: 後端 (CMS) | **已完成** (dev) | Dev 環境 `/api/header` endpoint 已上線 |
 | Phase 2: 前端整合 | **已完成** | JSON API 優先 + GraphQL fallback + health check |
-| Phase 3: 部署 | **待完成** | Prod 環境 endpoint 待確認（config.ts 中有 TODO 標記） |
+| Phase 3: 部署 | **已完成** | Prod 環境使用 GCS 靜態 JSON（`storage.googleapis.com/statics-e-info-prod/json/header.json`） |
 
 ---
 
 ## 變更記錄
 
+### 2026-03-01
+- **修正 newsBarPicks category slug**: `"hottopic"` → `"breakingnews"`（與程式碼 `homepagePicksForNewsBar` 一致）
+- **修正 API Endpoint**: 更新為 GCS 靜態 JSON 路徑（`storage.googleapis.com/.../header.json`），與 `config.ts` 一致
+- **重新產生 header-footer-api-example.json**
+
 ### 2026-02-12
 - 根據實際程式碼更新文件，修正多處規格與實作不一致
-- 修正 newsBarPicks category slug: `flashnews` → `hottopic`
+- 修正 newsBarPicks category slug: `flashnews` → `breakingnews`
 - 修正 sections GraphQL 查詢: 加入 `take: 10` 限制 categories 數量
 - 修正 siteConfigs: 捐款連結使用 `content` 欄位（非 `link`），補充 ID 對照表
 - 修正 siteConfigs response 範例: 加入電子報訂閱人數、修正捐款連結 ID 與欄位

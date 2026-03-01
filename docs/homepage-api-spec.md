@@ -7,8 +7,8 @@
 ## API Endpoint
 
 建議路徑：
-- **開發環境**: `https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/homepage`
-- **正式環境**: `https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/homepage`
+- **開發環境**: `https://storage.googleapis.com/statics-e-info-dev/json/homepage.json`
+- **正式環境**: `https://storage.googleapis.com/statics-e-info-prod/json/homepage.json`
 
 ## HTTP 規格
 
@@ -25,7 +25,7 @@ interface HomepageApiResponse {
   // 大分類資料 (時事新聞、專欄、副刊)
   sections: Section[]
 
-  // 焦點話題 (category slug = "breakingnews") - 使用 card 尺寸圖片
+  // 焦點話題 (category slug = "hottopic") - 使用 card 尺寸圖片
   highlightPicks: HomepagePick[]
 
   // 首頁輪播大圖 (category slug = "homepagegraph") - 使用完整尺寸圖片
@@ -338,10 +338,10 @@ interface GreenConsumptionTag {
 
 ### 2. highlightPicks (焦點話題)
 
-對應目前的 `homepagePicksByCategory` 查詢，categorySlug = `"breakingnews"`。
+對應目前的 `homepagePicksByCategory` 查詢，categorySlug = `"hottopic"`。
 
 **查詢條件**:
-- Category slug: `"breakingnews"`
+- Category slug: `"hottopic"`
 - 依 `sortOrder` 升冪排序
 - **圖片尺寸**: Card (original, w480, w800)
 
@@ -349,7 +349,7 @@ interface GreenConsumptionTag {
 ```graphql
 query {
   homepagePicks(
-    where: { category: { slug: { equals: "breakingnews" } } }
+    where: { category: { slug: { equals: "hottopic" } } }
     orderBy: { sortOrder: asc }
   ) {
     id
@@ -897,7 +897,7 @@ interface ResizedImages {
         "publishTime": "2025-01-15T00:00:00.000Z",
         "heroImage": null
       },
-      "category": { "id": "4", "slug": "breakingnews", "name": "快訊" }
+      "category": { "id": "4", "slug": "hottopic", "name": "熱門話題" }
     }
   ],
   "carouselPicks": [
@@ -1035,10 +1035,10 @@ HTTP Status Codes:
 
 此檔案包含：
 - 3 個 sections（時事新聞、專欄、副刊，每個 section 包含多個 categories）- **使用 Card 尺寸圖片**
-- 3 組 section-level posts（newsPosts、columnPosts、supplementPosts，各 8 篇）- **使用 Card 尺寸圖片**
-- 5 組綠色消費 tag 文章（greenMain、greenBuy、greenFood、greenClothing、greenLeisure，各 3 篇）- **使用 Card 尺寸圖片**
-- 3 個 highlightPicks - **使用 Card 尺寸圖片**
-- 3 個 carouselPicks - **使用完整尺寸圖片**
+- 3 組 section-level posts（newsPosts、columnPosts、supplementPosts，各最多 8 篇）- **使用 Card 尺寸圖片**
+- 5 組綠色消費 tag 文章（greenMain、greenBuy、greenFood、greenClothing、greenLeisure，各最多 3 篇）- **使用 Card 尺寸圖片**
+- 3 個 highlightPicks（category slug = "hottopic"）- **使用 Card 尺寸圖片**
+- 3 個 carouselPicks（category slug = "homepagegraph"）- **使用完整尺寸圖片**
 - 23 個 topics（每個 topic 最多 4 篇文章）- **使用 Card 尺寸圖片**
 - 1 個 infoGraph - **使用 Card 尺寸圖片**
 - 2 個 ads（showOnHomepage）- **使用 Card 尺寸圖片**
@@ -1084,6 +1084,11 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
 
 ## 變更記錄
 
+### 2026-03-01
+- **修正 highlightPicks category slug**: `"breakingnews"` → `"hottopic"`（與程式碼一致，原 changelog 記載有誤）
+- **修正 API Endpoint**: 更新為 GCS 靜態 JSON 路徑（`storage.googleapis.com/.../homepage.json`），與 `config.ts` 一致
+- **重新產生 homepage-api-example.json**
+
 ### 2026-02-12
 - **文章摘要欄位改用 `contentPreview`**
   - 所有文章（SectionPost、TopicPost）的 `brief` + `contentApiData` 改為 `contentPreview`（純文字摘要）
@@ -1106,8 +1111,8 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
 - **新增 Green consumption tag 欄位**
   - 新增欄位：`greenMain`、`greenBuy`、`greenFood`、`greenClothing`、`greenLeisure`
 - **修正 Category slug**
-  - highlightPicks: `"hottopic"` → `"breakingnews"`（與程式碼一致）
-  - carouselPicks: `"homepepicks"` → `"homepagegraph"`（與程式碼一致）
+  - highlightPicks: `"hottopic"`（與程式碼一致）
+  - carouselPicks: `"homepagegraph"`（與程式碼一致）
 - **更新 homepage-api-example.json**
   - 從 dev 環境 GraphQL API 重新產生完整範例
   - 反映新的 section IDs、tag-based 綠色消費、正確的 category slug
