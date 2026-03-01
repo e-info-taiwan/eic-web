@@ -101,6 +101,27 @@ export type PopularSearchResponse = {
   top_search_keywords: PopularSearchKeyword[]
 }
 
+// Reading Ranking (from GA4 analytics JSON)
+export type ReadingRankingArticle = {
+  rank: number
+  post_id: string
+  page_views: number
+  article: {
+    id: string
+    title: string
+    publishTime: string
+  }
+}
+
+export type ReadingRankingResponse = {
+  generated_at: string
+  period: {
+    start_date: string
+    end_date: string
+  }
+  top_articles: ReadingRankingArticle[]
+}
+
 // HomepagePick for highlight section (uses card sizes)
 export type HomepagePickPost = {
   id: string

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
-import type { Topic } from '~/graphql/query/section'
+import type { ReadingRankingArticle, Topic } from '~/graphql/query/section'
 
 // Styled Components
 const Container = styled.div`
@@ -457,27 +457,15 @@ const EmptyMessage = styled.p`
   padding: 2rem;
 `
 
-// Sample rankings data (this could be fetched from API later)
-const rankings = [
-  {
-    rank: 1,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-  },
-  {
-    rank: 2,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-  },
-  {
-    rank: 3,
-    title: '「核電延役免環評」影啟明也覺奇怪 立委呼籲環境部修法',
-  },
-]
-
 type FeaturedTopicsSectionProps = {
   topics?: Topic[]
+  rankings?: ReadingRankingArticle[]
 }
 
-const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
+const FeaturedTopicsSection = ({
+  topics = [],
+  rankings = [],
+}: FeaturedTopicsSectionProps) => {
   // Filter topics that have posts
   const topicsWithPosts = topics.filter(
     (topic) => topic.posts && topic.posts.length > 0
@@ -631,13 +619,20 @@ const FeaturedTopicsSection = ({ topics = [] }: FeaturedTopicsSectionProps) => {
               <RankingTitle>閱讀排名</RankingTitle>
             </RankingHeader>
             <RankingList>
-              {rankings.map((item) => (
-                <RankingItem key={item.rank} href="#">
-                  <RankingNumber>{item.rank}</RankingNumber>
-                  <RankingContent>
-                    <RankingItemTitle>{item.title}</RankingItemTitle>
-                  </RankingContent>
-                </RankingItem>
+              {rankings.slice(0, 3).map((item) => (
+                <Link
+                  key={item.post_id}
+                  href={`/node/${item.post_id}`}
+                  passHref
+                  legacyBehavior
+                >
+                  <RankingItem>
+                    <RankingNumber>{item.rank}</RankingNumber>
+                    <RankingContent>
+                      <RankingItemTitle>{item.article.title}</RankingItemTitle>
+                    </RankingContent>
+                  </RankingItem>
+                </Link>
               ))}
             </RankingList>
           </RankingSection>

@@ -26,6 +26,7 @@ import type {
   HomepagePickCarousel,
   InfoGraph,
   PopularSearchKeyword,
+  ReadingRankingArticle,
   Topic,
 } from '~/graphql/query/section'
 import useScrollToEnd from '~/hooks/useScrollToEnd'
@@ -39,6 +40,7 @@ import {
   type SectionInfo,
   fetchHomepageData,
   fetchPopularSearchKeywords,
+  fetchReadingRanking,
 } from '~/utils/homepage-api'
 
 import type { NextPageWithLayout } from './_app'
@@ -103,6 +105,7 @@ type PageProps = {
   deepTopicAds: Ad[]
   donation: Donation | null
   popularSearchKeywords: PopularSearchKeyword[]
+  readingRanking: ReadingRankingArticle[]
 }
 
 const HiddenAnchor = styled.div`
@@ -129,6 +132,7 @@ const Index: NextPageWithLayout<PageProps> = ({
   deepTopicAds,
   donation,
   popularSearchKeywords,
+  readingRanking,
 }) => {
   const [showDonationModal, setShowDonationModal] = useState(false)
 
@@ -166,7 +170,7 @@ const Index: NextPageWithLayout<PageProps> = ({
       <AdContent ads={ads} />
       <SpecialColumnSection section={columnSection} />
       <SupplementSection section={supplementSection} />
-      <FeaturedTopicsSection topics={topics} />
+      <FeaturedTopicsSection topics={topics} rankings={readingRanking} />
       <AdContent ads={deepTopicAds} />
       <GreenConsumptionSection data={greenSection} />
       <HotKeywordsSection keywords={popularSearchKeywords} />
@@ -229,15 +233,21 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
      * JSON API endpoint: /api/homepage
      * 詳細規格請參考: docs/homepage-api-spec.md
      */
-    const [headerData, homepageData, donationResult, popularSearchKeywords] =
-      await Promise.all([
-        fetchHeaderData(),
-        fetchHomepageData(client),
-        client.query<{ donations: Donation[] }>({
-          query: donationQuery,
-        }),
-        fetchPopularSearchKeywords(),
-      ])
+    const [
+      headerData,
+      homepageData,
+      donationResult,
+      popularSearchKeywords,
+      readingRanking,
+    ] = await Promise.all([
+      fetchHeaderData(),
+      fetchHomepageData(client),
+      client.query<{ donations: Donation[] }>({
+        query: donationQuery,
+      }),
+      fetchPopularSearchKeywords(),
+      fetchReadingRanking(),
+    ])
 
     // Get the first (most recent) active donation
     donation = donationResult.data?.donations?.[0] || null
@@ -274,6 +284,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async () => {
         deepTopicAds,
         donation,
         popularSearchKeywords,
+        readingRanking,
       },
       revalidate: 60, // 每 60 秒重新驗證
     }

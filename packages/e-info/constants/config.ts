@@ -37,6 +37,7 @@ let PREVIEW_API_ENDPOINT = ''
 let HOMEPAGE_API_ENDPOINT = ''
 let HEADER_API_ENDPOINT = ''
 let POPULAR_SEARCH_ENDPOINT = ''
+let READING_RANKING_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
   authDomain: '',
@@ -58,6 +59,8 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-prod/json/header.json' // TODO: Update when prod endpoint is ready
     POPULAR_SEARCH_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/ga/popular_search.json'
+    READING_RANKING_ENDPOINT =
+      'https://storage.cloud.google.com/statics-e-info-prod/ga/reading_ranking.json'
     FIREBASE_CONFIG = {
       // e-info-prod
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
@@ -80,6 +83,8 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-dev/json/header.json' // TODO: Update when prod endpoint is ready
     POPULAR_SEARCH_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
+    READING_RANKING_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/ga/reading_ranking.json'
     FIREBASE_CONFIG = {
       // e-info-dev
       apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
@@ -138,5 +143,6 @@ export {
   MAILCHIMP_SERVER_PREFIX,
   MOCK_API_SERVER_PORT,
   POPULAR_SEARCH_ENDPOINT,
+  READING_RANKING_ENDPOINT,
   TURNSTILE_SECRET_KEY,
 }

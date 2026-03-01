@@ -8,6 +8,7 @@ import type { ApolloClient } from '@apollo/client/core'
 import {
   HOMEPAGE_API_ENDPOINT,
   POPULAR_SEARCH_ENDPOINT,
+  READING_RANKING_ENDPOINT,
 } from '~/constants/config'
 import {
   API_TIMEOUT_MS,
@@ -21,6 +22,8 @@ import type {
   InfoGraph,
   PopularSearchKeyword,
   PopularSearchResponse,
+  ReadingRankingArticle,
+  ReadingRankingResponse,
   Section,
   SectionCategory,
   SectionPost,
@@ -455,6 +458,35 @@ export async function fetchPopularSearchKeywords(): Promise<
     // eslint-disable-next-line no-console
     console.warn(
       '[PopularSearch] Error fetching popular search keywords:',
+      error instanceof Error ? error.message : 'Unknown error'
+    )
+    return []
+  }
+}
+
+export async function fetchReadingRanking(): Promise<ReadingRankingArticle[]> {
+  try {
+    const controller = createTimeoutController(API_TIMEOUT_MS)
+
+    const response = await fetch(READING_RANKING_ENDPOINT, {
+      method: 'GET',
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[ReadingRanking] Failed to fetch: ${response.status} ${response.statusText}`
+      )
+      return []
+    }
+
+    const data: ReadingRankingResponse = await response.json()
+    return data.top_articles || []
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[ReadingRanking] Error fetching reading ranking:',
       error instanceof Error ? error.message : 'Unknown error'
     )
     return []
