@@ -21,7 +21,7 @@ const Container = styled.div`
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 66px 12px 0;
+    padding: 66px 0;
   }
 `
 
