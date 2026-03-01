@@ -906,6 +906,14 @@ const Header = () => {
 
   // Handle scroll direction for header hide/show
   useEffect(() => {
+    // On mount, immediately sync header visibility with current scroll position
+    // This prevents a flash of visible header when scroll restoration places us mid-page
+    const initialScrollY = window.scrollY
+    if (initialScrollY > 100) {
+      setIsHeaderHidden(true)
+    }
+    lastScrollY.current = initialScrollY
+
     const handleScroll = () => {
       // Skip if hovering on navigation menu
       if (isHoveringNavRef.current) {
