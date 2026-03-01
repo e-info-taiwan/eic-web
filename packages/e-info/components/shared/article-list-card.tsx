@@ -51,8 +51,12 @@ const ImageWrapper = styled.div<StyledProps>`
   margin: 0 16px 0 0;
   overflow: hidden;
   border-radius: 2px;
+  aspect-ratio: 16 / 10;
+
   > picture img {
-    aspect-ratio: 16 / 10;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `
 

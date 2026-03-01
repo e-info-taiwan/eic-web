@@ -240,7 +240,7 @@ const MainImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
-  aspect-ratio: attr(width) / attr(height);
+  aspect-ratio: 6 / 4;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     padding: 40px 84px 0;
