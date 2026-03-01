@@ -4,8 +4,6 @@ import styled from 'styled-components'
 
 import type { PostAd } from '~/graphql/query/post'
 
-import Placeholder from '../shared/placeholder'
-
 const Container = styled.div`
   width: 100%;
   margin: 32px 0;
@@ -39,13 +37,9 @@ type PostAdContentProps = {
 }
 
 const PostAdContent: React.FC<PostAdContentProps> = ({ ad }) => {
-  // If no ad or ad is not active, show placeholder
+  // If no ad or ad is not active, render nothing
   if (!ad || ad.state !== 'active') {
-    return (
-      <Container>
-        <Placeholder height={200} />
-      </Container>
-    )
+    return null
   }
 
   const image = ad.image?.resized
