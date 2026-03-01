@@ -15,6 +15,10 @@ picture {
 a {
   cursor: pointer;
   border: none;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 button {
