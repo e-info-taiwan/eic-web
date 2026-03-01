@@ -6,6 +6,8 @@ import { parse } from 'node-html-parser'
 export const Block = styled.div`
   position: relative;
   white-space: normal;
+  overflow-x: auto;
+  max-width: 100%;
   ${({ theme }) => theme.margin.default};
   /* styles for image link */
   img.img-responsive {

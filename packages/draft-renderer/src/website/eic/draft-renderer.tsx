@@ -135,6 +135,14 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
   /* code-block */
   .public-DraftStyleDefault-pre {
     overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .alignCenter * {

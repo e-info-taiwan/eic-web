@@ -212,6 +212,8 @@ const Citation = styled.article`
 
   .content {
     padding: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
 
     ul {
       list-style: disc;

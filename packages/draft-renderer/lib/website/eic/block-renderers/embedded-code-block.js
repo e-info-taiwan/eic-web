@@ -13,7 +13,7 @@ function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r
 var Block = exports.Block = _styledComponents["default"].div.withConfig({
   displayName: "embedded-code-block__Block",
   componentId: "sc-xxvvhj-0"
-})(["position:relative;white-space:normal;", ";img.img-responsive{margin:0 auto;max-width:100%;height:auto;display:block;}iframe[src*='youtube.com'],iframe[src*='youtu.be']{width:100%;aspect-ratio:16 / 9;max-width:100%;}"], function (_ref) {
+})(["position:relative;white-space:normal;overflow-x:auto;max-width:100%;", ";img.img-responsive{margin:0 auto;max-width:100%;height:auto;display:block;}iframe[src*='youtube.com'],iframe[src*='youtu.be']{width:100%;aspect-ratio:16 / 9;max-width:100%;}"], function (_ref) {
   var theme = _ref.theme;
   return theme.margin["default"];
 });
