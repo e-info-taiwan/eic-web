@@ -47,22 +47,22 @@ export const defaultH3Style = css`
 `
 
 export const defaultH4Style = css`
-  ${({ theme }) => theme.fontSize.sm};
+  ${({ theme }) => theme.fontSize.md};
   font-weight: 700;
-  line-height: 24px;
+  line-height: 28px;
   letter-spacing: 0;
   color: #232333;
 
   ${({ theme }) => theme.breakpoint.md} {
-    ${({ theme }) => theme.fontSize.md};
+    font-size: 20px;
     line-height: 28px;
   }
 `
 
 export const defaultH5Style = css`
-  ${({ theme }) => theme.fontSize.sm};
+  ${({ theme }) => theme.fontSize.md};
   font-weight: 700;
-  line-height: 24px;
+  line-height: 28px;
   letter-spacing: 0;
   color: #232333;
 `
