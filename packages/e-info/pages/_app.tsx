@@ -13,6 +13,7 @@ import { NormalizeStyles } from '~/components/layout/normalize-styles'
 import { AuthProvider } from '~/contexts/auth-context'
 import type { HeaderContextData } from '~/contexts/header-context'
 import { HeaderProvider } from '~/contexts/header-context'
+import { useScrollRestoration } from '~/hooks/useScrollRestoration'
 import theme from '~/styles/theme'
 import * as gtag from '~/utils/gtag'
 
@@ -32,6 +33,8 @@ type AppPropsWithLayout = AppProps & {
 
 const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
   const client = getGqlClient()
+
+  useScrollRestoration()
 
   useEffect(() => {
     gtag.init()

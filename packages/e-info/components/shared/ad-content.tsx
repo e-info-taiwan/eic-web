@@ -89,7 +89,7 @@ const AdContent: React.FC<AdContentProps> = ({ ads = [] }) => {
                 imagesWebP={imageWebp || {}}
                 alt={ad.name || '廣告'}
                 priority={false}
-                objectFit='contain'
+                objectFit="contain"
                 rwd={{
                   mobile: '332px',
                   tablet: '332px',

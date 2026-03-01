@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
@@ -364,8 +364,6 @@ const HistoricalNote = styled.p`
   text-align: center;
 `
 
-const SCROLL_POSITION_KEY = 'newsletter-scroll-position'
-
 const EmptyMessage = styled.div`
   text-align: center;
   padding: 20px;
@@ -420,24 +418,6 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   const [newsletters, setNewsletters] =
     useState<Newsletter[]>(initialNewsletters)
   const [loading, setLoading] = useState(false)
-
-  // Restore scroll position when returning from newsletter detail page
-  useEffect(() => {
-    const savedPosition = sessionStorage.getItem(SCROLL_POSITION_KEY)
-    if (savedPosition) {
-      const position = parseInt(savedPosition, 10)
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        window.scrollTo(0, position)
-      })
-      sessionStorage.removeItem(SCROLL_POSITION_KEY)
-    }
-  }, [])
-
-  // Save scroll position before navigating to newsletter detail
-  const handleNewsletterClick = () => {
-    sessionStorage.setItem(SCROLL_POSITION_KEY, String(window.scrollY))
-  }
 
   // Create a map of newsletters by date
   const newsletterMap: NewsletterMap = {}
@@ -683,7 +663,6 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                     {cell.newsletter && (
                       <NewsletterCard
                         href={`/newsletter/${cell.newsletter.id}`}
-                        onClick={handleNewsletterClick}
                       >
                         <ThumbnailWrapper>
                           <Image
@@ -716,10 +695,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
                     {month}/{cell.day}
                   </CardDate>
                   {cell.newsletter && (
-                    <NewsletterCard
-                      href={`/newsletter/${cell.newsletter.id}`}
-                      onClick={handleNewsletterClick}
-                    >
+                    <NewsletterCard href={`/newsletter/${cell.newsletter.id}`}>
                       <ThumbnailWrapper>
                         <Image
                           src={
