@@ -14,6 +14,7 @@ picture {
 
 a {
   cursor: pointer;
+  border: none;
 }
 
 button {

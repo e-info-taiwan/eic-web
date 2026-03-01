@@ -1,45 +1,9 @@
-import Document, {
-  DocumentContext,
-  Head,
-  Html,
-  Main,
-  NextScript,
-} from 'next/document'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
 import Script from 'next/script'
-import { ServerStyleSheet } from 'styled-components'
 
 import { GA_TRACKING_ID, GTM_ID } from '~/constants/environment-variables'
+
 export default class MyDocument extends Document {
-  /* ref:
-   *   1. https://styled-components.com/docs/advanced#with-swc
-   *   2. https://github.com/vercel/next.js/blob/canary/examples/with-styled-components/pages/_document.tsx
-   */
-  static async getInitialProps(ctx: DocumentContext) {
-    const sheet = new ServerStyleSheet()
-    const originalRenderPage = ctx.renderPage
-
-    try {
-      ctx.renderPage = () =>
-        originalRenderPage({
-          enhanceApp: (App) => (props) =>
-            sheet.collectStyles(<App {...props} />),
-        })
-
-      const initialProps = await Document.getInitialProps(ctx)
-      return {
-        ...initialProps,
-        styles: (
-          <>
-            {initialProps.styles}
-            {sheet.getStyleElement()}
-          </>
-        ),
-      }
-    } finally {
-      sheet.seal()
-    }
-  }
-
   render(): JSX.Element {
     return (
       <Html lang="zh-Hant">
