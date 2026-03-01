@@ -29,6 +29,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { fetchCategoryListing } from '~/utils/listing-api'
 import { postConvertFunc } from '~/utils/post'
 
 const PageWrapper = styled.div`
@@ -531,23 +532,62 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    // Fetch header data and category with section info in parallel
-    const [headerData, { data: categoryData, error: categoryError }] =
-      await Promise.all([
-        fetchHeaderData(),
-        client.query<{
-          categories: Array<{
-            id: string
-            slug: string
-            name: string
-            postsCount: number
-            section: SectionInfo
-          }>
-        }>({
-          query: categoryByIdWithSection,
-          variables: { categoryId },
-        }),
-      ])
+    // 嘗試從 JSON API 取得資料（僅前 5 頁）
+    const [headerData, listingData] = await Promise.all([
+      fetchHeaderData(),
+      fetchCategoryListing(categoryId, page),
+    ])
+
+    if (listingData) {
+      // Hidden categories check
+      const HIDDEN_CATEGORY_SLUGS = [
+        'homepagegraph',
+        'breakingnews',
+        'hottopic',
+      ]
+      if (HIDDEN_CATEGORY_SLUGS.includes(listingData.category.slug)) {
+        return { notFound: true }
+      }
+
+      // Convert posts to ArticleCard format
+      const posts: ArticleCard[] = listingData.posts.map((post) =>
+        postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
+      )
+
+      return {
+        props: {
+          headerData,
+          category: listingData.category,
+          section: {
+            id: listingData.section.id,
+            slug: listingData.section.slug,
+            name: listingData.section.name,
+            style: listingData.section.style,
+            heroImage: listingData.section.heroImage || null,
+            categories: listingData.section.categories,
+          },
+          categories: listingData.section.categories,
+          posts,
+          totalPosts: listingData.totalPosts,
+          currentPage: page,
+          totalPages: listingData.totalPages,
+        },
+      }
+    }
+
+    // Fallback: 使用 GraphQL 查詢（第 6 頁起或 JSON API 失敗時）
+    const { data: categoryData, error: categoryError } = await client.query<{
+      categories: Array<{
+        id: string
+        slug: string
+        name: string
+        postsCount: number
+        section: SectionInfo
+      }>
+    }>({
+      query: categoryByIdWithSection,
+      variables: { categoryId },
+    })
 
     if (categoryError || !categoryData?.categories?.length) {
       return { notFound: true }

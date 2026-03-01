@@ -112,7 +112,7 @@ export interface HomepageData {
  * 建立具有 timeout 功能的 AbortController
  * 相容於不支援 AbortSignal.timeout 的環境
  */
-function createTimeoutController(timeoutMs: number): AbortController {
+export function createTimeoutController(timeoutMs: number): AbortController {
   const controller = new AbortController()
   setTimeout(() => controller.abort(), timeoutMs)
   return controller

@@ -38,6 +38,7 @@ let HOMEPAGE_API_ENDPOINT = ''
 let HEADER_API_ENDPOINT = ''
 let POPULAR_SEARCH_ENDPOINT = ''
 let READING_RANKING_ENDPOINT = ''
+let LISTING_API_ENDPOINT = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
   authDomain: '',
@@ -61,6 +62,8 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-prod/ga/popular_search.json'
     READING_RANKING_ENDPOINT =
       'https://storage.cloud.google.com/statics-e-info-prod/ga/reading_ranking.json'
+    LISTING_API_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-prod/json/listing'
     FIREBASE_CONFIG = {
       // e-info-prod
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
@@ -85,6 +88,8 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
     READING_RANKING_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/ga/reading_ranking.json'
+    LISTING_API_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/json/listing'
     FIREBASE_CONFIG = {
       // e-info-dev
       apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
@@ -137,6 +142,7 @@ export {
   HEADER_API_ENDPOINT,
   HOMEPAGE_API_ENDPOINT,
   IS_PREVIEW_MODE,
+  LISTING_API_ENDPOINT,
   MAILCHIMP_API_KEY,
   MAILCHIMP_LIST_ID_DAILY,
   MAILCHIMP_LIST_ID_WEEKLY,

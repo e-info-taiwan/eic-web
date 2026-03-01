@@ -40,6 +40,10 @@ import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import {
+  fetchSectionListing,
+  isSectionDefaultListing,
+} from '~/utils/listing-api'
+import {
   formatPostDate,
   mergePostsWithFeatured,
   postConvertFunc,
@@ -1018,14 +1022,53 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    // Fetch header data and section basic info in parallel
-    const [headerData, sectionResult] = await Promise.all([
+    const page = Math.max(1, parseInt(query.page as string, 10) || 1)
+
+    // 嘗試從 JSON API 取得資料（僅前 5 頁）
+    const [headerData, listingData] = await Promise.all([
       fetchHeaderData(),
-      client.query<{ sections: SectionForListing[] }>({
-        query: sectionBySlug,
-        variables: { slug },
-      }),
+      fetchSectionListing(slug, page),
     ])
+
+    if (listingData) {
+      if (isSectionDefaultListing(listingData)) {
+        // Default style: 分頁文章列表
+        const posts: ArticleCard[] = listingData.posts.map((post) =>
+          postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
+        )
+
+        return {
+          props: {
+            pageType: 'default',
+            section: listingData.section,
+            categories: listingData.categories,
+            posts,
+            totalPosts: listingData.totalPosts,
+            currentPage: page,
+            totalPages: listingData.totalPages,
+            headerData,
+          },
+        }
+      } else {
+        // Column style: 分類格狀排列
+        return {
+          props: {
+            pageType: 'column',
+            section: listingData.section,
+            categories: listingData.categories,
+            headerData,
+          },
+        }
+      }
+    }
+
+    // Fallback: 使用 GraphQL 查詢（第 6 頁起或 JSON API 失敗時）
+    const sectionResult = await client.query<{
+      sections: SectionForListing[]
+    }>({
+      query: sectionBySlug,
+      variables: { slug },
+    })
 
     if (sectionResult.error || !sectionResult.data?.sections?.length) {
       return { notFound: true }
@@ -1036,7 +1079,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
     if (isDefaultStyle) {
       // Default style: fetch paginated posts list
-      const page = Math.max(1, parseInt(query.page as string, 10) || 1)
       const skip = (page - 1) * POSTS_PER_PAGE
 
       const postsResult = await client.query<{
