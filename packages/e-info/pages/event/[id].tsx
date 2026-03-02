@@ -29,9 +29,10 @@ const PageWrapper = styled.div`
 const HeroSection = styled.section`
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  max-width: 960px;
+  aspect-ratio: 2 / 1;
   overflow: hidden;
-  margin-bottom: 32px;
+  margin: 0 auto 32px;
 
   ${({ theme }) => theme.breakpoint.md} {
     margin-bottom: 40px;
