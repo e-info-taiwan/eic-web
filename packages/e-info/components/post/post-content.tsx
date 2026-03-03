@@ -66,6 +66,7 @@ const Summary = styled.article`
 //內文
 const Content = styled.article`
   ${defaultMarginBottom}
+  overflow-x: auto;
 
   /* Add spacing between split DraftRenderer segments */
   > * + * {

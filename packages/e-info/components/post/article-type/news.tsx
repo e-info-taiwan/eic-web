@@ -129,6 +129,7 @@ const LeftColumn = styled.aside`
 `
 
 const RightColumn = styled.div`
+  min-width: 0;
   padding-bottom: 100px;
 `
 
