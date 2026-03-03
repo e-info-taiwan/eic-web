@@ -320,6 +320,13 @@ const StyledTd = styled.div`
   ${({ theme }) => theme.fontSize.sm};
   line-height: 1.6;
   vertical-align: top;
+
+  /* Reset paragraph margins inherited from outer DraftEditorWrapper NormalStyle
+     which uses *:not(:first-child) .public-DraftStyleDefault-block { margin-top: 32px }
+     with specificity (0,3,0), so !important is needed to override */
+  .public-DraftStyleDefault-block {
+    margin-top: 0 !important;
+  }
 `
 
 export const TableEditorBlock = (props: TableBlockProps) => {
