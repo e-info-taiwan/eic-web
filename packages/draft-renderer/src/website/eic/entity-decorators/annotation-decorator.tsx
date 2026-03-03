@@ -22,7 +22,7 @@ const AnnotationWrapper = styled.span`
   cursor: pointer;
 
   &:hover ${AnnotationText} {
-    border-bottom: 2px solid #04295e;
+    color: ${({ theme }) => theme.colors.primary[0]};
   }
 `
 

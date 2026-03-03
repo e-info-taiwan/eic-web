@@ -22,8 +22,13 @@ const FigureCaption = styled.figcaption`
     line-height: 1.25;
   }
 `
-const Anchor = styled.a`
-  text-decoration: none;
+const CaptionLink = styled.a`
+  color: ${({ theme }) => theme.colors.primary[20]};
+  text-decoration: underline;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[0]};
+  }
 `
 
 type ImageBlockProps = {
@@ -51,7 +56,7 @@ export function ImageBlock(props: ImageBlockProps) {
   const webpImagesToUse =
     resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {}
 
-  let imgBlock = (
+  return (
     <Figure>
       <CustomImage
         images={imagesToUse}
@@ -66,17 +71,15 @@ export function ImageBlock(props: ImageBlockProps) {
         }}
         priority={true}
       />
-      <FigureCaption>{desc}</FigureCaption>
+      <FigureCaption>
+        {url ? (
+          <CaptionLink href={url} target="_blank" rel="noopener noreferrer">
+            {desc}
+          </CaptionLink>
+        ) : (
+          desc
+        )}
+      </FigureCaption>
     </Figure>
   )
-
-  if (url) {
-    imgBlock = (
-      <Anchor href={url} target="_blank">
-        {imgBlock}
-      </Anchor>
-    )
-  }
-
-  return imgBlock
 }

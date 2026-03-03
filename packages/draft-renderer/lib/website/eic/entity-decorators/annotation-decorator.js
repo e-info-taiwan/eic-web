@@ -24,31 +24,34 @@ var AnnotationText = _styledComponents["default"].span.withConfig({
 var AnnotationWrapper = _styledComponents["default"].span.withConfig({
   displayName: "annotation-decorator__AnnotationWrapper",
   componentId: "sc-ah822b-1"
-})(["display:inline-block;cursor:pointer;&:hover ", "{border-bottom:2px solid #04295e;}"], AnnotationText);
+})(["display:inline-block;cursor:pointer;&:hover ", "{color:", ";}"], AnnotationText, function (_ref) {
+  var theme = _ref.theme;
+  return theme.colors.primary[0];
+});
 var AnnotationBody = _styledComponents["default"].div.withConfig({
   displayName: "annotation-decorator__AnnotationBody",
   componentId: "sc-ah822b-2"
-})(["border-radius:2px;background-color:", ";padding:20px 24px;margin:12px 0 28px;font-size:14px;font-weight:400;line-height:1.5;display:inline-block;text-align:left;width:100%;color:", ";", "{padding:20px;}> * + *{margin:", "px 0 0;min-height:0.01px;}h2{", "}ul{", " margin-top:", "px;> li{", "}}ol{", " margin-top:", "px;> li{", "}}a{", "}blockquote{", "}"], function (_ref) {
-  var theme = _ref.theme;
-  return theme.colors.grayscale[95];
-}, function (_ref2) {
+})(["border-radius:2px;background-color:", ";padding:20px 24px;margin:12px 0 28px;font-size:14px;font-weight:400;line-height:1.5;display:inline-block;text-align:left;width:100%;color:", ";", "{padding:20px;}> * + *{margin:", "px 0 0;min-height:0.01px;}h2{", "}ul{", " margin-top:", "px;> li{", "}}ol{", " margin-top:", "px;> li{", "}}a{", "}blockquote{", "}"], function (_ref2) {
   var theme = _ref2.theme;
-  return theme.colors.grayscale[20];
+  return theme.colors.grayscale[95];
 }, function (_ref3) {
   var theme = _ref3.theme;
+  return theme.colors.grayscale[20];
+}, function (_ref4) {
+  var theme = _ref4.theme;
   return theme.breakpoint.md;
 }, annotationDefaultSpacing, _sharedStyle.defaultH2Style, _sharedStyle.defaultUlStyle, annotationDefaultSpacing, _sharedStyle.defaultUnorderedListStyle, _sharedStyle.defaultOlStyle, annotationDefaultSpacing, _sharedStyle.defaultOrderedListStyle, _sharedStyle.defaultLinkStyle, _sharedStyle.defaultBlockQuoteStyle);
 var ArrowIconWrapper = _styledComponents["default"].span.withConfig({
   displayName: "annotation-decorator__ArrowIconWrapper",
   componentId: "sc-ah822b-3"
-})(["width:20px;height:20px;margin:auto 4px;transition:transform 0.3s;display:inline-flex;align-items:center;justify-content:center;vertical-align:text-top;background-color:", ";border-radius:10px;transform:", ";"], function (_ref4) {
-  var theme = _ref4.theme;
+})(["width:20px;height:20px;margin:auto 4px;transition:transform 0.3s;display:inline-flex;align-items:center;justify-content:center;vertical-align:text-top;background-color:", ";border-radius:10px;transform:", ";"], function (_ref5) {
+  var theme = _ref5.theme;
   return theme.colors.secondary[80];
 }, function (props) {
   return props.$showContent ? 'rotate(-180deg)' : '';
 });
-var ArrowIcon = function ArrowIcon(_ref5) {
-  var showContent = _ref5.showContent;
+var ArrowIcon = function ArrowIcon(_ref6) {
+  var showContent = _ref6.showContent;
   return /*#__PURE__*/_react["default"].createElement(ArrowIconWrapper, {
     $showContent: showContent
   }, /*#__PURE__*/_react["default"].createElement("svg", {

@@ -23,10 +23,16 @@ var FigureCaption = _styledComponents["default"].figcaption.withConfig({
   var theme = _ref2.theme;
   return theme.breakpoint.xl;
 });
-var Anchor = _styledComponents["default"].a.withConfig({
-  displayName: "image-block__Anchor",
+var CaptionLink = _styledComponents["default"].a.withConfig({
+  displayName: "image-block__CaptionLink",
   componentId: "sc-1v0uv2e-2"
-})(["text-decoration:none;"]);
+})(["color:", ";text-decoration:underline;&:hover{color:", ";}"], function (_ref3) {
+  var theme = _ref3.theme;
+  return theme.colors.primary[20];
+}, function (_ref4) {
+  var theme = _ref4.theme;
+  return theme.colors.primary[0];
+});
 function ImageBlock(props) {
   var block = props.block,
     contentState = props.contentState;
@@ -48,7 +54,7 @@ function ImageBlock(props) {
     original: src
   } : {};
   var webpImagesToUse = resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {};
-  var imgBlock = /*#__PURE__*/_react["default"].createElement(Figure, null, /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {
+  return /*#__PURE__*/_react["default"].createElement(Figure, null, /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {
     images: imagesToUse,
     imagesWebP: webpImagesToUse,
     defaultImage: defaultImage,
@@ -60,12 +66,9 @@ function ImageBlock(props) {
       "default": '100%'
     },
     priority: true
-  }), /*#__PURE__*/_react["default"].createElement(FigureCaption, null, desc));
-  if (url) {
-    imgBlock = /*#__PURE__*/_react["default"].createElement(Anchor, {
-      href: url,
-      target: "_blank"
-    }, imgBlock);
-  }
-  return imgBlock;
+  }), /*#__PURE__*/_react["default"].createElement(FigureCaption, null, url ? /*#__PURE__*/_react["default"].createElement(CaptionLink, {
+    href: url,
+    target: "_blank",
+    rel: "noopener noreferrer"
+  }, desc) : desc));
 }

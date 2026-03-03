@@ -1,6 +1,8 @@
 import { ContentBlock, ContentState } from 'draft-js'
 import React from 'react'
 import styled from 'styled-components'
+import CustomImage from '@readr-media/react-image'
+import defaultImage from '../assets/post-default.png'
 
 import {
   defaultH2Style,
@@ -18,13 +20,24 @@ const InfoBoxRenderWrapper = styled.div`
   background: ${({ theme }) => theme.colors.grayscale[99]};
   border: 1px solid ${({ theme }) => theme.colors.primary[40]};
   position: relative;
-  padding: 24px 20px;
+  padding: 10px;
   width: 100%;
   ${({ theme }) => theme.margin.default};
+`
+
+const InfoBoxLayout = styled.div`
+  display: flex;
+  flex-direction: column;
 
   ${({ theme }) => theme.breakpoint.md} {
-    padding: 24px 32px;
+    flex-direction: row;
+    gap: 24px;
   }
+`
+
+const InfoTextArea = styled.div`
+  flex: 1;
+  min-width: 0;
 `
 
 const InfoTitle = styled.div`
@@ -91,6 +104,32 @@ const InfoContent = styled.div`
   }
 `
 
+const InfoImage = styled.div`
+  width: 100%;
+  max-width: 250px;
+  margin: 0 0 16px;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: auto !important;
+    display: block;
+  }
+
+  ${({ theme }) => theme.breakpoint.md} {
+    margin: 0;
+  }
+`
+
+const InfoImageCaption = styled.div`
+  font-size: 12px;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
+  margin-top: 8px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+`
+
 type InfoBoxBlockProps = {
   block: ContentBlock
   blockProps: {
@@ -110,14 +149,45 @@ export function InfoBoxBlock(props: InfoBoxBlockProps) {
   const { block, contentState } = props
   const entityKey = block.getEntityAt(0)
   const entity = contentState.getEntity(entityKey)
-  const { title, body } = entity.getData()
+  const { title, body, image } = entity.getData()
+
+  const hasImage = image?.resized || image?.imageFile?.url
 
   return (
     <InfoBoxRenderWrapper className="infobox-wrapper">
-      <InfoTitle className="infobox-title">{title}</InfoTitle>
-      <InfoContent className="infobox-content">
-        <div dangerouslySetInnerHTML={{ __html: body }} />
-      </InfoContent>
+      {hasImage ? (
+        <InfoBoxLayout>
+          <InfoImage>
+            <CustomImage
+              images={image.resized || {}}
+              defaultImage={defaultImage}
+              alt={image.name || image.caption || title}
+              rwd={{
+                mobile: '100vw',
+                tablet: '240px',
+                desktop: '240px',
+                default: '100%',
+              }}
+            />
+            {image.caption && (
+              <InfoImageCaption>{image.caption}</InfoImageCaption>
+            )}
+          </InfoImage>
+          <InfoTextArea>
+            <InfoTitle className="infobox-title">{title}</InfoTitle>
+            <InfoContent className="infobox-content">
+              <div dangerouslySetInnerHTML={{ __html: body }} />
+            </InfoContent>
+          </InfoTextArea>
+        </InfoBoxLayout>
+      ) : (
+        <>
+          <InfoTitle className="infobox-title">{title}</InfoTitle>
+          <InfoContent className="infobox-content">
+            <div dangerouslySetInnerHTML={{ __html: body }} />
+          </InfoContent>
+        </>
+      )}
     </InfoBoxRenderWrapper>
   )
 }
