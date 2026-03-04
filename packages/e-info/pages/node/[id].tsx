@@ -9,6 +9,7 @@ import CustomHead from '~/components/layout/custom-head'
 import News from '~/components/post/article-type/news'
 import { IS_PREVIEW_MODE } from '~/constants/config'
 import { SITE_TITLE } from '~/constants/constant'
+import { CACHE_MAX_AGE_SECONDS } from '~/constants/layout'
 import { pageRedirects } from '~/constants/redirects'
 import type { HeaderContextData } from '~/contexts/header-context'
 import { type Donation, footerDonationQuery } from '~/graphql/query/donation'
@@ -200,8 +201,8 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
         donation,
         isRedirectPage,
       },
-      // ISR: Preview mode 10 秒，正式站 5 分鐘
-      revalidate: IS_PREVIEW_MODE ? 10 : 300,
+      // ISR: Preview mode 10 秒，正式站 10 分鐘
+      revalidate: IS_PREVIEW_MODE ? 10 : CACHE_MAX_AGE_SECONDS,
     }
   } catch (err) {
     const annotatingError = errors.helpers.wrap(

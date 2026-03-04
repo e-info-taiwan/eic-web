@@ -7,6 +7,7 @@ export const POSTS_PER_PAGE = 12
 export const POSTS_PER_CATEGORY = 3
 
 /** API Cache / Timeout 設定 */
+export const CACHE_MAX_AGE_SECONDS = 600 // 10 minutes — SSR Cache-Control max-age
 export const CACHE_TTL_MS = 60 * 1000 // 60 seconds
 export const API_TIMEOUT_MS = 10_000 // 10 seconds
 export const HEALTH_CHECK_TIMEOUT_MS = 5_000 // 5 seconds

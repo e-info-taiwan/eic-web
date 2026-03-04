@@ -1,3 +1,5 @@
+import { CACHE_MAX_AGE_SECONDS } from '~/constants/layout'
+
 // 這裡管理的是在 Build 階段就會寫死數值的環境變數 (通常為 `NEXT_PUBLCI_` 開頭)
 const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
 let SITE_URL: string
@@ -10,7 +12,7 @@ switch (ENV) {
     SITE_URL = 'e-info.org.tw'
     GA_TRACKING_ID = 'G-3G2CB5BM24'
     GTM_ID = 'GTM-5K476LW'
-    GLOBAL_CACHE_SETTING = 'public, max-age=300'
+    GLOBAL_CACHE_SETTING = `public, max-age=${CACHE_MAX_AGE_SECONDS}`
     GOOGLE_CSE_ID = 'e7af92d93bc65444d'
     break
 
