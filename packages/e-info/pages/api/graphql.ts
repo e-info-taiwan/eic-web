@@ -126,6 +126,15 @@ function containsSensitiveQuery(body: unknown): {
     }
   }
 
+  // Block: event/events queries (could expose unpublished/unapproved events)
+  // All event data is fetched server-side via getServerSideProps
+  if (normalizedQuery.includes('event')) {
+    return {
+      isSensitive: true,
+      reason: 'Event queries are not available through this endpoint',
+    }
+  }
+
   return { isSensitive: false }
 }
 
