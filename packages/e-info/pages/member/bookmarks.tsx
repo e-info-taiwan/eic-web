@@ -12,7 +12,7 @@ import { useAuth } from '~/hooks/useAuth'
 import type { FavoriteWithPost } from '~/lib/graphql/member'
 import { getMemberFavorites } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { setCacheControl } from '~/utils/common'
+import { setPrivateCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { formatPostDate } from '~/utils/post'
 
@@ -433,7 +433,7 @@ MemberBookmarksPage.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  setCacheControl(res)
+  setPrivateCacheControl(res)
 
   const headerData = await fetchHeaderData()
 

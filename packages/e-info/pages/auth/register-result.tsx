@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import AuthResultCard from '~/components/auth/auth-result-card'
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { setCacheControl } from '~/utils/common'
+import { setPrivateCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
 
@@ -60,7 +60,7 @@ RegisterResultPage.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  setCacheControl(res)
+  setPrivateCacheControl(res)
 
   const headerData = await fetchHeaderData()
 

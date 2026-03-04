@@ -15,7 +15,7 @@ import type {
 } from '~/lib/graphql/member'
 import { updateMemberSubscriptions } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { setCacheControl } from '~/utils/common'
+import { setPrivateCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
@@ -547,7 +547,7 @@ MemberNewsletterPage.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  setCacheControl(res)
+  setPrivateCacheControl(res)
 
   const headerData = await fetchHeaderData()
 

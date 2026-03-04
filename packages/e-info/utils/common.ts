@@ -14,4 +14,8 @@ function setCacheControl(res: ServerResponse<IncomingMessage>): void {
   res.setHeader('Cache-Control', GLOBAL_CACHE_SETTING)
 }
 
-export { convertToStringList, isServer, setCacheControl }
+function setPrivateCacheControl(res: ServerResponse<IncomingMessage>): void {
+  res.setHeader('Cache-Control', 'private, no-store')
+}
+
+export { convertToStringList, isServer, setCacheControl, setPrivateCacheControl }

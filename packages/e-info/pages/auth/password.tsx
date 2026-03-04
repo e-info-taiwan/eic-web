@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { useAuth } from '~/hooks/useAuth'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { setCacheControl } from '~/utils/common'
+import { setPrivateCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
@@ -235,7 +235,7 @@ PasswordPage.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  setCacheControl(res)
+  setPrivateCacheControl(res)
 
   const headerData = await fetchHeaderData()
 

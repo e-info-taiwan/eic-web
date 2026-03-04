@@ -21,7 +21,7 @@ import type {
   RegisterFormErrors,
   RegisterFormValidation,
 } from '~/types/auth'
-import { setCacheControl } from '~/utils/common'
+import { setPrivateCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 
 const PageWrapper = styled.div`
@@ -784,7 +784,7 @@ export const getServerSideProps: GetServerSideProps<{
   headerData: Awaited<ReturnType<typeof fetchHeaderData>>
   sections: NotificationSection[]
 }> = async ({ res }) => {
-  setCacheControl(res)
+  setPrivateCacheControl(res)
 
   const [headerData, sections] = await Promise.all([
     fetchHeaderData(),

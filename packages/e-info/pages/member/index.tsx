@@ -12,7 +12,7 @@ import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { useAuth } from '~/hooks/useAuth'
 import { getMemberDisplayName } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
-import { setCacheControl } from '~/utils/common'
+import { setPrivateCacheControl } from '~/utils/common'
 import { getGravatarUrl } from '~/utils/gravatar'
 import { fetchHeaderData } from '~/utils/header-data'
 
@@ -361,7 +361,7 @@ MemberProfilePage.getLayout = function getLayout(page: ReactElement) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  setCacheControl(res)
+  setPrivateCacheControl(res)
 
   const headerData = await fetchHeaderData()
 
