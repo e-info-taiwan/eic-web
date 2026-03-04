@@ -418,7 +418,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
             }
           }
         }
-        posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
+        posts(where: { ${publishedStateFilter} } take: $postsPerCategory, orderBy: { publishTime: desc }) {
           id
           title
           publishTime
@@ -443,7 +443,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
 export const homepageSectionPosts = gql`
   query ($postsPerSection: Int = 8) {
     newsPosts: posts(
-      where: { category: { section: { id: { equals: "1" } } } }
+      where: { ${publishedStateFilter} category: { section: { id: { equals: "1" } } } }
       take: $postsPerSection
       orderBy: { publishTime: desc }
     ) {
@@ -461,7 +461,7 @@ export const homepageSectionPosts = gql`
       }
     }
     columnPosts: posts(
-      where: { category: { section: { id: { equals: "2" } } } }
+      where: { ${publishedStateFilter} category: { section: { id: { equals: "2" } } } }
       take: $postsPerSection
       orderBy: { publishTime: desc }
     ) {
@@ -479,7 +479,7 @@ export const homepageSectionPosts = gql`
       }
     }
     supplementPosts: posts(
-      where: { category: { section: { id: { equals: "3" } } } }
+      where: { ${publishedStateFilter} category: { section: { id: { equals: "3" } } } }
       take: $postsPerSection
       orderBy: { publishTime: desc }
     ) {
@@ -505,7 +505,7 @@ export const homepageSectionPosts = gql`
 export const homepageGreenConsumptionPosts = gql`
   query ($postsPerTag: Int = 3) {
     greenMain: posts(
-      where: { tags: { some: { name: { equals: "綠色消費" } } } }
+      where: { ${publishedStateFilter} tags: { some: { name: { equals: "綠色消費" } } } }
       take: $postsPerTag
       orderBy: { publishTime: desc }
     ) {
@@ -523,7 +523,7 @@ export const homepageGreenConsumptionPosts = gql`
       }
     }
     greenBuy: posts(
-      where: { tags: { some: { name: { equals: "買前必讀" } } } }
+      where: { ${publishedStateFilter} tags: { some: { name: { equals: "買前必讀" } } } }
       take: $postsPerTag
       orderBy: { publishTime: desc }
     ) {
@@ -541,7 +541,7 @@ export const homepageGreenConsumptionPosts = gql`
       }
     }
     greenFood: posts(
-      where: { tags: { some: { name: { equals: "食材食品" } } } }
+      where: { ${publishedStateFilter} tags: { some: { name: { equals: "食材食品" } } } }
       take: $postsPerTag
       orderBy: { publishTime: desc }
     ) {
@@ -559,7 +559,7 @@ export const homepageGreenConsumptionPosts = gql`
       }
     }
     greenClothing: posts(
-      where: { tags: { some: { name: { equals: "衣著紡織" } } } }
+      where: { ${publishedStateFilter} tags: { some: { name: { equals: "衣著紡織" } } } }
       take: $postsPerTag
       orderBy: { publishTime: desc }
     ) {
@@ -577,7 +577,7 @@ export const homepageGreenConsumptionPosts = gql`
       }
     }
     greenLeisure: posts(
-      where: { tags: { some: { name: { equals: "休閒娛樂" } } } }
+      where: { ${publishedStateFilter} tags: { some: { name: { equals: "休閒娛樂" } } } }
       take: $postsPerTag
       orderBy: { publishTime: desc }
     ) {

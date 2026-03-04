@@ -100,6 +100,7 @@ interface ResizedImages {
 
 **查詢條件**:
 - Section IDs: `['1', '2', '3']`（不含綠色消費，綠色消費改為 tag-based 查詢）
+- `state = "published"`（僅已發布文章）
 - 每個 category 取 8 篇文章（精選文章 + 一般文章）
 - Categories 依 `sortOrder` 升冪排序
 - Posts 依 `publishTime` 降冪排序
@@ -139,8 +140,8 @@ query {
           }
         }
       }
-      # 一般文章 (依發布時間)
-      posts(take: 8, orderBy: { publishTime: desc }) {
+      # 一般文章 (依發布時間, 僅已發布)
+      posts(where: { state: { equals: "published" } }, take: 8, orderBy: { publishTime: desc }) {
         id
         title
         publishTime
@@ -208,6 +209,7 @@ interface SectionPost {
 對應目前的 `homepageSectionPosts` 查詢。各大分類的跨分類文章，用於預設顯示（未選擇子分類 tab 時）。
 
 **查詢條件**:
+- `state = "published"`（僅已發布文章）
 - 依 section ID 篩選：時事新聞 (1)、專欄 (2)、副刊 (3)
 - 每個 section 取 8 篇文章
 - Posts 依 `publishTime` 降冪排序
@@ -217,7 +219,7 @@ interface SectionPost {
 ```graphql
 query ($postsPerSection: Int = 8) {
   newsPosts: posts(
-    where: { category: { section: { id: { equals: "1" } } } }
+    where: { state: { equals: "published" }, category: { section: { id: { equals: "1" } } } }
     take: $postsPerSection
     orderBy: { publishTime: desc }
   ) {
@@ -231,14 +233,14 @@ query ($postsPerSection: Int = 8) {
     }
   }
   columnPosts: posts(
-    where: { category: { section: { id: { equals: "2" } } } }
+    where: { state: { equals: "published" }, category: { section: { id: { equals: "2" } } } }
     take: $postsPerSection
     orderBy: { publishTime: desc }
   ) {
     # 同上
   }
   supplementPosts: posts(
-    where: { category: { section: { id: { equals: "3" } } } }
+    where: { state: { equals: "published" }, category: { section: { id: { equals: "3" } } } }
     take: $postsPerSection
     orderBy: { publishTime: desc }
   ) {
@@ -263,6 +265,7 @@ query ($postsPerSection: Int = 8) {
 | greenLeisure | 休閒娛樂 | 子 tab 文章 |
 
 **查詢條件**:
+- `state = "published"`（僅已發布文章）
 - 依 tag name 篩選（寫死 5 個 tag 名稱）
 - 每個 tag 取 3 篇文章
 - Posts 依 `publishTime` 降冪排序
@@ -272,7 +275,7 @@ query ($postsPerSection: Int = 8) {
 ```graphql
 query ($postsPerTag: Int = 3) {
   greenMain: posts(
-    where: { tags: { some: { name: { equals: "綠色消費" } } } }
+    where: { state: { equals: "published" }, tags: { some: { name: { equals: "綠色消費" } } } }
     take: $postsPerTag
     orderBy: { publishTime: desc }
   ) {
@@ -286,28 +289,28 @@ query ($postsPerTag: Int = 3) {
     }
   }
   greenBuy: posts(
-    where: { tags: { some: { name: { equals: "買前必讀" } } } }
+    where: { state: { equals: "published" }, tags: { some: { name: { equals: "買前必讀" } } } }
     take: $postsPerTag
     orderBy: { publishTime: desc }
   ) {
     # 同上
   }
   greenFood: posts(
-    where: { tags: { some: { name: { equals: "食材食品" } } } }
+    where: { state: { equals: "published" }, tags: { some: { name: { equals: "食材食品" } } } }
     take: $postsPerTag
     orderBy: { publishTime: desc }
   ) {
     # 同上
   }
   greenClothing: posts(
-    where: { tags: { some: { name: { equals: "衣著紡織" } } } }
+    where: { state: { equals: "published" }, tags: { some: { name: { equals: "衣著紡織" } } } }
     take: $postsPerTag
     orderBy: { publishTime: desc }
   ) {
     # 同上
   }
   greenLeisure: posts(
-    where: { tags: { some: { name: { equals: "休閒娛樂" } } } }
+    where: { state: { equals: "published" }, tags: { some: { name: { equals: "休閒娛樂" } } } }
     take: $postsPerTag
     orderBy: { publishTime: desc }
   ) {
