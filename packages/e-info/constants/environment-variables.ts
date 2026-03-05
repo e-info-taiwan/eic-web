@@ -1,6 +1,11 @@
-import { CACHE_MAX_AGE_SECONDS } from '~/constants/layout'
-
 // 這裡管理的是在 Build 階段就會寫死數值的環境變數 (通常為 `NEXT_PUBLCI_` 開頭)
+// NOTE: This file is loaded by ts-import in next.config.mjs, which compiles it
+// to CJS in an isolated cache directory. External imports (~/... or ./...)
+// will fail because ts-import doesn't resolve path aliases or co-compile
+// dependencies. Keep this file self-contained with no local imports.
+
+// Must match CACHE_MAX_AGE_SECONDS in constants/layout.ts
+const CACHE_MAX_AGE_SECONDS = 600
 const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
 let SITE_URL: string
 let GA_TRACKING_ID: string
