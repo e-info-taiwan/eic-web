@@ -61,7 +61,7 @@ switch (ENV) {
     POPULAR_SEARCH_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/ga/popular_search.json'
     READING_RANKING_ENDPOINT =
-      'https://storage.cloud.google.com/statics-e-info-prod/ga/reading_ranking.json'
+      'https://storage.googleapis.com/statics-e-info-prod/ga/reading_ranking.json'
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/json/listing'
     FIREBASE_CONFIG = {
