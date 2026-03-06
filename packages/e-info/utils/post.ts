@@ -2,6 +2,7 @@ import { Eic } from '@eic-web/draft-renderer'
 import dayjs from 'dayjs'
 import type { RawDraftContentState } from 'draft-js'
 
+import { DEFAULT_NEWS_IMAGE_PATH } from '~/constants/constant'
 import type { Post } from '~/graphql/fragments/post'
 import type {
   GenericPhoto,
@@ -105,10 +106,14 @@ export function convertPostToArticleCard(
 }
 
 export const postConvertFunc = (post: Post): ArticleCard => {
-  const { heroImage, ogImage } = post
+  const { heroImage, ogImage, style } = post
   const images = ogImage?.resized ?? heroImage?.resized ?? {}
   const imagesWebP = ogImage?.resizedWebp ?? heroImage?.resizedWebp ?? {}
-  return convertPostToArticleCard(post, images, imagesWebP)
+  const card = convertPostToArticleCard(post, images, imagesWebP)
+  if (style === 'editor') {
+    card.defaultImage = DEFAULT_NEWS_IMAGE_PATH
+  }
+  return card
 }
 
 export const getResizedUrl = (

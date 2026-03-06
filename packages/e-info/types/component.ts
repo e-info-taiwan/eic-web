@@ -12,6 +12,7 @@ export type ArticleCard = {
   date: string
   isReport: boolean
   tags?: ArticleCardTag[]
+  defaultImage?: string
 }
 
 export type FeaturedArticle = {

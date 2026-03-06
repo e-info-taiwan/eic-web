@@ -65,7 +65,7 @@ export default function ArticleLists({
           onClick={() =>
             gtag.sendEvent('listing', 'click', `listing-${article.title}`)
           }
-          defaultImage={defaultImage}
+          defaultImage={article.defaultImage || defaultImage}
         />
       </Item>
     )
