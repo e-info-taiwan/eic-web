@@ -3,6 +3,9 @@ import Head from 'next/head'
 import { SITE_TITLE } from '~/constants/constant'
 import { SITE_URL } from '~/constants/environment-variables'
 
+// Evaluated once at server startup — changes per deployment
+const DEPLOY_CACHE_BUSTER = Date.now()
+
 type OGProperties = {
   locale?: 'zh_TW'
   url: string
@@ -95,7 +98,8 @@ export default function CustomHead(props: HeadProps): JSX.Element {
       width: '1200',
       height: '630',
       type: 'images/jpeg',
-      url: props.imageUrl ?? `https://${SITE_URL}/og.jpg`,
+      url:
+        props.imageUrl ?? `https://${SITE_URL}/og.jpg?v=${DEPLOY_CACHE_BUSTER}`,
     },
     card: 'summary_large_image',
   }
