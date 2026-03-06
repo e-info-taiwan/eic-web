@@ -327,7 +327,7 @@ export const categoryWithPosts = gql`
       slug
       name
       postsCount
-      posts(take: $postsCount, orderBy: { publishTime: desc }) {
+      posts(where: { ${publishedStateFilter} } take: $postsCount, orderBy: { publishTime: desc }) {
         id
         title
         publishTime
@@ -358,7 +358,7 @@ export const sectionWithCategoriesAndPosts = gql`
         name
         sortOrder
         postsCount
-        posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
+        posts(where: { ${publishedStateFilter} } take: $postsPerCategory, orderBy: { publishTime: desc }) {
           id
           title
           publishTime
@@ -895,7 +895,7 @@ export const sectionBySlug = gql`
 export const sectionPostsForListing = gql`
   query ($sectionSlug: String!, $take: Int = 12, $skip: Int = 0) {
     posts(
-      where: { category: { section: { slug: { equals: $sectionSlug } } } }
+      where: { ${publishedStateFilter} category: { section: { slug: { equals: $sectionSlug } } } }
       take: $take
       skip: $skip
       orderBy: { publishTime: desc }
@@ -927,7 +927,7 @@ export const sectionPostsForListing = gql`
       }
     }
     postsCount(
-      where: { category: { section: { slug: { equals: $sectionSlug } } } }
+      where: { ${publishedStateFilter} category: { section: { slug: { equals: $sectionSlug } } } }
     )
   }
   ${resizeImagesCardFragment}
@@ -996,7 +996,7 @@ export const sectionPageBySlug = gql`
             }
           }
         }
-        posts(take: $postsPerCategory, orderBy: { publishTime: desc }) {
+        posts(where: { ${publishedStateFilter} } take: $postsPerCategory, orderBy: { publishTime: desc }) {
           id
           title
           publishTime
@@ -1061,7 +1061,7 @@ export const categoryPostsForListing = gql`
     categories(where: { id: { equals: $categoryId } }) {
       id
       postsCount
-      posts(take: $take, skip: $skip, orderBy: { publishTime: desc }) {
+      posts(where: { ${publishedStateFilter} } take: $take, skip: $skip, orderBy: { publishTime: desc }) {
         id
         title
         style
