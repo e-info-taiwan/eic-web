@@ -53,7 +53,7 @@ switch (ENV) {
     API_ENDPOINT =
       'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/graphql'
     PREVIEW_API_ENDPOINT =
-      'https://eic-info-cms-preview-prod-6rojjsxpoa-de.a.run.app/api/graphql'
+      'https://eic-info-cms-preview-prod-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/json/homepage.json'
     HEADER_API_ENDPOINT =
