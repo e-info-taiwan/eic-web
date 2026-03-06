@@ -166,7 +166,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     }
 
     if (!data?.posts?.[0]) {
-      return { notFound: true }
+      return { notFound: true, revalidate: 60 }
     }
 
     const postData = data.posts[0]
