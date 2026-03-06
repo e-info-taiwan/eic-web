@@ -77,6 +77,7 @@ steps:
         add_secret "MAILCHIMP_API_KEY" "MAILCHIMP_API_KEY$$SUFFIX"
         add_secret "MAILCHIMP_LIST_ID_DAILY" "MAILCHIMP_LIST_ID_DAILY$$SUFFIX"
         add_secret "MAILCHIMP_LIST_ID_WEEKLY" "MAILCHIMP_LIST_ID_WEEKLY$$SUFFIX"
+        add_secret "REVALIDATE_SECRET" "REVALIDATE_SECRET$$SUFFIX"
 
         echo "Secrets config: $$SECRETS"
 
