@@ -156,6 +156,10 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     const donation = donationResult.data?.donations?.[0] || null
 
     if (gqlError) {
+      console.error(
+        '[Post] GraphQL error details:',
+        JSON.stringify(gqlError, null, 2)
+      )
       const annotatingError = errors.helpers.wrap(
         'GraphQLError',
         'failed to complete `postData`',
@@ -211,7 +215,10 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
       'Error occurs while fetching data at Post page'
     )
 
-    console.log(JSON.stringify(err, null, 2))
+    console.log(
+      '[Post] Catch error:',
+      err instanceof Error ? err.message : JSON.stringify(err, null, 2)
+    )
 
     // All exceptions that include a stack trace will be
     // integrated with Error Reporting.
