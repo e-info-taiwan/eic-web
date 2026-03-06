@@ -156,9 +156,17 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     const donation = donationResult.data?.donations?.[0] || null
 
     if (gqlError) {
+      const err = gqlError as any
       console.error(
-        '[Post] GraphQL error details:',
-        JSON.stringify(gqlError, null, 2)
+        '[Post] GraphQL error:',
+        'message:',
+        err.message,
+        'graphQLErrors:',
+        JSON.stringify(err.graphQLErrors, null, 2),
+        'networkError:',
+        err.networkError?.message || err.networkError,
+        'extraInfo:',
+        JSON.stringify(err.extraInfo, null, 2)
       )
       const annotatingError = errors.helpers.wrap(
         'GraphQLError',
