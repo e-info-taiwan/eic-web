@@ -64,11 +64,6 @@ export const pageRedirects: PageRedirect[] = [
     description: '合作媒體',
   },
   {
-    path: '/sitemap',
-    postId: '55973',
-    description: '網站導覽',
-  },
-  {
     path: '/submission-guidelines',
     postId: '210973',
     description: '投稿須知',

@@ -273,7 +273,6 @@ const Footer = () => {
     [
       { label: '投稿須知', href: '/submission-guidelines' },
       { label: '隱私權政策', href: '/privacy' },
-      { label: '網站導覽', href: '/sitemap' },
       {
         label: '意見回饋',
         href: 'https://forms.gle/5e4hQsSJcSxtyJkF7',

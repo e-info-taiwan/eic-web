@@ -115,7 +115,7 @@ const HotKeywordsSection: React.FC<HotKeywordsSectionProps> = ({
   return (
     <SectionContainer>
       <Container>
-        <Title>熱搜關鍵字</Title>
+        <Title>熱門關鍵字</Title>
         <TagList>
           {keywords.map((item) => (
             <TagItem key={item.rank}>
