@@ -1033,6 +1033,7 @@ export const categoryByIdWithSection = gql`
         slug
         name
         style
+        description
         heroImage {
           resized {
             ...ResizedImagesField

@@ -26,6 +26,7 @@ type CategoryListingSection = {
   slug: string
   name: string
   style: string | null
+  description: string | null
   heroImage: {
     resized: Record<string, string> | null
     resizedWebp: Record<string, string> | null

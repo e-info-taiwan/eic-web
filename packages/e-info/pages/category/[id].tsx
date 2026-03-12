@@ -323,6 +323,20 @@ const ColumnCategoryTag = styled(Link)<{ $isActive?: boolean }>`
   }
 `
 
+const ColumnDescriptionSection = styled.div`
+  max-width: ${MAX_CONTENT_WIDTH};
+  margin: 0 auto;
+  padding: 24px 20px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #000;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 24px 58px 40px 58px;
+  }
+`
+
 const ColumnContentWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
@@ -368,6 +382,7 @@ type SectionInfo = {
   slug: string
   name: string
   style: string | null
+  description: string | null
   heroImage: SectionHeroImage
   categories: SectionListingCategory[]
 }
@@ -448,6 +463,13 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
             ))}
           </ColumnCategoryTagsContainer>
         </ColumnCategoryTagsWrapper>
+
+        {/* Description */}
+        {section.description && (
+          <ColumnDescriptionSection>
+            {section.description}
+          </ColumnDescriptionSection>
+        )}
 
         {/* Article Content */}
         <ColumnContentWrapper>
@@ -563,6 +585,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
             slug: listingData.section.slug,
             name: listingData.section.name,
             style: listingData.section.style,
+            description: listingData.section.description || null,
             heroImage: listingData.section.heroImage || null,
             categories: listingData.section.categories,
           },
@@ -653,6 +676,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           slug: section.slug,
           name: section.name,
           style: section.style,
+          description: section.description || null,
           heroImage: section.heroImage || null,
           categories: section.categories,
         },

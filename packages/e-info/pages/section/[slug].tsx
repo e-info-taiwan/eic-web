@@ -420,17 +420,14 @@ const CategoryTag = styled(Link)`
   }
 `
 
-// Description Section (placeholder for future CMS field)
 const DescriptionSection = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
   padding: 24px 20px;
-  text-align: left;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
   color: #000;
-  min-height: 80px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     padding: 24px 58px 40px 58px;
@@ -986,7 +983,9 @@ const SectionColumnPage = ({ section, categories }: SectionColumnPageProps) => {
       </CategoryTagsWrapper>
 
       {/* Description Section */}
-      <DescriptionSection>{section.description || ''}</DescriptionSection>
+      {section.description && (
+        <DescriptionSection>{section.description}</DescriptionSection>
+      )}
 
       {/* Category Article Sections - 2 columns on desktop */}
       {categoriesWithPosts.length > 0 ? (
