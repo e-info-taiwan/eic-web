@@ -148,7 +148,7 @@ const ArticleCard = styled.a`
 
 const ArticleImage = styled.div`
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   margin-bottom: 12px;
   background-color: ${({ theme }) => theme.colors.grayscale[95]};

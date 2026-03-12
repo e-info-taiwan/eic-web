@@ -109,7 +109,7 @@ const EventCard = styled.a`
 
 const EventImage = styled.div<{ $image: string }>`
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   background-image: url(${({ $image }) => $image});
   background-size: cover;
   background-position: center;
