@@ -369,7 +369,7 @@ const HeroTitle = styled.h1`
 // Category Tags Section
 const CategoryTagsWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
-  margin: 0 auto;
+  margin: 0 auto 40px;
   background: linear-gradient(
     180deg,
     rgba(207, 237, 209, 0.6) 61.06%,
@@ -422,7 +422,7 @@ const CategoryTag = styled(Link)`
 
 const DescriptionSection = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
-  margin: 0 auto;
+  margin: 0 auto 40px;
   padding: 24px 20px;
   font-size: 18px;
   font-weight: 500;

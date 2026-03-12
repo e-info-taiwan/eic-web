@@ -29,7 +29,7 @@ const PageWrapper = styled.div`
 const HeroSection = styled.section`
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   margin-bottom: 32px;
 
@@ -145,13 +145,13 @@ const ArticleCard = styled.a`
 const ArticleImageWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background-color: #f0f0f0;
 
   ${({ theme }) => theme.breakpoint.md} {
-    width: 283px;
-    height: 176px;
+    width: 284px;
+    height: 213px;
     flex-shrink: 0;
   }
 `
