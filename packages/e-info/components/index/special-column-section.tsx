@@ -157,7 +157,7 @@ const ArticleCard = styled.a`
 
 const ImageWrapper = styled.div`
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
   background-color: #d1d5db;
   overflow: hidden;
 `

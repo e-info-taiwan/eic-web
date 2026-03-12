@@ -228,13 +228,14 @@ const FeaturedImageWrapper = styled.div`
   position: relative;
   margin-bottom: 16px;
   overflow: hidden;
-  aspect-ratio: 740 / 431;
+  aspect-ratio: 4 / 3;
   background-color: #d1d5db;
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    aspect-ratio: unset;
     width: 740px;
-    height: 431px;
+    height: 555px;
   }
 `
 
@@ -353,14 +354,14 @@ const RelatedArticle = styled.a`
 
 const RelatedImageWrapper = styled.div`
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
   background-color: #d1d5db;
   overflow: hidden;
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    width: 160px;
-    height: 107px;
+    width: 144px;
+    height: 108px;
     flex-shrink: 0;
   }
 `

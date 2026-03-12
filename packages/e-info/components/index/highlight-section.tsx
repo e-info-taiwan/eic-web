@@ -128,7 +128,7 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
   margin-bottom: 12px;
-  aspect-ratio: 160 / 107;
+  aspect-ratio: 3 / 2;
   background-color: #d1d5db;
 
   // Desktop
@@ -136,7 +136,7 @@ const ImageContainer = styled.div`
     margin-bottom: 0;
     margin-right: 12px;
     width: 160px;
-    height: 107px;
+    height: 120px;
     flex-shrink: 0;
   }
 `

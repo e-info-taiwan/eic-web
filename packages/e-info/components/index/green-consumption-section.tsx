@@ -196,7 +196,7 @@ const ImageWrapper = styled.div`
   position: relative;
   overflow: hidden;
   margin-bottom: 12px;
-  aspect-ratio: 288 / 190;
+  aspect-ratio: 4 / 3;
   background-color: #2d7a4f;
 
   // Desktop

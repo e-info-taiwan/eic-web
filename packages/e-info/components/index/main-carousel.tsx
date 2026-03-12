@@ -243,11 +243,11 @@ const MainImage = styled.img`
   aspect-ratio: 6 / 4;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    padding: 40px 84px 0;
+    padding: 40px 47px 0;
   }
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    padding: 80px 0 0;
+    padding: 60px 0 0;
   }
 `
 

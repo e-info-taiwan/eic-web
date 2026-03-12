@@ -170,7 +170,7 @@ const HeroImageWrapper = styled.div`
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    aspect-ratio: 760 / 507;
+    aspect-ratio: 4 / 3;
   }
 `
 
@@ -211,7 +211,7 @@ const ArticlesList = styled.div`
 
 const ArticleItem = styled.a`
   display: grid;
-  grid-template-columns: 1fr 130px;
+  grid-template-columns: 1fr 98px;
   gap: 12px;
   padding: 0 23px;
   cursor: pointer;
@@ -219,14 +219,14 @@ const ArticleItem = styled.a`
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    grid-template-columns: 1fr 289px;
+    grid-template-columns: 1fr 217px;
     gap: 16px;
     padding: 0;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 300px;
     gap: 30px;
     padding: 0;
   }
@@ -290,18 +290,18 @@ const ArticleExcerpt = styled.p`
 const ArticleImageWrapper = styled.div`
   width: 100%;
   height: auto;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
   background-color: #d1d5db;
   overflow: hidden;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    width: 289px;
+    width: 217px;
   }
 
   // Desktop
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    width: 400px;
+    width: 300px;
   }
 `
 

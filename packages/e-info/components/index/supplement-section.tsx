@@ -187,11 +187,11 @@ const ImageWrapper = styled.div`
   width: 100%;
   height: auto;
   object-fit: cover;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
   background-color: #d1d5db;
   flex-shrink: 0;
-  max-width: 130px;
-  min-height: 87px;
+  max-width: 168px;
+  min-height: 126px;
   overflow: hidden;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
