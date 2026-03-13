@@ -17,12 +17,11 @@ type StyledProps = {
   $shouldHighlightReport: boolean
 }
 
-const CardContainer = styled.a<StyledProps>`
+const CardContainer = styled.article<StyledProps>`
   display: flex;
   position: relative;
   border-radius: 2px;
   cursor: pointer;
-  text-decoration: none;
   ${({ theme }) => theme.breakpoint.sm} {
     display: block;
   }
@@ -43,6 +42,12 @@ const CardContainer = styled.a<StyledProps>`
         padding: 0 0 12px;
       }
     `}
+`
+
+const CardLink = styled.a`
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 `
 
 const ImageWrapper = styled.div<StyledProps>`
@@ -173,46 +178,46 @@ export default function ArticleListCard({
   const isReportAndShouldHighlight = isReport && shouldHighlightReport
 
   return (
-    <Link href={href} passHref legacyBehavior>
-      <CardContainer
+    <CardContainer
+      $shouldReverseInMobile={shouldReverseInMobile}
+      $shouldHighlightReport={isReportAndShouldHighlight}
+    >
+      <Link href={href} passHref legacyBehavior>
+        <CardLink onClick={onClick} />
+      </Link>
+      <ImageWrapper
         $shouldReverseInMobile={shouldReverseInMobile}
         $shouldHighlightReport={isReportAndShouldHighlight}
-        onClick={onClick}
       >
-        <ImageWrapper
-          $shouldReverseInMobile={shouldReverseInMobile}
-          $shouldHighlightReport={isReportAndShouldHighlight}
-        >
-          <picture>
-            <SharedImage
-              images={images}
-              imagesWebP={imagesWebP}
-              defaultImage={defaultImage}
-              alt={title}
-              priority={shouldNotLazyload}
-              rwd={rwd}
-              breakpoint={breakpoint}
-            />
-          </picture>
-          {isReport && <ReportLabel />}
-        </ImageWrapper>
-        <TextWrapper $shouldHighlightReport={isReportAndShouldHighlight}>
-          {!shouldHideBottomInfos && <DateInfo date={date} />}
-          <div className="title">
-            <p>{title}</p>
+        <picture>
+          <SharedImage
+            images={images}
+            imagesWebP={imagesWebP}
+            defaultImage={defaultImage}
+            alt={title}
+            priority={shouldNotLazyload}
+            rwd={rwd}
+            breakpoint={breakpoint}
+          />
+        </picture>
+        {isReport && <ReportLabel />}
+      </ImageWrapper>
+      <TextWrapper $shouldHighlightReport={isReportAndShouldHighlight}>
+        {!shouldHideBottomInfos && <DateInfo date={date} />}
+        <div className="title">
+          <p>{title}</p>
+        </div>
+        {summary && (
+          <div className="summary">
+            <p>{summary}</p>
           </div>
-          {summary && (
-            <div className="summary">
-              <p>{summary}</p>
-            </div>
-          )}
-          {tags.length > 0 && (
-            <div className="tags">
-              <PostTag tags={tags} />
-            </div>
-          )}
-        </TextWrapper>
-      </CardContainer>
-    </Link>
+        )}
+        {tags.length > 0 && (
+          <div className="tags" style={{ position: 'relative', zIndex: 1 }}>
+            <PostTag tags={tags} />
+          </div>
+        )}
+      </TextWrapper>
+    </CardContainer>
   )
 }
