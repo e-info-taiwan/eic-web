@@ -305,6 +305,10 @@ const FeaturedBrief = styled.p`
   font-weight: 400;
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     font-size: 18px;
