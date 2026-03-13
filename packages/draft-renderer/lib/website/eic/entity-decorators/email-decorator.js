@@ -10,14 +10,11 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var EmailLinkWrapper = _styledComponents["default"].a.withConfig({
   displayName: "email-decorator__EmailLinkWrapper",
   componentId: "sc-zkxy0q-0"
-})(["display:inline;border-bottom:2px solid ", ";letter-spacing:0.01em;text-align:justify;color:", ";padding-bottom:2px;&:hover{border-bottom:2px solid ", ";}"], function (_ref) {
+})(["display:inline;text-decoration:none;letter-spacing:0.01em;text-align:justify;color:", ";padding-bottom:2px;&:hover{color:", ";}"], function (_ref) {
   var theme = _ref.theme;
-  return theme.colors.primary[40];
+  return theme.colors.primary[20];
 }, function (_ref2) {
   var theme = _ref2.theme;
-  return theme.colors.primary[20];
-}, function (_ref3) {
-  var theme = _ref3.theme;
   return theme.colors.primary[0];
 });
 
