@@ -212,7 +212,7 @@ const NewsTitle = styled.h3`
 `
 
 const NewsBrief = styled.p`
-  color: ${({ theme }) => theme.colors.grayscale[20]};
+  color: ${({ theme }) => theme.colors.grayscale[40]};
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
