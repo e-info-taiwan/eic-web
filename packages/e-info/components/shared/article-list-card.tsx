@@ -70,7 +70,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
   .title {
     font-size: 18px;
     line-height: 1.5;
-    font-weight: 500;
+    font-weight: 700;
     text-align: left;
     margin-top: 12px;
     color: ${({ theme }) => theme.colors.grayscale[0]};
@@ -92,7 +92,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
 
     p {
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 400;
       line-height: 24px;
       letter-spacing: 0;
       color: ${({ theme }) => theme.colors.grayscale[20]};
