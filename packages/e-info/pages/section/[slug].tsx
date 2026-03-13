@@ -234,6 +234,7 @@ const BackForwardButton = styled.button<{ $isDisabled?: boolean }>`
 
 const PaginationButton = styled(Link)<{
   $isActive?: boolean
+  $isLarge?: boolean
 }>`
   display: flex;
   align-items: center;
@@ -246,7 +247,7 @@ const PaginationButton = styled(Link)<{
   background: #fff;
   color: ${({ $isActive, theme }) =>
     $isActive ? theme.colors.grayscale[0] : theme.colors.primary[20]};
-  font-size: 10px;
+  font-size: ${({ $isLarge }) => ($isLarge ? '8px' : '10px')};
   font-weight: 500;
   line-height: 1.5;
   cursor: pointer;
@@ -263,7 +264,7 @@ const PaginationButton = styled(Link)<{
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
     min-width: 36px;
     height: 36px;
-    font-size: 16px;
+    font-size: ${({ $isLarge }) => ($isLarge ? '12px' : '16px')};
     font-weight: 700;
     border-radius: 18px;
   }
@@ -910,6 +911,7 @@ const SectionDefaultPage = ({
                 key={item}
                 href={buildPageUrl(item)}
                 $isActive={item === currentPage}
+                $isLarge={item >= 1000}
               >
                 {String(item).padStart(2, '0')}
               </PaginationButton>

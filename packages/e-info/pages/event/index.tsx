@@ -187,7 +187,10 @@ const BackForwardButton = styled.button<{ $isDisabled?: boolean }>`
   }
 `
 
-const PaginationButton = styled.button<{ $isActive?: boolean }>`
+const PaginationButton = styled.button<{
+  $isActive?: boolean
+  $isLarge?: boolean
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,7 +202,7 @@ const PaginationButton = styled.button<{ $isActive?: boolean }>`
   background: transparent;
   color: ${({ $isActive, theme }) =>
     $isActive ? '#c4956a' : theme.colors.primary[95]};
-  font-size: 10px;
+  font-size: ${({ $isLarge }) => ($isLarge ? '8px' : '10px')};
   font-weight: 500;
   line-height: 1.5;
   cursor: pointer;
@@ -214,7 +217,7 @@ const PaginationButton = styled.button<{ $isActive?: boolean }>`
   ${({ theme }) => theme.breakpoint.md} {
     min-width: 36px;
     height: 36px;
-    font-size: 16px;
+    font-size: ${({ $isLarge }) => ($isLarge ? '12px' : '16px')};
     font-weight: 700;
   }
 `
@@ -573,6 +576,7 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
               <PaginationButton
                 key={item}
                 $isActive={item === currentPage}
+                $isLarge={item >= 1000}
                 onClick={() => handlePageChange(item)}
               >
                 {String(item).padStart(2, '0')}
