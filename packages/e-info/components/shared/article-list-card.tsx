@@ -2,7 +2,7 @@
 
 import type { Breakpoint, Rwd } from '@readr-media/react-image'
 import SharedImage from '@readr-media/react-image'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import styled from 'styled-components'
 
 import PostTag from '~/components/post/tag'
@@ -17,11 +17,12 @@ type StyledProps = {
   $shouldHighlightReport: boolean
 }
 
-const CardContainer = styled.article<StyledProps>`
+const CardContainer = styled.a<StyledProps>`
   display: flex;
   position: relative;
   border-radius: 2px;
   cursor: pointer;
+  text-decoration: none;
   ${({ theme }) => theme.breakpoint.sm} {
     display: block;
   }
@@ -169,65 +170,49 @@ export default function ArticleListCard({
   breakpoint,
   defaultImage = DEFAULT_POST_IMAGE_PATH,
 }: ArticleListCardProps): JSX.Element {
-  const router = useRouter()
   const isReportAndShouldHighlight = isReport && shouldHighlightReport
 
-  function handleClick() {
-    if (typeof onClick === 'function') {
-      onClick()
-    }
-    router.push(href)
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      handleClick()
-    }
-  }
-
   return (
-    <CardContainer
-      $shouldReverseInMobile={shouldReverseInMobile}
-      $shouldHighlightReport={isReportAndShouldHighlight}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="link"
-      tabIndex={0}
-    >
-      <ImageWrapper
+    <Link href={href} passHref legacyBehavior>
+      <CardContainer
         $shouldReverseInMobile={shouldReverseInMobile}
         $shouldHighlightReport={isReportAndShouldHighlight}
+        onClick={onClick}
       >
-        <picture>
-          <SharedImage
-            images={images}
-            imagesWebP={imagesWebP}
-            defaultImage={defaultImage}
-            alt={title}
-            priority={shouldNotLazyload}
-            rwd={rwd}
-            breakpoint={breakpoint}
-          />
-        </picture>
-        {isReport && <ReportLabel />}
-      </ImageWrapper>
-      <TextWrapper $shouldHighlightReport={isReportAndShouldHighlight}>
-        {!shouldHideBottomInfos && <DateInfo date={date} />}
-        <div className="title">
-          <p>{title}</p>
-        </div>
-        {summary && (
-          <div className="summary">
-            <p>{summary}</p>
+        <ImageWrapper
+          $shouldReverseInMobile={shouldReverseInMobile}
+          $shouldHighlightReport={isReportAndShouldHighlight}
+        >
+          <picture>
+            <SharedImage
+              images={images}
+              imagesWebP={imagesWebP}
+              defaultImage={defaultImage}
+              alt={title}
+              priority={shouldNotLazyload}
+              rwd={rwd}
+              breakpoint={breakpoint}
+            />
+          </picture>
+          {isReport && <ReportLabel />}
+        </ImageWrapper>
+        <TextWrapper $shouldHighlightReport={isReportAndShouldHighlight}>
+          {!shouldHideBottomInfos && <DateInfo date={date} />}
+          <div className="title">
+            <p>{title}</p>
           </div>
-        )}
-        {tags.length > 0 && (
-          <div className="tags">
-            <PostTag tags={tags} />
-          </div>
-        )}
-      </TextWrapper>
-    </CardContainer>
+          {summary && (
+            <div className="summary">
+              <p>{summary}</p>
+            </div>
+          )}
+          {tags.length > 0 && (
+            <div className="tags">
+              <PostTag tags={tags} />
+            </div>
+          )}
+        </TextWrapper>
+      </CardContainer>
+    </Link>
   )
 }
