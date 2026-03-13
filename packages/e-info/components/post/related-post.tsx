@@ -58,10 +58,17 @@ const Card = styled.a`
 
 const ImageWrapper = styled.div`
   width: 100%;
-  max-height: 147px;
+  aspect-ratio: 4 / 3;
+  max-height: 165px;
   overflow: hidden;
   margin-bottom: 12px;
   background-color: #f0f0f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `
 
 const Title = styled.h3`
