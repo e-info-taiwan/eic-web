@@ -380,6 +380,9 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
   const [subscriptionState, setSubscriptionState] =
     useState<SubscriptionState>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [alreadySubscribedMessages, setAlreadySubscribedMessages] = useState<
+    string[]
+  >([])
 
   // Validation states
   const emailFormatError = email.length > 0 && !isValidEmail(email)
@@ -402,6 +405,7 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     setConfirmEmail('')
     setSubscriptionState('idle')
     setErrorMessage('')
+    setAlreadySubscribedMessages([])
     onClose()
   }
 
@@ -411,66 +415,127 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
     }
   }
 
+  // Build already-subscribed message based on frequency and format
+  const getAlreadySubscribedMessage = (
+    frequency: 'daily' | 'weekly',
+    format: 'standard' | 'styled'
+  ): string => {
+    const name =
+      frequency === 'daily'
+        ? '《環境資訊中心電子報》'
+        : '《環境資訊中心電子報一週回顧》'
+    const suffix = format === 'styled' ? '美化版，' : '，'
+    return `您已訂閱過${name}${suffix}謝謝`
+  }
+
   const handleSubmit = async () => {
     // Reset error state
     setErrorMessage('')
+    setAlreadySubscribedMessages([])
     setSubscriptionState('loading')
 
-    // Determine format from styled checkbox
     const format = styledChecked ? 'styled' : 'standard'
-    // For the external newsletter API, use 'daily' if daily is checked, otherwise 'weekly'
-    const frequency = dailyChecked ? 'daily' : 'weekly'
 
     try {
-      const response = await fetch('/api/newsletter/subscribe', {
+      // Step 1: Check existing subscriptions
+      const checkResponse = await fetch('/api/newsletter/check', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          frequency,
-          format: styledChecked ? 'styled' : 'standard',
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       })
 
-      const data = await response.json()
+      if (!checkResponse.ok) {
+        throw new Error('Check API failed')
+      }
 
-      if (data.success) {
-        setSubscriptionState('success')
-        setIsSubmitted(true)
+      const checkData = (await checkResponse.json()) as {
+        daily: { subscribed: boolean; format: 'standard' | 'styled' | null }
+        weekly: { subscribed: boolean; format: 'standard' | 'styled' | null }
+      }
 
-        // Track conversion in GA4
-        const subscriptionType =
-          dailyChecked && weeklyChecked ? 'both' : frequency
-        gtag.sendConversion('newsletter_subscribe', subscriptionType)
+      // Step 2: Determine which newsletters need subscribing
+      const messages: string[] = []
+      const toSubscribe: ('daily' | 'weekly')[] = []
 
-        // Sync to member system if user is logged in
-        if (member && firebaseUser) {
-          try {
-            // Build subscription input based on checked options
-            const subscriptionInput: {
-              daily?: NewsletterType | null
-              weekly?: NewsletterType | null
-            } = {
-              daily: dailyChecked ? format : null,
-              weekly: weeklyChecked ? format : null,
-            }
-
-            await updateMemberSubscriptions(
-              member.id,
-              firebaseUser.uid,
-              subscriptionInput
+      if (dailyChecked) {
+        if (checkData.daily.subscribed) {
+          messages.push(
+            getAlreadySubscribedMessage(
+              'daily',
+              checkData.daily.format || 'standard'
             )
-            console.log('[Newsletter] Member subscription synced')
-          } catch (syncError) {
-            // Don't fail the overall subscription if member sync fails
-            console.error('[Newsletter] Member sync error:', syncError)
-          }
+          )
+        } else {
+          toSubscribe.push('daily')
         }
-      } else {
-        setSubscriptionState('error')
-        setErrorMessage(data.error || '訂閱失敗，請稍後再試')
+      }
+
+      if (weeklyChecked) {
+        if (checkData.weekly.subscribed) {
+          messages.push(
+            getAlreadySubscribedMessage(
+              'weekly',
+              checkData.weekly.format || 'standard'
+            )
+          )
+        } else {
+          toSubscribe.push('weekly')
+        }
+      }
+
+      // Step 3: Subscribe to newsletters that aren't already subscribed
+      let subscribeSuccess = false
+      for (const frequency of toSubscribe) {
+        const response = await fetch('/api/newsletter/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, frequency, format }),
+        })
+
+        const data = await response.json()
+        if (data.success) {
+          subscribeSuccess = true
+        } else {
+          setSubscriptionState('error')
+          setErrorMessage(data.error || '訂閱失敗，請稍後再試')
+          return
+        }
+      }
+
+      // Step 4: Show results
+      setAlreadySubscribedMessages(messages)
+      setSubscriptionState('success')
+      setIsSubmitted(true)
+
+      // Track conversion in GA4 (only for new subscriptions)
+      if (subscribeSuccess) {
+        const subscriptionType =
+          toSubscribe.length === 2
+            ? 'both'
+            : toSubscribe[0] || (dailyChecked ? 'daily' : 'weekly')
+        gtag.sendConversion('newsletter_subscribe', subscriptionType)
+      }
+
+      // Sync to member system if user is logged in
+      if (member && firebaseUser) {
+        try {
+          const subscriptionInput: {
+            daily?: NewsletterType | null
+            weekly?: NewsletterType | null
+          } = {
+            daily: dailyChecked ? format : null,
+            weekly: weeklyChecked ? format : null,
+          }
+
+          await updateMemberSubscriptions(
+            member.id,
+            firebaseUser.uid,
+            subscriptionInput
+          )
+          console.log('[Newsletter] Member subscription synced')
+        } catch (syncError) {
+          console.error('[Newsletter] Member sync error:', syncError)
+        }
       }
     } catch (error) {
       console.error('[Newsletter] Subscription error:', error)
@@ -489,7 +554,17 @@ const NewsletterModal = ({ isOpen, onClose }: NewsletterModalProps) => {
         {isSubmitted ? (
           // Success view
           <SuccessContainer>
-            <SuccessMessage>訂閱成功！</SuccessMessage>
+            {alreadySubscribedMessages.map((msg, index) => (
+              <SuccessMessage key={index}>{msg}</SuccessMessage>
+            ))}
+            {alreadySubscribedMessages.length === 0 && (
+              <SuccessMessage>訂閱成功！</SuccessMessage>
+            )}
+            {alreadySubscribedMessages.length > 0 &&
+              alreadySubscribedMessages.length <
+                (dailyChecked ? 1 : 0) + (weeklyChecked ? 1 : 0) && (
+                <SuccessMessage>電子報訂閱成功！</SuccessMessage>
+              )}
             <CloseButtonLarge onClick={handleClose}>關閉</CloseButtonLarge>
           </SuccessContainer>
         ) : (
