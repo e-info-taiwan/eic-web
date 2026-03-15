@@ -476,11 +476,17 @@ const NewsSection = ({ section }: NewsSectionProps) => {
   const relatedPosts = currentPosts.slice(1, 3)
   const sidebarPosts = currentPosts.slice(3, 8)
 
-  // Use different default image for "編輯直送" category
+  // Use different default image for "編輯直送" category tab, editor style, or editorpick category posts
   const isEditorCategory = currentCategory?.slug === 'editorpick'
-  const defaultImage = isEditorCategory
-    ? DEFAULT_NEWS_IMAGE_PATH
-    : DEFAULT_POST_IMAGE_PATH
+  const getDefaultImage = (post: {
+    style?: string
+    category?: { slug: string } | null
+  }) =>
+    isEditorCategory ||
+    post.style === 'editor' ||
+    post.category?.slug === 'editorpick'
+      ? DEFAULT_NEWS_IMAGE_PATH
+      : DEFAULT_POST_IMAGE_PATH
 
   return (
     <Container>
@@ -538,7 +544,7 @@ const NewsSection = ({ section }: NewsSectionProps) => {
                   key={`featured-${activeCategory}-${featuredPost.id}`}
                   images={featuredPost.heroImage?.resized || {}}
                   imagesWebP={featuredPost.heroImage?.resizedWebp || {}}
-                  defaultImage={defaultImage}
+                  defaultImage={getDefaultImage(featuredPost)}
                   alt={featuredPost.title}
                   priority={true}
                   rwd={{
@@ -583,7 +589,7 @@ const NewsSection = ({ section }: NewsSectionProps) => {
                         key={`related-${activeCategory}-${post.id}`}
                         images={image || {}}
                         imagesWebP={imageWebp || {}}
-                        defaultImage={defaultImage}
+                        defaultImage={getDefaultImage(post)}
                         alt={post.title}
                         priority={false}
                         rwd={{

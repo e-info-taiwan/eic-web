@@ -125,6 +125,7 @@ query {
       featuredPostsInInputOrder {
         id
         title
+        style
         publishTime
         contentPreview
         heroImage {
@@ -139,11 +140,17 @@ query {
             w800
           }
         }
+        category {
+          id
+          slug
+          name
+        }
       }
       # 一般文章 (依發布時間, 僅已發布)
       posts(where: { state: { equals: "published" } }, take: 8, orderBy: { publishTime: desc }) {
         id
         title
+        style
         publishTime
         contentPreview
         heroImage {
@@ -157,6 +164,11 @@ query {
             w480
             w800
           }
+        }
+        category {
+          id
+          slug
+          name
         }
       }
     }
@@ -193,11 +205,17 @@ interface SectionCategory {
 interface SectionPost {
   id: string
   title: string
+  style: string  // 文章樣式 (e.g., "news", "editor", "report")
   publishTime: string  // ISO 8601 格式
   contentPreview: string | null  // 純文字摘要
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
+  } | null
+  category: {  // 文章所屬分類
+    id: string
+    slug: string
+    name: string
   } | null
 }
 ```
@@ -225,11 +243,17 @@ query ($postsPerSection: Int = 8) {
   ) {
     id
     title
+    style
     publishTime
     contentPreview
     heroImage {
       resized { original, w480, w800 }
       resizedWebp { original, w480, w800 }
+    }
+    category {
+      id
+      slug
+      name
     }
   }
   columnPosts: posts(
@@ -819,12 +843,14 @@ interface ResizedImages {
             {
               "id": "238659",
               "title": "最新測試文章",
+              "style": "news",
               "publishTime": "2025-11-23T00:00:00.000Z",
               "contentPreview": "文章摘要...",
               "heroImage": {
                 "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
                 "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://..." }
-              }
+              },
+              "category": { "id": "7", "slug": "taiwannews", "name": "台灣新聞" }
             }
           ]
         }
@@ -835,48 +861,56 @@ interface ResizedImages {
     {
       "id": "238665",
       "title": "時事新聞 section 文章",
+      "style": "news",
       "publishTime": "2026-01-25T16:00:00.000Z",
       "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": { "original": "https://...", "w480": "https://...", "w800": "https://..." }
-      }
+      },
+      "category": { "id": "7", "slug": "taiwannews", "name": "台灣新聞" }
     }
   ],
   "columnPosts": [
     {
       "id": "238618",
       "title": "專欄 section 文章",
+      "style": "report",
       "publishTime": "2024-03-06T02:59:45.000Z",
       "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
-      }
+      },
+      "category": { "id": "10", "slug": "biodiversity", "name": "生物多樣性" }
     }
   ],
   "supplementPosts": [
     {
       "id": "238621",
       "title": "副刊 section 文章",
+      "style": "report",
       "publishTime": "2024-03-06T02:20:10.000Z",
       "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
-      }
+      },
+      "category": { "id": "20", "slug": "bookreview", "name": "書摘" }
     }
   ],
   "greenMain": [
     {
       "id": "12345",
       "title": "綠色消費 tag 文章",
+      "style": "news",
       "publishTime": "2025-01-15T00:00:00.000Z",
       "contentPreview": "...",
       "heroImage": {
         "resized": { "original": "https://...", "w480": "https://...", "w800": "https://..." },
         "resizedWebp": null
-      }
+      },
+      "category": { "id": "7", "slug": "taiwannews", "name": "台灣新聞" }
     }
   ],
   "greenBuy": [],
@@ -1086,6 +1120,14 @@ const CACHE_TTL_MS = 60 * 1000  // 60 秒
 ---
 
 ## 變更記錄
+
+### 2026-03-15
+- **SectionPost 新增 `style` 與 `category` 欄位**
+  - 所有 `SectionPost` 新增 `style`（文章樣式，如 `"news"`, `"editor"`, `"report"`）
+  - 所有 `SectionPost` 新增 `category { id, slug, name }`（文章所屬分類）
+  - 影響欄位：`sections` 內的 `featuredPostsInInputOrder` 和 `posts`、`newsPosts`、`columnPosts`、`supplementPosts`、`greenMain`、`greenBuy`、`greenFood`、`greenClothing`、`greenLeisure`
+  - 用途：前端可根據 `style` 或 `category.slug` 判斷預設圖片（如 `editor` 樣式或 `editorpick` 分類使用 `news-default.jpg`）
+- **更新 homepage-api-example.json**
 
 ### 2026-03-01
 - **修正 highlightPicks category slug**: `"breakingnews"` → `"hottopic"`（與程式碼一致，原 changelog 記載有誤）

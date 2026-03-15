@@ -13,11 +13,17 @@ import { publishedStateFilter } from '~/utils/preview'
 export type SectionPost = {
   id: string
   title: string
+  style: string
   publishTime: string
   contentPreview?: string | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
+  } | null
+  category: {
+    id: string
+    slug: string
+    name: string
   } | null
 }
 
@@ -407,6 +413,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
         featuredPostsInInputOrder {
           id
           title
+          style
           publishTime
           contentPreview
           heroImage {
@@ -417,10 +424,16 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
               ...ResizedWebPImagesCardField
             }
           }
+          category {
+            id
+            slug
+            name
+          }
         }
         posts(where: { ${publishedStateFilter} } take: $postsPerCategory, orderBy: { publishTime: desc }) {
           id
           title
+          style
           publishTime
           contentPreview
           heroImage {
@@ -430,6 +443,11 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
             resizedWebp {
               ...ResizedWebPImagesCardField
             }
+          }
+          category {
+            id
+            slug
+            name
           }
         }
       }
@@ -449,6 +467,7 @@ export const homepageSectionPosts = gql`
     ) {
       id
       title
+      style
       publishTime
       contentPreview
       heroImage {
@@ -458,6 +477,11 @@ export const homepageSectionPosts = gql`
         resizedWebp {
           ...ResizedWebPImagesCardField
         }
+      }
+      category {
+        id
+        slug
+        name
       }
     }
     columnPosts: posts(
@@ -467,6 +491,7 @@ export const homepageSectionPosts = gql`
     ) {
       id
       title
+      style
       publishTime
       contentPreview
       heroImage {
@@ -477,6 +502,11 @@ export const homepageSectionPosts = gql`
           ...ResizedWebPImagesCardField
         }
       }
+      category {
+        id
+        slug
+        name
+      }
     }
     supplementPosts: posts(
       where: { ${publishedStateFilter} category: { section: { id: { equals: "3" } } } }
@@ -485,6 +515,7 @@ export const homepageSectionPosts = gql`
     ) {
       id
       title
+      style
       publishTime
       contentPreview
       heroImage {
@@ -494,6 +525,11 @@ export const homepageSectionPosts = gql`
         resizedWebp {
           ...ResizedWebPImagesCardField
         }
+      }
+      category {
+        id
+        slug
+        name
       }
     }
   }
