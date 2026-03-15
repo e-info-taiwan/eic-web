@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.textAroundPictureStyle = exports.noSpacingBetweenContent = exports.narrowSpacingBetweenContent = exports.defaultUnorderedListStyle = exports.defaultUlStyle = exports.defaultSpacingBetweenContent = exports.defaultOrderedListStyle = exports.defaultOlStyle = exports.defaultLinkStyle = exports.defaultH5Style = exports.defaultH4Style = exports.defaultH3Style = exports.defaultH2Style = exports.defaultH1Style = exports.defaultBlockQuoteStyle = exports.blockQuoteSpacingBetweenContent = void 0;
 var _styledComponents = require("styled-components");
 var blockQuoteSpacingBetweenContent = exports.blockQuoteSpacingBetweenContent = (0, _styledComponents.css)([".public-DraftStyleDefault-block{margin-top:8px;}"]);
-var textAroundPictureStyle = exports.textAroundPictureStyle = (0, _styledComponents.css)(["max-width:33.3%;> figure{margin-bottom:0;width:150%;transform:unset;}figcaption{padding:0;}"]);
+var textAroundPictureStyle = exports.textAroundPictureStyle = (0, _styledComponents.css)(["width:240px;> figure{margin-bottom:0;width:100%;transform:unset;}figcaption{padding:0;}"]);
 var defaultH1Style = exports.defaultH1Style = (0, _styledComponents.css)(["font-size:36px;font-weight:900;line-height:1.25;letter-spacing:0;color:#232333;"]);
 var defaultH2Style = exports.defaultH2Style = (0, _styledComponents.css)(["font-size:28px;font-weight:900;line-height:32px;letter-spacing:0;color:#232333;"]);
 var defaultH3Style = exports.defaultH3Style = (0, _styledComponents.css)(["", ";font-weight:700;line-height:28px;letter-spacing:0;color:#232333;", "{", ";line-height:32px;}"], function (_ref) {

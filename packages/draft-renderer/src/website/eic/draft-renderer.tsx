@@ -154,18 +154,18 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
 
   /* image-block: text-around-picture */
   figure.left {
-    ${({ theme }) => theme.breakpoint.xl} {
+    ${({ theme }) => theme.breakpoint.md} {
       ${textAroundPictureStyle};
       float: left;
-      transform: translateX(calc(-50% - 32px));
+      margin: 0 24px 24px 0;
     }
   }
 
   figure.right {
-    ${({ theme }) => theme.breakpoint.xl} {
+    ${({ theme }) => theme.breakpoint.md} {
       ${textAroundPictureStyle};
       float: right;
-      transform: translateX(32px);
+      margin: 0 0 24px 24px;
     }
   }
 

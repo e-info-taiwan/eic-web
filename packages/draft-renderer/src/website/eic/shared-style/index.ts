@@ -6,10 +6,10 @@ export const blockQuoteSpacingBetweenContent = css`
   }
 `
 export const textAroundPictureStyle = css`
-  max-width: 33.3%;
+  width: 240px;
   > figure {
     margin-bottom: 0;
-    width: 150%;
+    width: 100%;
     transform: unset;
   }
   figcaption {
