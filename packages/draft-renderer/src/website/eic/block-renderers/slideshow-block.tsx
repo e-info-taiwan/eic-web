@@ -17,9 +17,11 @@ const SlideShowBlockWrapper = styled.div`
   padding: 18px 28px;
 
   ${({ theme }) => theme.breakpoint.xl} {
-    width: 100%;
+    width: ${(props) =>
+      props.widthPercentage ? `${props.widthPercentage}%` : '100%'};
+    ${(props) =>
+      props.widthPercentage ? 'margin-left: auto; margin-right: auto;' : ''}
     background-color: transparent;
-    margin: 0;
     padding: 0;
     display: flex;
     align-items: center;
@@ -37,6 +39,8 @@ const SlideShowBlockWrapper = styled.div`
   }
 `
 
+const DefaultMaxImagesPerRow = 3
+
 const SlideShowImage = styled.figure`
   width: 100%;
   aspect-ratio: 1/1;
@@ -47,12 +51,21 @@ const SlideShowImage = styled.figure`
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    flex: 1 0 calc((100% - ${SpacingBetweenSlideImages * 2}px) / 3);
+    flex: 1 0
+      calc(
+        (
+            100% - ${(props) => {
+              const count = props.maxImagesPerRow || DefaultMaxImagesPerRow
+              return SpacingBetweenSlideImages * (count - 1)
+            }}px
+          ) / ${(props) => props.maxImagesPerRow || DefaultMaxImagesPerRow}
+      );
 
     &:hover {
-      cursor: pointer;
-      filter: brightness(0.85);
-      transition: 0.3s;
+      cursor: ${(props) => (props.lightboxEnabled ? 'pointer' : 'default')};
+      filter: ${(props) =>
+        props.lightboxEnabled ? 'brightness(0.85)' : 'none'};
+      transition: ${(props) => (props.lightboxEnabled ? '0.3s' : 'none')};
     }
 
     & + .slideshow-image {
@@ -183,7 +196,13 @@ export function SlideshowBlock(entity: DraftEntityInstance) {
 
 // 202206 latest version of slideshow, support delay property
 export function SlideshowBlockV2(entity: DraftEntityInstance) {
-  const { images, overallCaption } = entity.getData()
+  const {
+    images,
+    overallCaption,
+    widthPercentage,
+    maxImagesPerRow,
+    lightboxEnabled = true,
+  } = entity.getData()
   const [expandSlideShow, setExpandSlideShow] = useState(false)
   const [showLightBox, setShowLightBox] = useState(false)
   const [focusImageIndex, setFocusImageIndex] = useState(0)
@@ -210,7 +229,10 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
       <SlideShowImage
         className="slideshow-image"
         key={id}
+        maxImagesPerRow={maxImagesPerRow}
+        lightboxEnabled={lightboxEnabled}
         onClick={() => {
+          if (!lightboxEnabled) return
           setShowLightBox(!showLightBox)
           setFocusImageIndex(index)
         }}
@@ -238,6 +260,7 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
         onClick={() => setExpandSlideShow(!expandSlideShow)}
         expandSlideShow={expandSlideShow}
         shouldLimitFigureHeight={shouldLimitFigureHeight}
+        widthPercentage={widthPercentage}
       >
         {slideShowImages}
         {shouldMaskSlideShow && <GradientMask />}
@@ -254,7 +277,7 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
       {overallCaption && (
         <OverallCaption>整組多圖圖說：{overallCaption}</OverallCaption>
       )}
-      {showLightBox && (
+      {showLightBox && lightboxEnabled && (
         <SlideShowLightBox
           focusImageIndex={focusImageIndex}
           images={images}
