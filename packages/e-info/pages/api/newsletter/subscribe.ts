@@ -148,9 +148,10 @@ export default async function handler(
     }
 
     if (data.title === 'Invalid Resource') {
+      console.error('[Newsletter API] Invalid Resource:', data.detail)
       return res.status(400).json({
         success: false,
-        error: '請輸入有效的 Email 地址',
+        error: '請輸入有效的 Email 地址 (電子報平台驗證失敗)',
       })
     }
 

@@ -347,8 +347,8 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
     const topicDate = topic.publishTime
       ? formatPostDate(topic.publishTime)
       : topic.updatedAt
-        ? formatPostDate(topic.updatedAt)
-        : ''
+      ? formatPostDate(topic.updatedAt)
+      : ''
 
     return (
       <FeaturedSection key={topic.id}>
