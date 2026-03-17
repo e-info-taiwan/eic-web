@@ -39,6 +39,7 @@ export type CategoryListingResponse = {
     id: string
     slug: string
     name: string
+    description: string | null
     postsCount: number
   }
   section: CategoryListingSection

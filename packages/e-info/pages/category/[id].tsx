@@ -355,6 +355,7 @@ type CategoryInfo = {
   id: string
   slug: string
   name: string
+  description: string | null
   postsCount: number
 }
 
@@ -464,10 +465,10 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
           </ColumnCategoryTagsContainer>
         </ColumnCategoryTagsWrapper>
 
-        {/* Description */}
-        {section.description && (
+        {/* Description: category description takes priority over section description */}
+        {(category.description || section.description) && (
           <ColumnDescriptionSection>
-            {section.description}
+            {category.description || section.description}
           </ColumnDescriptionSection>
         )}
 
@@ -604,6 +605,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         id: string
         slug: string
         name: string
+        description: string | null
         postsCount: number
         section: SectionInfo
       }>
@@ -669,6 +671,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           id: categoryInfo.id,
           slug: categoryInfo.slug,
           name: categoryInfo.name,
+          description: categoryInfo.description || null,
           postsCount: categoryInfo.postsCount,
         },
         section: {

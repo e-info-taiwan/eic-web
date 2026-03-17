@@ -1065,6 +1065,7 @@ export const categoryByIdWithSection = gql`
       id
       slug
       name
+      description
       postsCount
       section {
         id
