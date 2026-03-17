@@ -12,7 +12,7 @@ import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Topic } from '~/graphql/query/section'
-import { allTopics } from '~/graphql/query/section'
+import { allTopics, allTopicsFallback } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
@@ -465,26 +465,29 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    // fetch header data and topics in parallel
-    const [headerData, { data, error: gqlError }] = await Promise.all([
-      fetchHeaderData(),
-      client.query<{ topics: Topic[] }>({
+    // fetch header data
+    const headerData = await fetchHeaderData()
+
+    // Try publishTime ordering first, fallback to updatedAt if backend
+    // hasn't added the publishTime field yet
+    let topics: Topic[] = []
+    try {
+      const { data, error: gqlError } = await client.query<{
+        topics: Topic[]
+      }>({
         query: allTopics,
-      }),
-    ])
-
-    if (gqlError) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `allTopics` query'),
-          'GraphQLError',
-          'failed to complete `allTopics`',
-          { errors: gqlError }
-        )
+      })
+      if (gqlError) throw gqlError
+      topics = data?.topics || []
+    } catch {
+      console.warn(
+        '[Feature] allTopics (publishTime) failed, falling back to updatedAt'
       )
+      const { data } = await client.query<{ topics: Topic[] }>({
+        query: allTopicsFallback,
+      })
+      topics = data?.topics || []
     }
-
-    const topics = data?.topics || []
 
     return {
       props: {

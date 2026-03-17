@@ -238,7 +238,8 @@ export const topicsWithPosts = gql`
 
 /**
  * Query for all published topics (for /feature listing page)
- * Returns all topics with basic info, ordered by publishTime
+ * Primary: ordered by publishTime (requires backend publishTime field)
+ * Fallback: ordered by updatedAt (always available)
  * First topic's posts (up to 3) are used for the article grid
  */
 export const allTopics = gql`
@@ -275,6 +276,48 @@ export const allTopics = gql`
       }
       isPinned
       publishTime
+      updatedAt
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
+// Fallback query: same as allTopics but ordered by updatedAt
+// Used when backend hasn't added publishTime field yet
+export const allTopicsFallback = gql`
+  query {
+    topics(
+      where: { status: { equals: "published" } }
+      orderBy: { updatedAt: desc }
+    ) {
+      id
+      title
+      status
+      content
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+      postsCount
+      posts(take: 3, orderBy: { publishTime: desc }) {
+        id
+        title
+        publishTime
+        heroImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+      }
+      isPinned
       updatedAt
     }
   }
