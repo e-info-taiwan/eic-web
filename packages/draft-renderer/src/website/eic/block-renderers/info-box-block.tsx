@@ -130,6 +130,24 @@ const InfoImageCaption = styled.div`
   word-break: break-word;
 `
 
+const ParagraphDivider = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
+  margin: 16px 0;
+`
+
+type InfoBoxParagraph = {
+  body?: string
+  image?: {
+    id?: string
+    name?: string
+    resized?: Record<string, string>
+    imageFile?: { url?: string; width?: number; height?: number }
+  }
+  caption?: string
+  rawContentState?: unknown
+}
+
 type InfoBoxBlockProps = {
   block: ContentBlock
   blockProps: {
@@ -145,12 +163,71 @@ type InfoBoxBlockProps = {
   contentState: ContentState
 }
 
+function InfoBoxParagraphItem({
+  paragraph,
+  title,
+}: {
+  paragraph: InfoBoxParagraph
+  title?: string
+}) {
+  const { body, image, caption } = paragraph
+  const hasImage = image?.resized || image?.imageFile?.url
+
+  if (!hasImage) {
+    return (
+      <InfoContent className="infobox-content">
+        {body && <div dangerouslySetInnerHTML={{ __html: body }} />}
+      </InfoContent>
+    )
+  }
+
+  return (
+    <InfoBoxLayout>
+      <InfoImage>
+        <CustomImage
+          images={image.resized || {}}
+          defaultImage={defaultImage}
+          alt={image.name || caption || title || ''}
+          rwd={{
+            mobile: '100vw',
+            tablet: '240px',
+            desktop: '240px',
+            default: '100%',
+          }}
+        />
+        {caption && <InfoImageCaption>{caption}</InfoImageCaption>}
+      </InfoImage>
+      <InfoTextArea>
+        <InfoContent className="infobox-content">
+          {body && <div dangerouslySetInnerHTML={{ __html: body }} />}
+        </InfoContent>
+      </InfoTextArea>
+    </InfoBoxLayout>
+  )
+}
+
 export function InfoBoxBlock(props: InfoBoxBlockProps) {
   const { block, contentState } = props
   const entityKey = block.getEntityAt(0)
   const entity = contentState.getEntity(entityKey)
-  const { title, body, image } = entity.getData()
+  const { title, body, image, paragraphs } = entity.getData()
 
+  // New format: paragraphs array
+  if (paragraphs && Array.isArray(paragraphs) && paragraphs.length > 0) {
+    return (
+      <InfoBoxRenderWrapper className="infobox-wrapper">
+        {title && <InfoTitle className="infobox-title">{title}</InfoTitle>}
+        {paragraphs.map((paragraph: InfoBoxParagraph, index: number) => (
+          <React.Fragment key={index}>
+            {index > 0 && <ParagraphDivider />}
+            <InfoBoxParagraphItem paragraph={paragraph} title={title} />
+          </React.Fragment>
+        ))}
+      </InfoBoxRenderWrapper>
+    )
+  }
+
+  // Legacy format: single body + image
   const hasImage = image?.resized || image?.imageFile?.url
 
   return (
