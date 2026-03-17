@@ -344,7 +344,11 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
   const renderFeaturedArticle = (topic: Topic, index: number) => {
     const topicHref = `/feature/${topic.id}`
     const topicImage = getTopicImageUrl(topic)
-    const topicDate = topic.updatedAt ? formatPostDate(topic.updatedAt) : ''
+    const topicDate = topic.publishTime
+      ? formatPostDate(topic.publishTime)
+      : topic.updatedAt
+        ? formatPostDate(topic.updatedAt)
+        : ''
 
     return (
       <FeaturedSection key={topic.id}>

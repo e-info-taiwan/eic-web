@@ -87,6 +87,7 @@ export type Topic = {
   authorInfo?: string | null
   isPinned: boolean
   sortOrder: number | null
+  publishTime?: string | null
   updatedAt?: string
   redirectUrl?: string | null
 }
@@ -237,14 +238,14 @@ export const topicsWithPosts = gql`
 
 /**
  * Query for all published topics (for /feature listing page)
- * Returns all topics with basic info and updatedAt for sorting
+ * Returns all topics with basic info, ordered by publishTime
  * First topic's posts (up to 3) are used for the article grid
  */
 export const allTopics = gql`
   query {
     topics(
       where: { status: { equals: "published" } }
-      orderBy: { updatedAt: desc }
+      orderBy: { publishTime: desc }
     ) {
       id
       title
@@ -273,6 +274,7 @@ export const allTopics = gql`
         }
       }
       isPinned
+      publishTime
       updatedAt
     }
   }
