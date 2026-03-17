@@ -176,7 +176,7 @@ var StyledTr = _styledComponents["default"].div.withConfig({
 var StyledTd = _styledComponents["default"].div.withConfig({
   displayName: "table-block__StyledTd",
   componentId: "sc-1qb2pp6-8"
-})(["display:table-cell;border:1px solid #e0e0e0;min-width:100px;padding:12px 16px;", ";line-height:1.6;vertical-align:top;.public-DraftStyleDefault-block{margin-top:0 !important;}"], function (_ref2) {
+})(["display:table-cell;border:1px solid #e0e0e0;min-width:100px;padding:12px 16px;", ";line-height:1.6;vertical-align:middle;.public-DraftStyleDefault-block{margin-top:0 !important;}"], function (_ref2) {
   var theme = _ref2.theme;
   return theme.fontSize.sm;
 });

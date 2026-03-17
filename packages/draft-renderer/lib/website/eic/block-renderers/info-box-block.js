@@ -63,8 +63,50 @@ var InfoImageCaption = _styledComponents["default"].div.withConfig({
   var theme = _ref8.theme;
   return theme.colors.grayscale[40];
 });
-function InfoBoxBlock(props) {
+var ParagraphDivider = _styledComponents["default"].hr.withConfig({
+  displayName: "info-box-block__ParagraphDivider",
+  componentId: "sc-12mxi9r-7"
+})(["border:none;border-top:1px solid ", ";margin:16px 0;"], function (_ref9) {
+  var theme = _ref9.theme;
+  return theme.colors.grayscale[80];
+});
+function InfoBoxParagraphItem(_ref0) {
   var _image$imageFile;
+  var paragraph = _ref0.paragraph,
+    title = _ref0.title;
+  var body = paragraph.body,
+    image = paragraph.image,
+    caption = paragraph.caption;
+  var hasImage = (image === null || image === void 0 ? void 0 : image.resized) || (image === null || image === void 0 || (_image$imageFile = image.imageFile) === null || _image$imageFile === void 0 ? void 0 : _image$imageFile.url);
+  if (!hasImage) {
+    return /*#__PURE__*/_react["default"].createElement(InfoContent, {
+      className: "infobox-content"
+    }, body && /*#__PURE__*/_react["default"].createElement("div", {
+      dangerouslySetInnerHTML: {
+        __html: body
+      }
+    }));
+  }
+  return /*#__PURE__*/_react["default"].createElement(InfoBoxLayout, null, /*#__PURE__*/_react["default"].createElement(InfoImage, null, /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {
+    images: image.resized || {},
+    defaultImage: defaultImage,
+    alt: image.name || caption || title || '',
+    rwd: {
+      mobile: '100vw',
+      tablet: '240px',
+      desktop: '240px',
+      "default": '100%'
+    }
+  }), caption && /*#__PURE__*/_react["default"].createElement(InfoImageCaption, null, caption)), /*#__PURE__*/_react["default"].createElement(InfoTextArea, null, /*#__PURE__*/_react["default"].createElement(InfoContent, {
+    className: "infobox-content"
+  }, body && /*#__PURE__*/_react["default"].createElement("div", {
+    dangerouslySetInnerHTML: {
+      __html: body
+    }
+  }))));
+}
+function InfoBoxBlock(props) {
+  var _image$imageFile2;
   var block = props.block,
     contentState = props.contentState;
   var entityKey = block.getEntityAt(0);
@@ -72,8 +114,27 @@ function InfoBoxBlock(props) {
   var _entity$getData = entity.getData(),
     title = _entity$getData.title,
     body = _entity$getData.body,
-    image = _entity$getData.image;
-  var hasImage = (image === null || image === void 0 ? void 0 : image.resized) || (image === null || image === void 0 || (_image$imageFile = image.imageFile) === null || _image$imageFile === void 0 ? void 0 : _image$imageFile.url);
+    image = _entity$getData.image,
+    paragraphs = _entity$getData.paragraphs;
+
+  // New format: paragraphs array
+  if (paragraphs && Array.isArray(paragraphs) && paragraphs.length > 0) {
+    return /*#__PURE__*/_react["default"].createElement(InfoBoxRenderWrapper, {
+      className: "infobox-wrapper"
+    }, title && /*#__PURE__*/_react["default"].createElement(InfoTitle, {
+      className: "infobox-title"
+    }, title), paragraphs.map(function (paragraph, index) {
+      return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, {
+        key: index
+      }, index > 0 && /*#__PURE__*/_react["default"].createElement(ParagraphDivider, null), /*#__PURE__*/_react["default"].createElement(InfoBoxParagraphItem, {
+        paragraph: paragraph,
+        title: title
+      }));
+    }));
+  }
+
+  // Legacy format: single body + image
+  var hasImage = (image === null || image === void 0 ? void 0 : image.resized) || (image === null || image === void 0 || (_image$imageFile2 = image.imageFile) === null || _image$imageFile2 === void 0 ? void 0 : _image$imageFile2.url);
   return /*#__PURE__*/_react["default"].createElement(InfoBoxRenderWrapper, {
     className: "infobox-wrapper"
   }, hasImage ? /*#__PURE__*/_react["default"].createElement(InfoBoxLayout, null, /*#__PURE__*/_react["default"].createElement(InfoImage, null, /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {

@@ -319,7 +319,7 @@ const StyledTd = styled.div`
   padding: 12px 16px;
   ${({ theme }) => theme.fontSize.sm};
   line-height: 1.6;
-  vertical-align: top;
+  vertical-align: middle;
 
   /* Reset paragraph margins inherited from outer DraftEditorWrapper NormalStyle
      which uses *:not(:first-child) .public-DraftStyleDefault-block { margin-top: 32px }
