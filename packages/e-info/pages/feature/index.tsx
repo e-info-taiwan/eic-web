@@ -489,6 +489,13 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
       topics = data?.topics || []
     }
 
+    // Sort by publishTime (fallback to updatedAt) descending
+    topics.sort((a, b) => {
+      const timeA = new Date(a.publishTime || a.updatedAt || 0).getTime()
+      const timeB = new Date(b.publishTime || b.updatedAt || 0).getTime()
+      return timeB - timeA
+    })
+
     return {
       props: {
         headerData,
