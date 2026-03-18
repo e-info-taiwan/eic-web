@@ -8,6 +8,8 @@ import SlideShowLightBox from '../components/slideshow-lightbox'
 
 const SlideShowDesktopSize = 960
 const SpacingBetweenSlideImages = 12
+const SlideShowRowHeight = 300
+const DefaultMaxImagesPerRow = 3
 
 const SlideShowBlockWrapper = styled.div`
   width: calc(100% + 36px);
@@ -24,22 +26,23 @@ const SlideShowBlockWrapper = styled.div`
     background-color: transparent;
     padding: 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: ${SpacingBetweenSlideImages}px;
     max-height: ${(props) => (props.expandSlideShow ? 'none' : '960px')};
     overflow: ${(props) => (props.expandSlideShow ? 'visible' : 'hidden')};
     margin-bottom: ${(props) => (props.expandSlideShow ? '32px' : '16px')};
   }
-
-  .slideshow-image {
-    max-height: ${(props) =>
-      props.shouldLimitFigureHeight ? 'calc(960px - 324px)' : 'none'};
-  }
 `
 
-const DefaultMaxImagesPerRow = 3
+const SlideShowRow = styled.div`
+  display: contents;
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    display: flex;
+    align-items: stretch;
+    gap: ${SpacingBetweenSlideImages}px;
+  }
+`
 
 const SlideShowImage = styled.figure`
   width: 100%;
@@ -51,15 +54,19 @@ const SlideShowImage = styled.figure`
   }
 
   ${({ theme }) => theme.breakpoint.xl} {
-    flex: 1 0
-      calc(
-        (
-            100% - ${(props) => {
-              const count = props.maxImagesPerRow || DefaultMaxImagesPerRow
-              return SpacingBetweenSlideImages * (count - 1)
-            }}px
-          ) / ${(props) => props.maxImagesPerRow || DefaultMaxImagesPerRow}
-      );
+    aspect-ratio: unset;
+    height: ${SlideShowRowHeight}px;
+    flex-grow: ${(props) => props.aspectRatio || 1};
+    flex-shrink: 1;
+    flex-basis: ${(props) =>
+      Math.round((props.aspectRatio || 1) * SlideShowRowHeight)}px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     &:hover {
       cursor: ${(props) => (props.lightboxEnabled ? 'pointer' : 'default')};
@@ -206,6 +213,7 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
   const [expandSlideShow, setExpandSlideShow] = useState(false)
   const [showLightBox, setShowLightBox] = useState(false)
   const [focusImageIndex, setFocusImageIndex] = useState(0)
+  const [aspectRatios, setAspectRatios] = useState<Record<string, number>>({})
 
   const imagesRefs = useRef(Array(images.length).fill(null))
 
@@ -220,16 +228,36 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
     }
   }, [focusImageIndex])
 
-  const shouldMaskSlideShow = Boolean(images.length > 9 && !expandSlideShow)
-  const shouldLimitFigureHeight = Boolean(images.length > 1)
+  // Load images to get natural dimensions for justified layout
+  useEffect(() => {
+    images.forEach((image) => {
+      const src =
+        image.resized?.original ||
+        image.resized?.w800 ||
+        image.imageFile?.url
+      if (!src) return
 
-  const slideShowImages = images.map((image, index) => {
+      const img = new window.Image()
+      img.onload = () => {
+        setAspectRatios((prev) => ({
+          ...prev,
+          [image.id]: img.naturalWidth / img.naturalHeight,
+        }))
+      }
+      img.src = src
+    })
+  }, [images])
+
+  const shouldMaskSlideShow = Boolean(images.length > 9 && !expandSlideShow)
+
+  const renderImage = (image, index) => {
     const { id, resized, desc, name } = image
+    const ratio = aspectRatios[id] || 1
     return (
       <SlideShowImage
         className="slideshow-image"
         key={id}
-        maxImagesPerRow={maxImagesPerRow}
+        aspectRatio={ratio}
         lightboxEnabled={lightboxEnabled}
         onClick={() => {
           if (!lightboxEnabled) return
@@ -252,17 +280,33 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
         {desc && <FigCaption>{desc}</FigCaption>}
       </SlideShowImage>
     )
-  })
+  }
+
+  // Split images into rows based on maxImagesPerRow
+  const perRow = maxImagesPerRow || DefaultMaxImagesPerRow
+  const rows = []
+  for (let i = 0; i < images.length; i += perRow) {
+    rows.push(images.slice(i, i + perRow))
+  }
 
   return (
     <>
       <SlideShowBlockWrapper
-        onClick={() => setExpandSlideShow(!expandSlideShow)}
+        onClick={
+          shouldMaskSlideShow
+            ? () => setExpandSlideShow(!expandSlideShow)
+            : undefined
+        }
         expandSlideShow={expandSlideShow}
-        shouldLimitFigureHeight={shouldLimitFigureHeight}
         widthPercentage={widthPercentage}
       >
-        {slideShowImages}
+        {rows.map((rowImages, rowIndex) => (
+          <SlideShowRow key={rowIndex}>
+            {rowImages.map((image, imgIndex) =>
+              renderImage(image, rowIndex * perRow + imgIndex)
+            )}
+          </SlideShowRow>
+        ))}
         {shouldMaskSlideShow && <GradientMask />}
       </SlideShowBlockWrapper>
 
