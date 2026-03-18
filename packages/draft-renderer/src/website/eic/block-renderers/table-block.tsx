@@ -11,6 +11,12 @@ import {
 } from 'draft-js'
 import cloneDeep from 'lodash/cloneDeep'
 
+import {
+  CUSTOM_STYLE_PREFIX_BACKGROUND_COLOR,
+  CUSTOM_STYLE_PREFIX_FONT_COLOR,
+} from '../../../draft-js/const'
+import decorators from '../entity-decorator'
+
 const _ = {
   cloneDeep,
 }
@@ -174,7 +180,7 @@ function convertTableDataFromRaw(rawTableData: RawTableData): TableData {
   return rawTableData.map((rowData) => {
     return rowData.map((colData) => {
       const contentState = convertFromRaw(colData)
-      return EditorState.createWithContent(contentState)
+      return EditorState.createWithContent(contentState, decorators)
     })
   })
 }
@@ -320,6 +326,11 @@ const StyledTd = styled.div`
   ${({ theme }) => theme.fontSize.sm};
   line-height: 1.6;
   vertical-align: middle;
+
+  a {
+    color: #2d7a4f;
+    text-decoration: underline;
+  }
 
   /* Reset paragraph margins inherited from outer DraftEditorWrapper NormalStyle
      which uses *:not(:first-child) .public-DraftStyleDefault-block { margin-top: 32px }
@@ -523,6 +534,40 @@ export const TableEditorBlock = (props: TableBlockProps) => {
   )
 }
 
+const tableCustomStyleMap = {
+  CODE: {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
+    fontSize: 16,
+    padding: 2,
+  },
+  SUP: {
+    verticalAlign: 'super',
+    fontSize: 'smaller',
+  },
+  SUB: {
+    verticalAlign: 'sub',
+    fontSize: 'smaller',
+  },
+}
+
+const tableCustomStyleFn = (style: any) => {
+  return style.reduce((styles: any, styleName: string) => {
+    if (styleName?.startsWith(CUSTOM_STYLE_PREFIX_FONT_COLOR)) {
+      styles['color'] = styleName.split(CUSTOM_STYLE_PREFIX_FONT_COLOR)[1]
+    }
+    if (styleName?.startsWith(CUSTOM_STYLE_PREFIX_BACKGROUND_COLOR)) {
+      const highlightColor = styleName.split(
+        CUSTOM_STYLE_PREFIX_BACKGROUND_COLOR
+      )[1]
+      styles[
+        'background'
+      ] = `linear-gradient(to top, transparent 25%, ${highlightColor} 25% 75%, transparent 75%)`
+    }
+    return styles
+  }, {})
+}
+
 export const TableBlock = (props) => {
   const { block, contentState } = props
   const entityKey = block.getEntityAt(0)
@@ -538,8 +583,12 @@ export const TableBlock = (props) => {
           const colsJsx = rowData.map((colData, cIndex) => {
             return (
               <StyledTd key={`col_${cIndex}`}>
-                {/* TODO: add editor buttons if needed */}
-                <Editor editorState={colData} readOnly />
+                <Editor
+                  editorState={colData}
+                  customStyleMap={tableCustomStyleMap}
+                  customStyleFn={tableCustomStyleFn}
+                  readOnly
+                />
               </StyledTd>
             )
           })

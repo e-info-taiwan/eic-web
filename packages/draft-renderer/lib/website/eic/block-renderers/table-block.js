@@ -9,6 +9,8 @@ var _react = _interopRequireWildcard(require("react"));
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _draftJs = require("draft-js");
 var _cloneDeep = _interopRequireDefault(require("lodash/cloneDeep"));
+var _const = require("../../../draft-js/const");
+var _entityDecorator = _interopRequireDefault(require("../entity-decorator"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -127,7 +129,7 @@ function convertTableDataFromRaw(rawTableData) {
   return rawTableData.map(function (rowData) {
     return rowData.map(function (colData) {
       var contentState = (0, _draftJs.convertFromRaw)(colData);
-      return _draftJs.EditorState.createWithContent(contentState);
+      return _draftJs.EditorState.createWithContent(contentState, _entityDecorator["default"]);
     });
   });
 }
@@ -176,7 +178,7 @@ var StyledTr = _styledComponents["default"].div.withConfig({
 var StyledTd = _styledComponents["default"].div.withConfig({
   displayName: "table-block__StyledTd",
   componentId: "sc-1qb2pp6-8"
-})(["display:table-cell;border:1px solid #e0e0e0;min-width:100px;padding:12px 16px;", ";line-height:1.6;vertical-align:middle;.public-DraftStyleDefault-block{margin-top:0 !important;}"], function (_ref2) {
+})(["display:table-cell;border:1px solid #e0e0e0;min-width:100px;padding:12px 16px;", ";line-height:1.6;vertical-align:middle;a{color:#2d7a4f;text-decoration:underline;}.public-DraftStyleDefault-block{margin-top:0 !important;}"], function (_ref2) {
   var theme = _ref2.theme;
   return theme.fontSize.sm;
 });
@@ -333,6 +335,34 @@ var TableEditorBlock = exports.TableEditorBlock = function TableEditorBlock(prop
     })), colsJsx));
   })));
 };
+var tableCustomStyleMap = {
+  CODE: {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
+    fontSize: 16,
+    padding: 2
+  },
+  SUP: {
+    verticalAlign: 'super',
+    fontSize: 'smaller'
+  },
+  SUB: {
+    verticalAlign: 'sub',
+    fontSize: 'smaller'
+  }
+};
+var tableCustomStyleFn = function tableCustomStyleFn(style) {
+  return style.reduce(function (styles, styleName) {
+    if (styleName !== null && styleName !== void 0 && styleName.startsWith(_const.CUSTOM_STYLE_PREFIX_FONT_COLOR)) {
+      styles['color'] = styleName.split(_const.CUSTOM_STYLE_PREFIX_FONT_COLOR)[1];
+    }
+    if (styleName !== null && styleName !== void 0 && styleName.startsWith(_const.CUSTOM_STYLE_PREFIX_BACKGROUND_COLOR)) {
+      var highlightColor = styleName.split(_const.CUSTOM_STYLE_PREFIX_BACKGROUND_COLOR)[1];
+      styles['background'] = "linear-gradient(to top, transparent 25%, ".concat(highlightColor, " 25% 75%, transparent 75%)");
+    }
+    return styles;
+  }, {});
+};
 var TableBlock = exports.TableBlock = function TableBlock(props) {
   var block = props.block,
     contentState = props.contentState;
@@ -353,6 +383,8 @@ var TableBlock = exports.TableBlock = function TableBlock(props) {
         key: "col_".concat(cIndex)
       }, /*#__PURE__*/_react["default"].createElement(_draftJs.Editor, {
         editorState: colData,
+        customStyleMap: tableCustomStyleMap,
+        customStyleFn: tableCustomStyleFn,
         readOnly: true
       }));
     });
