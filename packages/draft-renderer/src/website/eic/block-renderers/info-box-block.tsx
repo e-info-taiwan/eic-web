@@ -132,7 +132,6 @@ const InfoImageCaption = styled.div`
 
 const ParagraphDivider = styled.hr`
   border: none;
-  border-top: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
   margin: 16px 0;
 `
 

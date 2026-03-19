@@ -66,14 +66,11 @@ var InfoImageCaption = _styledComponents["default"].div.withConfig({
 var ParagraphDivider = _styledComponents["default"].hr.withConfig({
   displayName: "info-box-block__ParagraphDivider",
   componentId: "sc-12mxi9r-7"
-})(["border:none;border-top:1px solid ", ";margin:16px 0;"], function (_ref9) {
-  var theme = _ref9.theme;
-  return theme.colors.grayscale[80];
-});
-function InfoBoxParagraphItem(_ref0) {
+})(["border:none;margin:16px 0;"]);
+function InfoBoxParagraphItem(_ref9) {
   var _image$imageFile;
-  var paragraph = _ref0.paragraph,
-    title = _ref0.title;
+  var paragraph = _ref9.paragraph,
+    title = _ref9.title;
   var body = paragraph.body,
     image = paragraph.image,
     caption = paragraph.caption;
