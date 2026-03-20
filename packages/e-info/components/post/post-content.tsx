@@ -13,7 +13,11 @@ import MediaLinkList from '~/components/shared/media-link'
 import { PostDetail } from '~/graphql/query/post'
 import useOutboundLinkTracking from '~/hooks/useOutboundLinkTracking'
 import { ValidPostContentType } from '~/types/common'
-import { copyAndSliceDraftBlock, getBlocksCount } from '~/utils/post'
+import {
+  copyAndSliceDraftBlock,
+  findSafeSplitPoint,
+  getBlocksCount,
+} from '~/utils/post'
 
 const defaultMarginBottom = css`
   margin-bottom: 32px;
@@ -341,6 +345,18 @@ export default function PostContent({
 
   const blocksLength = getBlocksCount(contentToRender)
 
+  // Compute safe split points that avoid cutting inside consecutive list blocks
+  const { split1, split2 } = useMemo(() => {
+    const blocks = contentToRender?.blocks
+    if (!blocks || blocks.length <= 5) return { split1: 5, split2: 10 }
+    const s1 = findSafeSplitPoint(blocks, 5, blocks.length)
+    const s2 =
+      blocks.length > s1
+        ? findSafeSplitPoint(blocks, Math.max(s1 + 1, 10), blocks.length)
+        : s1
+    return { split1: s1, split2: s2 }
+  }, [contentToRender])
+
   return (
     <Container shouldPaddingTop={shouldPaddingTop} ref={articleRef}>
       {shouldShowSummary && (
@@ -365,33 +381,51 @@ export default function PostContent({
               contentType={ValidPostContentType.NORMAL}
               disabledImageLazyLoad={false}
             />
-          ) : blocksLength <= 10 ? (
-            // Medium content: split at block 5
+          ) : blocksLength <= split2 ? (
+            // Medium content: split at safe point
             <>
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 0, 5)}
+                rawContentBlock={copyAndSliceDraftBlock(
+                  contentToRender,
+                  0,
+                  split1
+                )}
                 contentType={ValidPostContentType.NORMAL}
                 disabledImageLazyLoad={false}
               />
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5)}
+                rawContentBlock={copyAndSliceDraftBlock(
+                  contentToRender,
+                  split1
+                )}
                 contentType={ValidPostContentType.NORMAL}
               />
             </>
           ) : (
-            // Long content: split at blocks 5 and 10
+            // Long content: split at two safe points
             <>
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 0, 5)}
+                rawContentBlock={copyAndSliceDraftBlock(
+                  contentToRender,
+                  0,
+                  split1
+                )}
                 contentType={ValidPostContentType.NORMAL}
                 disabledImageLazyLoad={false}
               />
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 5, 10)}
+                rawContentBlock={copyAndSliceDraftBlock(
+                  contentToRender,
+                  split1,
+                  split2
+                )}
                 contentType={ValidPostContentType.NORMAL}
               />
               <DraftRenderer
-                rawContentBlock={copyAndSliceDraftBlock(contentToRender, 10)}
+                rawContentBlock={copyAndSliceDraftBlock(
+                  contentToRender,
+                  split2
+                )}
                 contentType={ValidPostContentType.NORMAL}
               />
             </>

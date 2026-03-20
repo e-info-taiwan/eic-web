@@ -152,6 +152,47 @@ export const copyAndSliceDraftBlock = (
   return content
 }
 
+const LIST_BLOCK_TYPES = new Set(['unordered-list-item', 'ordered-list-item'])
+
+/**
+ * Adjust a split index so it doesn't cut in the middle of consecutive
+ * list-item blocks (unordered or ordered). Searches forward first,
+ * then backward if forward goes beyond maxIndex.
+ */
+export const findSafeSplitPoint = (
+  blocks: { type: string }[],
+  target: number,
+  maxIndex: number = blocks.length
+): number => {
+  if (target <= 0 || target >= blocks.length) return target
+
+  const prevType = blocks[target - 1].type
+  const currType = blocks[target].type
+
+  // Not splitting inside a list — already safe
+  if (
+    !LIST_BLOCK_TYPES.has(prevType) ||
+    !LIST_BLOCK_TYPES.has(currType) ||
+    prevType !== currType
+  ) {
+    return target
+  }
+
+  // Search forward for the end of this list group
+  let forward = target
+  while (forward < blocks.length && blocks[forward].type === prevType) {
+    forward++
+  }
+  if (forward <= maxIndex) return forward
+
+  // Forward goes too far — search backward for the start of this list group
+  let backward = target - 1
+  while (backward > 0 && blocks[backward - 1].type === prevType) {
+    backward--
+  }
+  return backward > 0 ? backward : target
+}
+
 export const getBlocksCount = (content: RawDraftContentState): number => {
   if (hasContentInRawContentBlock(content)) {
     return removeEmptyContentBlock(content).blocks.length
