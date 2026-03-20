@@ -319,7 +319,7 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
         </ExpandText>
       )}
       {overallCaption && (
-        <OverallCaption>整組多圖圖說：{overallCaption}</OverallCaption>
+        <OverallCaption>{overallCaption}</OverallCaption>
       )}
       {showLightBox && lightboxEnabled && (
         <SlideShowLightBox
