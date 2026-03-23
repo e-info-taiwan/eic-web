@@ -302,6 +302,7 @@ const FeaturedTitle = styled.h2`
 
 const FeaturedBrief = styled.p`
   color: ${({ theme }) => theme.colors.grayscale[40]};
+  font-family: sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
