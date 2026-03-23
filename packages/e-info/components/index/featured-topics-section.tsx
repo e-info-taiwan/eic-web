@@ -271,6 +271,7 @@ const ArticleTitle = styled.h3`
 
 const ArticleExcerpt = styled.p`
   color: ${({ theme }) => theme.colors.grayscale[20]};
+  font-family: sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;

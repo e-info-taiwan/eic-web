@@ -97,6 +97,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
     margin-top: 24px;
 
     p {
+      font-family: sans-serif;
       font-size: 16px;
       font-weight: 400;
       line-height: 24px;
