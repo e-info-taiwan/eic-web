@@ -252,7 +252,7 @@ function SlideshowBlockV2(entity) {
     onClick: function onClick() {
       return setExpandSlideShow(!expandSlideShow);
     }
-  }, "\u5C55\u958B\u6240\u6709\u5716\u7247"), overallCaption && /*#__PURE__*/_react["default"].createElement(OverallCaption, null, "\u6574\u7D44\u591A\u5716\u5716\u8AAA\uFF1A", overallCaption), showLightBox && lightboxEnabled && /*#__PURE__*/_react["default"].createElement(_slideshowLightbox["default"], {
+  }, "\u5C55\u958B\u6240\u6709\u5716\u7247"), overallCaption && /*#__PURE__*/_react["default"].createElement(OverallCaption, null, overallCaption), showLightBox && lightboxEnabled && /*#__PURE__*/_react["default"].createElement(_slideshowLightbox["default"], {
     focusImageIndex: focusImageIndex,
     images: images,
     setShowLightBox: setShowLightBox,

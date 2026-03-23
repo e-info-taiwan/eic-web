@@ -12,10 +12,7 @@ var sideIndexDefaultSpacing = 32;
 var SideIndexBlockWrapper = _styledComponents["default"].div.withConfig({
   displayName: "side-index-block__SideIndexBlockWrapper",
   componentId: "sc-rim3u6-0"
-})(["margin-top:", "px;background-color:#f5f5f5;border-left:4px solid #2d7a4f;padding:16px 20px;", "{padding:20px 24px;}h2{", " margin:0;}"], sideIndexDefaultSpacing, function (_ref) {
-  var theme = _ref.theme;
-  return theme.breakpoint.md;
-}, _sharedStyle.defaultH2Style);
+})(["margin-top:", "px;h2{", " margin:0;}"], sideIndexDefaultSpacing, _sharedStyle.defaultH2Style);
 function SideIndexBlock(props) {
   var block = props.block,
     contentState = props.contentState;
