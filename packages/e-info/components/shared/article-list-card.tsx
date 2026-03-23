@@ -102,6 +102,10 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
       line-height: 24px;
       letter-spacing: 0;
       color: ${({ theme }) => theme.colors.grayscale[20]};
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
+      overflow: hidden;
     }
 
     ${({ theme }) => theme.breakpoint.xl} {
