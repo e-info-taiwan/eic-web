@@ -104,7 +104,7 @@ const TextWrapper = styled.div<Pick<StyledProps, '$shouldHighlightReport'>>`
       color: ${({ theme }) => theme.colors.grayscale[20]};
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 6;
+      -webkit-line-clamp: 3;
       overflow: hidden;
     }
 
