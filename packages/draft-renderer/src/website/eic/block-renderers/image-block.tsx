@@ -56,21 +56,31 @@ export function ImageBlock(props: ImageBlockProps) {
   const webpImagesToUse =
     resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {}
 
+  const image = (
+    <CustomImage
+      images={imagesToUse}
+      imagesWebP={webpImagesToUse}
+      defaultImage={defaultImage}
+      alt={name || desc}
+      rwd={{
+        mobile: '100vw',
+        tablet: '608px',
+        desktop: '640px',
+        default: '100%',
+      }}
+      priority={true}
+    />
+  )
+
   return (
     <Figure>
-      <CustomImage
-        images={imagesToUse}
-        imagesWebP={webpImagesToUse}
-        defaultImage={defaultImage}
-        alt={name || desc}
-        rwd={{
-          mobile: '100vw',
-          tablet: '608px',
-          desktop: '640px',
-          default: '100%',
-        }}
-        priority={true}
-      />
+      {url ? (
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          {image}
+        </a>
+      ) : (
+        image
+      )}
       <FigureCaption>
         {url ? (
           <CaptionLink href={url} target="_blank" rel="noopener noreferrer">

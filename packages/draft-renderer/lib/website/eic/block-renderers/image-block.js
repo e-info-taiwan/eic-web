@@ -54,7 +54,7 @@ function ImageBlock(props) {
     original: src
   } : {};
   var webpImagesToUse = resizedWebp && Object.keys(resizedWebp).length > 0 ? resizedWebp : {};
-  return /*#__PURE__*/_react["default"].createElement(Figure, null, /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {
+  var image = /*#__PURE__*/_react["default"].createElement(_reactImage["default"], {
     images: imagesToUse,
     imagesWebP: webpImagesToUse,
     defaultImage: defaultImage,
@@ -66,7 +66,12 @@ function ImageBlock(props) {
       "default": '100%'
     },
     priority: true
-  }), /*#__PURE__*/_react["default"].createElement(FigureCaption, null, url ? /*#__PURE__*/_react["default"].createElement(CaptionLink, {
+  });
+  return /*#__PURE__*/_react["default"].createElement(Figure, null, url ? /*#__PURE__*/_react["default"].createElement("a", {
+    href: url,
+    target: "_blank",
+    rel: "noopener noreferrer"
+  }, image) : image, /*#__PURE__*/_react["default"].createElement(FigureCaption, null, url ? /*#__PURE__*/_react["default"].createElement(CaptionLink, {
     href: url,
     target: "_blank",
     rel: "noopener noreferrer"
