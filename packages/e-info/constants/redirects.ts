@@ -68,6 +68,11 @@ export const pageRedirects: PageRedirect[] = [
     postId: '210973',
     description: '投稿須知',
   },
+  {
+    path: '/about-en',
+    postId: '243200',
+    description: 'About us',
+  },
 ]
 
 /**

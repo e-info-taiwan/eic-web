@@ -262,17 +262,18 @@ const Footer = () => {
       { label: '環境徵才', href: '/job' },
       { label: '活動', href: '/event' },
       { label: '關於我們', href: '/about' },
-      { label: '合作媒體', href: '/media-partners' },
+      { label: 'About us', href: '/about-en' },
     ],
     [
       { label: '編輯室自律公約', href: '/editorial-guidelines' },
       { label: '網站授權條款', href: '/copyright' },
       { label: '常見問題', href: '/faq' },
-      { label: '獲獎紀錄', href: '/awards' },
+      { label: '合作媒體', href: '/media-partners' },
     ],
     [
       { label: '投稿須知', href: '/submission-guidelines' },
       { label: '隱私權政策', href: '/privacy' },
+      { label: '獲獎紀錄', href: '/awards' },
       {
         label: '意見回饋',
         href: 'https://forms.gle/5e4hQsSJcSxtyJkF7',
