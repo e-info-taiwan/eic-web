@@ -103,9 +103,12 @@ const Post: NextPageWithLayout<PageProps> = ({
     ? `${postData?.title} - ${SITE_TITLE}`
     : SITE_TITLE
 
+  const briefText =
+    typeof postData?.brief === 'string'
+      ? postData.brief.trim()
+      : convertDraftToText(postData?.brief?.blocks)
   const ogDescription =
-    convertDraftToText(postData?.brief?.blocks) ||
-    convertDraftToText(postData?.content?.blocks)
+    briefText || convertDraftToText(postData?.content?.blocks)
 
   const ogImageUrl =
     getResizedUrl(postData?.ogImage?.resized) ||

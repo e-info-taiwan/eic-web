@@ -206,8 +206,8 @@ export default function News({
                 alt={postData?.title}
                 priority={true}
               />
-              {!isEditorStyle && (
-                <figcaption>{postData?.heroCaption}</figcaption>
+              {!isEditorStyle && (postData as any)?.heroCaption && (
+                <figcaption>{(postData as any).heroCaption}</figcaption>
               )}
             </HeroImage>
           )}

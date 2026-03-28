@@ -94,7 +94,7 @@ export type PostDetail = Override<
   Post &
     Pick<
       GenericPost,
-      'heroCaption' | 'content' | 'subtitle' | 'otherByline' | 'state'
+      'content' | 'subtitle' | 'otherByline' | 'state'
     >,
   {
     heroImage: PhotoWithResizedOnly | null
@@ -140,7 +140,6 @@ const post = gql`
       contentApiData
       brief
       briefApiData
-      heroCaption
       citations
       isNewsletter
 
