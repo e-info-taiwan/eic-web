@@ -104,6 +104,11 @@ export type PostDetail = Override<
     reviewers: Author[] // 審校
     writers: Author[] // 文
     sources: Author[] // 稿源
+    reportersInInputOrder: Author[] // 記者（依輸入順序）
+    translatorsInInputOrder: Author[] // 編譯（依輸入順序）
+    reviewersInInputOrder: Author[] // 審校（依輸入順序）
+    writersInInputOrder: Author[] // 文（依輸入順序）
+    sourcesInInputOrder: Author[] // 稿源（依輸入順序）
     section: Section | null
     category: Category | null
     topic: Topic | null
@@ -176,6 +181,21 @@ const post = gql`
         ...AuthorFields
       }
       sources {
+        ...AuthorFields
+      }
+      reportersInInputOrder {
+        ...AuthorFields
+      }
+      translatorsInInputOrder {
+        ...AuthorFields
+      }
+      reviewersInInputOrder {
+        ...AuthorFields
+      }
+      writersInInputOrder {
+        ...AuthorFields
+      }
+      sourcesInInputOrder {
         ...AuthorFields
       }
 

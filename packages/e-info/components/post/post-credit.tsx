@@ -114,11 +114,12 @@ export default function PostCredit({
   postData,
   hideBookmark = false,
 }: PostProps): JSX.Element {
-  const reporters = postData?.reporters ?? []
-  const translators = postData?.translators ?? []
-  const reviewers = postData?.reviewers ?? []
-  const writers = postData?.writers ?? []
-  const sources = postData?.sources ?? []
+  const reporters = postData?.reportersInInputOrder ?? postData?.reporters ?? []
+  const translators =
+    postData?.translatorsInInputOrder ?? postData?.translators ?? []
+  const reviewers = postData?.reviewersInInputOrder ?? postData?.reviewers ?? []
+  const writers = postData?.writersInInputOrder ?? postData?.writers ?? []
+  const sources = postData?.sourcesInInputOrder ?? postData?.sources ?? []
   const otherByline = postData?.otherByline
   const section = postData?.section
   const category = postData?.category
