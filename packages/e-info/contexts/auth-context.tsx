@@ -1,7 +1,10 @@
 import type { User } from 'firebase/auth'
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { getFirebaseErrorMessage } from '~/constants/auth'
+import {
+  getFirebaseErrorMessage,
+  getProviderDisplayName,
+} from '~/constants/auth'
 import * as gtag from '~/utils/gtag'
 import {
   checkEmailExists as checkEmailExistsApi,
@@ -11,6 +14,7 @@ import {
   signInWithEmail as signInWithEmailApi,
   signInWithFacebook as signInWithFacebookApi,
   signInWithGoogle as signInWithGoogleApi,
+  getSignInMethodsForEmail,
   signOut as signOutApi,
   signUpWithEmail as signUpWithEmailApi,
 } from '~/lib/firebase/auth'
@@ -115,6 +119,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [firebaseUser])
 
+  // Handle account-exists-with-different-credential error
+  const handleDifferentCredentialError = async (
+    err: unknown
+  ): Promise<string | null> => {
+    const email =
+      err && typeof err === 'object' && 'customData' in err
+        ? (err as { customData: { email?: string } }).customData?.email
+        : null
+    if (!email) return null
+    try {
+      const methods = await getSignInMethodsForEmail(email)
+      if (methods.length > 0) {
+        const providerName = getProviderDisplayName(methods[0])
+        return `此 email 已經註冊過，請選擇以 ${providerName} 帳號登入`
+      }
+    } catch {
+      // ignore lookup failure
+    }
+    return '此 email 已經使用其他方式註冊過，請使用原登入方式登入'
+  }
+
   // Social login functions using popup method
   // Returns true if login successful and profile exists, false if needs registration
   const signInWithGoogle = useCallback(async (): Promise<boolean> => {
@@ -133,14 +158,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      const errorMessage = getFirebaseErrorMessage(errorCode)
-      console.error(
-        '[AuthContext] Error code:',
-        errorCode,
-        '| Message:',
-        errorMessage
-      )
-      setError(errorMessage)
+      if (errorCode === 'auth/account-exists-with-different-credential') {
+        const msg = await handleDifferentCredentialError(err)
+        setError(msg || getFirebaseErrorMessage(errorCode))
+      } else {
+        setError(getFirebaseErrorMessage(errorCode))
+      }
       return false
     }
   }, [])
@@ -161,14 +184,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      const errorMessage = getFirebaseErrorMessage(errorCode)
-      console.error(
-        '[AuthContext] Error code:',
-        errorCode,
-        '| Message:',
-        errorMessage
-      )
-      setError(errorMessage)
+      if (errorCode === 'auth/account-exists-with-different-credential') {
+        const msg = await handleDifferentCredentialError(err)
+        setError(msg || getFirebaseErrorMessage(errorCode))
+      } else {
+        setError(getFirebaseErrorMessage(errorCode))
+      }
       return false
     }
   }, [])
@@ -189,14 +210,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         err && typeof err === 'object' && 'code' in err
           ? (err as { code: string }).code
           : ''
-      const errorMessage = getFirebaseErrorMessage(errorCode)
-      console.error(
-        '[AuthContext] Error code:',
-        errorCode,
-        '| Message:',
-        errorMessage
-      )
-      setError(errorMessage)
+      if (errorCode === 'auth/account-exists-with-different-credential') {
+        const msg = await handleDifferentCredentialError(err)
+        setError(msg || getFirebaseErrorMessage(errorCode))
+      } else {
+        setError(getFirebaseErrorMessage(errorCode))
+      }
       return false
     }
   }, [])

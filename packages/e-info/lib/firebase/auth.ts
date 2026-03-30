@@ -59,6 +59,11 @@ export const checkEmailExists = async (email: string): Promise<boolean> => {
   }
 }
 
+// Get sign-in methods for an email
+export const getSignInMethodsForEmail = (
+  email: string
+): Promise<string[]> => fetchSignInMethodsForEmail(auth, email)
+
 // Sign out
 export const signOut = () => firebaseSignOut(auth)
 

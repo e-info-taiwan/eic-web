@@ -68,3 +68,16 @@ export const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
 export const getFirebaseErrorMessage = (errorCode: string): string => {
   return FIREBASE_ERROR_MESSAGES[errorCode] || '發生錯誤，請稍後再試'
 }
+
+// Firebase provider ID 對應中文名稱
+export const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
+  'google.com': 'Google',
+  'facebook.com': 'Facebook',
+  'apple.com': 'Apple',
+  password: 'Email',
+}
+
+// 將 sign-in methods 轉換為顯示名稱
+export const getProviderDisplayName = (method: string): string => {
+  return PROVIDER_DISPLAY_NAMES[method] || method
+}
