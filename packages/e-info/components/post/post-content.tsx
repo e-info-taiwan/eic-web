@@ -66,6 +66,11 @@ const Summary = styled.article`
     color: ${({ theme }) => theme.colors.primary[20]} !important;
   }
 
+  && span[style*='font-weight: bold'],
+  && span[style*='font-weight:bold'] {
+    font-weight: 900 !important;
+  }
+
   && a,
   && a span {
     font-weight: 900 !important;
