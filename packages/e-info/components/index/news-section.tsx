@@ -178,16 +178,6 @@ const NewsItem = styled.a`
     border-bottom: none;
     margin-bottom: 0;
   }
-
-  // Tablet
-  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    border-bottom: 1px solid #000;
-  }
-
-  // Desktop
-  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    border-bottom: 1px solid #000;
-  }
 `
 
 const NewsDate = styled.div`
@@ -217,7 +207,7 @@ const NewsBrief = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 1.5;
-  margin: 24px 0 36px;
+  margin: 24px 0 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
