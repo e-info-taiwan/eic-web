@@ -65,6 +65,16 @@ const Summary = styled.article`
     line-height: 1.5 !important;
     color: ${({ theme }) => theme.colors.primary[20]} !important;
   }
+
+  && a,
+  && a span {
+    font-weight: 900 !important;
+    text-decoration: underline !important;
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.primary[0]} !important;
+    }
+  }
 `
 
 //內文
