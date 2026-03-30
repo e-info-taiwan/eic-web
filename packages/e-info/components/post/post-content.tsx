@@ -58,12 +58,15 @@ const Container = styled.article<StyleProps>`
 const Summary = styled.article`
   ${defaultMarginBottom}
 
+  && > div {
+    color: ${({ theme }) => theme.colors.primary[20]} !important;
+  }
+
   && p,
   && span {
     font-size: 16px !important;
     font-weight: 700 !important;
     line-height: 1.5 !important;
-    color: ${({ theme }) => theme.colors.primary[20]} !important;
   }
 
   && span[style*='font-weight: bold'],
