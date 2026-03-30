@@ -1,5 +1,6 @@
 // Featured Topic 單頁
 // @ts-ignore: no definition
+import SharedImage from '@readr-media/react-image'
 import errors from '@twreporter/errors'
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
@@ -26,26 +27,27 @@ const PageWrapper = styled.div`
   margin: 0 auto;
 `
 
-const HeroSection = styled.section`
-  position: relative;
+const HeroImage = styled.figure`
   width: 100%;
-  aspect-ratio: 4 / 3;
+  max-width: 960px;
+  aspect-ratio: 2 / 1;
   overflow: hidden;
-  margin-bottom: 32px;
+  margin: 0 auto 32px;
+
+  .readr-media-react-image {
+    width: 100%;
+    height: 100%;
+
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+    }
+  }
 
   ${({ theme }) => theme.breakpoint.md} {
     margin-bottom: 40px;
   }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    margin-bottom: 40px;
-  }
-`
-
-const HeroImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 `
 
 const ContentWrapper = styled.div`
@@ -401,16 +403,23 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
     return pages
   }
 
-  // Get hero image URL
-  const heroImageUrl = getHeroImageUrl(topic)
+  const heroResized = topic.heroImage?.resized
+  const heroResizedWebp = topic.heroImage?.resizedWebp
+  const hasHeroImage = Boolean(heroResized)
 
   return (
     <PageWrapper>
       {/* Hero Section */}
-      {heroImageUrl && (
-        <HeroSection>
-          <HeroImage src={heroImageUrl} alt={topic.title || ''} />
-        </HeroSection>
+      {hasHeroImage && (
+        <HeroImage>
+          <SharedImage
+            images={heroResized}
+            imagesWebP={heroResizedWebp}
+            defaultImage={DEFAULT_POST_IMAGE_PATH}
+            alt={topic.title || ''}
+            priority={true}
+          />
+        </HeroImage>
       )}
 
       {/* Content */}
