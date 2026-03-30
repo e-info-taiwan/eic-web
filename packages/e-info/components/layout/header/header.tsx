@@ -473,6 +473,7 @@ const NewsContent = styled.a<NewsContentProps>`
     left: 50%;
     white-space: nowrap;
     opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+    pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'none')};
     transform: ${({ $isActive, $isLeaving }) => {
       if ($isActive) return 'translateX(-50%) translateY(0)'
       if ($isLeaving) return 'translateX(-50%) translateY(-100%)'
@@ -488,6 +489,7 @@ const NewsContent = styled.a<NewsContentProps>`
     justify-content: flex-start;
     white-space: nowrap;
     opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+    pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'none')};
     animation: ${({ $isActive }) =>
       $isActive ? 'marquee 15s linear infinite' : 'none'};
   }
