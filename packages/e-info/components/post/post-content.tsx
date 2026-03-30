@@ -67,7 +67,9 @@ const Summary = styled.article`
   }
 
   && span[style*='font-weight: bold'],
-  && span[style*='font-weight:bold'] {
+  && span[style*='font-weight:bold'],
+  && span[style*='font-weight: bold'] span,
+  && span[style*='font-weight:bold'] span {
     font-weight: 900 !important;
   }
 
