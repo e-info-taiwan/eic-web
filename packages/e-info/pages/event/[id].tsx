@@ -196,6 +196,7 @@ const ContentText = styled.div`
   font-size: 16px;
   line-height: 1.8;
   color: #000;
+  white-space: pre-wrap;
 
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 18px;
