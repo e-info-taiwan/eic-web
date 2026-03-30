@@ -40,8 +40,12 @@ export const SummaryStyle = css`
 `
 
 export const NormalStyle = css`
-  ${({ theme }) => theme.fontSize.md};
+  ${({ theme }) => theme.fontSize.sm};
   line-height: 1.8;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    ${({ theme }) => theme.fontSize.md};
+  }
 
   *:not(:first-child) {
     ${defaultSpacingBetweenContent}

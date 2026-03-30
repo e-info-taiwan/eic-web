@@ -47,7 +47,7 @@ export const defaultH3Style = css`
 `
 
 export const defaultH4Style = css`
-  ${({ theme }) => theme.fontSize.md};
+  ${({ theme }) => theme.fontSize.sm};
   font-weight: 700;
   line-height: 28px;
   letter-spacing: 0;
@@ -60,11 +60,15 @@ export const defaultH4Style = css`
 `
 
 export const defaultH5Style = css`
-  ${({ theme }) => theme.fontSize.md};
+  font-size: 15px;
   font-weight: 700;
   line-height: 28px;
   letter-spacing: 0;
   color: #232333;
+
+  ${({ theme }) => theme.breakpoint.md} {
+    ${({ theme }) => theme.fontSize.md};
+  }
 `
 
 export const defaultUlStyle = css`
