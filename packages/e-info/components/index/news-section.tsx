@@ -236,7 +236,7 @@ const FeaturedArticle = styled.a`
   order: 1;
   cursor: pointer;
 
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale[80]};
   padding-bottom: 20px;
 
   // Tablet
