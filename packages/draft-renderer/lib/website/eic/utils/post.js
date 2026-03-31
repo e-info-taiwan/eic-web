@@ -114,6 +114,9 @@ var getFirstBlockEntityType = exports.getFirstBlockEntityType = function getFirs
   }
 };
 var getSideIndexEntityData = exports.getSideIndexEntityData = function getSideIndexEntityData(rawContentBlock) {
+  if (!(0, _common.hasContentInRawContentBlock)(rawContentBlock)) {
+    return [];
+  }
   var contentBlocks = (0, _common.removeEmptyContentBlock)(rawContentBlock);
   if (contentBlocks !== null && contentBlocks !== void 0 && contentBlocks.entityMap) {
     return Object.values(contentBlocks.entityMap).filter(function (entity) {

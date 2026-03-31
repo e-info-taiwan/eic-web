@@ -2,7 +2,7 @@ import { RawDraftContentState } from 'draft-js'
 
 // eslint-disable-next-line prettier/prettier
 import type { Post } from '../types'
-import { removeEmptyContentBlock } from './common'
+import { hasContentInRawContentBlock, removeEmptyContentBlock } from './common'
 
 const insertRecommendInContentBlock = (
   rawContentBlock: RawDraftContentState,
@@ -129,6 +129,9 @@ const getFirstBlockEntityType = (rawContentBlock: RawDraftContentState) => {
 }
 
 const getSideIndexEntityData = (rawContentBlock: RawDraftContentState) => {
+  if (!hasContentInRawContentBlock(rawContentBlock)) {
+    return []
+  }
   const contentBlocks = removeEmptyContentBlock(rawContentBlock)
 
   if (contentBlocks?.entityMap) {
