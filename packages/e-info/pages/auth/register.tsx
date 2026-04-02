@@ -8,7 +8,9 @@ import NewsletterOptions from '~/components/auth/newsletter-options'
 import ValidationIndicator from '~/components/auth/validation-indicator'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { LOCATION_OPTIONS, VALIDATION_RULES } from '~/constants/auth'
+import { getProviderDisplayName } from '~/constants/auth'
 import { useAuth } from '~/hooks/useAuth'
+import { getSignInMethodsForEmail } from '~/lib/firebase/auth'
 import {
   type NotificationSection,
   createMember,
@@ -549,9 +551,30 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
         }
       }
     } catch (err) {
-      const errorMsg = encodeURIComponent(
-        err instanceof Error ? err.message : '註冊時發生錯誤'
-      )
+      let friendlyMessage = '註冊時發生錯誤'
+
+      // Detect Prisma unique constraint error on email (email already exists in CMS)
+      const errMessage = err instanceof Error ? err.message : ''
+      if (
+        errMessage.includes('Unique constraint') &&
+        errMessage.includes('email')
+      ) {
+        try {
+          const methods = await getSignInMethodsForEmail(formData.email)
+          if (methods.length > 0) {
+            const providerName = getProviderDisplayName(methods[0])
+            friendlyMessage = `此 email 已經註冊過，請選擇以 ${providerName} 帳號登入`
+          } else {
+            friendlyMessage = '此 email 已經註冊過，請使用原登入方式登入'
+          }
+        } catch {
+          friendlyMessage = '此 email 已經註冊過，請使用原登入方式登入'
+        }
+      } else if (errMessage) {
+        friendlyMessage = errMessage
+      }
+
+      const errorMsg = encodeURIComponent(friendlyMessage)
       router.push(`/auth/register-result?success=false&error=${errorMsg}`)
     } finally {
       setLoading(false)
