@@ -66,8 +66,7 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-prod/ga/reading_ranking.json'
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/json/listing'
-    GCS_STATICS_ORIGIN =
-      'https://storage.googleapis.com/statics-e-info-prod'
+    GCS_STATICS_ORIGIN = 'https://storage.googleapis.com/statics-e-info-prod'
     SITE_ORIGIN = 'https://e-info.org.tw'
     FIREBASE_CONFIG = {
       // e-info-prod
@@ -80,6 +79,7 @@ switch (ENV) {
     }
     break
   case 'dev':
+  case 'main':
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     PREVIEW_API_ENDPOINT =
@@ -94,8 +94,7 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-dev/ga/reading_ranking.json'
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/json/listing'
-    GCS_STATICS_ORIGIN =
-      'https://storage.googleapis.com/statics-e-info-dev'
+    GCS_STATICS_ORIGIN = 'https://storage.googleapis.com/statics-e-info-dev'
     SITE_ORIGIN = 'https://dev.e-info.org.tw'
     FIREBASE_CONFIG = {
       // e-info-dev
@@ -122,8 +121,7 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-dev/ga/reading_ranking.json'
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/json/listing'
-    GCS_STATICS_ORIGIN =
-      'https://storage.googleapis.com/statics-e-info-dev'
+    GCS_STATICS_ORIGIN = 'https://storage.googleapis.com/statics-e-info-dev'
     SITE_ORIGIN = `http://localhost:${process.env.PORT || 3000}`
     FIREBASE_CONFIG = {
       // e-info-dev
@@ -169,13 +167,12 @@ if (process.env.NEXT_PUBLIC_FIREBASE_APP_ID) {
 
 export {
   API_ENDPOINT,
-  GCS_STATICS_ORIGIN,
-  SITE_ORIGIN,
   FIREBASE_ADMIN_CLIENT_EMAIL,
   FIREBASE_ADMIN_PRIVATE_KEY,
   FIREBASE_ADMIN_PROJECT_ID,
   FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH,
   FIREBASE_CONFIG,
+  GCS_STATICS_ORIGIN,
   HEADER_API_ENDPOINT,
   HOMEPAGE_API_ENDPOINT,
   IS_PREVIEW_MODE,
@@ -187,5 +184,6 @@ export {
   MOCK_API_SERVER_PORT,
   POPULAR_SEARCH_ENDPOINT,
   READING_RANKING_ENDPOINT,
+  SITE_ORIGIN,
   TURNSTILE_SECRET_KEY,
 }
