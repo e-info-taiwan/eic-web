@@ -19,6 +19,7 @@ var EmbeddedCodeBlock = _blockRenderers.blockRenderers.EmbeddedCodeBlock,
   RelatedPostBlock = _blockRenderers.blockRenderers.RelatedPostBlock,
   SideIndexBlock = _blockRenderers.blockRenderers.SideIndexBlock,
   VideoBlock = _blockRenderers.blockRenderers.VideoBlock,
+  VideoV2Block = _blockRenderers.blockRenderers.VideoV2Block,
   AudioBlock = _blockRenderers.blockRenderers.AudioBlock;
 var AtomicBlock = function AtomicBlock(props) {
   var entity = props.contentState.getEntity(props.block.getEntityAt(0));
@@ -81,6 +82,10 @@ var AtomicBlock = function AtomicBlock(props) {
     case 'VIDEO':
       {
         return VideoBlock(entity);
+      }
+    case 'VIDEO-V2':
+      {
+        return VideoV2Block(entity);
       }
     case 'AUDIO':
       {

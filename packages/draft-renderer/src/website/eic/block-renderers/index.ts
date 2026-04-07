@@ -11,6 +11,7 @@ import { SideIndexBlock } from './side-index-block'
 import { SlideshowBlock, SlideshowBlockV2 } from './slideshow-block'
 import { TableBlock } from './table-block'
 import { VideoBlock } from './video-block'
+import { VideoV2Block } from './video-v2-block'
 import { AudioBlock } from './audio-block'
 
 export const blockRenderers = {
@@ -28,5 +29,6 @@ export const blockRenderers = {
   SlideshowBlockV2,
   TableBlock,
   VideoBlock,
+  VideoV2Block,
   AudioBlock,
 }

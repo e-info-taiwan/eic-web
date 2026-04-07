@@ -17,6 +17,7 @@ var _sideIndexBlock = require("./side-index-block");
 var _slideshowBlock = require("./slideshow-block");
 var _tableBlock = require("./table-block");
 var _videoBlock = require("./video-block");
+var _videoV2Block = require("./video-v2-block");
 var _audioBlock = require("./audio-block");
 var blockRenderers = exports.blockRenderers = {
   BGImageBlock: _backgroundImageBlock.BGImageBlock,
@@ -33,5 +34,6 @@ var blockRenderers = exports.blockRenderers = {
   SlideshowBlockV2: _slideshowBlock.SlideshowBlockV2,
   TableBlock: _tableBlock.TableBlock,
   VideoBlock: _videoBlock.VideoBlock,
+  VideoV2Block: _videoV2Block.VideoV2Block,
   AudioBlock: _audioBlock.AudioBlock
 };
