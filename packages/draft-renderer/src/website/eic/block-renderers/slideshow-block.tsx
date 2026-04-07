@@ -15,7 +15,7 @@ const SlideShowBlockWrapper = styled.div`
   width: calc(100% + 36px);
   position: relative;
   background-color: ${({ theme }) => theme.colors.grayscale[95]};
-  margin: 0 -18px;
+  margin: 32px -18px 0;
   padding: 18px 28px;
 
   ${({ theme }) => theme.breakpoint.xl} {
@@ -55,7 +55,7 @@ const SlideShowImage = styled.figure`
 
   ${({ theme }) => theme.breakpoint.xl} {
     aspect-ratio: unset;
-    height: ${SlideShowRowHeight}px;
+    max-height: ${SlideShowRowHeight}px;
     flex-grow: ${(props) => props.aspectRatio || 1};
     flex-shrink: 1;
     flex-basis: ${(props) =>
@@ -65,7 +65,7 @@ const SlideShowImage = styled.figure`
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     &:hover {
