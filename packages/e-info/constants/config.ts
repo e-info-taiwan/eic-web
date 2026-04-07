@@ -67,7 +67,7 @@ switch (ENV) {
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/json/listing'
     GCS_STATICS_ORIGIN = 'https://storage.googleapis.com/statics-e-info-prod'
-    SITE_ORIGIN = 'https://e-info.org.tw'
+    SITE_ORIGIN = 'https://www.e-info.org.tw'
     FIREBASE_CONFIG = {
       // e-info-prod
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
