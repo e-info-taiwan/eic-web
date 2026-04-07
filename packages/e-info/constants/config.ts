@@ -39,6 +39,8 @@ let HEADER_API_ENDPOINT = ''
 let POPULAR_SEARCH_ENDPOINT = ''
 let READING_RANKING_ENDPOINT = ''
 let LISTING_API_ENDPOINT = ''
+let GCS_STATICS_ORIGIN = ''
+let SITE_ORIGIN = ''
 let FIREBASE_CONFIG = {
   apiKey: '',
   authDomain: '',
@@ -64,6 +66,9 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-prod/ga/reading_ranking.json'
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/json/listing'
+    GCS_STATICS_ORIGIN =
+      'https://storage.googleapis.com/statics-e-info-prod'
+    SITE_ORIGIN = 'https://e-info.org.tw'
     FIREBASE_CONFIG = {
       // e-info-prod
       apiKey: 'AIzaSyDSB9cyyI_XZ52v8F4_tEuJv6KXjo9aVag',
@@ -75,7 +80,6 @@ switch (ENV) {
     }
     break
   case 'dev':
-  default:
     API_ENDPOINT =
       'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
     PREVIEW_API_ENDPOINT =
@@ -90,6 +94,37 @@ switch (ENV) {
       'https://storage.googleapis.com/statics-e-info-dev/ga/reading_ranking.json'
     LISTING_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/json/listing'
+    GCS_STATICS_ORIGIN =
+      'https://storage.googleapis.com/statics-e-info-dev'
+    SITE_ORIGIN = 'https://dev.e-info.org.tw'
+    FIREBASE_CONFIG = {
+      // e-info-dev
+      apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
+      authDomain: 'e-info-dev.firebaseapp.com',
+      projectId: 'e-info-dev',
+      storageBucket: 'e-info-dev.firebasestorage.app',
+      messagingSenderId: '503550465964',
+      appId: '1:503550465964:web:1f1f075c8165fb88b3cc09',
+    }
+    break
+  default:
+    API_ENDPOINT =
+      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
+    PREVIEW_API_ENDPOINT =
+      'https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql'
+    HOMEPAGE_API_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/json/homepage.json'
+    HEADER_API_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/json/header.json'
+    POPULAR_SEARCH_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/ga/popular_search.json'
+    READING_RANKING_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/ga/reading_ranking.json'
+    LISTING_API_ENDPOINT =
+      'https://storage.googleapis.com/statics-e-info-dev/json/listing'
+    GCS_STATICS_ORIGIN =
+      'https://storage.googleapis.com/statics-e-info-dev'
+    SITE_ORIGIN = `http://localhost:${process.env.PORT || 3000}`
     FIREBASE_CONFIG = {
       // e-info-dev
       apiKey: 'AIzaSyCEk2WxBeqiuTI6Xjh1QOkK-mpJXJlGWoc',
@@ -134,6 +169,8 @@ if (process.env.NEXT_PUBLIC_FIREBASE_APP_ID) {
 
 export {
   API_ENDPOINT,
+  GCS_STATICS_ORIGIN,
+  SITE_ORIGIN,
   FIREBASE_ADMIN_CLIENT_EMAIL,
   FIREBASE_ADMIN_PRIVATE_KEY,
   FIREBASE_ADMIN_PROJECT_ID,

@@ -9,6 +9,8 @@ const { ENV } = await tsImport.load('./constants/environment-variables.ts')
 
 const { getNextRewrites } = await tsImport.load('./constants/redirects.ts')
 
+const { GCS_STATICS_ORIGIN } = await tsImport.load('./constants/config.ts')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -31,6 +33,11 @@ const nextConfig = {
       {
         source: '/robots.txt',
         destination: '/api/robots',
+      },
+      // Proxy /images/* to GCS statics bucket
+      {
+        source: '/images/:path*',
+        destination: `${GCS_STATICS_ORIGIN}/images/:path*`,
       },
       // 頁面轉址設定（從 constants/redirects.ts 載入）
       ...getNextRewrites(),

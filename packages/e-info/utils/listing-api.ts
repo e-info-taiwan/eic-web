@@ -6,6 +6,7 @@
 
 import { LISTING_API_ENDPOINT } from '~/constants/config'
 import { API_TIMEOUT_MS } from '~/constants/layout'
+import { rewriteGcsUrls } from '~/utils/rewrite-gcs-urls'
 import type {
   CategoryPostForListing,
   SectionForListing,
@@ -106,7 +107,7 @@ export async function fetchCategoryListing(
     console.log(
       `[ListingAPI] Category ${categoryId} page ${page} fetched from JSON API`
     )
-    return data
+    return rewriteGcsUrls(data)
   } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -155,7 +156,7 @@ export async function fetchSectionListing(
     console.log(
       `[ListingAPI] Section ${slug} page ${page} fetched from JSON API`
     )
-    return data
+    return rewriteGcsUrls(data)
   } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(

@@ -10,6 +10,7 @@ import {
   CACHE_TTL_MS,
   HEALTH_CHECK_TIMEOUT_MS,
 } from '~/constants/layout'
+import { rewriteGcsUrls } from '~/utils/rewrite-gcs-urls'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   HeaderNavSection,
@@ -173,6 +174,9 @@ export async function fetchHeaderData(): Promise<HeaderContextData> {
     // eslint-disable-next-line no-console
     console.log('[Header] Data source: JSON API')
   }
+
+  // Rewrite GCS image URLs to use local proxy
+  data = rewriteGcsUrls(data)
 
   // Update cache
   cachedHeaderData = data

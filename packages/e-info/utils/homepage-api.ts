@@ -15,6 +15,7 @@ import {
   CACHE_TTL_MS,
   HEALTH_CHECK_TIMEOUT_MS,
 } from '~/constants/layout'
+import { rewriteGcsUrls } from '~/utils/rewrite-gcs-urls'
 import type {
   Ad,
   HomepagePick,
@@ -407,7 +408,7 @@ export async function fetchHomepageData(
     console.log('[Homepage] Data source: JSON API')
   }
 
-  const data = transformApiResponse(response)
+  const data = rewriteGcsUrls(transformApiResponse(response))
 
   // Update cache
   cachedHomepageData = data
