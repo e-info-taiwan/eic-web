@@ -46,7 +46,7 @@ const SlideShowRow = styled.div`
 
 const SlideShowImage = styled.figure`
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: ${(props) => (props.isSingle ? 'unset' : '1/1')};
   margin: 0;
 
   & + .slideshow-image {
@@ -55,16 +55,20 @@ const SlideShowImage = styled.figure`
 
   ${({ theme }) => theme.breakpoint.xl} {
     aspect-ratio: unset;
-    max-height: ${SlideShowRowHeight}px;
-    flex-grow: ${(props) => props.aspectRatio || 1};
-    flex-shrink: 1;
+    max-height: ${(props) => (props.isSingle ? 'none' : `${SlideShowRowHeight}px`)};
+    flex-grow: ${(props) => (props.isSingle ? 0 : props.aspectRatio || 1)};
+    flex-shrink: ${(props) => (props.isSingle ? 0 : 1)};
     flex-basis: ${(props) =>
-      Math.round((props.aspectRatio || 1) * SlideShowRowHeight)}px;
-    overflow: hidden;
+      props.isSingle
+        ? 'auto'
+        : `${Math.round((props.aspectRatio || 1) * SlideShowRowHeight)}px`};
+    overflow: ${(props) => (props.isSingle ? 'visible' : 'hidden')};
+    ${(props) => props.isSingle ? 'margin: 0 auto;' : ''}
 
     img {
-      width: 100%;
-      height: 100%;
+      width: ${(props) => (props.isSingle ? 'auto' : '100%')};
+      max-width: 100%;
+      height: ${(props) => (props.isSingle ? 'auto' : '100%')};
       object-fit: contain;
     }
 
@@ -258,6 +262,7 @@ export function SlideshowBlockV2(entity: DraftEntityInstance) {
         className="slideshow-image"
         key={id}
         aspectRatio={ratio}
+        isSingle={images.length === 1}
         lightboxEnabled={lightboxEnabled}
         onClick={() => {
           if (!lightboxEnabled) return

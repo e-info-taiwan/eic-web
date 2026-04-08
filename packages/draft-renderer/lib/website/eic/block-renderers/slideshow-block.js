@@ -58,13 +58,27 @@ var SlideShowRow = _styledComponents["default"].div.withConfig({
 var SlideShowImage = _styledComponents["default"].figure.withConfig({
   displayName: "slideshow-block__SlideShowImage",
   componentId: "sc-gsubhh-2"
-})(["width:100%;aspect-ratio:1/1;margin:0;& + .slideshow-image{margin-top:", "px;}", "{aspect-ratio:unset;max-height:", "px;flex-grow:", ";flex-shrink:1;flex-basis:", "px;overflow:hidden;img{width:100%;height:100%;object-fit:contain;}&:hover{cursor:", ";filter:", ";transition:", ";}& + .slideshow-image{margin-top:unset;}}"], SpacingBetweenSlideImages, function (_ref4) {
+})(["width:100%;aspect-ratio:", ";margin:0;& + .slideshow-image{margin-top:", "px;}", "{aspect-ratio:unset;max-height:", ";flex-grow:", ";flex-shrink:", ";flex-basis:", ";overflow:", ";", " img{width:", ";max-width:100%;height:", ";object-fit:contain;}&:hover{cursor:", ";filter:", ";transition:", ";}& + .slideshow-image{margin-top:unset;}}"], function (props) {
+  return props.isSingle ? 'unset' : '1/1';
+}, SpacingBetweenSlideImages, function (_ref4) {
   var theme = _ref4.theme;
   return theme.breakpoint.xl;
-}, SlideShowRowHeight, function (props) {
-  return props.aspectRatio || 1;
 }, function (props) {
-  return Math.round((props.aspectRatio || 1) * SlideShowRowHeight);
+  return props.isSingle ? 'none' : "".concat(SlideShowRowHeight, "px");
+}, function (props) {
+  return props.isSingle ? 0 : props.aspectRatio || 1;
+}, function (props) {
+  return props.isSingle ? 0 : 1;
+}, function (props) {
+  return props.isSingle ? 'auto' : "".concat(Math.round((props.aspectRatio || 1) * SlideShowRowHeight), "px");
+}, function (props) {
+  return props.isSingle ? 'visible' : 'hidden';
+}, function (props) {
+  return props.isSingle ? 'margin: 0 auto;' : '';
+}, function (props) {
+  return props.isSingle ? 'auto' : '100%';
+}, function (props) {
+  return props.isSingle ? 'auto' : '100%';
 }, function (props) {
   return props.lightboxEnabled ? 'pointer' : 'default';
 }, function (props) {
@@ -209,6 +223,7 @@ function SlideshowBlockV2(entity) {
       className: "slideshow-image",
       key: id,
       aspectRatio: ratio,
+      isSingle: images.length === 1,
       lightboxEnabled: lightboxEnabled,
       onClick: function onClick() {
         if (!lightboxEnabled) return;
