@@ -11,7 +11,7 @@ import type { ReadingRankingArticle, Topic } from '~/graphql/query/section'
 const Container = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
   margin: 0 auto;
-  padding: 36px 0;
+  padding: 0;
 
   // Tablet
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
