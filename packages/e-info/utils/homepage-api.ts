@@ -138,6 +138,62 @@ async function fetchFromJsonApi(): Promise<HomepageApiResponse> {
   }
 
   const data = await response.json()
+  return normalizeHomepageResponse(data)
+}
+
+/**
+ * JSON API 相容處理：將 Post 上舊格式 category（單數）轉換為 categories（陣列）
+ * 後端 JSON 產生器更新後可移除此函式
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizePostCategory(post: any): any {
+  if (!post || typeof post !== 'object') return post
+  if ('category' in post && !('categories' in post)) {
+    const { category, ...rest } = post
+    return { ...rest, categories: category ? [category] : [] }
+  }
+  return post
+}
+
+function normalizeHomepageResponse(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any
+): HomepageApiResponse {
+  // Normalize post arrays that contain Post objects with category field
+  const postArrayKeys = [
+    'newsPosts',
+    'columnPosts',
+    'supplementPosts',
+    'greenMain',
+    'greenBuy',
+    'greenFood',
+    'greenClothing',
+    'greenLeisure',
+  ] as const
+
+  for (const key of postArrayKeys) {
+    if (Array.isArray(data[key])) {
+      data[key] = data[key].map(normalizePostCategory)
+    }
+  }
+
+  // Normalize posts inside sections.categories.posts and featuredPostsInInputOrder
+  if (Array.isArray(data.sections)) {
+    for (const section of data.sections) {
+      if (Array.isArray(section.categories)) {
+        for (const cat of section.categories) {
+          if (Array.isArray(cat.posts)) {
+            cat.posts = cat.posts.map(normalizePostCategory)
+          }
+          if (Array.isArray(cat.featuredPostsInInputOrder)) {
+            cat.featuredPostsInInputOrder =
+              cat.featuredPostsInInputOrder.map(normalizePostCategory)
+          }
+        }
+      }
+    }
+  }
+
   return data as HomepageApiResponse
 }
 

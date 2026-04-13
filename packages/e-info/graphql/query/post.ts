@@ -110,7 +110,7 @@ export type PostDetail = Override<
     writersInInputOrder: Author[] // 文（依輸入順序）
     sourcesInInputOrder: Author[] // 稿源（依輸入順序）
     section: Section | null
-    category: Category | null
+    categories: Category[]
     topic: Topic | null
     locations: Location[]
     relatedPosts: PostCard[]
@@ -153,7 +153,7 @@ const post = gql`
         name
         slug
       }
-      category {
+      categories {
         id
         name
         slug

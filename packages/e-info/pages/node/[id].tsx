@@ -50,7 +50,7 @@ const Post: NextPageWithLayout<PageProps> = ({
       gtag.sendArticlePageview(router.asPath, {
         articleId: postData.id,
         articleTitle: postData.title,
-        articleCategory: postData.category?.name,
+        articleCategory: postData.categories?.map((c) => c.name).join(','),
         articleSection: postData.section?.name,
         articleTags: tags,
       })

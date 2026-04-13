@@ -472,11 +472,11 @@ const NewsSection = ({ section }: NewsSectionProps) => {
   const isEditorCategory = currentCategory?.slug === 'editorpick'
   const getDefaultImage = (post: {
     style?: string
-    category?: { slug: string } | null
+    categories?: { slug: string }[]
   }) =>
     isEditorCategory ||
     post.style === 'editor' ||
-    post.category?.slug === 'editorpick'
+    post.categories?.some((c) => c.slug === 'editorpick')
       ? DEFAULT_NEWS_IMAGE_PATH
       : DEFAULT_POST_IMAGE_PATH
 

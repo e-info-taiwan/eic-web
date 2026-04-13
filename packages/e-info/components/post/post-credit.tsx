@@ -131,31 +131,20 @@ export default function PostCredit({
     : postData?.sources ?? []
   const otherByline = postData?.otherByline
   const section = postData?.section
-  const category = postData?.category
-
-  // Build section path: section/category
-  const sectionPathParts: { name: string; href: string }[] = []
-  if (section) {
-    sectionPathParts.push({
-      name: section.name,
-      href: `/section/${section.slug}`,
-    })
-  }
-  if (category) {
-    sectionPathParts.push({
-      name: category.name,
-      href: `/category/${category.id}`,
-    })
-  }
+  const categories = postData?.categories ?? []
 
   return (
     <PostCreditWrapper>
-      {sectionPathParts.length > 0 && (
+      {(section || categories.length > 0) && (
         <SectionPath>
-          {sectionPathParts.map((part, index) => (
-            <span key={part.href}>
-              {index > 0 && '/'}
-              <Link href={part.href}>{part.name}</Link>
+          {section && (
+            <Link href={`/section/${section.slug}`}>{section.name}</Link>
+          )}
+          {section && categories.length > 0 && '/'}
+          {categories.map((cat, index) => (
+            <span key={cat.id}>
+              {index > 0 && ', '}
+              <Link href={`/category/${cat.id}`}>{cat.name}</Link>
             </span>
           ))}
         </SectionPath>

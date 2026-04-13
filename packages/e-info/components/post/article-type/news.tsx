@@ -169,7 +169,7 @@ export default function News({
   // Track reading progress at 25%, 50%, 75%, 100%
   const readingProgressRef = useReadingProgress({
     articleId: postData?.id,
-    articleCategory: postData?.category?.name,
+    articleCategory: postData?.categories?.map((c) => c.name).join(','),
     enabled: Boolean(postData?.id),
   })
 
@@ -177,7 +177,9 @@ export default function News({
   const isEditorStyle = postData?.style === ValidPostStyle.EDITOR
   const shouldShowHeroImage =
     isEditorStyle || Boolean(postData?.heroImage?.resized)
-  const isEditorCategory = postData?.category?.slug === 'editorpick'
+  const isEditorCategory = postData?.categories?.some(
+    (c) => c.slug === 'editorpick'
+  )
   // Use news default image for editor style or editor category
   const defaultImage =
     isEditorStyle || isEditorCategory

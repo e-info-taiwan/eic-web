@@ -93,7 +93,7 @@ export type GenericPost = {
   sources: GenericAuthor[] // 稿源
   otherByline: string // 作者（其他）
   section: { id: string; name: string; slug: string } | null
-  category: { id: string; name: string; slug: string } | null
+  categories: { id: string; name: string; slug: string }[]
   topic: { id: string; title: string } | null
   relatedPosts: GenericPost[]
   publishTime: string

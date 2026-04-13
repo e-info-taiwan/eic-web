@@ -20,11 +20,11 @@ export type SectionPost = {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
   } | null
-  category: {
+  categories: {
     id: string
     slug: string
     name: string
-  } | null
+  }[]
 }
 
 export type SectionCategory = {
@@ -469,7 +469,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
               ...ResizedWebPImagesCardField
             }
           }
-          category {
+          categories {
             id
             slug
             name
@@ -489,7 +489,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
               ...ResizedWebPImagesCardField
             }
           }
-          category {
+          categories {
             id
             slug
             name
@@ -506,7 +506,7 @@ export const multipleSectionsWithCategoriesAndPosts = gql`
 export const homepageSectionPosts = gql`
   query ($postsPerSection: Int = 8) {
     newsPosts: posts(
-      where: { ${publishedStateFilter} category: { section: { id: { equals: "1" } } } }
+      where: { ${publishedStateFilter} categories: { some: { section: { id: { equals: "1" } } } } }
       take: $postsPerSection
       orderBy: { publishTime: desc }
     ) {
@@ -523,14 +523,14 @@ export const homepageSectionPosts = gql`
           ...ResizedWebPImagesCardField
         }
       }
-      category {
+      categories {
         id
         slug
         name
       }
     }
     columnPosts: posts(
-      where: { ${publishedStateFilter} category: { section: { id: { equals: "2" } } } }
+      where: { ${publishedStateFilter} categories: { some: { section: { id: { equals: "2" } } } } }
       take: $postsPerSection
       orderBy: { publishTime: desc }
     ) {
@@ -547,14 +547,14 @@ export const homepageSectionPosts = gql`
           ...ResizedWebPImagesCardField
         }
       }
-      category {
+      categories {
         id
         slug
         name
       }
     }
     supplementPosts: posts(
-      where: { ${publishedStateFilter} category: { section: { id: { equals: "3" } } } }
+      where: { ${publishedStateFilter} categories: { some: { section: { id: { equals: "3" } } } } }
       take: $postsPerSection
       orderBy: { publishTime: desc }
     ) {
@@ -571,7 +571,7 @@ export const homepageSectionPosts = gql`
           ...ResizedWebPImagesCardField
         }
       }
-      category {
+      categories {
         id
         slug
         name
@@ -972,11 +972,11 @@ export const sectionBySlug = gql`
 `
 
 // Query all posts from all categories in a section with pagination
-// Uses posts query with category.section filter to get aggregated posts
+// Uses posts query with categories.some.section filter to get aggregated posts
 export const sectionPostsForListing = gql`
   query ($sectionSlug: String!, $take: Int = 12, $skip: Int = 0) {
     posts(
-      where: { ${publishedStateFilter} category: { section: { slug: { equals: $sectionSlug } } } }
+      where: { ${publishedStateFilter} categories: { some: { section: { slug: { equals: $sectionSlug } } } } }
       take: $take
       skip: $skip
       orderBy: { publishTime: desc }
@@ -1008,7 +1008,7 @@ export const sectionPostsForListing = gql`
       }
     }
     postsCount(
-      where: { ${publishedStateFilter} category: { section: { slug: { equals: $sectionSlug } } } }
+      where: { ${publishedStateFilter} categories: { some: { section: { slug: { equals: $sectionSlug } } } } }
     )
   }
   ${resizeImagesCardFragment}
