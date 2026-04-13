@@ -162,6 +162,10 @@ const FeaturedExcerpt = styled.p`
   line-height: 1.8;
   color: ${({ theme }) => theme.colors.grayscale[20]};
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 
   ${({ theme }) => theme.breakpoint.md} {
     font-size: 16px;
