@@ -25,7 +25,6 @@ import type {
   CategoryPostForListing,
   ClassifyWithPosts,
   SectionListingCategory,
-  SectionPost,
 } from '~/graphql/query/section'
 import {
   categoryByIdWithSection,
@@ -954,8 +953,7 @@ function determinePageType(
   categoryStyle: string | null,
   sectionStyle: string | null
 ): 'default' | 'section-column' | 'category-column' {
-  const isCategoryColumn =
-    categoryStyle !== null && categoryStyle !== 'default'
+  const isCategoryColumn = categoryStyle !== null && categoryStyle !== 'default'
   if (isCategoryColumn) return 'category-column'
 
   const isSectionColumn = sectionStyle !== null && sectionStyle !== 'default'
@@ -989,8 +987,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         return { notFound: true }
       }
 
-      const categoryStyle =
-        (listingData.category as CategoryInfo).style ?? null
+      const categoryStyle = (listingData.category as CategoryInfo).style ?? null
       const sectionStyle = listingData.section.style ?? null
       const pageType = determinePageType(categoryStyle, sectionStyle)
 
@@ -1036,8 +1033,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
             category: categoryProps,
             section: sectionProps,
             categories: listingData.section.categories,
-            classifyTags:
-              columnData?.categories?.[0]?.columnClassifyTags || [],
+            classifyTags: columnData?.categories?.[0]?.columnClassifyTags || [],
           },
         }
       }
