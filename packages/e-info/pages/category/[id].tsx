@@ -30,6 +30,7 @@ import {
   categoryByIdWithSection,
   categoryColumnPageData,
   categoryPostsForListing,
+  classifyPostsForListing,
 } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import type { ArticleCard } from '~/types/component'
@@ -656,7 +657,21 @@ type CategoryColumnPageProps = BasePageProps & {
   classifyTags: ClassifyWithPosts[]
 }
 
-type PageProps = DefaultPageProps | CategoryColumnPageProps
+type CategoryColumnFilteredPageProps = BasePageProps & {
+  pageType: 'category-column-filtered'
+  classifyTags: ClassifyWithPosts[]
+  activeClassifyId: string
+  activeClassifyName: string
+  posts: ArticleCard[]
+  totalPosts: number
+  currentPage: number
+  totalPages: number
+}
+
+type PageProps =
+  | DefaultPageProps
+  | CategoryColumnPageProps
+  | CategoryColumnFilteredPageProps
 
 // ========== Classify Article Section Component ==========
 
@@ -850,6 +865,96 @@ const CategoryPage: NextPageWithLayout<PageProps> = (props) => {
       ? DEFAULT_NEWS_IMAGE_PATH
       : DEFAULT_POST_IMAGE_PATH
 
+  // Category column filtered: classify tag selected → list view
+  if (props.pageType === 'category-column-filtered') {
+    const classifiesWithPosts = props.classifyTags.filter(
+      (c) => c.posts && c.posts.length > 0
+    )
+
+    const buildFilteredPageUrl = (page: number) => {
+      const base = `/category/${categoryId}?classify=${props.activeClassifyId}`
+      if (page === 1) return base
+      return `${base}&page=${page}`
+    }
+
+    return (
+      <ColumnPageWrapper $withTopPadding>
+        {/* Section header + category tabs */}
+        <SectionHeaderWithTabs
+          section={section}
+          categories={categories}
+          activeCategoryId={category.id}
+          isColumnStyle={isSectionColumnStyle}
+          compactBottom
+        />
+
+        <CategoryColumnContentWrapper>
+          {/* Category's own hero image */}
+          <ColumnHeroSection>
+            <ColumnHeroImageWrapper>
+              {category.heroImage?.resized ? (
+                <SharedImage
+                  images={category.heroImage.resized || {}}
+                  imagesWebP={category.heroImage.resizedWebp || {}}
+                  alt={category.name}
+                  priority={true}
+                  rwd={{
+                    mobile: '100vw',
+                    tablet: '100vw',
+                    desktop: '100vw',
+                    default: '100vw',
+                  }}
+                />
+              ) : (
+                <img src={DEFAULT_POST_IMAGE_PATH} alt={category.name} />
+              )}
+            </ColumnHeroImageWrapper>
+            <ColumnHeroTitleWrapper>
+              <ColumnHeroAccentBar />
+              <ColumnHeroTitle>{category.name}</ColumnHeroTitle>
+            </ColumnHeroTitleWrapper>
+          </ColumnHeroSection>
+
+          {/* Classify tags — link back to grid or filter */}
+          {classifiesWithPosts.length > 0 && (
+            <ColumnCategoryTagsWrapper>
+              <ColumnCategoryTagsContainer>
+                {classifiesWithPosts.map((c) => (
+                  <ColumnCategoryTag
+                    key={c.id}
+                    href={`/category/${categoryId}?classify=${c.id}`}
+                    $isActive={c.id === props.activeClassifyId}
+                  >
+                    {c.name}
+                  </ColumnCategoryTag>
+                ))}
+              </ColumnCategoryTagsContainer>
+            </ColumnCategoryTagsWrapper>
+          )}
+        </CategoryColumnContentWrapper>
+
+        {/* Article list view */}
+        <ColumnContentWrapper>
+          {props.posts.length > 0 ? (
+            <ArticleLists
+              posts={props.posts}
+              AdPageKey={category.slug}
+              defaultImage={defaultImage}
+            />
+          ) : (
+            <EmptyMessage>目前沒有文章</EmptyMessage>
+          )}
+        </ColumnContentWrapper>
+
+        <Pagination
+          currentPage={props.currentPage}
+          totalPages={props.totalPages}
+          buildPageUrl={buildFilteredPageUrl}
+        />
+      </ColumnPageWrapper>
+    )
+  }
+
   // Category column style: category's own hero + classify tags grid
   if (props.pageType === 'category-column') {
     const classifiesWithPosts = props.classifyTags.filter(
@@ -901,7 +1006,7 @@ const CategoryPage: NextPageWithLayout<PageProps> = (props) => {
                 {classifiesWithPosts.map((c) => (
                   <ColumnCategoryTag
                     key={c.id}
-                    href={`#classify-${c.id}`}
+                    href={`/category/${categoryId}?classify=${c.id}`}
                     $isActive={false}
                   >
                     {c.name}
@@ -1031,6 +1136,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
   const categoryId = params?.id as string
   const page = Math.max(1, parseInt(query.page as string, 10) || 1)
+  const classifyId = (query.classify as string) || null
   const client = getGqlClient()
 
   try {
@@ -1086,6 +1192,57 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           },
         })
 
+        const classifyTags =
+          columnData?.categories?.[0]?.columnClassifyTags || []
+
+        // Filtered by classify tag: show list view
+        if (classifyId) {
+          const skip = (page - 1) * POSTS_PER_PAGE
+          const { data: classifyData } = await client.query<{
+            classifies: Array<{
+              id: string
+              name: string
+              postsCount: number
+              posts: CategoryPostForListing[]
+            }>
+          }>({
+            query: classifyPostsForListing,
+            variables: {
+              classifyId,
+              take: POSTS_PER_PAGE,
+              skip,
+            },
+          })
+
+          const classifyInfo = classifyData?.classifies?.[0]
+          if (!classifyInfo) {
+            return { notFound: true }
+          }
+
+          const totalPosts = classifyInfo.postsCount
+          const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE)
+          const posts: ArticleCard[] = classifyInfo.posts.map((post) =>
+            postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
+          )
+
+          return {
+            props: {
+              pageType: 'category-column-filtered',
+              headerData,
+              category: categoryProps,
+              section: sectionProps,
+              categories: listingData.section.categories,
+              classifyTags,
+              activeClassifyId: classifyId,
+              activeClassifyName: classifyInfo.name,
+              posts,
+              totalPosts,
+              currentPage: page,
+              totalPages,
+            },
+          }
+        }
+
         return {
           props: {
             pageType: 'category-column',
@@ -1093,7 +1250,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
             category: categoryProps,
             section: sectionProps,
             categories: listingData.section.categories,
-            classifyTags: columnData?.categories?.[0]?.columnClassifyTags || [],
+            classifyTags,
           },
         }
       }
@@ -1189,6 +1346,56 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         },
       })
 
+      const classifyTags = columnData?.categories?.[0]?.columnClassifyTags || []
+
+      // Filtered by classify tag: show list view
+      if (classifyId) {
+        const skip = (page - 1) * POSTS_PER_PAGE
+        const { data: classifyData } = await client.query<{
+          classifies: Array<{
+            id: string
+            name: string
+            postsCount: number
+            posts: CategoryPostForListing[]
+          }>
+        }>({
+          query: classifyPostsForListing,
+          variables: {
+            classifyId,
+            take: POSTS_PER_PAGE,
+            skip,
+          },
+        })
+
+        const classifyInfo = classifyData?.classifies?.[0]
+        if (!classifyInfo) {
+          return { notFound: true }
+        }
+
+        const totalPosts = classifyInfo.postsCount
+        const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE)
+        const posts: ArticleCard[] = classifyInfo.posts.map((post) =>
+          postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
+        )
+
+        return {
+          props: {
+            pageType: 'category-column-filtered',
+            headerData,
+            category: categoryProps,
+            section: sectionProps,
+            categories,
+            classifyTags,
+            activeClassifyId: classifyId,
+            activeClassifyName: classifyInfo.name,
+            posts,
+            totalPosts,
+            currentPage: page,
+            totalPages,
+          },
+        }
+      }
+
       return {
         props: {
           pageType: 'category-column',
@@ -1196,7 +1403,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
           category: categoryProps,
           section: sectionProps,
           categories,
-          classifyTags: columnData?.categories?.[0]?.columnClassifyTags || [],
+          classifyTags,
         },
       }
     }
@@ -1266,7 +1473,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 }
 
 CategoryPage.getLayout = function getLayout(
-  page: ReactElement<DefaultPageProps | CategoryColumnPageProps>
+  page: ReactElement<
+    DefaultPageProps | CategoryColumnPageProps | CategoryColumnFilteredPageProps
+  >
 ) {
   const { props } = page
 

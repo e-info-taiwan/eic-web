@@ -1263,6 +1263,46 @@ export const categoryPostsForListing = gql`
   ${resizeWebpImagesCardFragment}
 `
 
+// Query posts for a specific classify tag with pagination
+export const classifyPostsForListing = gql`
+  query ($classifyId: ID!, $take: Int = 12, $skip: Int = 0) {
+    classifies(where: { id: { equals: $classifyId } }) {
+      id
+      name
+      postsCount
+      posts(where: { ${publishedStateFilter} } take: $take, skip: $skip, orderBy: { publishTime: desc }) {
+        id
+        title
+        style
+        publishTime
+        contentPreview
+        heroImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+        ogImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+        tags {
+          id
+          name
+        }
+      }
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
 // Types for header navigation
 export type HeaderNavCategory = {
   id: string
