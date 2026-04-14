@@ -193,9 +193,15 @@ const EmptyMessage = styled.div`
 
 // ========== Column Style Header Styled Components ==========
 
-const ColumnPageWrapper = styled.div`
+const ColumnPageWrapper = styled.div<{ $withTopPadding?: boolean }>`
   width: 100%;
   padding-bottom: 24px;
+
+  ${({ $withTopPadding }) =>
+    $withTopPadding &&
+    `
+    padding-top: 20px;
+  `}
 
   ${({ theme }) => theme.breakpoint.md} {
     padding-bottom: 48px;
@@ -204,6 +210,14 @@ const ColumnPageWrapper = styled.div`
   ${({ theme }) => theme.breakpoint.lg} {
     padding-bottom: 60px;
   }
+
+  ${({ $withTopPadding, theme }) =>
+    $withTopPadding &&
+    `
+    @media (min-width: ${theme.mediaSize.xl}px) {
+      padding-top: 40px;
+    }
+  `}
 `
 
 const ColumnHeroSection = styled.div`
@@ -840,7 +854,7 @@ const CategoryPage: NextPageWithLayout<PageProps> = (props) => {
     )
 
     return (
-      <ColumnPageWrapper>
+      <ColumnPageWrapper $withTopPadding>
         {/* Section header + category tabs */}
         <SectionHeaderWithTabs
           section={section}
