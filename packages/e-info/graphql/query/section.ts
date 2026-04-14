@@ -1205,6 +1205,7 @@ export const categoryColumnPageData = gql`
         posts(where: { ${publishedStateFilter} } take: $postsPerClassify, orderBy: { publishTime: desc }) {
           id
           title
+          style
           publishTime
           contentPreview
           heroImage {

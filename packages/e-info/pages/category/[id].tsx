@@ -675,6 +675,9 @@ const ClassifyArticleSectionComponent = ({
     return null
   }
 
+  const getPostDefaultImage = (postStyle: string) =>
+    postStyle === 'editor' ? DEFAULT_NEWS_IMAGE_PATH : defaultImage
+
   const largePost = posts[0]
   const smallPosts = posts.slice(1, 3)
 
@@ -692,7 +695,7 @@ const ClassifyArticleSectionComponent = ({
               <SharedImage
                 images={largePost.heroImage?.resized || {}}
                 imagesWebP={largePost.heroImage?.resizedWebp || {}}
-                defaultImage={defaultImage}
+                defaultImage={getPostDefaultImage(largePost.style)}
                 alt={largePost.title}
                 priority={false}
                 rwd={{
@@ -718,7 +721,7 @@ const ClassifyArticleSectionComponent = ({
                 <SharedImage
                   images={post.heroImage?.resized || {}}
                   imagesWebP={post.heroImage?.resizedWebp || {}}
-                  defaultImage={defaultImage}
+                  defaultImage={getPostDefaultImage(post.style)}
                   alt={post.title}
                   priority={false}
                   rwd={{

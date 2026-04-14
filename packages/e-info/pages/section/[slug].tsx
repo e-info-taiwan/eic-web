@@ -745,6 +745,9 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
     ? DEFAULT_NEWS_IMAGE_PATH
     : DEFAULT_POST_IMAGE_PATH
 
+  const getPostDefaultImage = (postStyle: string) =>
+    postStyle === 'editor' ? DEFAULT_NEWS_IMAGE_PATH : defaultImage
+
   return (
     <CategorySection>
       <CategoryHeader>
@@ -760,7 +763,7 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
               <SharedImage
                 images={largePost.heroImage?.resized || {}}
                 imagesWebP={largePost.heroImage?.resizedWebp || {}}
-                defaultImage={defaultImage}
+                defaultImage={getPostDefaultImage(largePost.style)}
                 alt={largePost.title}
                 priority={false}
                 rwd={{
@@ -786,7 +789,7 @@ const CategoryArticleSection = ({ category }: CategoryArticleSectionProps) => {
                 <SharedImage
                   images={post.heroImage?.resized || {}}
                   imagesWebP={post.heroImage?.resizedWebp || {}}
-                  defaultImage={defaultImage}
+                  defaultImage={getPostDefaultImage(post.style)}
                   alt={post.title}
                   priority={false}
                   rwd={{
