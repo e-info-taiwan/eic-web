@@ -157,6 +157,7 @@ const FeaturedDate = styled.time`
 `
 
 const FeaturedExcerpt = styled.p`
+  font-family: sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.8;
