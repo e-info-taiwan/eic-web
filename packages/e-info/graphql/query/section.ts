@@ -1037,6 +1037,7 @@ export type SectionPageData = {
     resizedWebp: ResizedImages | null
   } | null
   categories: SectionPageCategory[]
+  columnCategoryTags: SectionPageCategory[]
 }
 
 // Query section with heroImage and categories with posts (for new section page design)
@@ -1055,6 +1056,41 @@ export const sectionPageBySlug = gql`
         }
         resizedWebp {
           ...ResizedWebPImagesField
+        }
+      }
+      columnCategoryTags(orderBy: { sortOrder: asc }) {
+        id
+        slug
+        name
+        sortOrder
+        postsCount
+        featuredPostsInInputOrder {
+          id
+          title
+          publishTime
+          contentPreview
+          heroImage {
+            resized {
+              ...ResizedImagesCardField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesCardField
+            }
+          }
+        }
+        posts(where: { ${publishedStateFilter} } take: $postsPerCategory, orderBy: { publishTime: desc }) {
+          id
+          title
+          publishTime
+          contentPreview
+          heroImage {
+            resized {
+              ...ResizedImagesCardField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesCardField
+            }
+          }
         }
       }
       categories(orderBy: { sortOrder: asc }) {
@@ -1100,6 +1136,15 @@ export const sectionPageBySlug = gql`
   ${resizeWebpImagesCardFragment}
 `
 
+// Type for Classify (sub-category classification)
+export type ClassifyWithPosts = {
+  id: string
+  name: string
+  sortOrder: number | null
+  postsCount: number
+  posts: SectionPost[]
+}
+
 // Query category by ID with section info (for category page)
 // Includes heroImage for column-style category pages
 export const categoryByIdWithSection = gql`
@@ -1109,7 +1154,16 @@ export const categoryByIdWithSection = gql`
       slug
       name
       description
+      style
       postsCount
+      heroImage {
+        resized {
+          ...ResizedImagesField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesField
+        }
+      }
       section {
         id
         slug
@@ -1136,6 +1190,37 @@ export const categoryByIdWithSection = gql`
   }
   ${resizeImagesFragment}
   ${resizeWebpImagesFragment}
+`
+
+// Query category column page data: classify tags with their posts
+export const categoryColumnPageData = gql`
+  query ($categoryId: ID!, $postsPerClassify: Int = 3) {
+    categories(where: { id: { equals: $categoryId } }) {
+      id
+      columnClassifyTags(orderBy: { sortOrder: asc }) {
+        id
+        name
+        sortOrder
+        postsCount
+        posts(where: { ${publishedStateFilter} } take: $postsPerClassify, orderBy: { publishTime: desc }) {
+          id
+          title
+          publishTime
+          contentPreview
+          heroImage {
+            resized {
+              ...ResizedImagesCardField
+            }
+            resizedWebp {
+              ...ResizedWebPImagesCardField
+            }
+          }
+        }
+      }
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
 `
 
 // Query posts for category page with pagination

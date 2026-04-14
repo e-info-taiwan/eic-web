@@ -938,7 +938,12 @@ const SectionDefaultPage = ({
 
 const SectionColumnPage = ({ section, categories }: SectionColumnPageProps) => {
   const hasHeroImage = !!section.heroImage?.resized
-  const categoriesWithPosts = categories.filter(
+  // Use columnCategoryTags if available, fallback to categories
+  const tagSource =
+    section.columnCategoryTags && section.columnCategoryTags.length > 0
+      ? section.columnCategoryTags
+      : categories
+  const categoriesWithPosts = tagSource.filter(
     (cat) =>
       (cat.featuredPostsInInputOrder &&
         cat.featuredPostsInInputOrder.length > 0) ||

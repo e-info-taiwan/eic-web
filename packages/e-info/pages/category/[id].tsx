@@ -15,14 +15,21 @@ import {
   DEFAULT_NEWS_IMAGE_PATH,
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
-import { MAX_CONTENT_WIDTH, POSTS_PER_PAGE } from '~/constants/layout'
+import {
+  MAX_CONTENT_WIDTH,
+  POSTS_PER_CATEGORY,
+  POSTS_PER_PAGE,
+} from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type {
   CategoryPostForListing,
+  ClassifyWithPosts,
   SectionListingCategory,
+  SectionPost,
 } from '~/graphql/query/section'
 import {
   categoryByIdWithSection,
+  categoryColumnPageData,
   categoryPostsForListing,
 } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
@@ -30,7 +37,7 @@ import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
 import { fetchCategoryListing } from '~/utils/listing-api'
-import { postConvertFunc } from '~/utils/post'
+import { formatPostDate, postConvertFunc } from '~/utils/post'
 
 const PageWrapper = styled.div`
   padding: 20px 0 24px;
@@ -351,15 +358,195 @@ const ColumnContentWrapper = styled.div`
   }
 `
 
-type CategoryInfo = {
-  id: string
-  slug: string
-  name: string
-  description: string | null
-  postsCount: number
-}
+// ========== Category Column Style (Grid) Styled Components ==========
 
-type SectionHeroImage = {
+const ClassifiesGrid = styled.div`
+  max-width: ${MAX_CONTENT_WIDTH};
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 32px;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 60px;
+    gap: 0 48px;
+  }
+`
+
+const ClassifySection = styled.section`
+  padding-bottom: 32px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 32px;
+`
+
+const ClassifyHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    justify-content: flex-start;
+    padding-bottom: 16px;
+  }
+`
+
+const ClassifyName = styled.h2`
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin: 0;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-size: 28px;
+    line-height: 32px;
+  }
+`
+
+const ClassifyArticleList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    gap: 20px;
+  }
+`
+
+const ClassifyLargeCard = styled.a`
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+`
+
+const ClassifyLargeCardImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  margin-bottom: 12px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    aspect-ratio: 4 / 3;
+    margin-bottom: 16px;
+  }
+`
+
+const ClassifyLargeCardDate = styled.div`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 8px;
+`
+
+const ClassifyLargeCardTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+
+  ${ClassifyLargeCard}:hover & {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+    min-height: 56px;
+  }
+`
+
+const ClassifySmallCard = styled.a`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    flex-direction: row;
+    gap: 16px;
+  }
+`
+
+const ClassifySmallCardImageWrapper = styled.div`
+  display: none;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    display: block;
+    width: 160px;
+    height: 107px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    width: 180px;
+    height: 120px;
+  }
+`
+
+const ClassifySmallCardContent = styled.div`
+  flex: 1;
+`
+
+const ClassifySmallCardDate = styled.div`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  margin-bottom: 4px;
+`
+
+const ClassifySmallCardTitle = styled.h4`
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+
+  ${ClassifySmallCard}:hover & {
+    color: ${({ theme }) => theme.colors.primary[20]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    font-size: 18px;
+  }
+`
+
+type HeroImage = {
   resized: {
     original?: string
     w480?: string
@@ -378,59 +565,157 @@ type SectionHeroImage = {
   } | null
 } | null
 
+type CategoryInfo = {
+  id: string
+  slug: string
+  name: string
+  description: string | null
+  style: string | null
+  postsCount: number
+  heroImage: HeroImage
+}
+
 type SectionInfo = {
   id: string
   slug: string
   name: string
   style: string | null
   description: string | null
-  heroImage: SectionHeroImage
+  heroImage: HeroImage
   categories: SectionListingCategory[]
 }
 
-type PageProps = {
+type BasePageProps = {
   headerData: HeaderContextData
   category: CategoryInfo
   section: SectionInfo
   categories: SectionListingCategory[]
+}
+
+type DefaultPageProps = BasePageProps & {
+  pageType: 'default' | 'section-column'
   posts: ArticleCard[]
   totalPosts: number
   currentPage: number
   totalPages: number
 }
 
-const CategoryPage: NextPageWithLayout<PageProps> = ({
-  category,
-  section,
-  categories,
-  posts,
-  currentPage,
-  totalPages,
-}) => {
-  const router = useRouter()
-  const categoryId = router.query.id as string
-  const isColumnStyle = section.style !== 'default' && section.style !== null
+type CategoryColumnPageProps = BasePageProps & {
+  pageType: 'category-column'
+  classifyTags: ClassifyWithPosts[]
+}
 
-  const buildPageUrl = (page: number) => {
-    if (page === 1) {
-      return `/category/${categoryId}`
-    }
-    return `/category/${categoryId}?page=${page}`
+type PageProps = DefaultPageProps | CategoryColumnPageProps
+
+// ========== Classify Article Section Component ==========
+
+type ClassifyArticleSectionProps = {
+  classify: ClassifyWithPosts
+  defaultImage: string
+}
+
+const ClassifyArticleSectionComponent = ({
+  classify,
+  defaultImage,
+}: ClassifyArticleSectionProps) => {
+  const posts = (classify.posts || []).slice(0, POSTS_PER_CATEGORY)
+
+  if (posts.length === 0) {
+    return null
   }
 
-  const hasHeroImage = !!section.heroImage?.resized
+  const largePost = posts[0]
+  const smallPosts = posts.slice(1, 3)
 
-  // Column style header (when section.style is not 'default')
+  return (
+    <ClassifySection>
+      <ClassifyHeader>
+        <ClassifyName>{classify.name}</ClassifyName>
+      </ClassifyHeader>
+
+      <ClassifyArticleList>
+        {/* Large Card */}
+        <Link href={`/node/${largePost.id}`} passHref legacyBehavior>
+          <ClassifyLargeCard>
+            <ClassifyLargeCardImageWrapper>
+              <SharedImage
+                images={largePost.heroImage?.resized || {}}
+                imagesWebP={largePost.heroImage?.resizedWebp || {}}
+                defaultImage={defaultImage}
+                alt={largePost.title}
+                priority={false}
+                rwd={{
+                  mobile: '100vw',
+                  tablet: '50vw',
+                  desktop: '540px',
+                  default: '540px',
+                }}
+              />
+            </ClassifyLargeCardImageWrapper>
+            <ClassifyLargeCardDate>
+              {formatPostDate(largePost.publishTime)}
+            </ClassifyLargeCardDate>
+            <ClassifyLargeCardTitle>{largePost.title}</ClassifyLargeCardTitle>
+          </ClassifyLargeCard>
+        </Link>
+
+        {/* Small Cards */}
+        {smallPosts.map((post) => (
+          <Link key={post.id} href={`/node/${post.id}`} passHref legacyBehavior>
+            <ClassifySmallCard>
+              <ClassifySmallCardImageWrapper>
+                <SharedImage
+                  images={post.heroImage?.resized || {}}
+                  imagesWebP={post.heroImage?.resizedWebp || {}}
+                  defaultImage={defaultImage}
+                  alt={post.title}
+                  priority={false}
+                  rwd={{
+                    mobile: '160px',
+                    tablet: '160px',
+                    desktop: '180px',
+                    default: '180px',
+                  }}
+                />
+              </ClassifySmallCardImageWrapper>
+              <ClassifySmallCardContent>
+                <ClassifySmallCardDate>
+                  {formatPostDate(post.publishTime)}
+                </ClassifySmallCardDate>
+                <ClassifySmallCardTitle>{post.title}</ClassifySmallCardTitle>
+              </ClassifySmallCardContent>
+            </ClassifySmallCard>
+          </Link>
+        ))}
+      </ClassifyArticleList>
+    </ClassifySection>
+  )
+}
+
+// ========== Section Header + Category Tabs (shared across all modes) ==========
+
+type SectionHeaderProps = {
+  section: SectionInfo
+  categories: SectionListingCategory[]
+  activeCategoryId: string
+  isColumnStyle: boolean
+}
+
+const SectionHeaderWithTabs = ({
+  section,
+  categories,
+  activeCategoryId,
+  isColumnStyle,
+}: SectionHeaderProps) => {
   if (isColumnStyle) {
     return (
-      <ColumnPageWrapper>
-        {/* Hero Section */}
+      <>
         <ColumnHeroSection>
           <ColumnHeroImageWrapper>
-            {hasHeroImage ? (
+            {section.heroImage?.resized ? (
               <SharedImage
-                images={section.heroImage?.resized || {}}
-                imagesWebP={section.heroImage?.resizedWebp || {}}
+                images={section.heroImage.resized || {}}
+                imagesWebP={section.heroImage.resizedWebp || {}}
                 alt={section.name}
                 priority={true}
                 rwd={{
@@ -449,21 +734,160 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
             <ColumnHeroTitle>{section.name}</ColumnHeroTitle>
           </ColumnHeroTitleWrapper>
         </ColumnHeroSection>
-
-        {/* Category Tags */}
         <ColumnCategoryTagsWrapper>
           <ColumnCategoryTagsContainer>
             {categories.map((cat) => (
               <ColumnCategoryTag
                 key={cat.id}
                 href={`/category/${cat.id}`}
-                $isActive={cat.id === category.id}
+                $isActive={cat.id === activeCategoryId}
               >
                 {cat.name}
               </ColumnCategoryTag>
             ))}
           </ColumnCategoryTagsContainer>
         </ColumnCategoryTagsWrapper>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Header>
+        <AccentBar />
+        <TitleLink href={`/section/${section.slug}`}>{section.name}</TitleLink>
+      </Header>
+      <CategoryTabs>
+        {categories.map((cat) => (
+          <CategoryTab
+            key={cat.id}
+            href={`/category/${cat.id}`}
+            $isActive={cat.id === activeCategoryId}
+          >
+            {cat.name}
+          </CategoryTab>
+        ))}
+      </CategoryTabs>
+      <Divider />
+    </>
+  )
+}
+
+// ========== Main Page Component ==========
+
+const CategoryPage: NextPageWithLayout<PageProps> = (props) => {
+  const { category, section, categories } = props
+  const router = useRouter()
+  const categoryId = router.query.id as string
+  const isSectionColumnStyle =
+    section.style !== 'default' && section.style !== null
+
+  const buildPageUrl = (page: number) => {
+    if (page === 1) {
+      return `/category/${categoryId}`
+    }
+    return `/category/${categoryId}?page=${page}`
+  }
+
+  const defaultImage =
+    category.slug === 'editorpick'
+      ? DEFAULT_NEWS_IMAGE_PATH
+      : DEFAULT_POST_IMAGE_PATH
+
+  // Category column style: category's own hero + classify tags grid
+  if (props.pageType === 'category-column') {
+    const classifiesWithPosts = props.classifyTags.filter(
+      (c) => c.posts && c.posts.length > 0
+    )
+
+    return (
+      <ColumnPageWrapper>
+        {/* Section header + category tabs */}
+        <SectionHeaderWithTabs
+          section={section}
+          categories={categories}
+          activeCategoryId={category.id}
+          isColumnStyle={isSectionColumnStyle}
+        />
+
+        {/* Category's own hero image */}
+        <ColumnHeroSection>
+          <ColumnHeroImageWrapper>
+            {category.heroImage?.resized ? (
+              <SharedImage
+                images={category.heroImage.resized || {}}
+                imagesWebP={category.heroImage.resizedWebp || {}}
+                alt={category.name}
+                priority={true}
+                rwd={{
+                  mobile: '100vw',
+                  tablet: '100vw',
+                  desktop: '100vw',
+                  default: '100vw',
+                }}
+              />
+            ) : (
+              <img src={DEFAULT_POST_IMAGE_PATH} alt={category.name} />
+            )}
+          </ColumnHeroImageWrapper>
+          <ColumnHeroTitleWrapper>
+            <ColumnHeroAccentBar />
+            <ColumnHeroTitle>{category.name}</ColumnHeroTitle>
+          </ColumnHeroTitleWrapper>
+        </ColumnHeroSection>
+
+        {/* Classify tags */}
+        {classifiesWithPosts.length > 0 && (
+          <ColumnCategoryTagsWrapper>
+            <ColumnCategoryTagsContainer>
+              {classifiesWithPosts.map((c) => (
+                <ColumnCategoryTag
+                  key={c.id}
+                  href={`#classify-${c.id}`}
+                  $isActive={false}
+                >
+                  {c.name}
+                </ColumnCategoryTag>
+              ))}
+            </ColumnCategoryTagsContainer>
+          </ColumnCategoryTagsWrapper>
+        )}
+
+        {/* Description */}
+        {category.description && (
+          <ColumnDescriptionSection>
+            {category.description}
+          </ColumnDescriptionSection>
+        )}
+
+        {/* Classify Article Sections - 2 columns on desktop */}
+        {classifiesWithPosts.length > 0 ? (
+          <ClassifiesGrid>
+            {classifiesWithPosts.map((classify) => (
+              <ClassifyArticleSectionComponent
+                key={classify.id}
+                classify={classify}
+                defaultImage={defaultImage}
+              />
+            ))}
+          </ClassifiesGrid>
+        ) : (
+          <EmptyMessage>目前沒有文章</EmptyMessage>
+        )}
+      </ColumnPageWrapper>
+    )
+  }
+
+  // Section column style: section hero + category tags + paginated articles
+  if (props.pageType === 'section-column') {
+    return (
+      <ColumnPageWrapper>
+        <SectionHeaderWithTabs
+          section={section}
+          categories={categories}
+          activeCategoryId={category.id}
+          isColumnStyle={true}
+        />
 
         {/* Description: category description takes priority over section description */}
         {(category.description || section.description) && (
@@ -474,15 +898,11 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
 
         {/* Article Content */}
         <ColumnContentWrapper>
-          {posts.length > 0 ? (
+          {props.posts.length > 0 ? (
             <ArticleLists
-              posts={posts}
+              posts={props.posts}
               AdPageKey={category.slug}
-              defaultImage={
-                category.slug === 'editorpick'
-                  ? DEFAULT_NEWS_IMAGE_PATH
-                  : DEFAULT_POST_IMAGE_PATH
-              }
+              defaultImage={defaultImage}
             />
           ) : (
             <EmptyMessage>目前沒有文章</EmptyMessage>
@@ -490,44 +910,30 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
         </ColumnContentWrapper>
 
         <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
+          currentPage={props.currentPage}
+          totalPages={props.totalPages}
           buildPageUrl={buildPageUrl}
         />
       </ColumnPageWrapper>
     )
   }
 
-  // Default style header
+  // Default style
   return (
     <PageWrapper>
-      <Header>
-        <AccentBar />
-        <TitleLink href={`/section/${section.slug}`}>{section.name}</TitleLink>
-      </Header>
-      <CategoryTabs>
-        {categories.map((cat) => (
-          <CategoryTab
-            key={cat.id}
-            href={`/category/${cat.id}`}
-            $isActive={cat.id === category.id}
-          >
-            {cat.name}
-          </CategoryTab>
-        ))}
-      </CategoryTabs>
-      <Divider />
+      <SectionHeaderWithTabs
+        section={section}
+        categories={categories}
+        activeCategoryId={category.id}
+        isColumnStyle={false}
+      />
 
       <ArticleWrapper>
-        {posts.length > 0 ? (
+        {props.posts.length > 0 ? (
           <ArticleLists
-            posts={posts}
+            posts={props.posts}
             AdPageKey={category.slug}
-            defaultImage={
-              category.slug === 'editorpick'
-                ? DEFAULT_NEWS_IMAGE_PATH
-                : DEFAULT_POST_IMAGE_PATH
-            }
+            defaultImage={defaultImage}
           />
         ) : (
           <EmptyMessage>目前沒有文章</EmptyMessage>
@@ -535,12 +941,27 @@ const CategoryPage: NextPageWithLayout<PageProps> = ({
       </ArticleWrapper>
 
       <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
+        currentPage={props.currentPage}
+        totalPages={props.totalPages}
         buildPageUrl={buildPageUrl}
       />
     </PageWrapper>
   )
+}
+
+// Helper to determine page type
+function determinePageType(
+  categoryStyle: string | null,
+  sectionStyle: string | null
+): 'default' | 'section-column' | 'category-column' {
+  const isCategoryColumn =
+    categoryStyle !== null && categoryStyle !== 'default'
+  if (isCategoryColumn) return 'category-column'
+
+  const isSectionColumn = sectionStyle !== null && sectionStyle !== 'default'
+  if (isSectionColumn) return 'section-column'
+
+  return 'default'
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({
@@ -555,41 +976,83 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   const client = getGqlClient()
 
   try {
-    // 嘗試從 JSON API 取得資料（僅前 5 頁）
     const [headerData, listingData] = await Promise.all([
       fetchHeaderData(),
       fetchCategoryListing(categoryId, page),
     ])
 
+    // Hidden categories check
+    const HIDDEN_CATEGORY_SLUGS = ['homepagegraph', 'breakingnews', 'hottopic']
+
     if (listingData) {
-      // Hidden categories check
-      const HIDDEN_CATEGORY_SLUGS = [
-        'homepagegraph',
-        'breakingnews',
-        'hottopic',
-      ]
       if (HIDDEN_CATEGORY_SLUGS.includes(listingData.category.slug)) {
         return { notFound: true }
       }
 
-      // Convert posts to ArticleCard format
+      const categoryStyle =
+        (listingData.category as CategoryInfo).style ?? null
+      const sectionStyle = listingData.section.style ?? null
+      const pageType = determinePageType(categoryStyle, sectionStyle)
+
+      const sectionProps: SectionInfo = {
+        id: listingData.section.id,
+        slug: listingData.section.slug,
+        name: listingData.section.name,
+        style: listingData.section.style,
+        description: listingData.section.description || null,
+        heroImage: listingData.section.heroImage || null,
+        categories: listingData.section.categories,
+      }
+
+      const categoryProps: CategoryInfo = {
+        id: listingData.category.id,
+        slug: listingData.category.slug,
+        name: listingData.category.name,
+        description: listingData.category.description || null,
+        style: categoryStyle,
+        postsCount: listingData.category.postsCount,
+        heroImage: (listingData.category as CategoryInfo).heroImage || null,
+      }
+
+      // Category column style: fetch classify tags with posts via GraphQL
+      if (pageType === 'category-column') {
+        const { data: columnData } = await client.query<{
+          categories: Array<{
+            id: string
+            columnClassifyTags: ClassifyWithPosts[]
+          }>
+        }>({
+          query: categoryColumnPageData,
+          variables: {
+            categoryId,
+            postsPerClassify: POSTS_PER_CATEGORY,
+          },
+        })
+
+        return {
+          props: {
+            pageType: 'category-column',
+            headerData,
+            category: categoryProps,
+            section: sectionProps,
+            categories: listingData.section.categories,
+            classifyTags:
+              columnData?.categories?.[0]?.columnClassifyTags || [],
+          },
+        }
+      }
+
+      // Default or section-column: paginated posts
       const posts: ArticleCard[] = listingData.posts.map((post) =>
         postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
       )
 
       return {
         props: {
+          pageType,
           headerData,
-          category: listingData.category,
-          section: {
-            id: listingData.section.id,
-            slug: listingData.section.slug,
-            name: listingData.section.name,
-            style: listingData.section.style,
-            description: listingData.section.description || null,
-            heroImage: listingData.section.heroImage || null,
-            categories: listingData.section.categories,
-          },
+          category: categoryProps,
+          section: sectionProps,
           categories: listingData.section.categories,
           posts,
           totalPosts: listingData.totalPosts,
@@ -606,7 +1069,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         slug: string
         name: string
         description: string | null
+        style: string | null
         postsCount: number
+        heroImage: HeroImage
         section: SectionInfo
       }>
     }>({
@@ -620,8 +1085,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
     const categoryInfo = categoryData.categories[0]
 
-    // Hidden categories - used only for homepage picks, not for direct browsing
-    const HIDDEN_CATEGORY_SLUGS = ['homepagegraph', 'breakingnews', 'hottopic']
     if (HIDDEN_CATEGORY_SLUGS.includes(categoryInfo.slug)) {
       return { notFound: true }
     }
@@ -633,9 +1096,58 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     }
 
     const categories = section.categories
+    const pageType = determinePageType(categoryInfo.style, section.style)
+
+    const categoryProps: CategoryInfo = {
+      id: categoryInfo.id,
+      slug: categoryInfo.slug,
+      name: categoryInfo.name,
+      description: categoryInfo.description || null,
+      style: categoryInfo.style,
+      postsCount: categoryInfo.postsCount,
+      heroImage: categoryInfo.heroImage || null,
+    }
+
+    const sectionProps: SectionInfo = {
+      id: section.id,
+      slug: section.slug,
+      name: section.name,
+      style: section.style,
+      description: section.description || null,
+      heroImage: section.heroImage || null,
+      categories: section.categories,
+    }
+
+    // Category column style: fetch classify tags with posts
+    if (pageType === 'category-column') {
+      const { data: columnData } = await client.query<{
+        categories: Array<{
+          id: string
+          columnClassifyTags: ClassifyWithPosts[]
+        }>
+      }>({
+        query: categoryColumnPageData,
+        variables: {
+          categoryId,
+          postsPerClassify: POSTS_PER_CATEGORY,
+        },
+      })
+
+      return {
+        props: {
+          pageType: 'category-column',
+          headerData,
+          category: categoryProps,
+          section: sectionProps,
+          categories,
+          classifyTags: columnData?.categories?.[0]?.columnClassifyTags || [],
+        },
+      }
+    }
+
+    // Default or section-column: fetch paginated posts
     const skip = (page - 1) * POSTS_PER_PAGE
 
-    // Fetch posts for this category
     const { data: postsData, error: postsError } = await client.query<{
       categories: Array<{
         id: string
@@ -659,30 +1171,16 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     const totalPosts = postsCategory.postsCount
     const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE)
 
-    // Convert posts to ArticleCard format
     const posts: ArticleCard[] = postsCategory.posts.map((post) =>
       postConvertFunc(post as Parameters<typeof postConvertFunc>[0])
     )
 
     return {
       props: {
+        pageType,
         headerData,
-        category: {
-          id: categoryInfo.id,
-          slug: categoryInfo.slug,
-          name: categoryInfo.name,
-          description: categoryInfo.description || null,
-          postsCount: categoryInfo.postsCount,
-        },
-        section: {
-          id: section.id,
-          slug: section.slug,
-          name: section.name,
-          style: section.style,
-          description: section.description || null,
-          heroImage: section.heroImage || null,
-          categories: section.categories,
-        },
+        category: categoryProps,
+        section: sectionProps,
         categories,
         posts,
         totalPosts,
@@ -711,7 +1209,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   }
 }
 
-CategoryPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
+CategoryPage.getLayout = function getLayout(
+  page: ReactElement<DefaultPageProps | CategoryColumnPageProps>
+) {
   const { props } = page
 
   return (
