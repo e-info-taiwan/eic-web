@@ -274,7 +274,7 @@ const ColumnHeroTitle = styled.h1`
 
 const ColumnCategoryTagsWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
-  margin: 0 auto;
+  margin: 0 auto 40px;
   background: linear-gradient(
     180deg,
     rgba(207, 237, 209, 0.6) 61.06%,
@@ -354,6 +354,44 @@ const ColumnContentWrapper = styled.div`
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
     padding: 24px 58px;
+  }
+`
+
+const SectionHeaderWrapper = styled.div<{ $compactBottom?: boolean }>`
+  padding-top: 20px;
+
+  ${({ theme }) => theme.breakpoint.lg} {
+    max-width: ${MAX_CONTENT_WIDTH};
+    margin: 0 auto;
+  }
+
+  ${({ theme }) => theme.breakpoint.xl} {
+    padding-top: 40px;
+  }
+
+  ${({ $compactBottom }) =>
+    $compactBottom &&
+    `
+    hr {
+      margin-bottom: 16px;
+    }
+  `}
+`
+
+const CategoryColumnContentWrapper = styled.div`
+  padding: 0 28px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 98px;
+  }
+
+  ${({ theme }) => theme.breakpoint.lg} {
+    max-width: ${MAX_CONTENT_WIDTH};
+    margin: 0 auto;
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 58px;
   }
 `
 
@@ -698,6 +736,7 @@ type SectionHeaderProps = {
   categories: SectionListingCategory[]
   activeCategoryId: string
   isColumnStyle: boolean
+  compactBottom?: boolean
 }
 
 const SectionHeaderWithTabs = ({
@@ -705,6 +744,7 @@ const SectionHeaderWithTabs = ({
   categories,
   activeCategoryId,
   isColumnStyle,
+  compactBottom,
 }: SectionHeaderProps) => {
   if (isColumnStyle) {
     return (
@@ -751,7 +791,7 @@ const SectionHeaderWithTabs = ({
   }
 
   return (
-    <>
+    <SectionHeaderWrapper $compactBottom={compactBottom}>
       <Header>
         <AccentBar />
         <TitleLink href={`/section/${section.slug}`}>{section.name}</TitleLink>
@@ -768,7 +808,7 @@ const SectionHeaderWithTabs = ({
         ))}
       </CategoryTabs>
       <Divider />
-    </>
+    </SectionHeaderWrapper>
   )
 }
 
@@ -807,72 +847,75 @@ const CategoryPage: NextPageWithLayout<PageProps> = (props) => {
           categories={categories}
           activeCategoryId={category.id}
           isColumnStyle={isSectionColumnStyle}
+          compactBottom
         />
 
-        {/* Category's own hero image */}
-        <ColumnHeroSection>
-          <ColumnHeroImageWrapper>
-            {category.heroImage?.resized ? (
-              <SharedImage
-                images={category.heroImage.resized || {}}
-                imagesWebP={category.heroImage.resizedWebp || {}}
-                alt={category.name}
-                priority={true}
-                rwd={{
-                  mobile: '100vw',
-                  tablet: '100vw',
-                  desktop: '100vw',
-                  default: '100vw',
-                }}
-              />
-            ) : (
-              <img src={DEFAULT_POST_IMAGE_PATH} alt={category.name} />
-            )}
-          </ColumnHeroImageWrapper>
-          <ColumnHeroTitleWrapper>
-            <ColumnHeroAccentBar />
-            <ColumnHeroTitle>{category.name}</ColumnHeroTitle>
-          </ColumnHeroTitleWrapper>
-        </ColumnHeroSection>
+        <CategoryColumnContentWrapper>
+          {/* Category's own hero image */}
+          <ColumnHeroSection>
+            <ColumnHeroImageWrapper>
+              {category.heroImage?.resized ? (
+                <SharedImage
+                  images={category.heroImage.resized || {}}
+                  imagesWebP={category.heroImage.resizedWebp || {}}
+                  alt={category.name}
+                  priority={true}
+                  rwd={{
+                    mobile: '100vw',
+                    tablet: '100vw',
+                    desktop: '100vw',
+                    default: '100vw',
+                  }}
+                />
+              ) : (
+                <img src={DEFAULT_POST_IMAGE_PATH} alt={category.name} />
+              )}
+            </ColumnHeroImageWrapper>
+            <ColumnHeroTitleWrapper>
+              <ColumnHeroAccentBar />
+              <ColumnHeroTitle>{category.name}</ColumnHeroTitle>
+            </ColumnHeroTitleWrapper>
+          </ColumnHeroSection>
 
-        {/* Classify tags */}
-        {classifiesWithPosts.length > 0 && (
-          <ColumnCategoryTagsWrapper>
-            <ColumnCategoryTagsContainer>
-              {classifiesWithPosts.map((c) => (
-                <ColumnCategoryTag
-                  key={c.id}
-                  href={`#classify-${c.id}`}
-                  $isActive={false}
-                >
-                  {c.name}
-                </ColumnCategoryTag>
+          {/* Classify tags */}
+          {classifiesWithPosts.length > 0 && (
+            <ColumnCategoryTagsWrapper>
+              <ColumnCategoryTagsContainer>
+                {classifiesWithPosts.map((c) => (
+                  <ColumnCategoryTag
+                    key={c.id}
+                    href={`#classify-${c.id}`}
+                    $isActive={false}
+                  >
+                    {c.name}
+                  </ColumnCategoryTag>
+                ))}
+              </ColumnCategoryTagsContainer>
+            </ColumnCategoryTagsWrapper>
+          )}
+
+          {/* Description */}
+          {category.description && (
+            <ColumnDescriptionSection>
+              {category.description}
+            </ColumnDescriptionSection>
+          )}
+
+          {/* Classify Article Sections - 2 columns on desktop */}
+          {classifiesWithPosts.length > 0 ? (
+            <ClassifiesGrid>
+              {classifiesWithPosts.map((classify) => (
+                <ClassifyArticleSectionComponent
+                  key={classify.id}
+                  classify={classify}
+                  defaultImage={defaultImage}
+                />
               ))}
-            </ColumnCategoryTagsContainer>
-          </ColumnCategoryTagsWrapper>
-        )}
-
-        {/* Description */}
-        {category.description && (
-          <ColumnDescriptionSection>
-            {category.description}
-          </ColumnDescriptionSection>
-        )}
-
-        {/* Classify Article Sections - 2 columns on desktop */}
-        {classifiesWithPosts.length > 0 ? (
-          <ClassifiesGrid>
-            {classifiesWithPosts.map((classify) => (
-              <ClassifyArticleSectionComponent
-                key={classify.id}
-                classify={classify}
-                defaultImage={defaultImage}
-              />
-            ))}
-          </ClassifiesGrid>
-        ) : (
-          <EmptyMessage>目前沒有文章</EmptyMessage>
-        )}
+            </ClassifiesGrid>
+          ) : (
+            <EmptyMessage>目前沒有文章</EmptyMessage>
+          )}
+        </CategoryColumnContentWrapper>
       </ColumnPageWrapper>
     )
   }
