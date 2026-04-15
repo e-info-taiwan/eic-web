@@ -443,8 +443,47 @@ const ClassifyHeader = styled.div`
   padding-bottom: 20px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
-    justify-content: flex-start;
+    justify-content: space-between;
     padding-bottom: 16px;
+  }
+`
+
+const ClassifyReadMoreLink = styled(Link)`
+  display: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary[20]};
+  text-decoration: underline;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[40]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    display: block;
+    font-size: 16px;
+  }
+`
+
+const ClassifyMobileReadMoreWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    display: none;
+  }
+`
+
+const ClassifyMobileReadMoreLink = styled(Link)`
+  color: ${({ theme }) => theme.colors.primary[40]};
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: underline;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary[20]};
   }
 `
 
@@ -678,11 +717,13 @@ type PageProps =
 type ClassifyArticleSectionProps = {
   classify: ClassifyWithPosts
   defaultImage: string
+  categoryId: string
 }
 
 const ClassifyArticleSectionComponent = ({
   classify,
   defaultImage,
+  categoryId,
 }: ClassifyArticleSectionProps) => {
   const posts = (classify.posts || []).slice(0, POSTS_PER_CATEGORY)
 
@@ -700,6 +741,11 @@ const ClassifyArticleSectionComponent = ({
     <ClassifySection>
       <ClassifyHeader>
         <ClassifyName>{classify.name}</ClassifyName>
+        <ClassifyReadMoreLink
+          href={`/category/${categoryId}?classify=${classify.id}`}
+        >
+          閱讀更多
+        </ClassifyReadMoreLink>
       </ClassifyHeader>
 
       <ClassifyArticleList>
@@ -757,6 +803,14 @@ const ClassifyArticleSectionComponent = ({
           </Link>
         ))}
       </ClassifyArticleList>
+
+      <ClassifyMobileReadMoreWrapper>
+        <ClassifyMobileReadMoreLink
+          href={`/category/${categoryId}?classify=${classify.id}`}
+        >
+          閱讀更多
+        </ClassifyMobileReadMoreLink>
+      </ClassifyMobileReadMoreWrapper>
     </ClassifySection>
   )
 }
@@ -1031,6 +1085,7 @@ const CategoryPage: NextPageWithLayout<PageProps> = (props) => {
                   key={classify.id}
                   classify={classify}
                   defaultImage={defaultImage}
+                  categoryId={categoryId}
                 />
               ))}
             </ClassifiesGrid>
