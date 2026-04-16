@@ -373,15 +373,9 @@ const ColumnContentWrapper = styled.div`
 `
 
 const SectionHeaderWrapper = styled.div<{ $compactBottom?: boolean }>`
-  padding-top: 20px;
-
   ${({ theme }) => theme.breakpoint.lg} {
     max-width: ${MAX_CONTENT_WIDTH};
     margin: 0 auto;
-  }
-
-  ${({ theme }) => theme.breakpoint.xl} {
-    padding-top: 40px;
   }
 
   ${({ $compactBottom }) =>
