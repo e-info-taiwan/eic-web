@@ -1,7 +1,14 @@
 Dockerfile
 .dockerignore
-node_modules
+**/node_modules
+**/.next
 npm-debug.log
+*.log
 README.md
-.next
 .git
+.gitignore
+.DS_Store
+.env.local
+.env.*.local
+.vscode
+.idea

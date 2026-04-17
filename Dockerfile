@@ -2,24 +2,19 @@ ARG NODE_VERSION=20.19.5
 
 # Install dependencies only when needed
 FROM node:${NODE_VERSION}-alpine AS deps
-# Create workspace structure
 WORKDIR /workspace
 
 # https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
 RUN apk add --no-cache python3 make g++ \
     && yarn global add node-gyp
 
-# Set up workspace - cloudbuild copies root-package.json, yarn.lock, and draft-renderer
-# into the e-info package directory before building
-
-# First, set up the packages directory with e-info's package.json
-RUN mkdir -p packages/e-info
+# Set up workspace package.json files only (source code is added in builder stage
+# so that changes to source don't invalidate the yarn install cache layer).
+RUN mkdir -p packages/e-info packages/draft-renderer
 COPY package.json ./packages/e-info/
+COPY draft-renderer/package.json ./packages/draft-renderer/
 
-# Copy draft-renderer package
-COPY draft-renderer ./packages/draft-renderer/
-
-# Now copy workspace root configuration (this will be the workspace root)
+# Workspace root configuration
 COPY root-package.json ./package.json
 COPY yarn.lock ./
 COPY root-eslintrc.js ./.eslintrc.js
@@ -29,7 +24,7 @@ COPY prettier.config.js ./
 RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
-FROM node:${NODE_VERSION} AS builder
+FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /workspace
 COPY --from=deps /workspace/node_modules ./node_modules
 COPY --from=deps /workspace/package.json /workspace/yarn.lock /workspace/.eslintrc.js /workspace/prettier.config.js ./
@@ -39,8 +34,11 @@ COPY --from=deps /workspace/packages ./packages
 # This will copy everything including the draft-renderer that cloudbuild copied here
 COPY . ./packages/e-info/
 
-# Remove the draft-renderer from e-info directory since it's already in packages/
+# Remove the draft-renderer from e-info directory since it's built separately
 RUN rm -rf ./packages/e-info/draft-renderer
+
+# Copy draft-renderer source for its own build step
+COPY draft-renderer ./packages/draft-renderer/
 
 # Build draft-renderer first
 RUN cd packages/draft-renderer && yarn build
@@ -49,7 +47,7 @@ RUN cd packages/draft-renderer && yarn build
 RUN cd packages/e-info && yarn build
 
 # Production image, copy all the files and run next
-FROM node:${NODE_VERSION} AS runner
+FROM node:${NODE_VERSION}-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
