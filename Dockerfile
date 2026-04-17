@@ -50,7 +50,7 @@ RUN cd packages/e-info && yarn build
 FROM node:${NODE_VERSION}-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
