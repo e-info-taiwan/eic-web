@@ -1,16 +1,16 @@
 steps:
-  # Build docker image for target sub-package
+  # Build, cache, and push docker image using buildx with registry cache
   - name: gcr.io/cloud-builders/docker
     id: Build Image
     env:
       - 'NEXT_PUBLIC_ENV=${BRANCH_NAME}'
       - 'NEXT_PUBLIC_IS_PREVIEW_MODE=${_IS_PREVIEW_MODE}'
       - 'NEXT_PUBLIC_TURNSTILE_SITE_KEY=${_TURNSTILE_SITE_KEY}'
-      - 'DOCKER_BUILDKIT=1'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        set -e
         # Copy root files and workspace packages for monorepo build
         cp yarn.lock Dockerfile .dockerignore prettier.config.js packages/$_TARGET_PACKAGE/
         # Copy root configs separately to avoid overwriting package's own configs
@@ -23,28 +23,18 @@ steps:
         IMG=asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/$_IMAGE_NAME
         CACHE_TAG=${BRANCH_NAME}_cache
 
-        # Pull previous cache image for this branch (ignore if first build)
-        docker pull "$$IMG:$$CACHE_TAG" || true
+        # Set up buildx with docker-container driver (required for registry cache mode=max)
+        docker buildx create --name cbbuilder --driver docker-container --use
+        docker buildx inspect --bootstrap
 
-        # BuildKit inline cache so intermediate stages get cache metadata
-        docker build \
-          --build-arg BUILDKIT_INLINE_CACHE=1 \
-          --cache-from "$$IMG:$$CACHE_TAG" \
+        # Build with registry cache (mode=max exports all intermediate stages)
+        # --push writes both the SHA tag image and the cache blob to the registry
+        docker buildx build \
+          --cache-from "type=registry,ref=$$IMG:$$CACHE_TAG" \
+          --cache-to "type=registry,ref=$$IMG:$$CACHE_TAG,mode=max" \
           -t "$$IMG:${BRANCH_NAME}_${SHORT_SHA}" \
-          -t "$$IMG:$$CACHE_TAG" \
+          --push \
           .
-
-  # Push docker image (SHA tag + cache tag in parallel)
-  - name: gcr.io/cloud-builders/docker
-    id: Push Image
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        IMG=asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/$_IMAGE_NAME
-        docker push "$$IMG:${BRANCH_NAME}_${SHORT_SHA}" &
-        docker push "$$IMG:${BRANCH_NAME}_cache" &
-        wait
 
   # Deploy container image to Cloud Run with Secrets
   - name: gcr.io/cloud-builders/gcloud
