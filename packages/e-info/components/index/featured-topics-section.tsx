@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { ReadingRankingArticle, Topic } from '~/graphql/query/section'
+import { rawContentToPlainText } from '~/utils/post'
 
 // Styled Components
 const Container = styled.div`
@@ -500,7 +501,7 @@ const FeaturedTopicsSection = ({
     listItems = topicsWithPosts.slice(1, 4).map((topic) => ({
       id: topic.id,
       title: topic.title,
-      excerpt: typeof topic.content === 'string' ? topic.content : null,
+      excerpt: rawContentToPlainText(topic.content),
       heroImage: topic.heroImage,
       href: `/feature/${topic.id}`,
     }))
