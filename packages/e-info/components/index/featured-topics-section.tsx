@@ -500,7 +500,7 @@ const FeaturedTopicsSection = ({
     listItems = topicsWithPosts.slice(1, 4).map((topic) => ({
       id: topic.id,
       title: topic.title,
-      excerpt: topic.content,
+      excerpt: typeof topic.content === 'string' ? topic.content : null,
       heroImage: topic.heroImage,
       href: `/feature/${topic.id}`,
     }))
