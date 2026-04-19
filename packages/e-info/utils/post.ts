@@ -202,15 +202,19 @@ export const getBlocksCount = (content: RawDraftContentState): number => {
 }
 
 export const rawContentToPlainText = (
-  content: RawDraftContentState | null | undefined,
+  content: RawDraftContentState | string | null | undefined,
   maxLength?: number
 ): string => {
-  if (!content || !hasContentInRawContentBlock(content)) return ''
-  const text = content.blocks
-    .filter((b) => b.type !== 'atomic')
-    .map((b) => b.text)
-    .join(' ')
-    .trim()
+  let text = ''
+  if (typeof content === 'string') {
+    text = content.trim()
+  } else if (content && hasContentInRawContentBlock(content)) {
+    text = content.blocks
+      .filter((b) => b.type !== 'atomic')
+      .map((b) => b.text)
+      .join(' ')
+      .trim()
+  }
   return maxLength && text.length > maxLength
     ? `${text.slice(0, maxLength)}…`
     : text

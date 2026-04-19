@@ -445,15 +445,21 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
             <TopicTitle>{topic.title}</TopicTitle>
           </TopicTitleSection>
 
-          {/* Summary (content field from API — Draft.js rich text) */}
-          {topic.content && hasContentInRawContentBlock(topic.content) && (
-            <TopicSummary>
-              <DraftRenderer
-                rawContentBlock={topic.content}
-                contentType={ValidPostContentType.SUMMARY}
-              />
-            </TopicSummary>
-          )}
+          {/* Summary (content field from API)
+              Supports both Draft.js rich text (new) and plain string (legacy). */}
+          {typeof topic.content === 'string'
+            ? topic.content.trim() && (
+                <TopicSummary as="p">{topic.content}</TopicSummary>
+              )
+            : topic.content &&
+              hasContentInRawContentBlock(topic.content) && (
+                <TopicSummary>
+                  <DraftRenderer
+                    rawContentBlock={topic.content}
+                    contentType={ValidPostContentType.SUMMARY}
+                  />
+                </TopicSummary>
+              )}
 
           {/* Author Info */}
           {topic.authorInfo && <AuthorInfo>{topic.authorInfo}</AuthorInfo>}

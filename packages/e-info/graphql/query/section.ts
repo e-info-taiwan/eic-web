@@ -78,7 +78,7 @@ export type Topic = {
   id: string
   title: string
   status: string
-  content: RawDraftContentState | null
+  content: RawDraftContentState | string | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
