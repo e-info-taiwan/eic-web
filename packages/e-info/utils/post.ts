@@ -201,6 +201,21 @@ export const getBlocksCount = (content: RawDraftContentState): number => {
   }
 }
 
+export const rawContentToPlainText = (
+  content: RawDraftContentState | null | undefined,
+  maxLength?: number
+): string => {
+  if (!content || !hasContentInRawContentBlock(content)) return ''
+  const text = content.blocks
+    .filter((b) => b.type !== 'atomic')
+    .map((b) => b.text)
+    .join(' ')
+    .trim()
+  return maxLength && text.length > maxLength
+    ? `${text.slice(0, maxLength)}…`
+    : text
+}
+
 /**
  * 合併精選文章和一般文章
  * 精選文章優先顯示（依照 featuredPostsInInputOrder 的順序），

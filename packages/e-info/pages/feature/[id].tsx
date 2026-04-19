@@ -1,4 +1,5 @@
 // Featured Topic 單頁
+import { Eic } from '@eic-web/draft-renderer'
 // @ts-ignore: no definition
 import SharedImage from '@readr-media/react-image'
 import errors from '@twreporter/errors'
@@ -18,9 +19,11 @@ import { topicById } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
+import { ValidPostContentType } from '~/types/common'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { rawContentToPlainText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
@@ -92,7 +95,7 @@ const TopicTitle = styled.h2`
   }
 `
 
-const TopicSummary = styled.p`
+const TopicSummary = styled.div`
   font-size: 16px;
   font-weight: 400;
   line-height: 1.8;
@@ -352,6 +355,8 @@ type PageProps = {
   topic: Topic
 }
 
+const { DraftRenderer, hasContentInRawContentBlock } = Eic
+
 const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const articleListRef = useRef<HTMLDivElement>(null)
@@ -430,8 +435,15 @@ const TopicPage: NextPageWithLayout<PageProps> = ({ topic }) => {
             <TopicTitle>{topic.title}</TopicTitle>
           </TopicTitleSection>
 
-          {/* Summary (content field from API) */}
-          {topic.content && <TopicSummary>{topic.content}</TopicSummary>}
+          {/* Summary (content field from API — Draft.js rich text) */}
+          {topic.content && hasContentInRawContentBlock(topic.content) && (
+            <TopicSummary>
+              <DraftRenderer
+                rawContentBlock={topic.content}
+                contentType={ValidPostContentType.SUMMARY}
+              />
+            </TopicSummary>
+          )}
 
           {/* Author Info */}
           {topic.authorInfo && <AuthorInfo>{topic.authorInfo}</AuthorInfo>}
@@ -611,7 +623,7 @@ TopicPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   return (
     <LayoutGeneral
       title={topic.title || '專題'}
-      description={topic.content || ''}
+      description={rawContentToPlainText(topic.content, 160)}
       imageUrl={heroImageUrl || undefined}
     >
       {page}

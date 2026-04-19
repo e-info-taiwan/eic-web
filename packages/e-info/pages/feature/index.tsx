@@ -17,7 +17,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
-import { formatPostDate } from '~/utils/post'
+import { formatPostDate, rawContentToPlainText } from '~/utils/post'
 
 const PageWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
@@ -380,9 +380,12 @@ const FeaturedTopicsPage: NextPageWithLayout<PageProps> = ({ topics }) => {
                 <FeaturedTitle>{topic.title}</FeaturedTitle>
               </Link>
               <FeaturedDate>{topicDate}</FeaturedDate>
-              {topic.content && (
-                <FeaturedExcerpt>{topic.content}</FeaturedExcerpt>
-              )}
+              {(() => {
+                const excerpt = rawContentToPlainText(topic.content)
+                return excerpt ? (
+                  <FeaturedExcerpt>{excerpt}</FeaturedExcerpt>
+                ) : null
+              })()}
             </FeaturedTextContent>
             <Link href={topicHref} passHref legacyBehavior>
               <EnterButton

@@ -1,3 +1,4 @@
+import type { RawDraftContentState } from 'draft-js'
 import gql from 'graphql-tag'
 
 import type { ResizedImagesCard } from '~/graphql/fragments/post'
@@ -77,7 +78,7 @@ export type Topic = {
   id: string
   title: string
   status: string
-  content: string | null
+  content: RawDraftContentState | null
   heroImage: {
     resized: ResizedImagesCard | null
     resizedWebp: ResizedImagesCard | null
