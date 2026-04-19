@@ -102,6 +102,16 @@ const TopicSummary = styled.div`
   color: ${({ theme }) => theme.colors.grayscale[20]};
   margin: 0 0 16px;
   text-align: left;
+
+  a {
+    color: ${({ theme }) => theme.colors.secondary[40]};
+    font-weight: 500;
+    text-decoration: underline;
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.secondary[20]};
+    }
+  }
 `
 
 const AuthorInfo = styled.div`
