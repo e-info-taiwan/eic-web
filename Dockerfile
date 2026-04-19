@@ -43,6 +43,14 @@ COPY draft-renderer ./packages/draft-renderer/
 # Build draft-renderer first
 RUN cd packages/draft-renderer && yarn build
 
+# NEXT_PUBLIC_* vars are baked into the Next.js bundle at build time
+ARG NEXT_PUBLIC_ENV
+ARG NEXT_PUBLIC_IS_PREVIEW_MODE
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ENV NEXT_PUBLIC_ENV=${NEXT_PUBLIC_ENV}
+ENV NEXT_PUBLIC_IS_PREVIEW_MODE=${NEXT_PUBLIC_IS_PREVIEW_MODE}
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+
 # Build e-info
 RUN cd packages/e-info && yarn build
 

@@ -2,10 +2,6 @@ steps:
   # Build, cache, and push docker image using buildx with registry cache
   - name: gcr.io/cloud-builders/docker
     id: Build Image
-    env:
-      - 'NEXT_PUBLIC_ENV=${BRANCH_NAME}'
-      - 'NEXT_PUBLIC_IS_PREVIEW_MODE=${_IS_PREVIEW_MODE}'
-      - 'NEXT_PUBLIC_TURNSTILE_SITE_KEY=${_TURNSTILE_SITE_KEY}'
     entrypoint: 'bash'
     args:
       - '-c'
@@ -18,7 +14,6 @@ steps:
         cp .eslintrc.js packages/$_TARGET_PACKAGE/root-eslintrc.js
         cp -r packages/draft-renderer packages/$_TARGET_PACKAGE/
         cd packages/$_TARGET_PACKAGE
-        printenv > .env.local
 
         IMG=asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/$_IMAGE_NAME
         CACHE_TAG=${BRANCH_NAME}_cache
@@ -29,9 +24,13 @@ steps:
 
         # Build with registry cache (mode=max exports all intermediate stages)
         # --push writes both the SHA tag image and the cache blob to the registry
+        # NEXT_PUBLIC_* build args are baked into the Next.js bundle at build time
         docker buildx build \
           --cache-from "type=registry,ref=$$IMG:$$CACHE_TAG" \
           --cache-to "type=registry,ref=$$IMG:$$CACHE_TAG,mode=max" \
+          --build-arg "NEXT_PUBLIC_ENV=${BRANCH_NAME}" \
+          --build-arg "NEXT_PUBLIC_IS_PREVIEW_MODE=${_IS_PREVIEW_MODE}" \
+          --build-arg "NEXT_PUBLIC_TURNSTILE_SITE_KEY=${_TURNSTILE_SITE_KEY}" \
           -t "$$IMG:${BRANCH_NAME}_${SHORT_SHA}" \
           --push \
           .
