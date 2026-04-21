@@ -1,5 +1,7 @@
 import { API_ENDPOINT } from '~/constants/config.server'
 
+import { getIdToken } from './gcp-id-token'
+
 type GraphQLResponse<T> = {
   data?: T
   errors?: Array<{ message: string }>
@@ -14,11 +16,15 @@ export async function serverGraphQL<T>(
   variables?: Record<string, unknown>
 ): Promise<{ data?: T; error?: string }> {
   try {
+    const token = await getIdToken(API_ENDPOINT)
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         query,
         variables,
@@ -42,8 +48,7 @@ export async function serverGraphQL<T>(
     return { data: result.data }
   } catch (error) {
     return {
-      error:
-        error instanceof Error ? error.message : 'Unknown error occurred',
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
     }
   }
 }

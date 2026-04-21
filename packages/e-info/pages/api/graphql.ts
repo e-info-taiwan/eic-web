@@ -13,6 +13,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'stream'
 
 import { API_ENDPOINT } from '~/constants/config.server'
+import { getIdToken } from '~/utils/gcp-id-token'
 
 export const config = {
   api: {
@@ -138,7 +139,10 @@ function containsSensitiveQuery(body: unknown): {
   return { isSensitive: false }
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   // Only allow POST requests for GraphQL
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -159,6 +163,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       error: `Sensitive query blocked. ${sensitiveCheck.reason}`,
     })
   }
+
+  // Attach Cloud Run IAM ID token so the CMS GraphQL service can require auth.
+  const token = await getIdToken(API_ENDPOINT)
+  if (token) req.headers['authorization'] = `Bearer ${token}`
 
   // Create proxy for queries
   const proxy = httpProxy.createProxy()

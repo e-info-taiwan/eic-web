@@ -4,6 +4,7 @@ import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { API_ENDPOINT } from '~/constants/config.server'
+import { getIdToken } from '~/utils/gcp-id-token'
 import { verifyFirebaseToken } from '~/utils/verify-firebase'
 import { getClientIp, verifyTurnstileToken } from '~/utils/verify-turnstile'
 
@@ -145,6 +146,13 @@ export default async function handler(
       contentType: file.mimetype || 'image/jpeg',
     })
 
+    // Attach Cloud Run IAM ID token when calling the CMS with auth enforced.
+    const cmsIdToken = await getIdToken(API_ENDPOINT)
+    const cmsHeaders: Record<string, string> = {
+      'Apollo-Require-Preflight': 'true',
+    }
+    if (cmsIdToken) cmsHeaders['Authorization'] = `Bearer ${cmsIdToken}`
+
     // Send the request to the GraphQL API using form-data's submit
     const response = await new Promise<{ statusCode: number; body: string }>(
       (resolve, reject) => {
@@ -154,9 +162,7 @@ export default async function handler(
             host: new URL(API_ENDPOINT).host,
             path: new URL(API_ENDPOINT).pathname,
             method: 'POST',
-            headers: {
-              'Apollo-Require-Preflight': 'true',
-            },
+            headers: cmsHeaders,
           },
           (err, res) => {
             if (err) {
