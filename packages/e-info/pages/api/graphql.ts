@@ -12,7 +12,7 @@ import httpProxy from 'http-proxy'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'stream'
 
-import { API_ENDPOINT } from '~/constants/config'
+import { API_ENDPOINT } from '~/constants/config.server'
 
 export const config = {
   api: {

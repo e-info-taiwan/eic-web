@@ -1,7 +1,6 @@
 const ENV = process.env.NEXT_PUBLIC_ENV || 'local'
 
 // 這裡管理的是在 runtime 時，可被設定的環境變數 (通常沒有 `NEXT_PUBLIC_` 作為開頭)
-const USE_MOCK_SERVER = (process.env.USE_MOCK_SERVER ?? 'false') === 'true'
 const MOCK_API_SERVER_PORT = Number(process.env.MOCK_API_SERVER_PORT ?? 4000)
 
 // Mailchimp Configuration
@@ -32,8 +31,6 @@ const FIREBASE_ADMIN_PRIVATE_KEY = (
   process.env.FIREBASE_ADMIN_PRIVATE_KEY ?? ''
 ).replace(/\\n/g, '\n')
 
-let API_ENDPOINT = ''
-let PREVIEW_API_ENDPOINT = ''
 let HOMEPAGE_API_ENDPOINT = ''
 let HEADER_API_ENDPOINT = ''
 let POPULAR_SEARCH_ENDPOINT = ''
@@ -52,10 +49,6 @@ let FIREBASE_CONFIG = {
 
 switch (ENV) {
   case 'prod':
-    API_ENDPOINT =
-      'https://eic-info-cms-gql-prod-1090198686704.asia-east1.run.app/api/graphql'
-    PREVIEW_API_ENDPOINT =
-      'https://eic-info-cms-preview-prod-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-prod/json/homepage.json'
     HEADER_API_ENDPOINT =
@@ -80,10 +73,6 @@ switch (ENV) {
     break
   case 'dev':
   case 'main':
-    API_ENDPOINT =
-      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
-    PREVIEW_API_ENDPOINT =
-      'https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/json/homepage.json'
     HEADER_API_ENDPOINT =
@@ -107,10 +96,6 @@ switch (ENV) {
     }
     break
   default:
-    API_ENDPOINT =
-      'https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql'
-    PREVIEW_API_ENDPOINT =
-      'https://eic-cms-preview-dev-1090198686704.asia-east1.run.app/api/graphql'
     HOMEPAGE_API_ENDPOINT =
       'https://storage.googleapis.com/statics-e-info-dev/json/homepage.json'
     HEADER_API_ENDPOINT =
@@ -135,13 +120,9 @@ switch (ENV) {
     break
 }
 
-if (USE_MOCK_SERVER) API_ENDPOINT = `http://localhost:${MOCK_API_SERVER_PORT}/`
-
 // Preview Mode: 獨立部署的預覽模式，用於預覽草稿文章
+// Note: actual API_ENDPOINT selection happens in config.server.ts (server-only)
 const IS_PREVIEW_MODE = process.env.NEXT_PUBLIC_IS_PREVIEW_MODE === 'true'
-if (IS_PREVIEW_MODE && PREVIEW_API_ENDPOINT) {
-  API_ENDPOINT = PREVIEW_API_ENDPOINT
-}
 
 // 環境變數優先覆蓋 Firebase 設定（各欄位獨立檢查）
 if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
@@ -166,7 +147,6 @@ if (process.env.NEXT_PUBLIC_FIREBASE_APP_ID) {
 }
 
 export {
-  API_ENDPOINT,
   FIREBASE_ADMIN_CLIENT_EMAIL,
   FIREBASE_ADMIN_PRIVATE_KEY,
   FIREBASE_ADMIN_PROJECT_ID,

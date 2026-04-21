@@ -1,7 +1,7 @@
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client'
 import { createUploadLink } from 'apollo-upload-client'
 
-import { API_ENDPOINT } from '~/constants/config'
+import { API_ENDPOINT } from '~/constants/config.server'
 
 // Apollo Client configured for file uploads
 // Uses createUploadLink which supports multipart form data for file uploads

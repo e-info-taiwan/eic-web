@@ -3,7 +3,7 @@ import { File, IncomingForm } from 'formidable'
 import fs from 'fs'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { API_ENDPOINT } from '~/constants/config'
+import { API_ENDPOINT } from '~/constants/config.server'
 import { verifyFirebaseToken } from '~/utils/verify-firebase'
 import { getClientIp, verifyTurnstileToken } from '~/utils/verify-turnstile'
 

@@ -7,8 +7,6 @@ import {
   Observable,
 } from '@apollo/client'
 
-import { API_ENDPOINT } from '~/constants/config'
-import { isServer } from '~/utils/common'
 import { rewriteGcsUrls } from '~/utils/rewrite-gcs-urls'
 
 // Rewrite GCS image URLs in GraphQL responses to use local proxy
@@ -28,12 +26,17 @@ const rewriteLink = new ApolloLink((operation, forward) => {
 })
 
 export const getGqlClient = () => {
-  // Server-side: use API endpoint directly
-  // Client-side: use /api/graphql proxy to avoid CORS issues
-  // Note: All mutations are handled by dedicated API routes with proper protection
-  const uri = isServer()
-    ? API_ENDPOINT
-    : `${window.location.origin}/api/graphql`
+  // Server-side: use API endpoint directly (loaded via server-only require so
+  // the URL literal is DCE'd from the client bundle by Next.js).
+  // Client-side: use /api/graphql same-origin proxy.
+  let uri: string
+  if (typeof window === 'undefined') {
+    const serverConfig =
+      require('~/constants/config.server') as typeof import('~/constants/config.server')
+    uri = serverConfig.API_ENDPOINT
+  } else {
+    uri = `${window.location.origin}/api/graphql`
+  }
 
   return new ApolloClient({
     link: ApolloLink.from([rewriteLink, new HttpLink({ uri })]),

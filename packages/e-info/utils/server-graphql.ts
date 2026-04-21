@@ -1,4 +1,4 @@
-import { API_ENDPOINT } from '~/constants/config'
+import { API_ENDPOINT } from '~/constants/config.server'
 
 type GraphQLResponse<T> = {
   data?: T
