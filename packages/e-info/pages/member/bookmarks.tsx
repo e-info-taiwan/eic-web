@@ -138,6 +138,7 @@ const ArticleGrid = styled.div`
 
 const ArticleCard = styled.a`
   display: block;
+  min-width: 0;
   text-decoration: none;
   cursor: pointer;
 
