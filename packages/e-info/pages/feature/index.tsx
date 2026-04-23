@@ -262,7 +262,7 @@ const ArticleCard = styled.a`
 const ArticleImageWrapper = styled.div`
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background-color: #f0f0f0;
   margin-bottom: 12px;
