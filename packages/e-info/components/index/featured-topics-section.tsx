@@ -289,10 +289,10 @@ const ArticleExcerpt = styled.p`
   }
 `
 
-const ArticleImageWrapper = styled.div`
+const ArticleImageWrapper = styled.div<{ $isTopicMode?: boolean }>`
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: ${({ $isTopicMode }) => ($isTopicMode ? '2 / 1' : '4 / 3')};
   background-color: #d1d5db;
   overflow: hidden;
 
@@ -584,7 +584,7 @@ const FeaturedTopicsSection = ({
                           <ArticleExcerpt>{item.excerpt}</ArticleExcerpt>
                         )}
                       </ArticleContent>
-                      <ArticleImageWrapper>
+                      <ArticleImageWrapper $isTopicMode={activeTopic === ''}>
                         <SharedImage
                           key={`article-${activeTopic}-${item.id}`}
                           images={image || {}}
