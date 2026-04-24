@@ -1,3 +1,4 @@
+import SharedImage from '@readr-media/react-image'
 import React from 'react'
 import styled from 'styled-components'
 
@@ -133,6 +134,30 @@ const VideoWrapper = styled.div`
   }
 `
 
+const ImageWrapper = styled.div`
+  width: 100%;
+  padding: 0 20px;
+  margin-top: 14px;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  // Tablet
+  @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
+    padding: 0 60px;
+    margin-top: 24px;
+  }
+
+  // Desktop
+  @media (min-width: ${({ theme }) => theme.mediaSize.xl}px) {
+    padding: 0 60px;
+    margin-top: 52px;
+  }
+`
+
 const Inforgraphic = ({ infoGraph }: InforgraphicProps) => {
   // Don't render if no infoGraph data
   if (!infoGraph) {
@@ -140,13 +165,16 @@ const Inforgraphic = ({ infoGraph }: InforgraphicProps) => {
   }
 
   const embedUrl = getYoutubeEmbedUrl(infoGraph.youtubeUrl)
+  const hasImage = Boolean(
+    infoGraph.image?.resized || infoGraph.image?.resizedWebp
+  )
 
   return (
     <BackgroundContainer>
       <Container>
         {infoGraph.title && <Title>{infoGraph.title}</Title>}
         {infoGraph.description && <Excerpt>{infoGraph.description}</Excerpt>}
-        {embedUrl && (
+        {embedUrl ? (
           <VideoWrapper>
             <iframe
               src={embedUrl}
@@ -157,7 +185,22 @@ const Inforgraphic = ({ infoGraph }: InforgraphicProps) => {
               allowFullScreen
             ></iframe>
           </VideoWrapper>
-        )}
+        ) : hasImage ? (
+          <ImageWrapper>
+            <SharedImage
+              images={infoGraph.image?.resized || undefined}
+              imagesWebP={infoGraph.image?.resizedWebp || undefined}
+              alt={infoGraph.title || ''}
+              priority={false}
+              rwd={{
+                mobile: '100vw',
+                tablet: '100vw',
+                desktop: '1080px',
+                default: '1080px',
+              }}
+            />
+          </ImageWrapper>
+        ) : null}
       </Container>
     </BackgroundContainer>
   )
