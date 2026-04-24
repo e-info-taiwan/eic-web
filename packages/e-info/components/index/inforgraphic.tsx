@@ -174,18 +174,7 @@ const Inforgraphic = ({ infoGraph }: InforgraphicProps) => {
       <Container>
         {infoGraph.title && <Title>{infoGraph.title}</Title>}
         {infoGraph.description && <Excerpt>{infoGraph.description}</Excerpt>}
-        {embedUrl ? (
-          <VideoWrapper>
-            <iframe
-              src={embedUrl}
-              title={infoGraph.title || 'YouTube video player'}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            ></iframe>
-          </VideoWrapper>
-        ) : hasImage ? (
+        {hasImage ? (
           <ImageWrapper>
             <SharedImage
               images={infoGraph.image?.resized || undefined}
@@ -200,6 +189,17 @@ const Inforgraphic = ({ infoGraph }: InforgraphicProps) => {
               }}
             />
           </ImageWrapper>
+        ) : embedUrl ? (
+          <VideoWrapper>
+            <iframe
+              src={embedUrl}
+              title={infoGraph.title || 'YouTube video player'}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
+          </VideoWrapper>
         ) : null}
       </Container>
     </BackgroundContainer>
