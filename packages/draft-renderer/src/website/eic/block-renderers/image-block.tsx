@@ -31,6 +31,80 @@ const CaptionLink = styled.a`
   }
 `
 
+type EntityRange = { key: number; offset: number; length: number }
+type CaptionBlock = {
+  key?: string
+  text?: string
+  entityRanges?: EntityRange[]
+}
+type CaptionEntity = { type?: string; data?: { url?: string } }
+type CaptionRichTextData = {
+  blocks?: CaptionBlock[]
+  entityMap?: Record<string | number, CaptionEntity>
+}
+
+function renderCaptionBlock(
+  block: CaptionBlock,
+  entityMap: Record<string | number, CaptionEntity>
+): React.ReactNode {
+  const text = block.text ?? ''
+  const ranges = (block.entityRanges ?? [])
+    .slice()
+    .sort((a, b) => a.offset - b.offset)
+  if (!ranges.length) return text
+
+  const segments: React.ReactNode[] = []
+  let cursor = 0
+  ranges.forEach((range, i) => {
+    if (range.offset > cursor) {
+      segments.push(text.slice(cursor, range.offset))
+    }
+    const entity = entityMap[range.key]
+    const slice = text.slice(range.offset, range.offset + range.length)
+    if (entity?.type === 'LINK' && entity.data?.url) {
+      segments.push(
+        <CaptionLink
+          key={`${block.key ?? 'b'}-${i}`}
+          href={entity.data.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {slice}
+        </CaptionLink>
+      )
+    } else {
+      segments.push(slice)
+    }
+    cursor = range.offset + range.length
+  })
+  if (cursor < text.length) {
+    segments.push(text.slice(cursor))
+  }
+  return <>{segments}</>
+}
+
+function CaptionRichText({ raw }: { raw: CaptionRichTextData }) {
+  const blocks = raw?.blocks ?? []
+  const entityMap = raw?.entityMap ?? {}
+  return (
+    <>
+      {blocks.map((block, i) => (
+        <React.Fragment key={block.key || i}>
+          {i > 0 && <br />}
+          {renderCaptionBlock(block, entityMap)}
+        </React.Fragment>
+      ))}
+    </>
+  )
+}
+
+function hasCaptionRichText(
+  raw: CaptionRichTextData | undefined | null
+): raw is CaptionRichTextData {
+  if (!raw?.blocks?.length) return false
+  return raw.blocks.some((b) => (b.text ?? '').trim().length > 0)
+}
+
 type ImageBlockProps = {
   block: ContentBlock
   contentState: ContentState
@@ -48,6 +122,7 @@ export function ImageBlock(props: ImageBlockProps) {
     resizedWebp = {},
     url,
     src,
+    captionRichText,
   } = entity.getData()
 
   // Check if resized images exist, otherwise fallback to src
@@ -72,6 +147,8 @@ export function ImageBlock(props: ImageBlockProps) {
     />
   )
 
+  const useRichCaption = hasCaptionRichText(captionRichText)
+
   return (
     <Figure>
       {url ? (
@@ -82,7 +159,9 @@ export function ImageBlock(props: ImageBlockProps) {
         image
       )}
       <FigureCaption>
-        {url ? (
+        {useRichCaption ? (
+          <CaptionRichText raw={captionRichText} />
+        ) : url ? (
           <CaptionLink href={url} target="_blank" rel="noopener noreferrer">
             {desc}
           </CaptionLink>
