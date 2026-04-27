@@ -113,27 +113,35 @@ var getFirstBlockEntityType = exports.getFirstBlockEntityType = function getFirs
     return undefined;
   }
 };
+
+// Walk blocks in document order, indexing each SIDEINDEX block as the Nth
+// occurrence. The renderer (side-index-block.tsx) computes the same Nth index
+// from the post-convertFromRaw ContentState — so both sides agree on
+// `header-${n}` even though convertFromRaw remaps entityMap keys.
 var getSideIndexEntityData = exports.getSideIndexEntityData = function getSideIndexEntityData(rawContentBlock) {
   if (!(0, _common.hasContentInRawContentBlock)(rawContentBlock)) {
     return [];
   }
   var contentBlocks = (0, _common.removeEmptyContentBlock)(rawContentBlock);
-  if (contentBlocks !== null && contentBlocks !== void 0 && contentBlocks.entityMap) {
-    return Object.values(contentBlocks.entityMap).filter(function (entity) {
-      return entity.type === 'SIDEINDEX';
-    }).map(function (entity) {
-      var _entity$data;
-      var content = (_entity$data = entity.data) !== null && _entity$data !== void 0 ? _entity$data : {};
-      var sideIndexTitle = content.sideIndexText || content.h2Text || '';
-      var key = sideIndexTitle.replace(/\s+/g, '');
-      return {
-        title: sideIndexTitle,
-        id: "header-".concat(key),
-        href: (content === null || content === void 0 ? void 0 : content.sideIndexUrl) || null,
-        isActive: false
-      };
-    });
-  } else {
+  if (!(contentBlocks !== null && contentBlocks !== void 0 && contentBlocks.blocks) || !(contentBlocks !== null && contentBlocks !== void 0 && contentBlocks.entityMap)) {
     return undefined;
   }
+  var result = [];
+  contentBlocks.blocks.forEach(function (block) {
+    var _block$entityRanges;
+    (_block$entityRanges = block.entityRanges) === null || _block$entityRanges === void 0 || _block$entityRanges.forEach(function (range) {
+      var _entity$data;
+      var entity = contentBlocks.entityMap[range.key];
+      if (!entity || entity.type !== 'SIDEINDEX') return;
+      var data = (_entity$data = entity.data) !== null && _entity$data !== void 0 ? _entity$data : {};
+      var sideIndexTitle = data.sideIndexText || data.h2Text || '';
+      result.push({
+        title: sideIndexTitle,
+        id: "header-".concat(result.length),
+        href: (data === null || data === void 0 ? void 0 : data.sideIndexUrl) || null,
+        isActive: false
+      });
+    });
+  });
+  return result;
 };

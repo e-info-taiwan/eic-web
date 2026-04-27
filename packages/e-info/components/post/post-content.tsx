@@ -332,27 +332,30 @@ export default function PostContent({
   useOutboundLinkTracking(articleRef)
 
   //Draft Style: add IntersectionObserver to detect side-index titles.
+  // Active band: thin strip near the top of the viewport (between 100px from
+  // top and 10% from top). A header crossing this band — in either scroll
+  // direction — becomes current.
   useEffect(() => {
     if (!articleRef.current) {
       return
     }
 
-    const selectorIdBeginWithHeader = '[id^="header"]'
-    const targets = [
-      ...articleRef.current.querySelectorAll(selectorIdBeginWithHeader),
-    ]
+    const targets = [...articleRef.current.querySelectorAll('[id^="header"]')]
 
     const indexObserver = new IntersectionObserver(
       (entries) => {
-        entries.forEach(({ isIntersecting, target }) => {
-          if (isIntersecting) {
-            setCurrentSideIndex(target.id)
-          }
-        })
+        const intersecting = entries.filter((e) => e.isIntersecting)
+        if (intersecting.length === 0) return
+        const topmost = intersecting.reduce((best, curr) =>
+          curr.boundingClientRect.top < best.boundingClientRect.top
+            ? curr
+            : best
+        )
+        setCurrentSideIndex(topmost.target.id)
       },
       {
-        threshold: 1,
-        rootMargin: `150px 0px 0px 0px`,
+        threshold: 0,
+        rootMargin: '-100px 0px -90% 0px',
       }
     )
     targets.forEach((element) => {

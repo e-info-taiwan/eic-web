@@ -740,6 +740,7 @@ const Header = () => {
   const lastScrollY = useRef(0)
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const isHoveringNavRef = useRef(false)
+  const headerContainerRef = useRef<HTMLElement | null>(null)
 
   // Get header data from context (pre-fetched on server side)
   const {
@@ -965,9 +966,34 @@ const Header = () => {
     }
   }, [])
 
+  // Publish header height as a CSS variable so anchor targets (e.g. side-index
+  // h2 blocks) can offset their scroll-margin-top to land just below the
+  // sticky header instead of being covered by it.
+  useEffect(() => {
+    const el = headerContainerRef.current
+    if (!el) return
+
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        '--header-height',
+        `${el.offsetHeight}px`
+      )
+    }
+    updateHeight()
+
+    const ro = new ResizeObserver(updateHeight)
+    ro.observe(el)
+    window.addEventListener('resize', updateHeight)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', updateHeight)
+    }
+  }, [])
+
   return (
     <>
-      <HeaderContainer $isHidden={isHeaderHidden}>
+      <HeaderContainer $isHidden={isHeaderHidden} ref={headerContainerRef}>
         <Container>
           <TopSection>
             <HamburgerButton onClick={() => setIsMenuOpen(!isMenuOpen)}>

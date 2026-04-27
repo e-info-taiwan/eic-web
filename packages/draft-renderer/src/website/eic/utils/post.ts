@@ -128,32 +128,42 @@ const getFirstBlockEntityType = (rawContentBlock: RawDraftContentState) => {
   }
 }
 
+// Walk blocks in document order, indexing each SIDEINDEX block as the Nth
+// occurrence. The renderer (side-index-block.tsx) computes the same Nth index
+// from the post-convertFromRaw ContentState — so both sides agree on
+// `header-${n}` even though convertFromRaw remaps entityMap keys.
 const getSideIndexEntityData = (rawContentBlock: RawDraftContentState) => {
   if (!hasContentInRawContentBlock(rawContentBlock)) {
     return []
   }
   const contentBlocks = removeEmptyContentBlock(rawContentBlock)
-
-  if (contentBlocks?.entityMap) {
-    return Object.values(contentBlocks.entityMap)
-      .filter((entity) => entity.type === 'SIDEINDEX')
-      .map((entity) => {
-        const content = entity.data ?? {}
-
-        const sideIndexTitle = content.sideIndexText || content.h2Text || ''
-
-        const key = sideIndexTitle.replace(/\s+/g, '')
-
-        return {
-          title: sideIndexTitle,
-          id: `header-${key}`,
-          href: content?.sideIndexUrl || null,
-          isActive: false,
-        }
-      })
-  } else {
+  if (!contentBlocks?.blocks || !contentBlocks?.entityMap) {
     return undefined
   }
+
+  const result: Array<{
+    title: string
+    id: string
+    href: string | null
+    isActive: boolean
+  }> = []
+
+  contentBlocks.blocks.forEach((block) => {
+    block.entityRanges?.forEach((range) => {
+      const entity = contentBlocks.entityMap[range.key]
+      if (!entity || entity.type !== 'SIDEINDEX') return
+      const data = entity.data ?? {}
+      const sideIndexTitle = data.sideIndexText || data.h2Text || ''
+      result.push({
+        title: sideIndexTitle,
+        id: `header-${result.length}`,
+        href: data?.sideIndexUrl || null,
+        isActive: false,
+      })
+    })
+  })
+
+  return result
 }
 
 export {

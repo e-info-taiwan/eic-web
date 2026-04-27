@@ -229,7 +229,6 @@ export default function News({
                 <SideIndex
                   rawContentBlock={postData?.content}
                   currentIndex={currentSideIndex}
-                  isAside={true}
                 />
               </LeftColumn>
 

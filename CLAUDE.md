@@ -142,10 +142,10 @@ type Post {
     resizedWebp: { ... }
   }
   ogImage: { ... }
-  content: string          // Legacy: draft-js JSON string
-  contentApiData: JSON     // New: API format content
-  brief: JSON              // Legacy: draft-js brief
-  briefApiData: JSON       // New: API format brief
+  content: string          // Draft.js JSON string — currently used by PostContent
+  contentApiData: JSON     // New API format (array) — queried but not yet rendered (DraftRenderer incompatible)
+  brief: JSON              // Draft.js brief — currently used
+  briefApiData: JSON       // New API format brief — queried but not yet rendered
   citations: string        // HTML string for references
   tags: [Tag]
   category: Category
@@ -356,8 +356,8 @@ Image sizes use `w480`, `w800`, `w1200`, `w1600`, `w2400`, **not** `small`, `med
 The project uses a custom draft-renderer package (`@eic-web/draft-renderer` v1.4.4).
 
 **Important Changes**:
-- New API format uses `contentApiData` and `briefApiData` fields
-- These fields are JSON objects, passed directly to the `<Eic>` component
+- The CMS exposes a new `contentApiData` / `briefApiData` array format alongside the legacy Draft.js `content` / `brief` fields
+- **Current rendering still uses the legacy `content` / `brief` fields** because `DraftRenderer` only accepts Draft.js raw content state. The new API fields are queried in the fragment but not rendered (see `post-content.tsx` comment around line 301)
 - Image rendering uses `SharedImage` component with fallback mechanism:
   ```typescript
   images={resized} or src={image.url}
@@ -723,9 +723,9 @@ new ApolloClient({
 **Issue**: Content not displaying correctly
 
 **Solution**:
-- Use `contentApiData` field (not the old `content` field)
+- Pass the legacy `content` (Draft.js JSON string) field to `<DraftRenderer />`. The new `contentApiData` array format is **not** rendered by the current `@eic-web/draft-renderer` v1.4.4 — see `post-content.tsx` around line 301
 - Use `@eic-web/draft-renderer` v1.4.4
-- Ensure you're passing the `contentApiData` JSON object correctly
+- For brief, same rule applies: render from `brief`, not `briefApiData`
 
 ### 4. Citations HTML Not Rendering
 
@@ -802,7 +802,7 @@ Includes simple-import-sort rules to ensure consistent import ordering.
 5. **Style Changes**: Use styled-components, follow existing theme settings
 6. **GraphQL Queries**: Reference complete query examples in `graphql/query/post.ts` and `graphql/query/category.ts`
 7. **Image Handling**: Prefer `resized` and `resizedWebp`, with `src` fallback
-8. **Content Rendering**: Use `contentApiData` field, not the old `content` field
+8. **Content Rendering**: Render from the legacy `content` (Draft.js JSON string) field via `DraftRenderer`. `contentApiData` is queried by the GraphQL fragment but not yet rendered (DraftRenderer doesn't accept the new array format)
 9. **Commit Messages**: Use clear descriptions, reference recent commit style
 10. **API Testing**: Use curl with `/tmp/query.json` for complex GraphQL queries (see Testing GraphQL API section)
 
