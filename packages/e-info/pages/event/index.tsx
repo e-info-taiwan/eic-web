@@ -350,19 +350,29 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
   // Use fixed city/county options for location filter
   const locationOptions = LOCATION_OPTIONS
 
+  // Generate all YYYY-MM months spanned by an event's [startDate, endDate]
+  const getMonthRange = (start: string, end?: string): string[] => {
+    const startD = new Date(start)
+    const endD = end ? new Date(end) : startD
+    const months: string[] = []
+    const cur = new Date(startD.getFullYear(), startD.getMonth(), 1)
+    const last = new Date(endD.getFullYear(), endD.getMonth(), 1)
+    while (cur <= last) {
+      months.push(
+        `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}`
+      )
+      cur.setMonth(cur.getMonth() + 1)
+    }
+    return months
+  }
+
   // Generate date options from events data (YYYY-MM format)
+  // Includes every month an event spans, so a 3/1–4/30 event appears under both 3月 and 4月.
   const dateOptions = Array.from(
     new Set(
-      events
-        .map((event) => {
-          if (!event.startDate) return null
-          const date = new Date(event.startDate)
-          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-            2,
-            '0'
-          )}`
-        })
-        .filter((date): date is string => !!date)
+      events.flatMap((event) =>
+        event.startDate ? getMonthRange(event.startDate, event.endDate) : []
+      )
     )
   ).sort((a, b) => b.localeCompare(a)) // Sort descending (newest first)
 
@@ -407,13 +417,11 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     }
 
     // Date filter (format: YYYY-MM)
+    // Match if selected month falls within the event's [startDate, endDate] span.
     if (selectedDate !== 'all') {
       if (!event.startDate) return false
-      const eventDate = new Date(event.startDate)
-      const eventYearMonth = `${eventDate.getFullYear()}-${String(
-        eventDate.getMonth() + 1
-      ).padStart(2, '0')}`
-      if (eventYearMonth !== selectedDate) {
+      const months = getMonthRange(event.startDate, event.endDate)
+      if (!months.includes(selectedDate)) {
         return false
       }
     }
