@@ -15,7 +15,7 @@ var sideIndexDefaultSpacing = 32;
 var SideIndexBlockWrapper = _styledComponents["default"].div.withConfig({
   displayName: "side-index-block__SideIndexBlockWrapper",
   componentId: "sc-rim3u6-0"
-})(["margin-top:", "px;scroll-margin-top:calc(var(--header-height,80px) + 16px);h2{", " margin:0;}"], sideIndexDefaultSpacing, _sharedStyle.defaultH2Style);
+})(["margin-top:", "px;scroll-margin-top:calc(var(--header-height,80px) + 16px);h3{", " margin:0;}"], sideIndexDefaultSpacing, _sharedStyle.defaultH3Style);
 function SideIndexBlock(props) {
   var block = props.block,
     contentState = props.contentState;
@@ -24,9 +24,12 @@ function SideIndexBlock(props) {
     return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null);
   }
   var entity = contentState.getEntity(entityKey);
+  // Field is named `h2Text` for historical reasons — kept to avoid a CMS
+  // schema migration. It now renders as <h3>; the editor UI labels this as
+  // "段落小標" in the CMS.
   var _entity$getData = entity.getData(),
-    h2Text = _entity$getData.h2Text;
-  if (!h2Text) {
+    headingText = _entity$getData.h2Text;
+  if (!headingText) {
     return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null);
   }
 
@@ -58,5 +61,5 @@ function SideIndexBlock(props) {
   }
   return /*#__PURE__*/_react["default"].createElement(SideIndexBlockWrapper, {
     id: "header-".concat(sideIndexNumber)
-  }, /*#__PURE__*/_react["default"].createElement("h2", null, h2Text));
+  }, /*#__PURE__*/_react["default"].createElement("h3", null, headingText));
 }

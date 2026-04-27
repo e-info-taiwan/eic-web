@@ -2,7 +2,7 @@ import { ContentBlock, ContentState } from 'draft-js'
 import React from 'react'
 import styled from 'styled-components'
 
-import { defaultH2Style } from '../shared-style'
+import { defaultH3Style } from '../shared-style'
 
 const sideIndexDefaultSpacing = 32
 
@@ -13,8 +13,8 @@ const SideIndexBlockWrapper = styled.div`
   // SSR / pages without the Header.
   scroll-margin-top: calc(var(--header-height, 80px) + 16px);
 
-  h2 {
-    ${defaultH2Style}
+  h3 {
+    ${defaultH3Style}
     margin: 0;
   }
 `
@@ -41,8 +41,11 @@ export function SideIndexBlock(props: SideIndexBlockProps) {
     return <></>
   }
   const entity = contentState.getEntity(entityKey)
-  const { h2Text } = entity.getData()
-  if (!h2Text) {
+  // Field is named `h2Text` for historical reasons — kept to avoid a CMS
+  // schema migration. It now renders as <h3>; the editor UI labels this as
+  // "段落小標" in the CMS.
+  const { h2Text: headingText } = entity.getData()
+  if (!headingText) {
     return <></>
   }
 
@@ -66,7 +69,7 @@ export function SideIndexBlock(props: SideIndexBlockProps) {
 
   return (
     <SideIndexBlockWrapper id={`header-${sideIndexNumber}`}>
-      <h2>{h2Text}</h2>
+      <h3>{headingText}</h3>
     </SideIndexBlockWrapper>
   )
 }
