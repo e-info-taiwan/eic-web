@@ -30,6 +30,13 @@ export const LOCATION_OPTIONS: { value: LocationOption; label: string }[] = [
   { value: '其他', label: '其他' },
 ]
 
+// 活動專用地點選項：在縣市清單前面多一個「全台」，用於跨縣市/全國性活動。
+// 不寫進 LOCATION_OPTIONS 是因為使用者註冊的「居住地」不需要這個選項。
+export const EVENT_CITY_OPTIONS: { value: string; label: string }[] = [
+  { value: '全台', label: '全台' },
+  ...LOCATION_OPTIONS,
+]
+
 // 密碼驗證規則
 export const VALIDATION_RULES = {
   password: {

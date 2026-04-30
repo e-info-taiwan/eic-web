@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import LayoutGeneral from '~/components/layout/layout-general'
 import type { TurnstileWidgetHandle } from '~/components/shared/turnstile-widget'
 import TurnstileWidget from '~/components/shared/turnstile-widget'
-import { LOCATION_OPTIONS } from '~/constants/auth'
+import { EVENT_CITY_OPTIONS } from '~/constants/auth'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
@@ -774,7 +774,7 @@ const CreateEventPage: NextPageWithLayout = () => {
               onChange={handleInputChange}
             >
               <option value="">請選擇縣市</option>
-              {LOCATION_OPTIONS.map((option) => (
+              {EVENT_CITY_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

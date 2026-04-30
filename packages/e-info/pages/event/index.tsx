@@ -7,7 +7,7 @@ import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
 import LayoutGeneral from '~/components/layout/layout-general'
-import { LOCATION_OPTIONS } from '~/constants/auth'
+import { EVENT_CITY_OPTIONS } from '~/constants/auth'
 import { DEFAULT_EVENT_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
@@ -348,7 +348,7 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
   const itemsPerPage = 9 // 9 events per page (3x3 grid)
 
   // Use fixed city/county options for location filter
-  const locationOptions = LOCATION_OPTIONS
+  const locationOptions = EVENT_CITY_OPTIONS
 
   // Generate all YYYY-MM months spanned by an event's [startDate, endDate]
   const getMonthRange = (start: string, end?: string): string[] => {
