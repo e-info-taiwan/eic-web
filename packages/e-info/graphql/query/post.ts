@@ -100,11 +100,13 @@ export type PostDetail = Override<
     heroImage: PhotoWithResizedOnly | null
     ogImage: PhotoWithResizedOnly | null
     reporters: Author[] // 記者
+    stringers: Author[] // 特約記者
     translators: Author[] // 編譯
     reviewers: Author[] // 審校
     writers: Author[] // 文
     sources: Author[] // 稿源
     reportersInInputOrder: Author[] // 記者（依輸入順序）
+    stringersInInputOrder: Author[] // 特約記者（依輸入順序）
     translatorsInInputOrder: Author[] // 編譯（依輸入順序）
     reviewersInInputOrder: Author[] // 審校（依輸入順序）
     writersInInputOrder: Author[] // 文（依輸入順序）
@@ -171,6 +173,9 @@ const post = gql`
       reporters {
         ...AuthorFields
       }
+      stringers {
+        ...AuthorFields
+      }
       translators {
         ...AuthorFields
       }
@@ -184,6 +189,9 @@ const post = gql`
         ...AuthorFields
       }
       reportersInInputOrder {
+        ...AuthorFields
+      }
+      stringersInInputOrder {
         ...AuthorFields
       }
       translatorsInInputOrder {
@@ -327,6 +335,7 @@ const authorPosts = gql`
       where: {
         OR: [
           { reporters: { some: { id: { equals: $authorId } } } }
+          { stringers: { some: { id: { equals: $authorId } } } }
           { translators: { some: { id: { equals: $authorId } } } }
           { reviewers: { some: { id: { equals: $authorId } } } }
           { writers: { some: { id: { equals: $authorId } } } }
@@ -353,6 +362,7 @@ const authorPostsWithCount = gql`
       where: {
         OR: [
           { reporters: { some: { id: { equals: $authorId } } } }
+          { stringers: { some: { id: { equals: $authorId } } } }
           { translators: { some: { id: { equals: $authorId } } } }
           { reviewers: { some: { id: { equals: $authorId } } } }
           { writers: { some: { id: { equals: $authorId } } } }
@@ -371,6 +381,7 @@ const authorPostsWithCount = gql`
       where: {
         OR: [
           { reporters: { some: { id: { equals: $authorId } } } }
+          { stringers: { some: { id: { equals: $authorId } } } }
           { translators: { some: { id: { equals: $authorId } } } }
           { reviewers: { some: { id: { equals: $authorId } } } }
           { writers: { some: { id: { equals: $authorId } } } }

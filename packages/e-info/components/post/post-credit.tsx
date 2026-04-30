@@ -117,6 +117,9 @@ export default function PostCredit({
   const reporters = postData?.reportersInInputOrder?.length
     ? postData.reportersInInputOrder
     : postData?.reporters ?? []
+  const stringers = postData?.stringersInInputOrder?.length
+    ? postData.stringersInInputOrder
+    : postData?.stringers ?? []
   const translators = postData?.translatorsInInputOrder?.length
     ? postData.translatorsInInputOrder
     : postData?.translators ?? []
@@ -151,6 +154,7 @@ export default function PostCredit({
       )}
       <CreditList>
         {renderAuthorList(reporters, '記者')}
+        {renderAuthorList(stringers, '特約記者')}
         {renderAuthorList(translators, '編譯')}
         {renderAuthorList(reviewers, '審校')}
         {renderAuthorList(writers, '文')}
