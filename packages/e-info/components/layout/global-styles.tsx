@@ -5,7 +5,7 @@ import { createGlobalStyle } from 'styled-components'
  */
 export const GlobalStyles = createGlobalStyle`
 html {
-  font-family: 'Noto Sans TC', sans-serif;
+  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
 }
 
 picture {
