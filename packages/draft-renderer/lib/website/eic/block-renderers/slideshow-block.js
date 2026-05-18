@@ -31,17 +31,17 @@ var DefaultMaxImagesPerRow = 3;
 var SlideShowBlockWrapper = _styledComponents["default"].div.withConfig({
   displayName: "slideshow-block__SlideShowBlockWrapper",
   componentId: "sc-gsubhh-0"
-})(["width:calc(100% + 36px);position:relative;background-color:", ";margin:32px -18px 0;padding:18px 28px;", "{width:", ";", " background-color:transparent;padding:0;display:flex;flex-direction:column;gap:", "px;max-height:", ";overflow:", ";margin-bottom:", ";}"], function (_ref) {
+})(["width:calc(100% + 36px);position:relative;background-color:", ";margin:32px -18px 0;padding:18px 28px;display:flex;flex-direction:column;gap:", "px;", "{width:", ";", " background-color:transparent;padding:0;max-height:", ";overflow:", ";margin-bottom:", ";}"], function (_ref) {
   var theme = _ref.theme;
   return theme.colors.grayscale[95];
-}, function (_ref2) {
+}, SpacingBetweenSlideImages, function (_ref2) {
   var theme = _ref2.theme;
   return theme.breakpoint.xl;
 }, function (props) {
   return props.widthPercentage ? "".concat(props.widthPercentage, "%") : '100%';
 }, function (props) {
   return props.widthPercentage ? 'margin-left: auto; margin-right: auto;' : '';
-}, SpacingBetweenSlideImages, function (props) {
+}, function (props) {
   return props.expandSlideShow ? 'none' : '960px';
 }, function (props) {
   return props.expandSlideShow ? 'visible' : 'hidden';
@@ -51,16 +51,16 @@ var SlideShowBlockWrapper = _styledComponents["default"].div.withConfig({
 var SlideShowRow = _styledComponents["default"].div.withConfig({
   displayName: "slideshow-block__SlideShowRow",
   componentId: "sc-gsubhh-1"
-})(["display:contents;", "{display:flex;align-items:stretch;gap:", "px;}"], function (_ref3) {
+})(["display:flex;flex-direction:column;gap:", "px;", "{flex-direction:row;align-items:stretch;}"], SpacingBetweenSlideImages, function (_ref3) {
   var theme = _ref3.theme;
   return theme.breakpoint.xl;
-}, SpacingBetweenSlideImages);
+});
 var SlideShowImage = _styledComponents["default"].figure.withConfig({
   displayName: "slideshow-block__SlideShowImage",
   componentId: "sc-gsubhh-2"
-})(["width:100%;aspect-ratio:", ";margin:0;& + .slideshow-image{margin-top:", "px;}", "{aspect-ratio:unset;max-height:", ";flex-grow:", ";flex-shrink:", ";flex-basis:", ";overflow:", ";", " img{width:", ";max-width:100%;height:", ";object-fit:contain;}&:hover{cursor:", ";filter:", ";transition:", ";}& + .slideshow-image{margin-top:unset;}}"], function (props) {
+})(["width:100%;aspect-ratio:", ";margin:0;", "{aspect-ratio:unset;max-height:", ";flex-grow:", ";flex-shrink:", ";flex-basis:", ";overflow:", ";", " img{width:", ";max-width:100%;height:", ";object-fit:contain;}&:hover{cursor:", ";filter:", ";transition:", ";}}"], function (props) {
   return props.isSingle ? 'unset' : '4/3';
-}, SpacingBetweenSlideImages, function (_ref4) {
+}, function (_ref4) {
   var theme = _ref4.theme;
   return theme.breakpoint.xl;
 }, function (props) {

@@ -17,6 +17,9 @@ const SlideShowBlockWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.grayscale[95]};
   margin: 32px -18px 0;
   padding: 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: ${SpacingBetweenSlideImages}px;
 
   ${({ theme }) => theme.breakpoint.xl} {
     width: ${(props) =>
@@ -25,9 +28,6 @@ const SlideShowBlockWrapper = styled.div`
       props.widthPercentage ? 'margin-left: auto; margin-right: auto;' : ''}
     background-color: transparent;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: ${SpacingBetweenSlideImages}px;
     max-height: ${(props) => (props.expandSlideShow ? 'none' : '960px')};
     overflow: ${(props) => (props.expandSlideShow ? 'visible' : 'hidden')};
     margin-bottom: ${(props) => (props.expandSlideShow ? '32px' : '16px')};
@@ -35,12 +35,13 @@ const SlideShowBlockWrapper = styled.div`
 `
 
 const SlideShowRow = styled.div`
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  gap: ${SpacingBetweenSlideImages}px;
 
   ${({ theme }) => theme.breakpoint.xl} {
-    display: flex;
+    flex-direction: row;
     align-items: stretch;
-    gap: ${SpacingBetweenSlideImages}px;
   }
 `
 
@@ -48,10 +49,6 @@ const SlideShowImage = styled.figure`
   width: 100%;
   aspect-ratio: ${(props) => (props.isSingle ? 'unset' : '4/3')};
   margin: 0;
-
-  & + .slideshow-image {
-    margin-top: ${SpacingBetweenSlideImages}px;
-  }
 
   ${({ theme }) => theme.breakpoint.xl} {
     aspect-ratio: unset;
@@ -77,10 +74,6 @@ const SlideShowImage = styled.figure`
       filter: ${(props) =>
         props.lightboxEnabled ? 'brightness(0.85)' : 'none'};
       transition: ${(props) => (props.lightboxEnabled ? '0.3s' : 'none')};
-    }
-
-    & + .slideshow-image {
-      margin-top: unset;
     }
   }
 `
