@@ -88,7 +88,7 @@ const AudioInfo = styled.div`
 `
 
 const AudioTitle = styled.div`
-  font-family: 'Noto Sans TC';
+  font-family: inherit;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;

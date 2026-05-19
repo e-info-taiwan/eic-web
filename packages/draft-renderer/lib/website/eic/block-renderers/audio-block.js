@@ -38,7 +38,7 @@ var AudioInfo = _styledComponents["default"].div.withConfig({
 var AudioTitle = _styledComponents["default"].div.withConfig({
   displayName: "audio-block__AudioTitle",
   componentId: "sc-v5b30w-2"
-})(["font-family:'Noto Sans TC';font-style:normal;font-weight:400;font-size:14px;line-height:1.4em;color:rgba(0,9,40,0.87);padding:0 40px 0px 10px;", "{font-size:16px;}"], function (_ref4) {
+})(["font-family:inherit;font-style:normal;font-weight:400;font-size:14px;line-height:1.4em;color:rgba(0,9,40,0.87);padding:0 40px 0px 10px;", "{font-size:16px;}"], function (_ref4) {
   var theme = _ref4.theme;
   return theme.breakpoint.md;
 });

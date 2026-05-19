@@ -48,9 +48,8 @@ const DraftEditorWrapper = styled.div<DraftEditorProps>`
   font-family: 'Georgia', serif;
   text-align: left;
 
-  /* Custom setting */
-  font-family: 'Noto Sans TC', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  /* Custom setting: font-family inherited from host app (see e-info _app.tsx) */
+  font-family: inherit;
   width: 100%;
   height: 100%;
   font-weight: 400;

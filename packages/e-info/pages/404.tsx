@@ -17,7 +17,6 @@ type PageProps = {
 
 const Page = styled.div`
   background: #ffffff;
-  font-family: 'Noto Sans TC';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +42,6 @@ const ErrorCode = styled.h1`
 `
 
 const ErrorMessage = styled.h2`
-  font-family: 'Noto Sans TC';
   font-size: 20px;
   font-weight: 700;
   color: #000000;
@@ -56,7 +54,6 @@ const Button = styled.button`
   background: #ffffff;
   border: 1px solid ${({ theme }) => theme.colors.primary[40]};
   border-radius: 4px;
-  font-family: 'Noto Sans TC';
   font-weight: 500;
   font-size: 14px;
   line-height: 1.5;

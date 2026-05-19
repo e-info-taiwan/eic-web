@@ -4,10 +4,6 @@ import { createGlobalStyle } from 'styled-components'
  * 應放入客製化的全局基底樣式
  */
 export const GlobalStyles = createGlobalStyle`
-html {
-  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
-}
-
 picture {
   display: block;
 }

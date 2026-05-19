@@ -1,6 +1,7 @@
 import { ApolloProvider } from '@apollo/client/react'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
+import { Noto_Sans_TC } from 'next/font/google'
 import type { ReactElement, ReactNode } from 'react'
 import { useEffect } from 'react'
 import { ThemeProvider } from 'styled-components'
@@ -16,6 +17,15 @@ import { HeaderProvider } from '~/contexts/header-context'
 import { useScrollRestoration } from '~/hooks/useScrollRestoration'
 import theme from '~/styles/theme'
 import * as gtag from '~/utils/gtag'
+
+const notoSansTC = Noto_Sans_TC({
+  weight: ['100', '300', '400', '500', '700', '900'],
+  subsets: ['latin'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-noto-sans-tc',
+  fallback: ['PingFang TC', 'Microsoft JhengHei', '微軟正黑體', 'sans-serif'],
+})
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (
@@ -47,7 +57,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
   const { headerData, ...restPageProps } = pageProps
 
   return (
-    <>
+    <div className={`${notoSansTC.variable} ${notoSansTC.className}`}>
       <NormalizeStyles />
       <GlobalStyles />
       <ApolloProvider client={client}>
@@ -61,7 +71,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
           </AuthProvider>
         </ThemeProvider>
       </ApolloProvider>
-    </>
+    </div>
   )
 }
 
