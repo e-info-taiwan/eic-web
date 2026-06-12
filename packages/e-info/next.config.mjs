@@ -13,6 +13,10 @@ const { getTaxonomyTermRedirects } = await tsImport.load(
   './constants/taxonomy-redirects.ts'
 )
 
+const { getLegacyPathRedirects } = await tsImport.load(
+  './constants/legacy-path-redirects.ts'
+)
+
 const { GCS_STATICS_ORIGIN } = await tsImport.load('./constants/config.ts')
 
 /** @type {import('next').NextConfig} */
@@ -112,6 +116,9 @@ const nextConfig = {
       // 舊站 taxonomy/term/{id} → 新站 tag/category/feature/node（從
       // constants/taxonomy-redirects.ts 載入，共 315 筆）
       ...getTaxonomyTermRedirects(),
+      // 舊站文章 path alias → 新站 /node/{id}（從
+      // constants/legacy-path-redirects.ts 載入）
+      ...getLegacyPathRedirects(),
     ]
   },
   output: 'standalone',
