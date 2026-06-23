@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import MemberPageTitle from '~/components/member/member-page-title'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { useAuth } from '~/hooks/useAuth'
 import {
@@ -115,15 +116,10 @@ const MainContent = styled.main`
   }
 `
 
-const PageTitle = styled.h1`
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[40]};
+const PageHeader = styled(MemberPageTitle)`
   margin: 0 0 16px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 24px;
     margin-bottom: 20px;
   }
 `
@@ -141,8 +137,9 @@ const Description = styled.p`
 
 const CategoryList = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 32px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 32px;
 `
 
@@ -151,6 +148,14 @@ const CategoryItem = styled.label`
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  text-align: left;
+`
+
+const CategoryText = styled.span`
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
 `
 
 const HiddenCheckbox = styled.input`
@@ -187,10 +192,17 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
   }
 `
 
-const CategoryLabel = styled.span`
+const CategoryName = styled.span`
   font-size: 16px;
+  font-weight: 700;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
+`
+
+const CategoryDescription = styled.span`
+  font-size: 16px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[40]};
 `
 
 const SaveButton = styled.button<{ $hasChanges: boolean }>`
@@ -379,7 +391,7 @@ const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
             ))}
           </MobileNav>
 
-          <PageTitle>通知</PageTitle>
+          <PageHeader title="通知" clickFrom="member-notifications" />
           <Description>
             勾選有興趣的分類，我們將在新文章刊出的時候以email 通知
           </Description>
@@ -388,20 +400,27 @@ const MemberNotificationsPage: NextPageWithLayout<PageProps> = ({
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
           <CategoryList>
-            {sections.map((section) => (
-              <CategoryItem key={section.id}>
-                <HiddenCheckbox
-                  type="checkbox"
-                  checked={selectedSectionIds.includes(section.id)}
-                  onChange={() => handleSectionToggle(section.id)}
-                  disabled={saving}
-                />
-                <CheckboxIcon
-                  $checked={selectedSectionIds.includes(section.id)}
-                />
-                <CategoryLabel>{section.name}</CategoryLabel>
-              </CategoryItem>
-            ))}
+            {sections.map((section) => {
+              const checked = selectedSectionIds.includes(section.id)
+              const description = section.description
+              return (
+                <CategoryItem key={section.id}>
+                  <HiddenCheckbox
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => handleSectionToggle(section.id)}
+                    disabled={saving}
+                  />
+                  <CheckboxIcon $checked={checked} />
+                  <CategoryText>
+                    <CategoryName>{section.name}</CategoryName>
+                    {checked && description && (
+                      <CategoryDescription>{description}</CategoryDescription>
+                    )}
+                  </CategoryText>
+                </CategoryItem>
+              )
+            })}
           </CategoryList>
 
           <SaveButton

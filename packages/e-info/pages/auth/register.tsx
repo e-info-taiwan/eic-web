@@ -143,19 +143,42 @@ const Select = styled.select`
 
 const CheckboxGroup = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 `
 
 const CheckboxItem = styled.label`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
+  cursor: pointer;
+  text-align: left;
+`
+
+const CategoryText = styled.span`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+`
+
+const CategoryName = styled.span`
+  flex-shrink: 0;
+  white-space: nowrap;
   font-size: 16px;
+  font-weight: 700;
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
-  cursor: pointer;
+`
+
+const CategoryDescription = styled.span`
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.primary[40]};
 `
 
 const HiddenCheckbox = styled.input`
@@ -179,6 +202,8 @@ const CheckboxIcon = styled.span<{ $checked: boolean }>`
     $checked ? theme.colors.primary[40] : 'transparent'};
   transition: all 0.2s ease;
   flex-shrink: 0;
+  /* optically center the icon on the first text line (line-height 24px) */
+  margin-top: 2px;
 
   &::after {
     content: '';
@@ -256,12 +281,13 @@ const SectionLabel = styled.div`
   text-align: center;
 `
 
-const SectionHint = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.25;
+// Section heading (e.g. 感興趣的分類) — matches 訂閱電子報 heading in NewsletterOptions
+const SectionHeading = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
   color: ${({ theme }) => theme.colors.grayscale[0]};
-  margin: 0 0 8px;
+  margin-bottom: 8px;
   text-align: center;
 `
 
@@ -735,27 +761,34 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
           </FormGroup>
 
           <FormGroup>
-            <SectionLabel>感興趣的分類</SectionLabel>
-            <SectionHint>
-              勾選有興趣的分類，我們將在新文章刊出的時候以 email 通知
-            </SectionHint>
+            <SectionHeading>感興趣的分類</SectionHeading>
             <CheckboxGroup>
-              {sections.map((section) => (
-                <CheckboxItem key={section.id}>
-                  <HiddenCheckbox
-                    type="checkbox"
-                    checked={formData.interestedSectionIds.includes(section.id)}
-                    onChange={() => handleSectionToggle(section.id)}
-                    disabled={loading}
-                  />
-                  <CheckboxIcon
-                    $checked={formData.interestedSectionIds.includes(
-                      section.id
-                    )}
-                  />
-                  {section.name}
-                </CheckboxItem>
-              ))}
+              {sections.map((section) => {
+                const description = section.description
+                return (
+                  <CheckboxItem key={section.id}>
+                    <HiddenCheckbox
+                      type="checkbox"
+                      checked={formData.interestedSectionIds.includes(
+                        section.id
+                      )}
+                      onChange={() => handleSectionToggle(section.id)}
+                      disabled={loading}
+                    />
+                    <CheckboxIcon
+                      $checked={formData.interestedSectionIds.includes(
+                        section.id
+                      )}
+                    />
+                    <CategoryText>
+                      <CategoryName>{section.name}</CategoryName>
+                      {description && (
+                        <CategoryDescription>{description}</CategoryDescription>
+                      )}
+                    </CategoryText>
+                  </CheckboxItem>
+                )
+              })}
             </CheckboxGroup>
           </FormGroup>
 

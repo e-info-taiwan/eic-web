@@ -9,10 +9,10 @@ const OptionsContainer = styled.div`
 `
 
 const SectionTitle = styled.div`
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[20]};
+  color: ${({ theme }) => theme.colors.grayscale[0]};
   text-align: center;
 `
 

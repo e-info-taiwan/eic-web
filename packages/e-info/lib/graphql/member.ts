@@ -17,6 +17,7 @@ const GET_ALL_SECTIONS = gql`
       id
       slug
       name
+      description
     }
   }
 `
@@ -570,6 +571,8 @@ export type NotificationSection = {
   id: string
   slug: string
   name: string
+  // Marketing blurb shown next to the section name (CMS field, may be empty)
+  description: string | null
 }
 
 /**

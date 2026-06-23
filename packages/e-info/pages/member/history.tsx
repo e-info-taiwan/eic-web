@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import LayoutGeneral from '~/components/layout/layout-general'
+import MemberPageTitle from '~/components/member/member-page-title'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import { useAuth } from '~/hooks/useAuth'
@@ -108,15 +109,10 @@ const MainContent = styled.main`
   flex: 1;
 `
 
-const PageTitle = styled.h1`
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.5;
-  color: ${({ theme }) => theme.colors.primary[40]};
+const PageHeader = styled(MemberPageTitle)`
   margin: 0 0 24px;
 
   ${({ theme }) => theme.breakpoint.md} {
-    font-size: 24px;
     margin-bottom: 32px;
   }
 `
@@ -380,7 +376,7 @@ const MemberHistoryPage: NextPageWithLayout = () => {
             ))}
           </MobileNav>
 
-          <PageTitle>閱讀紀錄</PageTitle>
+          <PageHeader title="閱讀紀錄" clickFrom="member-history" />
 
           {isContentLoading ? (
             <LoadingWrapper>載入中...</LoadingWrapper>
