@@ -348,7 +348,9 @@ export const topicById = gql`
         }
       }
       postsCount
-      posts(orderBy: { publishTime: desc }) {
+      # Fixed manual order set in CMS (postsInInputOrder), aliased to "posts"
+      # so the type and component stay unchanged. Takes no args, returns all.
+      posts: postsInInputOrder {
         id
         title
         publishTime

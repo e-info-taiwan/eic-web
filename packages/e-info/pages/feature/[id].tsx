@@ -103,7 +103,7 @@ const TopicSummary = styled.div`
   text-align: left;
 
   a {
-    color: ${({ theme }) => theme.colors.secondary[40]};
+    color: ${({ theme }) => theme.colors.secondary[0]};
     font-weight: 500;
     text-decoration: underline;
 
