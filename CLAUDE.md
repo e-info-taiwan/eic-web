@@ -635,11 +635,18 @@ Project uses husky and lint-staged:
 
 ### Testing GraphQL API
 
-You can test the API using curl:
+You can test the API using curl.
+
+**Auth required (both dev and prod)**: The Cloud Run GraphQL endpoints now return `403 Forbidden` for plain curl. Attach a gcloud identity token. Export it once per shell:
+
+```bash
+TOKEN=$(gcloud auth print-identity-token)
+```
 
 ```bash
 # Example: Query post
 curl -X POST "https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "query ($id: ID!) { posts(where: { id: { equals: $id } }) { id title citations } }",
@@ -653,6 +660,7 @@ cat > /tmp/query.json << 'EOF'
 }
 EOF
 curl -X POST https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql \
+  -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   -d @/tmp/query.json | jq '.'
 
@@ -663,6 +671,7 @@ cat > /tmp/query.json << 'EOF'
 }
 EOF
 curl -X POST https://eic-cms-gql-dev-1090198686704.asia-east1.run.app/api/graphql \
+  -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   -d @/tmp/query.json | jq '.'
 ```
