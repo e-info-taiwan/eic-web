@@ -14,7 +14,7 @@ import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
 import type { HeaderContextData } from '~/contexts/header-context'
 import type { Topic, TopicPost } from '~/graphql/query/section'
-import { topicById } from '~/graphql/query/section'
+import { topicById, topicByIdFallback } from '~/graphql/query/section'
 import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
@@ -550,26 +550,37 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
   const client = getGqlClient()
 
+  // Topic posts use the CMS manual order (`postsInInputOrder`) when the
+  // backend supports it. Prod may not have that field yet, so fall back to the
+  // legacy publishTime-ordered query on a GraphQL/schema error.
+  const fetchTopic = async (): Promise<{ topics: Topic[] } | undefined> => {
+    try {
+      const { data, error: gqlError } = await client.query<{ topics: Topic[] }>(
+        {
+          query: topicById,
+          variables: { topicId },
+        }
+      )
+      if (gqlError) throw gqlError
+      return data
+    } catch {
+      console.warn(
+        '[Feature] topicById (postsInInputOrder) failed, falling back to publishTime order'
+      )
+      const { data } = await client.query<{ topics: Topic[] }>({
+        query: topicByIdFallback,
+        variables: { topicId },
+      })
+      return data
+    }
+  }
+
   try {
     // fetch header data and topic data in parallel
-    const [headerData, { data, error: gqlError }] = await Promise.all([
+    const [headerData, data] = await Promise.all([
       fetchHeaderData(),
-      client.query<{ topics: Topic[] }>({
-        query: topicById,
-        variables: { topicId },
-      }),
+      fetchTopic(),
     ])
-
-    if (gqlError) {
-      console.error(
-        errors.helpers.wrap(
-          new Error('Errors returned in `topicById` query'),
-          'GraphQLError',
-          'failed to complete `topicById`',
-          { errors: gqlError }
-        )
-      )
-    }
 
     const topic = data?.topics?.[0]
 

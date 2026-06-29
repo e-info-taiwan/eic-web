@@ -374,6 +374,54 @@ export const topicById = gql`
   ${resizeWebpImagesCardFragment}
 `
 
+/**
+ * Fallback for `topicById` used when the backend has no `postsInInputOrder`
+ * field yet (e.g. prod before the CMS deploy). Identical to `topicById` but
+ * orders posts by publishTime desc. The page tries `topicById` first and
+ * falls back to this on a GraphQL/schema error.
+ */
+export const topicByIdFallback = gql`
+  query ($topicId: ID!) {
+    topics(
+      where: { id: { equals: $topicId }, status: { equals: "published" } }
+    ) {
+      id
+      title
+      status
+      content
+      heroImage {
+        resized {
+          ...ResizedImagesCardField
+        }
+        resizedWebp {
+          ...ResizedWebPImagesCardField
+        }
+      }
+      postsCount
+      posts(orderBy: { publishTime: desc }) {
+        id
+        title
+        publishTime
+        contentPreview
+        heroImage {
+          resized {
+            ...ResizedImagesCardField
+          }
+          resizedWebp {
+            ...ResizedWebPImagesCardField
+          }
+        }
+      }
+      authorInfo
+      isPinned
+      updatedAt
+      redirectUrl
+    }
+  }
+  ${resizeImagesCardFragment}
+  ${resizeWebpImagesCardFragment}
+`
+
 export const categoryWithPosts = gql`
   query ($categoryId: ID!, $postsCount: Int = 3) {
     categories(where: { id: { equals: $categoryId } }) {
