@@ -291,6 +291,15 @@ const SectionHeading = styled.div`
   text-align: center;
 `
 
+const SectionHint = styled.p`
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: ${({ theme }) => theme.colors.grayscale[0]};
+  margin: 0 0 8px;
+  text-align: center;
+`
+
 // Eye icon for showing password
 const EyeIcon = () => (
   <svg
@@ -762,6 +771,9 @@ const RegisterPage: NextPageWithLayout<PageProps> = ({ sections }) => {
 
           <FormGroup>
             <SectionHeading>感興趣的分類</SectionHeading>
+            <SectionHint>
+              勾選有興趣的分類，我們將在新文章刊出的時候以 email 通知
+            </SectionHint>
             <CheckboxGroup>
               {sections.map((section) => {
                 const description = section.description
