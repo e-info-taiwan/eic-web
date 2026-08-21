@@ -173,14 +173,12 @@ const CopyrightSection = styled.div`
   gap: 8px;
 
   @media (min-width: ${({ theme }) => theme.mediaSize.md}px) {
-    flex-direction: row;
     align-items: flex-start;
-    gap: 20px;
   }
 `
 
 const CopyrightText = styled.p`
-  color: #000;
+  color: ${({ theme }) => theme.colors.grayscale[40]};
   font-size: 12px;
   line-height: 1.25;
   font-weight: 400;
@@ -331,7 +329,7 @@ const Footer = () => {
         <BottomSection>
           <CopyrightSection>
             <CopyrightText>
-              © Copyright 2026 環境資訊中心 版權所有
+              © Copyright 環境資訊中心、自然保育與環境資訊基金會 版權所有
             </CopyrightText>
             <CopyrightText>公益勸募字號：{donationPermitNumber}</CopyrightText>
           </CopyrightSection>
