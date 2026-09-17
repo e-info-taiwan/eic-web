@@ -258,6 +258,14 @@ Noto Sans TC is self-hosted via `next/font/google` in `pages/_app.tsx` (2026-05-
 - Member APIs under `/api/favorites`, `/api/reading-history`, `/api/member`; bookmarks page has favourite stats per section and section filtering, infinite scroll
 - Newsletter subscription via Mailchimp dual audiences (`MAILCHIMP_LIST_ID_DAILY` / `_WEEKLY`); `/api/newsletter/check` verifies status before subscribing. See `docs/newsletter-subscription-spec.md`, `docs/mailchimp-template-guide.md`
 
+### SEO: Head Meta & JSON-LD
+
+- `components/layout/custom-head.tsx` renders title / description / canonical / OG / Twitter. Pass `path` (site-relative) so canonical + `og:url` are correct; pass `type="article"` with `publishedTime` / `modifiedTime` / `section` / `tags` on article pages to emit `article:*` meta. Absolute URLs use `SITE_ORIGIN` (`config.ts`), never `SITE_URL`.
+- `CustomHead` also emits site-wide JSON-LD (`NewsMediaOrganization` + `WebSite` with `SearchAction`) on every page; articles reference the organization via `@id`.
+- Builders live in `utils/json-ld.ts` (`buildNewsArticle`, `buildArticleBreadcrumb`, `buildBreadcrumb`, `buildOrganization`, `buildWebSite`); render with `<JsonLd id="…" data={…} />` (`components/layout/json-ld.tsx`), which escapes `<` so `</script>` in content can't break out.
+- `/node/[id]` emits `NewsArticle` + `BreadcrumbList` (首頁 → section → categories[0] → 文章). Author = reporters + writers + stringers (`*InInputOrder` first), falling back to `otherByline`; translators / reviewers / sources are not authors. Redirect pages (`/about` etc.) get `type="website"` and no article JSON-LD.
+- Not yet done: `BreadcrumbList` on category / section / tag / author / newsletter pages (decided against `ItemList` — no rich-result benefit).
+
 ### GA4 Analytics Tracking (`utils/gtag.ts`)
 
 ```typescript
@@ -367,6 +375,7 @@ Cloud Build (`cloudbuild.yaml`) → `docker buildx` with registry layer cache �
 ## Change Log (condensed)
 
 ### 2026-06 → 2026-09
+- SEO: `NewsArticle` + `BreadcrumbList` JSON-LD on article pages, site-wide Organization/WebSite JSON-LD, canonical + `og:url` + `og:type=article` + `article:*` meta in `CustomHead`; `updatedAt` added to post query
 - Sitemap index served from statics bucket via `/sitemap/*` rewrite; `robots.txt` declares it (`952ff2d`, `cbd83ee`)
 - Hero image → default-image fallback on load failure; draft-renderer default-image path fix (`1e39920`, `de7ad67`)
 - Member bookmarks: favourite stats + section filtering (`4dc0225`); donation button; GraphQL-driven section descriptions (`2a525bf`)

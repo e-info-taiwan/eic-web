@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 
 import { getGqlClient } from '~/apollo-client'
 import CustomHead from '~/components/layout/custom-head'
+import JsonLd from '~/components/layout/json-ld'
 import News from '~/components/post/article-type/news'
 import { IS_PREVIEW_MODE } from '~/constants/config'
 import { SITE_TITLE } from '~/constants/constant'
@@ -21,6 +22,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import { ResizedImages } from '~/types/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { buildArticleBreadcrumb, buildNewsArticle } from '~/utils/json-ld'
 
 type PageProps = {
   headerData: HeaderContextData
@@ -67,7 +69,9 @@ const Post: NextPageWithLayout<PageProps> = ({
   )
 
   // head info
-  function convertDraftToText(blocks: RawDraftContentBlock[]) {
+  function convertDraftToText(
+    blocks: RawDraftContentBlock[]
+  ): string | undefined {
     if (blocks) {
       const text = blocks.map((block) => block.text).join('')
       const ogDescription =
@@ -114,13 +118,38 @@ const Post: NextPageWithLayout<PageProps> = ({
     getResizedUrl(postData?.ogImage?.resized) ||
     getResizedUrl(postData?.heroImage?.resized)
 
+  const postPath = `/node/${postData?.id}`
+  const tagNames = (postData?.tags ?? []).map((t) => t.name).filter(Boolean)
+
+  // Redirect pages (about, faq, …) are static pages, not news articles
+  const isArticle = Boolean(postData?.id) && !isRedirectPage
+
   return (
     <>
       <CustomHead
         title={ogTitle}
         description={ogDescription}
         imageUrl={ogImageUrl}
+        path={postData?.id ? postPath : undefined}
+        type={isArticle ? 'article' : 'website'}
+        publishedTime={isArticle ? postData.publishTime : undefined}
+        modifiedTime={isArticle ? postData.updatedAt ?? undefined : undefined}
+        section={isArticle ? postData.section?.name : undefined}
+        tags={isArticle ? tagNames : undefined}
       />
+      {isArticle && (
+        <JsonLd
+          id="article"
+          data={[
+            buildNewsArticle({
+              post: postData,
+              path: postPath,
+              description: ogDescription,
+            }),
+            buildArticleBreadcrumb(postData, postPath),
+          ]}
+        />
+      )}
       {articleType}
     </>
   )

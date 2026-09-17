@@ -91,12 +91,9 @@ export type PostAd = {
 }
 
 export type PostDetail = Override<
-  Post &
-    Pick<
-      GenericPost,
-      'content' | 'subtitle' | 'otherByline' | 'state'
-    >,
+  Post & Pick<GenericPost, 'content' | 'subtitle' | 'otherByline' | 'state'>,
   {
+    updatedAt: string | null
     heroImage: PhotoWithResizedOnly | null
     ogImage: PhotoWithResizedOnly | null
     reporters: Author[] // 記者
@@ -143,6 +140,7 @@ const post = gql`
 
       state
       subtitle
+      updatedAt
       content
       contentApiData
       brief
