@@ -118,7 +118,12 @@ const Post: NextPageWithLayout<PageProps> = ({
     getResizedUrl(postData?.ogImage?.resized) ||
     getResizedUrl(postData?.heroImage?.resized)
 
-  const postPath = `/node/${postData?.id}`
+  // Redirect pages (about, faq, …) are served via rewrite; the friendly
+  // path is the canonical URL, not /node/{id}
+  const friendlyPath = pageRedirects.find(
+    (r) => r.postId === String(postData?.id)
+  )?.path
+  const postPath = friendlyPath ?? `/node/${postData?.id}`
   const tagNames = (postData?.tags ?? []).map((t) => t.name).filter(Boolean)
 
   // Redirect pages (about, faq, …) are static pages, not news articles
