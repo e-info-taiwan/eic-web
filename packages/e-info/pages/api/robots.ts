@@ -8,7 +8,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     res.write(`User-agent: *
 Allow: /
 
-Sitemap: https://e-info.org.tw/sitemap.xml
+Sitemap: https://e-info.org.tw/sitemap/sitemap.xml
 `)
   } else {
     res.write(`User-agent: * 
