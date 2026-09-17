@@ -20,6 +20,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB, pagedPath } from '~/utils/json-ld'
 import { postConvertFunc } from '~/utils/post'
 
 const AuthorWrapper = styled.div`
@@ -261,8 +262,17 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 AuthorPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const { props } = page
   const ogTitle = `${props.authorName}`
+  const basePath = `/author/${props.authorId}`
 
-  return <LayoutGeneral title={ogTitle}>{page}</LayoutGeneral>
+  return (
+    <LayoutGeneral
+      title={ogTitle}
+      path={pagedPath(basePath, props.currentPage)}
+      breadcrumbs={[HOME_CRUMB, { name: props.authorName, path: basePath }]}
+    >
+      {page}
+    </LayoutGeneral>
+  )
 }
 
 export default AuthorPage

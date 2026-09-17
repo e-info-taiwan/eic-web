@@ -36,6 +36,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB, pagedPath } from '~/utils/json-ld'
 import { fetchCategoryListing } from '~/utils/listing-api'
 import { formatPostDate, postConvertFunc } from '~/utils/post'
 
@@ -1501,9 +1502,28 @@ CategoryPage.getLayout = function getLayout(
   >
 ) {
   const { props } = page
+  const basePath = `/category/${props.category.id}`
+  const currentPage = 'currentPage' in props ? props.currentPage : undefined
+  const path =
+    props.pageType === 'category-column-filtered'
+      ? pagedPath(`${basePath}?classify=${props.activeClassifyId}`, currentPage)
+      : pagedPath(basePath, currentPage)
+
+  const breadcrumbs = [
+    HOME_CRUMB,
+    { name: props.section.name, path: `/section/${props.section.slug}` },
+    { name: props.category.name, path: basePath },
+  ]
+  if (props.pageType === 'category-column-filtered') {
+    breadcrumbs.push({ name: props.activeClassifyName, path })
+  }
 
   return (
-    <LayoutGeneral title={`${props.category.name} - ${props.section.name}`}>
+    <LayoutGeneral
+      title={`${props.category.name} - ${props.section.name}`}
+      path={path}
+      breadcrumbs={breadcrumbs}
+    >
       {page}
     </LayoutGeneral>
   )

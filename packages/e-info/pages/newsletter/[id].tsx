@@ -14,6 +14,7 @@ import { newsletterById } from '~/graphql/query/newsletter'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -494,8 +495,19 @@ NewsletterDetailPage.getLayout = function getLayout(page: ReactElement) {
     ? `${newsletter.title} - 環境資訊中心電子報`
     : '環境資訊中心電子報'
 
+  const path = newsletter ? `/newsletter/${newsletter.id}` : '/newsletter'
+
   return (
-    <LayoutGeneral title={title} description={description}>
+    <LayoutGeneral
+      title={title}
+      description={description}
+      path={path}
+      breadcrumbs={[
+        HOME_CRUMB,
+        { name: '電子報', path: '/newsletter' },
+        ...(newsletter ? [{ name: newsletter.title, path }] : []),
+      ]}
+    >
       {page}
     </LayoutGeneral>
   )

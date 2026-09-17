@@ -17,6 +17,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB, pagedPath } from '~/utils/json-ld'
 import { postConvertFunc } from '~/utils/post'
 
 const TagWrapper = styled.div`
@@ -163,8 +164,17 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 Tag.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const { props } = page
   const ogTitle = `${props.tagName}`
+  const basePath = `/tag/${encodeURIComponent(props.tagName)}`
 
-  return <LayoutGeneral title={ogTitle}>{page}</LayoutGeneral>
+  return (
+    <LayoutGeneral
+      title={ogTitle}
+      path={pagedPath(basePath, props.currentPage)}
+      breadcrumbs={[HOME_CRUMB, { name: props.tagName, path: basePath }]}
+    >
+      {page}
+    </LayoutGeneral>
+  )
 }
 
 export default Tag

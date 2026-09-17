@@ -39,6 +39,7 @@ import IconForward from '~/public/icons/arrow_forward.svg'
 import type { ArticleCard } from '~/types/component'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB, pagedPath } from '~/utils/json-ld'
 import {
   fetchSectionListing,
   isSectionDefaultListing,
@@ -1158,8 +1159,21 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
 SectionPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
   const { props } = page
+  const basePath = `/section/${props.section.slug}`
+  const path = pagedPath(
+    basePath,
+    props.pageType === 'default' ? props.currentPage : undefined
+  )
 
-  return <LayoutGeneral title={props.section.name}>{page}</LayoutGeneral>
+  return (
+    <LayoutGeneral
+      title={props.section.name}
+      path={path}
+      breadcrumbs={[HOME_CRUMB, { name: props.section.name, path: basePath }]}
+    >
+      {page}
+    </LayoutGeneral>
+  )
 }
 
 export default SectionPage

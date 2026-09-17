@@ -17,6 +17,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 import { formatPostDate, rawContentToPlainText } from '~/utils/post'
 
 const PageWrapper = styled.div`
@@ -548,6 +549,8 @@ FeaturedTopicsPage.getLayout = function getLayout(
     <LayoutGeneral
       title="深度專題"
       description="探討環境、能源、氣候等重要議題的深度報導"
+      path="/feature"
+      breadcrumbs={[HOME_CRUMB, { name: '深度專題', path: '/feature' }]}
     >
       {page}
     </LayoutGeneral>

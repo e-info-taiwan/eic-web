@@ -21,6 +21,14 @@ const LOGO_URL = `${SITE_ORIGIN}/eic-logo.svg`
 export const absoluteUrl = (path: string): string =>
   path.startsWith('http') ? path : `${SITE_ORIGIN}${path}`
 
+/** Canonical path for paginated listings: page 1 is the bare path */
+export const pagedPath = (base: string, currentPage?: number): string =>
+  currentPage && currentPage > 1
+    ? `${base}${base.includes('?') ? '&' : '?'}page=${currentPage}`
+    : base
+
+export const HOME_CRUMB: BreadcrumbItem = { name: '首頁', path: '/' }
+
 /** Site-wide publisher entity; referenced by articles via @id */
 export function buildOrganization(): JsonLdObject {
   return {
@@ -154,7 +162,7 @@ export function buildArticleBreadcrumb(
   post: PostDetail,
   path: string
 ): JsonLdObject {
-  const items: BreadcrumbItem[] = [{ name: '首頁', path: '/' }]
+  const items: BreadcrumbItem[] = [HOME_CRUMB]
   if (post.section) {
     items.push({
       name: post.section.name,

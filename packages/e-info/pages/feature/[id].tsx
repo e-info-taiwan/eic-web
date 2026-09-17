@@ -22,6 +22,7 @@ import { ValidPostContentType } from '~/types/common'
 import { setCacheControl } from '~/utils/common'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 import { rawContentToPlainText } from '~/utils/post'
 
 const PageWrapper = styled.div`
@@ -640,12 +641,19 @@ TopicPage.getLayout = function getLayout(page: ReactElement<PageProps>) {
 
   // Get hero image URL for og:image
   const heroImageUrl = getHeroImageUrl(topic)
+  const path = `/feature/${topic.id}`
 
   return (
     <LayoutGeneral
       title={topic.title || '專題'}
       description={rawContentToPlainText(topic.content, 160)}
       imageUrl={heroImageUrl || undefined}
+      path={path}
+      breadcrumbs={[
+        HOME_CRUMB,
+        { name: '深度專題', path: '/feature' },
+        { name: topic.title || '專題', path },
+      ]}
     >
       {page}
     </LayoutGeneral>

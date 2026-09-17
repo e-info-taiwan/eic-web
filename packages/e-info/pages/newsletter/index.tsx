@@ -22,6 +22,7 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import loadingAnimation from '~/public/lottie/loading.json'
 import { setCacheControl } from '~/utils/common'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -775,7 +776,12 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
 NewsletterOverviewPage.getLayout = function getLayout(page: ReactElement) {
   return (
-    <LayoutGeneral title="電子報總覽" description="環境資訊中心電子報總覽">
+    <LayoutGeneral
+      title="電子報總覽"
+      description="環境資訊中心電子報總覽"
+      path="/newsletter"
+      breadcrumbs={[HOME_CRUMB, { name: '電子報', path: '/newsletter' }]}
+    >
       {page}
     </LayoutGeneral>
   )
