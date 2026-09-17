@@ -16,7 +16,9 @@ export type JsonLdObject = Record<string, unknown>
 
 const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`
-const LOGO_URL = `${SITE_ORIGIN}/eic-logo.svg`
+// PNG on white, 600x124 — Google ignores SVG logos and wants the publisher
+// logo to fit a 60x600 box at 1x. Regenerate from eic-logo.svg with sharp.
+const LOGO = { url: `${SITE_ORIGIN}/eic-logo.png`, width: 600, height: 124 }
 
 export const absoluteUrl = (path: string): string =>
   path.startsWith('http') ? path : `${SITE_ORIGIN}${path}`
@@ -39,7 +41,7 @@ export function buildOrganization(): JsonLdObject {
     url: `${SITE_ORIGIN}/`,
     logo: {
       '@type': 'ImageObject',
-      url: LOGO_URL,
+      ...LOGO,
     },
     sameAs: Object.values(SOCIAL_LINKS),
   }
