@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/readr-media/Sachiel#readme",
   "engines": {
-    "node": "^20.19.5"
+    "node": "^24.22.1"
   },
   "devDependencies": {
     "eslint": "8.57.1",

@@ -5,7 +5,7 @@
 **Project Name**: EIC Web (Environment Info Center Website, 環境資訊中心)
 **Codename**: Sachiel
 **Tech Stack**: Yarn Workspaces monorepo + Next.js 15 (Pages Router) + TypeScript + Apollo Client 4 + styled-components 5
-**Node Version**: `^20.19.5` (root `package.json`; e-info package declares `>=18.18.0`)
+**Node Version**: `^24.22.1` (root `package.json`; e-info package declares `>=18.18.0`)
 **Repo**: https://github.com/e-info-taiwan/eic-web
 
 > Lerna was removed on 2026-05-13 (`adbcf17`). Use `yarn workspace e-info run <script>` from the root.
