@@ -13,6 +13,7 @@ import { useAuth } from '~/hooks/useAuth'
 import { getMemberDisplayName } from '~/lib/graphql/member'
 import type { NextPageWithLayout } from '~/pages/_app'
 import { setPrivateCacheControl } from '~/utils/common'
+import { toTaipeiISODate } from '~/utils/date'
 import { getGravatarUrl } from '~/utils/gravatar'
 import { fetchHeaderData } from '~/utils/header-data'
 
@@ -258,14 +259,9 @@ const MemberProfilePage: NextPageWithLayout = () => {
     return null
   }
 
-  const formatDate = (dateString: string | null | undefined): string => {
-    if (!dateString) return '-'
-    const date = new Date(dateString)
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      '0'
-    )}-${String(date.getDate()).padStart(2, '0')}`
-  }
+  // yyyy-mm-dd in Taiwan time
+  const formatDate = (dateString: string | null | undefined): string =>
+    toTaipeiISODate(dateString) || '-'
 
   const displayName = member
     ? getMemberDisplayName(member)

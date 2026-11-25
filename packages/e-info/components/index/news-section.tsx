@@ -8,6 +8,7 @@ import {
   DEFAULT_POST_IMAGE_PATH,
 } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
+import { getTaipeiParts } from '~/utils/date'
 import type { SectionInfo } from '~/utils/homepage-api'
 import { mergePostsWithFeatured } from '~/utils/post'
 
@@ -406,13 +407,10 @@ const EmptyMessage = styled.p`
   grid-column: 1 / -1;
 `
 
-// Helper function to format date
+// Format date as yyyy/mm/dd in Taiwan time (the server renders in UTC)
 const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}/${month}/${day}`
+  const p = getTaipeiParts(dateString)
+  return p ? `${p.year}/${p.month}/${p.day}` : ''
 }
 
 type NewsSectionProps = {

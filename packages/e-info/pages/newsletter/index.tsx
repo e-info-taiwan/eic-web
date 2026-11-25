@@ -21,6 +21,11 @@ import {
 import type { NextPageWithLayout } from '~/pages/_app'
 import loadingAnimation from '~/public/lottie/loading.json'
 import { setCacheControl } from '~/utils/common'
+import {
+  getTaipeiParts,
+  getTaipeiYearMonth,
+  taipeiMonthRange,
+} from '~/utils/date'
 import { fetchHeaderData } from '~/utils/header-data'
 import { HOME_CRUMB } from '~/utils/json-ld'
 
@@ -423,16 +428,16 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
   // Create a map of newsletters by date
   const newsletterMap: NewsletterMap = {}
   newsletters.forEach((newsletter) => {
-    const date = new Date(newsletter.sendDate)
-    const dateKey = `${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()}`
+    // Key by Taiwan calendar day so server (UTC) and browser agree
+    const p = getTaipeiParts(newsletter.sendDate)
+    if (!p) return
+    const dateKey = `${Number(p.year)}-${Number(p.month)}-${Number(p.day)}`
     newsletterMap[dateKey] = newsletter
   })
 
-  // Get the first day of the month and number of days
-  const firstDayOfMonth = new Date(year, month - 1, 1).getDay()
-  const daysInMonth = new Date(year, month, 0).getDate()
+  // Get the first day of the month and number of days (pure calendar math)
+  const firstDayOfMonth = new Date(Date.UTC(year, month - 1, 1)).getUTCDay()
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
 
   // Generate calendar cells with newsletter mapped to correct day of week
   const calendarCells: { day?: number; newsletter?: Newsletter }[] = []
@@ -467,15 +472,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
     try {
       const client = getGqlClient()
-      const startDate = new Date(targetYear, targetMonth - 1, 1).toISOString()
-      const endDate = new Date(
-        targetYear,
-        targetMonth,
-        0,
-        23,
-        59,
-        59
-      ).toISOString()
+      const { startDate, endDate } = taipeiMonthRange(targetYear, targetMonth)
 
       const { data } = await client.query<{ newsletters: Newsletter[] }>({
         query: newslettersByMonth,
@@ -510,9 +507,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
   // Navigate to next month
   const goToNextMonth = () => {
-    const now = new Date()
-    const currentYear = now.getFullYear()
-    const currentMonth = now.getMonth() + 1
+    const { year: currentYear, month: currentMonth } = getTaipeiYearMonth()
 
     let newYear = year
     let newMonth = month + 1
@@ -535,9 +530,7 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
 
   // Handle year change
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const now = new Date()
-    const currentYear = now.getFullYear()
-    const currentMonth = now.getMonth() + 1
+    const { year: currentYear, month: currentMonth } = getTaipeiYearMonth()
 
     const newYear = parseInt(e.target.value, 10)
     // Cap month if switching to current year and month is in future
@@ -562,10 +555,8 @@ const NewsletterOverviewPage: NextPageWithLayout<PageProps> = ({
     yearOptions.push(y)
   }
 
-  // Get current date to prevent navigating to future months
-  const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth() + 1
+  // Get current month (Taiwan) to prevent navigating to future months
+  const { year: currentYear, month: currentMonth } = getTaipeiYearMonth()
 
   // Check if we can navigate
   const canGoPrev = year > minYear || (year === minYear && month > 1)
@@ -795,14 +786,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 
   const client = getGqlClient()
 
-  // Get current date or from query params
-  const now = new Date()
-  const initialYear = query.year
-    ? parseInt(query.year as string, 10)
-    : now.getFullYear()
+  // Get current month (Taiwan) or from query params
+  const now = getTaipeiYearMonth()
+  const initialYear = query.year ? parseInt(query.year as string, 10) : now.year
   const initialMonth = query.month
     ? parseInt(query.month as string, 10)
-    : now.getMonth() + 1
+    : now.month
 
   try {
     // Get header data and year range in parallel
@@ -817,22 +806,14 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
     ])
 
     const minYear = rangeData?.oldest?.[0]
-      ? new Date(rangeData.oldest[0].sendDate).getFullYear()
-      : now.getFullYear()
+      ? getTaipeiYearMonth(rangeData.oldest[0].sendDate).year
+      : now.year
     const maxYear = rangeData?.newest?.[0]
-      ? new Date(rangeData.newest[0].sendDate).getFullYear()
-      : now.getFullYear()
+      ? getTaipeiYearMonth(rangeData.newest[0].sendDate).year
+      : now.year
 
-    // Get newsletters for the current month
-    const startDate = new Date(initialYear, initialMonth - 1, 1).toISOString()
-    const endDate = new Date(
-      initialYear,
-      initialMonth,
-      0,
-      23,
-      59,
-      59
-    ).toISOString()
+    // Get newsletters for the month (Taiwan calendar month)
+    const { startDate, endDate } = taipeiMonthRange(initialYear, initialMonth)
 
     const { data: newslettersData } = await client.query<{
       newsletters: Newsletter[]
@@ -880,7 +861,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
         initialYear,
         initialMonth,
         newsletters: [],
-        yearRange: { minYear: now.getFullYear(), maxYear: now.getFullYear() },
+        yearRange: { minYear: now.year, maxYear: now.year },
       },
     }
   }

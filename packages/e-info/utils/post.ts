@@ -1,5 +1,4 @@
 import { Eic } from '@eic-web/draft-renderer'
-import dayjs from 'dayjs'
 import type { RawDraftContentState } from 'draft-js'
 
 import { DEFAULT_NEWS_IMAGE_PATH } from '~/constants/constant'
@@ -11,6 +10,7 @@ import type {
   ResizedImages,
 } from '~/types/common'
 import type { ArticleCard } from '~/types/component'
+import { formatTaipeiDate } from '~/utils/date'
 const { removeEmptyContentBlock, hasContentInRawContentBlock } = Eic
 
 export function getHref({
@@ -55,8 +55,9 @@ export function getImageSrc(
   return imageSrc
 }
 
-export function formatPostDate(datetime: dayjs.ConfigType): string {
-  return dayjs(datetime).format('YYYY年MM月DD日')
+/** `yyyy年mm月dd日` in Taiwan time (the server renders in UTC) */
+export function formatPostDate(datetime?: string | Date | null): string {
+  return formatTaipeiDate(datetime)
 }
 
 export function formatReadTime(readingTime = 0): string {

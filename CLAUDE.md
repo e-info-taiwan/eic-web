@@ -290,7 +290,7 @@ Hooks: `useReadingProgress` (25/50/75/100%), `useOutboundLinkTracking`, `useRead
 | `homepage-api.ts`, `header-data.ts`, `listing-api.ts` | JSON-first data loaders with GraphQL fallback, timeouts, TTL cache |
 | `rewrite-gcs-urls.ts` | Rewrite GCS URLs → `/images/*` |
 | `common.ts` | `setCacheControl()` / `setPrivateCacheControl()`, `isServer` |
-| `date.ts` | Taiwan-time formatting (`formatTaipeiDate`, `toTaipeiISODate`, `toTaipeiMonth`, `getTaipeiParts`) — use instead of `getDate()`/`getMonth()`, the server runs in UTC |
+| `date.ts` | Taiwan-time formatting (`formatTaipeiDate`, `toTaipeiISODate`, `toTaipeiMonth`, `getTaipeiParts`, `getTaipeiYearMonth`) and `taipeiMonthRange()` for month-range GraphQL filters — use instead of `getDate()`/`getMonth()`/dayjs, the server runs in UTC. `formatPostDate` (`post.ts`) wraps `formatTaipeiDate` |
 | `page-props.ts` | `withHeaderData()` / `withHeaderDataStatic()` — wrap `getServerSideProps` / `getStaticProps` to inject header/footer data |
 | `preview.ts` | Preview-mode helpers |
 | `verify-firebase.ts`, `verify-turnstile.ts` | Server-side auth / bot checks |

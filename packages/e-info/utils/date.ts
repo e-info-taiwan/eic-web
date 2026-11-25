@@ -69,3 +69,31 @@ export function formatTaipeiDate(input?: string | Date | null): string {
   const p = getTaipeiParts(input)
   return p ? `${p.year}年${p.month}月${p.day}日` : ''
 }
+
+/** Year and month (1–12) in Taiwan; defaults to now */
+export function getTaipeiYearMonth(input: string | Date = new Date()): {
+  year: number
+  month: number
+} {
+  const p = getTaipeiParts(input) ?? getTaipeiParts(new Date())
+  return { year: Number(p?.year), month: Number(p?.month) }
+}
+
+// Taiwan has had no DST since 1979, so a fixed offset is exact
+const TAIPEI_OFFSET_MS = 8 * 60 * 60 * 1000
+
+/**
+ * UTC ISO bounds of a Taiwan calendar month, for GraphQL range filters.
+ * e.g. (2026, 12) → 2026-11-30T16:00:00.000Z … 2026-12-31T15:59:59.999Z
+ */
+export function taipeiMonthRange(
+  year: number,
+  month: number
+): { startDate: string; endDate: string } {
+  const start = Date.UTC(year, month - 1, 1) - TAIPEI_OFFSET_MS
+  const nextMonthStart = Date.UTC(year, month, 1) - TAIPEI_OFFSET_MS
+  return {
+    startDate: new Date(start).toISOString(),
+    endDate: new Date(nextMonthStart - 1).toISOString(),
+  }
+}
