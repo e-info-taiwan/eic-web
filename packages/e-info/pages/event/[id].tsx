@@ -6,6 +6,7 @@ import type { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import { getGqlClient } from '~/apollo-client'
+import JsonLd from '~/components/layout/json-ld'
 import LayoutGeneral from '~/components/layout/layout-general'
 import { DEFAULT_POST_IMAGE_PATH } from '~/constants/constant'
 import { MAX_CONTENT_WIDTH } from '~/constants/layout'
@@ -19,7 +20,9 @@ import FacebookIcon from '~/public/icons/facebook.svg'
 import LineIcon from '~/public/icons/line.svg'
 import XIcon from '~/public/icons/x.svg'
 import { setCacheControl } from '~/utils/common'
+import { formatTaipeiDate } from '~/utils/date'
 import { fetchHeaderData } from '~/utils/header-data'
+import { buildEvent, HOME_CRUMB } from '~/utils/json-ld'
 
 const PageWrapper = styled.div`
   max-width: ${MAX_CONTENT_WIDTH};
@@ -291,15 +294,8 @@ type PageProps = {
   event: Event | null
 }
 
-// Format date as yyyy年mm月dd日
-const formatDate = (dateString?: string): string => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}年${month}月${day}日`
-}
+// Format date as yyyy年mm月dd日 in Taiwan time (server runs in UTC)
+const formatDate = (dateString?: string): string => formatTaipeiDate(dateString)
 
 // Format date range
 const formatDateRange = (startDate?: string, endDate?: string): string => {
@@ -456,13 +452,30 @@ EventPage.getLayout = function getLayout(page: ReactElement) {
   const { event } = page.props as PageProps
   const title = event?.name || '活動'
   const heroImageUrl = event ? getHeroImageUrl(event) : undefined
+  const description = event?.content?.replace(/<[^>]*>/g, '').slice(0, 150)
+  const path = event ? `/event/${event.id}` : undefined
+  const eventJsonLd =
+    event && path
+      ? buildEvent({ event, path, description, image: heroImageUrl })
+      : null
 
   return (
     <LayoutGeneral
       title={title}
-      description={event?.content?.replace(/<[^>]*>/g, '').slice(0, 150)}
+      description={description}
       imageUrl={heroImageUrl}
+      path={path}
+      breadcrumbs={
+        event && path
+          ? [
+              HOME_CRUMB,
+              { name: '活動', path: '/event' },
+              { name: title, path },
+            ]
+          : undefined
+      }
     >
+      {eventJsonLd && <JsonLd id="event" data={eventJsonLd} />}
       {page}
     </LayoutGeneral>
   )

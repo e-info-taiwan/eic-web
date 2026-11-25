@@ -17,8 +17,10 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
+import { formatTaipeiDate, toTaipeiMonth } from '~/utils/date'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 
 const PageWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.primary[20]};
@@ -351,17 +353,21 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
   const locationOptions = EVENT_CITY_OPTIONS
 
   // Generate all YYYY-MM months spanned by an event's [startDate, endDate]
+  // Months are taken in Taiwan time (server renders in UTC)
   const getMonthRange = (start: string, end?: string): string[] => {
-    const startD = new Date(start)
-    const endD = end ? new Date(end) : startD
+    const first = toTaipeiMonth(start)
+    if (!first) return []
+    const last = toTaipeiMonth(end) || first
     const months: string[] = []
-    const cur = new Date(startD.getFullYear(), startD.getMonth(), 1)
-    const last = new Date(endD.getFullYear(), endD.getMonth(), 1)
-    while (cur <= last) {
-      months.push(
-        `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}`
-      )
-      cur.setMonth(cur.getMonth() + 1)
+    let [year, month] = first.split('-').map(Number)
+    const [lastYear, lastMonth] = last.split('-').map(Number)
+    while (year < lastYear || (year === lastYear && month <= lastMonth)) {
+      months.push(`${year}-${String(month).padStart(2, '0')}`)
+      month += 1
+      if (month > 12) {
+        month = 1
+        year += 1
+      }
     }
     return months
   }
@@ -376,15 +382,8 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
     )
   ).sort((a, b) => b.localeCompare(a)) // Sort descending (newest first)
 
-  // Format date to yyyy年mm月dd日
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return ''
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}年${month}月${day}日`
-  }
+  // Format date to yyyy年mm月dd日 in Taiwan time
+  const formatDate = (dateString?: string) => formatTaipeiDate(dateString)
 
   // Get image URL with fallback
   const getImageUrl = (event: Event) => {
@@ -604,7 +603,15 @@ const EventsPage: NextPageWithLayout<PageProps> = ({ events }) => {
 }
 
 EventsPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutGeneral title="活動">{page}</LayoutGeneral>
+  return (
+    <LayoutGeneral
+      title="活動"
+      path="/event"
+      breadcrumbs={[HOME_CRUMB, { name: '活動', path: '/event' }]}
+    >
+      {page}
+    </LayoutGeneral>
+  )
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({

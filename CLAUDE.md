@@ -264,6 +264,7 @@ Noto Sans TC is self-hosted via `next/font/google` in `pages/_app.tsx` (2026-05-
 - `CustomHead` also emits site-wide JSON-LD (`NewsMediaOrganization` + `WebSite` with `SearchAction`) on every page; articles reference the organization via `@id`. The organization logo is `public/eic-logo.png` (600×124 on white, rasterized from `eic-logo.svg` via `sharp`) because Google ignores SVG logos.
 - Builders live in `utils/json-ld.ts` (`buildNewsArticle`, `buildArticleBreadcrumb`, `buildBreadcrumb`, `buildOrganization`, `buildWebSite`); render with `<JsonLd id="…" data={…} />` (`components/layout/json-ld.tsx`), which escapes `<` so `</script>` in content can't break out.
 - `/node/[id]` emits `NewsArticle` + `BreadcrumbList` (首頁 → section → categories[0] → 文章). Author = reporters + writers + stringers (`*InInputOrder` first), falling back to `otherByline`; translators / reviewers / sources are not authors. Redirect pages (`/about` etc.) get `type="website"` and no article JSON-LD.
+- `/event/[id]` emits `Event` JSON-LD (`buildEvent`) + `BreadcrumbList`; `/event`, `/job`, `/job/[id]` pass `path` + `breadcrumbs` too. Event dates are stored as UTC instants (form `2026-12-19` → `2026-12-19T00:00:00.000Z`); always format them in Taiwan time via `utils/date.ts` (`toTaipeiISODate`, `formatTaipeiDate`) and emit schema.org dates as `YYYY-MM-DD` — a raw UTC timestamp made Google show events one day early.
 - Listing / feature / newsletter pages pass `path` and `breadcrumbs` to `LayoutGeneral`, which forwards `path` to `CustomHead` (canonical / `og:url`; paginated pages use `pagedPath()` → `?page=N`) and renders `BreadcrumbList` JSON-LD. Use `HOME_CRUMB` as the first item. Deliberately no `ItemList` / `CollectionPage` — no rich-result benefit.
 
 ### GA4 Analytics Tracking (`utils/gtag.ts`)
@@ -289,6 +290,7 @@ Hooks: `useReadingProgress` (25/50/75/100%), `useOutboundLinkTracking`, `useRead
 | `homepage-api.ts`, `header-data.ts`, `listing-api.ts` | JSON-first data loaders with GraphQL fallback, timeouts, TTL cache |
 | `rewrite-gcs-urls.ts` | Rewrite GCS URLs → `/images/*` |
 | `common.ts` | `setCacheControl()` / `setPrivateCacheControl()`, `isServer` |
+| `date.ts` | Taiwan-time formatting (`formatTaipeiDate`, `toTaipeiISODate`, `toTaipeiMonth`, `getTaipeiParts`) — use instead of `getDate()`/`getMonth()`, the server runs in UTC |
 | `page-props.ts` | `withHeaderData()` / `withHeaderDataStatic()` — wrap `getServerSideProps` / `getStaticProps` to inject header/footer data |
 | `preview.ts` | Preview-mode helpers |
 | `verify-firebase.ts`, `verify-turnstile.ts` | Server-side auth / bot checks |

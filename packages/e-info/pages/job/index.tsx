@@ -15,8 +15,10 @@ import type { NextPageWithLayout } from '~/pages/_app'
 import IconBack from '~/public/icons/arrow_back.svg'
 import IconForward from '~/public/icons/arrow_forward.svg'
 import { setCacheControl } from '~/utils/common'
+import { formatTaipeiDate } from '~/utils/date'
 import * as gtag from '~/utils/gtag'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -323,15 +325,8 @@ type PageProps = {
   jobs: Job[]
 }
 
-// Format date as yyyy年mm月dd日
-const formatDate = (dateString?: string): string => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}年${month}月${day}日`
-}
+// Format date as yyyy年mm月dd日 in Taiwan time (server runs in UTC)
+const formatDate = (dateString?: string): string => formatTaipeiDate(dateString)
 
 // Strip HTML tags and get plain text excerpt
 const getExcerpt = (html?: string, maxLength = 150): string => {
@@ -488,7 +483,15 @@ const JobsPage: NextPageWithLayout<PageProps> = ({ jobs }) => {
 }
 
 JobsPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutGeneral title="徵才">{page}</LayoutGeneral>
+  return (
+    <LayoutGeneral
+      title="徵才"
+      path="/job"
+      breadcrumbs={[HOME_CRUMB, { name: '徵才', path: '/job' }]}
+    >
+      {page}
+    </LayoutGeneral>
+  )
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({

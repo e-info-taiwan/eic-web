@@ -17,7 +17,9 @@ import FacebookIcon from '~/public/icons/facebook.svg'
 import LineIcon from '~/public/icons/line.svg'
 import XIcon from '~/public/icons/x.svg'
 import { setCacheControl } from '~/utils/common'
+import { formatTaipeiDate, getTaipeiParts } from '~/utils/date'
 import { fetchHeaderData } from '~/utils/header-data'
+import { HOME_CRUMB } from '~/utils/json-ld'
 
 const PageWrapper = styled.div`
   background-color: #ffffff;
@@ -216,26 +218,13 @@ type PageProps = {
   job: Job | null
 }
 
-// Format date as yyyy年mm月dd日
-const formatDate = (dateString?: string): string => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}年${month}月${day}日`
-}
+// Format date as yyyy年mm月dd日 in Taiwan time (server runs in UTC)
+const formatDate = (dateString?: string): string => formatTaipeiDate(dateString)
 
-// Format datetime as yyyy-mm-dd-HH:mm
+// Format datetime as yyyy-mm-dd-HH:mm in Taiwan time
 const formatDateTime = (dateString?: string): string => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  return `${year}-${month}-${day}-${hours}:${minutes}`
+  const p = getTaipeiParts(dateString)
+  return p ? `${p.year}-${p.month}-${p.day}-${p.hour}:${p.minute}` : ''
 }
 
 // Format date range
@@ -382,9 +371,19 @@ JobPage.getLayout = function getLayout(page: ReactElement) {
   const { job } = page.props as PageProps
   const title = job?.title || '徵才'
   const description = getPlainText(job?.jobDescription)
+  const path = job ? `/job/${job.id}` : undefined
 
   return (
-    <LayoutGeneral title={title} description={description}>
+    <LayoutGeneral
+      title={title}
+      description={description}
+      path={path}
+      breadcrumbs={
+        job && path
+          ? [HOME_CRUMB, { name: '徵才', path: '/job' }, { name: title, path }]
+          : undefined
+      }
+    >
       {page}
     </LayoutGeneral>
   )

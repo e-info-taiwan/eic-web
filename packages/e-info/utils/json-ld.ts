@@ -10,7 +10,9 @@ import { SITE_ORIGIN } from '~/constants/config'
 import { SITE_TITLE } from '~/constants/constant'
 import { SOCIAL_LINKS } from '~/constants/social'
 import type { Author } from '~/graphql/fragments/author'
+import type { Event } from '~/graphql/query/event'
 import type { PostDetail } from '~/graphql/query/post'
+import { toTaipeiISODate } from '~/utils/date'
 
 export type JsonLdObject = Record<string, unknown>
 
@@ -177,6 +179,77 @@ export function buildArticleBreadcrumb(
   }
   items.push({ name: post.title, path })
   return buildBreadcrumb(items)
+}
+
+type EventInput = {
+  event: Event
+  /** Site-relative path of the event, e.g. `/event/243206` */
+  path: string
+  description?: string
+  image?: string
+}
+
+/**
+ * schema.org Event. Dates are emitted as Taiwan calendar dates (`YYYY-MM-DD`)
+ * rather than the raw CMS timestamp: a bare UTC instant like
+ * `2026-12-19T00:00:00.000Z` gets shown as 12/18 by consumers that render it
+ * in a US timezone (e.g. Google's event snippets).
+ *
+ * Location comes from the submit form as either `實體: <address>` or `線上`.
+ */
+export function buildEvent({
+  event,
+  path,
+  description,
+  image,
+}: EventInput): JsonLdObject | null {
+  const startDate = toTaipeiISODate(event.startDate)
+  if (!startDate) return null
+  const endDate = toTaipeiISODate(event.endDate) || startDate
+
+  const url = absoluteUrl(path)
+  const rawLocation = (event.location ?? '').trim()
+  const isOnline = rawLocation === '線上'
+  const address = rawLocation.replace(/^實體\s*[:：]\s*/, '')
+
+  const location = isOnline
+    ? {
+        '@type': 'VirtualLocation',
+        url: event.registrationUrl || url,
+      }
+    : {
+        '@type': 'Place',
+        name: address || event.city || '臺灣',
+        address: {
+          '@type': 'PostalAddress',
+          ...(address ? { streetAddress: address } : {}),
+          ...(event.city && event.city !== '其他'
+            ? { addressRegion: event.city }
+            : {}),
+          addressCountry: 'TW',
+        },
+      }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    '@id': `${url}#event`,
+    url,
+    name: event.name,
+    ...(description ? { description } : {}),
+    ...(image ? { image: [image] } : {}),
+    startDate,
+    endDate,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: isOnline
+      ? 'https://schema.org/OnlineEventAttendanceMode'
+      : 'https://schema.org/OfflineEventAttendanceMode',
+    location,
+    ...(event.organizer
+      ? { organizer: { '@type': 'Organization', name: event.organizer } }
+      : {}),
+    inLanguage: 'zh-TW',
+  }
 }
 
 /**
